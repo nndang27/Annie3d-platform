@@ -1,0 +1,1796 @@
+{
+  "identity": {
+    "commit": "unknown",
+    "node": "v25.5.0",
+    "date": "2026-09-12T14:00:28.826Z",
+    "platform": "darwin arm64"
+  },
+  "runs": [
+    {
+      "profile": "reference",
+      "path": "/",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 872,
+          "p50": 876,
+          "p75": 876,
+          "p95": 876,
+          "max": 880,
+          "mean": 876
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.000026111518012152783,
+          "p50": 0.000026111518012152783,
+          "p75": 0.000026111518012152783,
+          "p95": 0.000026111518012152783,
+          "max": 0.000026111518012152783,
+          "mean": 0.000026111518012152783
+        },
+        "fcp": {
+          "n": 3,
+          "min": 872,
+          "p50": 876,
+          "p75": 876,
+          "p95": 876,
+          "max": 880,
+          "mean": 876
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 2793,
+          "p50": 2793,
+          "p75": 2793,
+          "p95": 2793,
+          "max": 2793,
+          "mean": 2793
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 89747,
+          "p50": 89747,
+          "p75": 89747,
+          "p95": 89747,
+          "max": 89747,
+          "mean": 89747
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/hero.D0JUSzjR_Z111IBT.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 124,
+          "p50": 124,
+          "p75": 124,
+          "p95": 124,
+          "max": 152,
+          "mean": 133.33333333333334
+        },
+        "cls": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "fcp": {
+          "n": 3,
+          "min": 124,
+          "p50": 124,
+          "p75": 124,
+          "p95": 124,
+          "max": 152,
+          "mean": 133.33333333333334
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/hero.D0JUSzjR_Z111IBT.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "resources": [
+        {
+          "name": "/_astro/Base.5p_ot-c5.css",
+          "transfer": 5366,
+          "type": "link"
+        },
+        {
+          "name": "/_astro/hero.D0JUSzjR_Z111IBT.webp",
+          "transfer": 13626,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/page.BDh2vuYI.js",
+          "transfer": 1253,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/HomeDemo.astro_astro_type_script_index_0_lang.P-K6Pudd.js",
+          "transfer": 1540,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2",
+          "transfer": 48556,
+          "type": "css"
+        },
+        {
+          "name": "/_astro/before-after-comparison.jG75RIoQ_Z1q8HSP.webp",
+          "transfer": 3902,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/feature-callouts-headphones.BhLcJKpD_Z2gBfdO.webp",
+          "transfer": 8892,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/lifestyle-spin-appliance._9dPq8gC_Z1ndBuI.webp",
+          "transfer": 6612,
+          "type": "img"
+        }
+      ]
+    },
+    {
+      "profile": "reference",
+      "path": "/pricing",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 636,
+          "p50": 644,
+          "p75": 644,
+          "p95": 644,
+          "max": 660,
+          "mean": 646.6666666666666
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.000005517301834169239,
+          "p50": 0.000005517301834169239,
+          "p75": 0.000005517301834169239,
+          "p95": 0.000005517301834169239,
+          "max": 0.000005517301834169239,
+          "mean": 0.000005517301834169239
+        },
+        "fcp": {
+          "n": 3,
+          "min": 636,
+          "p50": 644,
+          "p75": 644,
+          "p95": 644,
+          "max": 660,
+          "mean": 646.6666666666666
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 1253,
+          "p50": 1253,
+          "p75": 1253,
+          "p95": 1253,
+          "max": 1253,
+          "mean": 1253
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 55175,
+          "p50": 55175,
+          "p75": 55175,
+          "p95": 55175,
+          "max": 55175,
+          "mean": 55175
+        },
+        "lcpElement": "H1.h1",
+        "lcpUrl": null,
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 72,
+          "p50": 88,
+          "p75": 88,
+          "p95": 88,
+          "max": 92,
+          "mean": 84
+        },
+        "cls": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "fcp": {
+          "n": 3,
+          "min": 72,
+          "p50": 88,
+          "p75": 88,
+          "p95": 88,
+          "max": 92,
+          "mean": 84
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "lcpElement": "H1.h1",
+        "lcpUrl": null,
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "resources": [
+        {
+          "name": "/_astro/Base.5p_ot-c5.css",
+          "transfer": 5366,
+          "type": "link"
+        },
+        {
+          "name": "/_astro/page.BDh2vuYI.js",
+          "transfer": 1253,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2",
+          "transfer": 48556,
+          "type": "css"
+        }
+      ]
+    },
+    {
+      "profile": "reference",
+      "path": "/templates",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 1252,
+          "p50": 1256,
+          "p75": 1256,
+          "p95": 1256,
+          "max": 1460,
+          "mean": 1322.6666666666667
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.000005517301834169239,
+          "p50": 0.000005517301834169239,
+          "p75": 0.000005517301834169239,
+          "p95": 0.000005517301834169239,
+          "max": 0.000005517301834169239,
+          "mean": 0.000005517301834169239
+        },
+        "fcp": {
+          "n": 3,
+          "min": 896,
+          "p50": 1252,
+          "p75": 1252,
+          "p95": 1252,
+          "max": 1256,
+          "mean": 1134.6666666666667
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 1253,
+          "p50": 1253,
+          "p75": 1253,
+          "p95": 1253,
+          "max": 1253,
+          "mean": 1253
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 91989,
+          "p50": 91989,
+          "p75": 91989,
+          "p95": 91989,
+          "max": 91989,
+          "mean": 91989
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/before-after-comparison.jG75RIoQ_Z1q8HSP.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 80,
+          "p50": 120,
+          "p75": 120,
+          "p95": 120,
+          "max": 140,
+          "mean": 113.33333333333333
+        },
+        "cls": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "fcp": {
+          "n": 3,
+          "min": 80,
+          "p50": 120,
+          "p75": 120,
+          "p95": 120,
+          "max": 140,
+          "mean": 113.33333333333333
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/before-after-comparison.jG75RIoQ_Z1q8HSP.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "resources": [
+        {
+          "name": "/_astro/Base.5p_ot-c5.css",
+          "transfer": 5366,
+          "type": "link"
+        },
+        {
+          "name": "/_astro/page.BDh2vuYI.js",
+          "transfer": 1253,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/before-after-comparison.jG75RIoQ_Z1q8HSP.webp",
+          "transfer": 3902,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/feature-callouts-headphones.BhLcJKpD_Z2gBfdO.webp",
+          "transfer": 8892,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/lifestyle-spin-appliance._9dPq8gC_Z1ndBuI.webp",
+          "transfer": 6612,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2",
+          "transfer": 48556,
+          "type": "css"
+        },
+        {
+          "name": "/_astro/social-teaser-9-16.DTtmaTlh_2q7jfG.webp",
+          "transfer": 3216,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/color-variants-carousel.CmQODPL6_1Lw2fF.webp",
+          "transfer": 4946,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/scale-and-dimensions.CZQXw-PK_Zf4coz.webp",
+          "transfer": 5514,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/unboxing-reveal.DyVnxtzU_Z1CdneY.webp",
+          "transfer": 3732,
+          "type": "img"
+        }
+      ]
+    },
+    {
+      "profile": "reference",
+      "path": "/templates/turntable-hero-skincare",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 536,
+          "p50": 544,
+          "p75": 544,
+          "p95": 544,
+          "max": 552,
+          "mean": 544
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.0015913695033195087,
+          "p50": 0.0015913695033195087,
+          "p75": 0.0015913695033195087,
+          "p95": 0.0015913695033195087,
+          "max": 0.0015913695033195087,
+          "mean": 0.0015913695033195087
+        },
+        "fcp": {
+          "n": 3,
+          "min": 536,
+          "p50": 544,
+          "p75": 544,
+          "p95": 544,
+          "max": 552,
+          "mean": 544
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 1253,
+          "p50": 1253,
+          "p75": 1253,
+          "p95": 1253,
+          "max": 1253,
+          "mean": 1253
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 68001,
+          "p50": 68001,
+          "p75": 68001,
+          "p95": 68001,
+          "max": 68001,
+          "mean": 68001
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/before-after-comparison.jG75RIoQ_fop9o.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 72,
+          "p50": 76,
+          "p75": 76,
+          "p95": 76,
+          "max": 80,
+          "mean": 76
+        },
+        "cls": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "fcp": {
+          "n": 3,
+          "min": 72,
+          "p50": 76,
+          "p75": 76,
+          "p95": 76,
+          "max": 80,
+          "mean": 76
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/before-after-comparison.jG75RIoQ_fop9o.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "resources": [
+        {
+          "name": "/_astro/Base.5p_ot-c5.css",
+          "transfer": 5366,
+          "type": "link"
+        },
+        {
+          "name": "/_astro/before-after-comparison.jG75RIoQ_fop9o.webp",
+          "transfer": 6214,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/page.BDh2vuYI.js",
+          "transfer": 1253,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2",
+          "transfer": 48556,
+          "type": "css"
+        },
+        {
+          "name": "/_astro/lifestyle-spin-appliance._9dPq8gC_Z1ndBuI.webp",
+          "transfer": 6612,
+          "type": "img"
+        }
+      ]
+    },
+    {
+      "profile": "reference",
+      "path": "/help/quickstart",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 784,
+          "p50": 788,
+          "p75": 788,
+          "p95": 788,
+          "max": 812,
+          "mean": 794.6666666666666
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.0025473234535081236,
+          "p50": 0.0025473234535081236,
+          "p75": 0.0025473234535081236,
+          "p95": 0.0025473234535081236,
+          "max": 0.0025473234535081236,
+          "mean": 0.0025473234535081236
+        },
+        "fcp": {
+          "n": 3,
+          "min": 784,
+          "p50": 788,
+          "p75": 788,
+          "p95": 788,
+          "max": 812,
+          "mean": 794.6666666666666
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 1253,
+          "p50": 1253,
+          "p75": 1253,
+          "p95": 1253,
+          "max": 1253,
+          "mean": 1253
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 55175,
+          "p50": 55175,
+          "p75": 55175,
+          "p95": 55175,
+          "max": 55175,
+          "mean": 55175
+        },
+        "lcpElement": "P",
+        "lcpUrl": null,
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 104,
+          "p50": 104,
+          "p75": 104,
+          "p95": 104,
+          "max": 128,
+          "mean": 112
+        },
+        "cls": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "fcp": {
+          "n": 3,
+          "min": 104,
+          "p50": 104,
+          "p75": 104,
+          "p95": 104,
+          "max": 128,
+          "mean": 112
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "lcpElement": "P",
+        "lcpUrl": null,
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "resources": [
+        {
+          "name": "/_astro/Base.5p_ot-c5.css",
+          "transfer": 5366,
+          "type": "link"
+        },
+        {
+          "name": "/_astro/page.BDh2vuYI.js",
+          "transfer": 1253,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2",
+          "transfer": 48556,
+          "type": "css"
+        }
+      ]
+    },
+    {
+      "profile": "throttled-4x-fast3g",
+      "path": "/",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 1316,
+          "p50": 1320,
+          "p75": 1320,
+          "p95": 1320,
+          "max": 1336,
+          "mean": 1324
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.000026111518012152783,
+          "p50": 0.000026111518012152783,
+          "p75": 0.000026111518012152783,
+          "p95": 0.000026111518012152783,
+          "max": 0.000026111518012152783,
+          "mean": 0.000026111518012152783
+        },
+        "fcp": {
+          "n": 3,
+          "min": 1276,
+          "p50": 1280,
+          "p75": 1280,
+          "p95": 1280,
+          "max": 1292,
+          "mean": 1282.6666666666667
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 2793,
+          "p50": 2793,
+          "p75": 2793,
+          "p95": 2793,
+          "max": 2793,
+          "mean": 2793
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 70341,
+          "p50": 70341,
+          "p75": 70341,
+          "p95": 70341,
+          "max": 70341,
+          "mean": 70341
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/hero.D0JUSzjR_Z111IBT.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 220,
+          "p50": 260,
+          "p75": 260,
+          "p95": 260,
+          "max": 264,
+          "mean": 248
+        },
+        "cls": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "fcp": {
+          "n": 3,
+          "min": 220,
+          "p50": 260,
+          "p75": 260,
+          "p95": 260,
+          "max": 264,
+          "mean": 248
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/hero.D0JUSzjR_Z111IBT.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "resources": [
+        {
+          "name": "/_astro/Base.5p_ot-c5.css",
+          "transfer": 5366,
+          "type": "link"
+        },
+        {
+          "name": "/_astro/page.BDh2vuYI.js",
+          "transfer": 1253,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/hero.D0JUSzjR_Z111IBT.webp",
+          "transfer": 13626,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/HomeDemo.astro_astro_type_script_index_0_lang.P-K6Pudd.js",
+          "transfer": 1540,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2",
+          "transfer": 48556,
+          "type": "css"
+        }
+      ]
+    },
+    {
+      "profile": "throttled-4x-fast3g",
+      "path": "/pricing",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 1064,
+          "p50": 1092,
+          "p75": 1092,
+          "p95": 1092,
+          "max": 1220,
+          "mean": 1125.3333333333333
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.000005517301834169239,
+          "p50": 0.000005517301834169239,
+          "p75": 0.000005517301834169239,
+          "p95": 0.000005517301834169239,
+          "max": 0.000005517301834169239,
+          "mean": 0.000005517301834169239
+        },
+        "fcp": {
+          "n": 3,
+          "min": 1064,
+          "p50": 1092,
+          "p75": 1092,
+          "p95": 1092,
+          "max": 1220,
+          "mean": 1125.3333333333333
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 1253,
+          "p50": 1253,
+          "p75": 1253,
+          "p95": 1253,
+          "max": 1253,
+          "mean": 1253
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 55175,
+          "p50": 55175,
+          "p75": 55175,
+          "p95": 55175,
+          "max": 55175,
+          "mean": 55175
+        },
+        "lcpElement": "H1.h1",
+        "lcpUrl": null,
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 208,
+          "p50": 208,
+          "p75": 208,
+          "p95": 208,
+          "max": 208,
+          "mean": 208
+        },
+        "cls": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "fcp": {
+          "n": 3,
+          "min": 208,
+          "p50": 208,
+          "p75": 208,
+          "p95": 208,
+          "max": 208,
+          "mean": 208
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "lcpElement": "H1.h1",
+        "lcpUrl": null,
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "resources": [
+        {
+          "name": "/_astro/Base.5p_ot-c5.css",
+          "transfer": 5366,
+          "type": "link"
+        },
+        {
+          "name": "/_astro/page.BDh2vuYI.js",
+          "transfer": 1253,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2",
+          "transfer": 48556,
+          "type": "css"
+        }
+      ]
+    },
+    {
+      "profile": "throttled-4x-fast3g",
+      "path": "/templates",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 1580,
+          "p50": 1908,
+          "p75": 1908,
+          "p95": 1908,
+          "max": 1964,
+          "mean": 1817.3333333333333
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.000005517301834169239,
+          "p50": 0.000005517301834169239,
+          "p75": 0.000005517301834169239,
+          "p95": 0.000005517301834169239,
+          "max": 0.000005517301834169239,
+          "mean": 0.000005517301834169239
+        },
+        "fcp": {
+          "n": 3,
+          "min": 1544,
+          "p50": 1908,
+          "p75": 1908,
+          "p95": 1908,
+          "max": 1964,
+          "mean": 1805.3333333333333
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 1253,
+          "p50": 1253,
+          "p75": 1253,
+          "p95": 1253,
+          "max": 1253,
+          "mean": 1253
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 91989,
+          "p50": 91989,
+          "p75": 91989,
+          "p95": 91989,
+          "max": 91989,
+          "mean": 91989
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/before-after-comparison.jG75RIoQ_Z1q8HSP.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 244,
+          "p50": 368,
+          "p75": 368,
+          "p95": 368,
+          "max": 384,
+          "mean": 332
+        },
+        "cls": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "fcp": {
+          "n": 3,
+          "min": 244,
+          "p50": 336,
+          "p75": 336,
+          "p95": 336,
+          "max": 352,
+          "mean": 310.6666666666667
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/before-after-comparison.jG75RIoQ_Z1q8HSP.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "resources": [
+        {
+          "name": "/_astro/Base.5p_ot-c5.css",
+          "transfer": 5366,
+          "type": "link"
+        },
+        {
+          "name": "/_astro/page.BDh2vuYI.js",
+          "transfer": 1253,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/before-after-comparison.jG75RIoQ_Z1q8HSP.webp",
+          "transfer": 3902,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/feature-callouts-headphones.BhLcJKpD_Z2gBfdO.webp",
+          "transfer": 8892,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/lifestyle-spin-appliance._9dPq8gC_Z1ndBuI.webp",
+          "transfer": 6612,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2",
+          "transfer": 48556,
+          "type": "css"
+        },
+        {
+          "name": "/_astro/social-teaser-9-16.DTtmaTlh_2q7jfG.webp",
+          "transfer": 3216,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/color-variants-carousel.CmQODPL6_1Lw2fF.webp",
+          "transfer": 4946,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/scale-and-dimensions.CZQXw-PK_Zf4coz.webp",
+          "transfer": 5514,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/unboxing-reveal.DyVnxtzU_Z1CdneY.webp",
+          "transfer": 3732,
+          "type": "img"
+        }
+      ]
+    },
+    {
+      "profile": "throttled-4x-fast3g",
+      "path": "/templates/turntable-hero-skincare",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 940,
+          "p50": 1240,
+          "p75": 1240,
+          "p95": 1240,
+          "max": 1320,
+          "mean": 1166.6666666666667
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.0015913695033195087,
+          "p50": 0.0015913695033195087,
+          "p75": 0.0015913695033195087,
+          "p95": 0.0015913695033195087,
+          "max": 0.0015913695033195087,
+          "mean": 0.0015913695033195087
+        },
+        "fcp": {
+          "n": 3,
+          "min": 940,
+          "p50": 1120,
+          "p75": 1120,
+          "p95": 1120,
+          "max": 1200,
+          "mean": 1086.6666666666667
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 1253,
+          "p50": 1253,
+          "p75": 1253,
+          "p95": 1253,
+          "max": 1253,
+          "mean": 1253
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 68001,
+          "p50": 68001,
+          "p75": 68001,
+          "p95": 68001,
+          "max": 68001,
+          "mean": 68001
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/before-after-comparison.jG75RIoQ_fop9o.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 204,
+          "p50": 208,
+          "p75": 208,
+          "p95": 208,
+          "max": 232,
+          "mean": 214.66666666666666
+        },
+        "cls": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "fcp": {
+          "n": 3,
+          "min": 204,
+          "p50": 208,
+          "p75": 208,
+          "p95": 208,
+          "max": 232,
+          "mean": 214.66666666666666
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "lcpElement": "IMG",
+        "lcpUrl": "http://localhost:4173/_astro/before-after-comparison.jG75RIoQ_fop9o.webp",
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "resources": [
+        {
+          "name": "/_astro/Base.5p_ot-c5.css",
+          "transfer": 5366,
+          "type": "link"
+        },
+        {
+          "name": "/_astro/page.BDh2vuYI.js",
+          "transfer": 1253,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/before-after-comparison.jG75RIoQ_fop9o.webp",
+          "transfer": 6214,
+          "type": "img"
+        },
+        {
+          "name": "/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2",
+          "transfer": 48556,
+          "type": "css"
+        },
+        {
+          "name": "/_astro/lifestyle-spin-appliance._9dPq8gC_Z1ndBuI.webp",
+          "transfer": 6612,
+          "type": "img"
+        }
+      ]
+    },
+    {
+      "profile": "throttled-4x-fast3g",
+      "path": "/help/quickstart",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 1172,
+          "p50": 1228,
+          "p75": 1228,
+          "p95": 1228,
+          "max": 1248,
+          "mean": 1216
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.0025473234535081236,
+          "p50": 0.0025473234535081236,
+          "p75": 0.0025473234535081236,
+          "p95": 0.0025473234535081236,
+          "max": 0.0025473234535081236,
+          "mean": 0.0025473234535081236
+        },
+        "fcp": {
+          "n": 3,
+          "min": 1172,
+          "p50": 1228,
+          "p75": 1228,
+          "p95": 1228,
+          "max": 1248,
+          "mean": 1216
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 1253,
+          "p50": 1253,
+          "p75": 1253,
+          "p95": 1253,
+          "max": 1253,
+          "mean": 1253
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 55175,
+          "p50": 55175,
+          "p75": 55175,
+          "p95": 55175,
+          "max": 55175,
+          "mean": 55175
+        },
+        "lcpElement": "P",
+        "lcpUrl": null,
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 220,
+          "p50": 264,
+          "p75": 264,
+          "p95": 264,
+          "max": 264,
+          "mean": 249.33333333333334
+        },
+        "cls": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "fcp": {
+          "n": 3,
+          "min": 220,
+          "p50": 264,
+          "p75": 264,
+          "p95": 264,
+          "max": 264,
+          "mean": 249.33333333333334
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "totalTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "lcpElement": "P",
+        "lcpUrl": null,
+        "longTasks": [
+          0,
+          0,
+          0
+        ]
+      },
+      "resources": [
+        {
+          "name": "/_astro/Base.5p_ot-c5.css",
+          "transfer": 5366,
+          "type": "link"
+        },
+        {
+          "name": "/_astro/page.BDh2vuYI.js",
+          "transfer": 1253,
+          "type": "script"
+        },
+        {
+          "name": "/_astro/inter-latin-wght-normal.Dx4kXJAl.woff2",
+          "transfer": 48556,
+          "type": "css"
+        }
+      ]
+    },
+    {
+      "profile": "reference",
+      "path": "/app/signin (shell)",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 704,
+          "p50": 708,
+          "p75": 708,
+          "p95": 708,
+          "max": 728,
+          "mean": 713.3333333333334
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.01075233196159122,
+          "p50": 0.01075233196159122,
+          "p75": 0.01075233196159122,
+          "p95": 0.01075233196159122,
+          "max": 0.010897633744855967,
+          "mean": 0.010800765889346135
+        },
+        "fcp": {
+          "n": 3,
+          "min": 424,
+          "p50": 428,
+          "p75": 428,
+          "p95": 428,
+          "max": 432,
+          "mean": 428
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 137944,
+          "p50": 137944,
+          "p75": 137944,
+          "p95": 137944,
+          "max": 137944,
+          "mean": 137944
+        },
+        "bootstrap": {
+          "n": 3,
+          "min": 18.899999976158142,
+          "p50": 19.100000023841858,
+          "p75": 19.100000023841858,
+          "p95": 19.100000023841858,
+          "max": 20.899999976158142,
+          "mean": 19.633333325386047
+        }
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 276,
+          "p50": 288,
+          "p75": 288,
+          "p95": 288,
+          "max": 340,
+          "mean": 301.3333333333333
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        }
+      },
+      "signInToDashboardMs": {
+        "n": 3,
+        "min": 846,
+        "p50": 849,
+        "p75": 849,
+        "p95": 849,
+        "max": 850,
+        "mean": 848.3333333333334
+      },
+      "resources": [
+        {
+          "name": "/app/assets/index-DaXkrmOf.js",
+          "transfer": 7750,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/rolldown-runtime-hePW80VL.js",
+          "transfer": 1016,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/src-B7FJrpdj.js",
+          "transfer": 4947,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/navigation-BqTLbDky.js",
+          "transfer": 945,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/src-CVkW7pN_.js",
+          "transfer": 4586,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/tanstack-1loMNLXy.js",
+          "transfer": 31736,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/context-CY4qGtVY.js",
+          "transfer": 648,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/react-BOEoycWw.js",
+          "transfer": 59299,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/index-CoTN4tI4.css",
+          "transfer": 13691,
+          "type": "link"
+        },
+        {
+          "name": "/app/assets/errors-DaNr5UvF.js",
+          "transfer": 692,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/ErrorState-9ejnlyPL.js",
+          "transfer": 1071,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/queries-CGFXWV4_.js",
+          "transfer": 1346,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/artifacts-BEEoIaK7.js",
+          "transfer": 1263,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/plans-BNs48A1v.js",
+          "transfer": 1007,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/services-CAbWCneg.js",
+          "transfer": 16758,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/notifications-DkX4I89q.js",
+          "transfer": 475,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/runs-CIwq8oxd.js",
+          "transfer": 706,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/scenarios-DDcN_fHz.js",
+          "transfer": 1287,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/SignIn-Cn88q7Y7.js",
+          "transfer": 1851,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/ids-DAZKueMA.js",
+          "transfer": 561,
+          "type": "script"
+        }
+      ]
+    },
+    {
+      "profile": "throttled-4x-fast3g",
+      "path": "/app/signin (shell)",
+      "cold": {
+        "lcp": {
+          "n": 3,
+          "min": 1968,
+          "p50": 2008,
+          "p75": 2008,
+          "p95": 2008,
+          "max": 2040,
+          "mean": 2005.3333333333333
+        },
+        "cls": {
+          "n": 3,
+          "min": 0.01075233196159122,
+          "p50": 0.01075233196159122,
+          "p75": 0.01075233196159122,
+          "p95": 0.01075233196159122,
+          "max": 0.01075233196159122,
+          "mean": 0.01075233196159122
+        },
+        "fcp": {
+          "n": 3,
+          "min": 1208,
+          "p50": 1216,
+          "p75": 1216,
+          "p95": 1216,
+          "max": 1224,
+          "mean": 1216
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 137944,
+          "p50": 137944,
+          "p75": 137944,
+          "p95": 137944,
+          "max": 137944,
+          "mean": 137944
+        },
+        "bootstrap": {
+          "n": 3,
+          "min": 1003.6999999880791,
+          "p50": 1005.8999999761581,
+          "p75": 1005.8999999761581,
+          "p95": 1005.8999999761581,
+          "max": 1010.3999999761581,
+          "mean": 1006.6666666467985
+        }
+      },
+      "warm": {
+        "lcp": {
+          "n": 3,
+          "min": 388,
+          "p50": 440,
+          "p75": 440,
+          "p95": 440,
+          "max": 488,
+          "mean": 438.6666666666667
+        },
+        "jsTransfer": {
+          "n": 3,
+          "min": 0,
+          "p50": 0,
+          "p75": 0,
+          "p95": 0,
+          "max": 0,
+          "mean": 0
+        }
+      },
+      "signInToDashboardMs": {
+        "n": 3,
+        "min": 815,
+        "p50": 818,
+        "p75": 818,
+        "p95": 818,
+        "max": 822,
+        "mean": 818.3333333333334
+      },
+      "resources": [
+        {
+          "name": "/app/assets/index-DaXkrmOf.js",
+          "transfer": 7750,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/rolldown-runtime-hePW80VL.js",
+          "transfer": 1016,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/src-B7FJrpdj.js",
+          "transfer": 4947,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/navigation-BqTLbDky.js",
+          "transfer": 945,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/tanstack-1loMNLXy.js",
+          "transfer": 31736,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/react-BOEoycWw.js",
+          "transfer": 59299,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/context-CY4qGtVY.js",
+          "transfer": 648,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/src-CVkW7pN_.js",
+          "transfer": 4586,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/errors-DaNr5UvF.js",
+          "transfer": 692,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/index-CoTN4tI4.css",
+          "transfer": 13691,
+          "type": "link"
+        },
+        {
+          "name": "/app/assets/ErrorState-9ejnlyPL.js",
+          "transfer": 1071,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/queries-CGFXWV4_.js",
+          "transfer": 1346,
+          "type": "other"
+        },
+        {
+          "name": "/app/assets/services-CAbWCneg.js",
+          "transfer": 16758,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/artifacts-BEEoIaK7.js",
+          "transfer": 1263,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/plans-BNs48A1v.js",
+          "transfer": 1007,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/notifications-DkX4I89q.js",
+          "transfer": 475,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/runs-CIwq8oxd.js",
+          "transfer": 706,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/scenarios-DDcN_fHz.js",
+          "transfer": 1287,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/SignIn-Cn88q7Y7.js",
+          "transfer": 1851,
+          "type": "script"
+        },
+        {
+          "name": "/app/assets/ids-DAZKueMA.js",
+          "transfer": 561,
+          "type": "script"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "browser": "Chromium 153.0.8010.12",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "cpuThrottle": 4,
+    "network": "209715.2B/s ↓ 150ms",
+    "viewport": "1440x900 @2x"
+  }
+}

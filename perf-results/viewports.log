@@ -1,0 +1,253 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+npm warn Unknown project config "strict-peer-dependencies". This will stop working in the next major version of npm.
+
+Running 42 tests using 1 worker
+
+[1/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:39:7 › public pages fit phone-portrait (390×844)
+[2/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-portrait (390×844)
+  1) [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-portrait (390×844) 
+
+    Error: billing @ phone-portrait: H2., SPAN.badge, DIV.card, DIV., SPAN.
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    62
+
+      76 |     await expect(page.getByTestId('subscription-card')).toBeVisible();
+      77 |     o = await overflow(page);
+    > 78 |     expect(o.over, `billing @ ${name}: ${o.offenders.join(', ')}`).toBeLessThanOrEqual(1);
+         |                                                                    ^
+      79 |     await page.goto('/app/projects/new');
+      80 |     await expect(page.getByTestId('create-project')).toBeVisible();
+      81 |     o = await overflow(page);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/viewports.spec.ts:78:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[3/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:39:7 › public pages fit phone-landscape (844×390)
+[4/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-landscape (844×390)
+[5/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:39:7 › public pages fit small-phone (320×568)
+[6/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit small-phone (320×568)
+  2) [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit small-phone (320×568) 
+
+    Error: billing @ small-phone: H2., SPAN.badge, DIV.card, DIV., SPAN.badge
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    132
+
+      76 |     await expect(page.getByTestId('subscription-card')).toBeVisible();
+      77 |     o = await overflow(page);
+    > 78 |     expect(o.over, `billing @ ${name}: ${o.offenders.join(', ')}`).toBeLessThanOrEqual(1);
+         |                                                                    ^
+      79 |     await page.goto('/app/projects/new');
+      80 |     await expect(page.getByTestId('create-project')).toBeVisible();
+      81 |     o = await overflow(page);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/viewports.spec.ts:78:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[7/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:39:7 › public pages fit tablet-portrait (768×1024)
+[8/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit tablet-portrait (768×1024)
+[9/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:39:7 › public pages fit tablet-landscape (1024×768)
+[10/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit tablet-landscape (1024×768)
+[11/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:39:7 › public pages fit laptop (1280×800)
+[12/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit laptop (1280×800)
+[13/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:39:7 › public pages fit wide (1600×1000)
+[14/42] [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit wide (1600×1000)
+[15/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:39:7 › public pages fit phone-portrait (390×844)
+[16/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-portrait (390×844)
+  3) [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-portrait (390×844) 
+
+    Error: billing @ phone-portrait: H2., SPAN.badge, DIV.card, DIV., SPAN.
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    62
+
+      76 |     await expect(page.getByTestId('subscription-card')).toBeVisible();
+      77 |     o = await overflow(page);
+    > 78 |     expect(o.over, `billing @ ${name}: ${o.offenders.join(', ')}`).toBeLessThanOrEqual(1);
+         |                                                                    ^
+      79 |     await page.goto('/app/projects/new');
+      80 |     await expect(page.getByTestId('create-project')).toBeVisible();
+      81 |     o = await overflow(page);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/viewports.spec.ts:78:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[17/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:39:7 › public pages fit phone-landscape (844×390)
+[18/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-landscape (844×390)
+[19/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:39:7 › public pages fit small-phone (320×568)
+[20/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit small-phone (320×568)
+  4) [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit small-phone (320×568) ─
+
+    Error: billing @ small-phone: H2., SPAN.badge, DIV.card, DIV., SPAN.badge
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    132
+
+      76 |     await expect(page.getByTestId('subscription-card')).toBeVisible();
+      77 |     o = await overflow(page);
+    > 78 |     expect(o.over, `billing @ ${name}: ${o.offenders.join(', ')}`).toBeLessThanOrEqual(1);
+         |                                                                    ^
+      79 |     await page.goto('/app/projects/new');
+      80 |     await expect(page.getByTestId('create-project')).toBeVisible();
+      81 |     o = await overflow(page);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/viewports.spec.ts:78:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[21/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:39:7 › public pages fit tablet-portrait (768×1024)
+[22/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit tablet-portrait (768×1024)
+[23/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:39:7 › public pages fit tablet-landscape (1024×768)
+[24/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit tablet-landscape (1024×768)
+[25/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:39:7 › public pages fit laptop (1280×800)
+[26/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit laptop (1280×800)
+[27/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:39:7 › public pages fit wide (1600×1000)
+[28/42] [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit wide (1600×1000)
+[29/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:39:7 › public pages fit phone-portrait (390×844)
+[30/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-portrait (390×844)
+  5) [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-portrait (390×844) 
+
+    Error: billing @ phone-portrait: H2., SPAN.badge, DIV.card, DIV., SPAN.
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    61
+
+      76 |     await expect(page.getByTestId('subscription-card')).toBeVisible();
+      77 |     o = await overflow(page);
+    > 78 |     expect(o.over, `billing @ ${name}: ${o.offenders.join(', ')}`).toBeLessThanOrEqual(1);
+         |                                                                    ^
+      79 |     await page.goto('/app/projects/new');
+      80 |     await expect(page.getByTestId('create-project')).toBeVisible();
+      81 |     o = await overflow(page);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/viewports.spec.ts:78:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/viewports-app-screens-fit-phone-portrait-390×844--viewports-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[31/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:39:7 › public pages fit phone-landscape (844×390)
+[32/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-landscape (844×390)
+[33/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:39:7 › public pages fit small-phone (320×568)
+[34/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit small-phone (320×568)
+  6) [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit small-phone (320×568) 
+
+    Error: billing @ small-phone: H2., SPAN.badge, DIV.card, DIV., SPAN.badge
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    131
+
+      76 |     await expect(page.getByTestId('subscription-card')).toBeVisible();
+      77 |     o = await overflow(page);
+    > 78 |     expect(o.over, `billing @ ${name}: ${o.offenders.join(', ')}`).toBeLessThanOrEqual(1);
+         |                                                                    ^
+      79 |     await page.goto('/app/projects/new');
+      80 |     await expect(page.getByTestId('create-project')).toBeVisible();
+      81 |     o = await overflow(page);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/viewports.spec.ts:78:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/viewports-app-screens-fit-small-phone-320×568--viewports-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[35/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:39:7 › public pages fit tablet-portrait (768×1024)
+[36/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit tablet-portrait (768×1024)
+[37/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:39:7 › public pages fit tablet-landscape (1024×768)
+[38/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit tablet-landscape (1024×768)
+[39/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:39:7 › public pages fit laptop (1280×800)
+[40/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit laptop (1280×800)
+[41/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:39:7 › public pages fit wide (1600×1000)
+[42/42] [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit wide (1600×1000)
+  6 failed
+    [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-portrait (390×844) 
+    [viewports-chromium] › tests/e2e/viewports.spec.ts:53:7 › app screens fit small-phone (320×568) 
+    [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-portrait (390×844) 
+    [viewports-webkit] › tests/e2e/viewports.spec.ts:53:7 › app screens fit small-phone (320×568) ──
+    [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit phone-portrait (390×844) 
+    [viewports-firefox] › tests/e2e/viewports.spec.ts:53:7 › app screens fit small-phone (320×568) ─
+  36 passed (1.3m)

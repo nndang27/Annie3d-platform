@@ -1,0 +1,73 @@
+/* Design tokens from INSTRUCT_DESIGN_UI.md §5–6. One source for marketing and app. */
+:root {
+  color-scheme: light;
+  --bg-page: #ffffff;
+  --bg-canvas: #f7f8fa;
+  --bg-subtle: #f0f2f5;
+  --bg-hover: #e9ecf0;
+  --bg-elevated: #ffffff;
+
+  --text-primary: #17191d;
+  --text-secondary: #505762;
+  --text-muted: #616975;
+  --text-on-dark: #ffffff;
+
+  --border-subtle: #e4e7ec;
+  --border-default: #d8dce3;
+  --border-control: #808894;
+
+  --action-primary: #17191d;
+  --action-primary-hover: #30343b;
+  --action-primary-pressed: #090b0e;
+  --accent: #2457d6;
+  --accent-hover: #1d46ad;
+  --accent-soft: #edf3ff;
+
+  --success: #17623b;
+  --success-soft: #edf7f0;
+  --warning: #8a4b08;
+  --warning-soft: #fff5e6;
+  --danger: #b42332;
+  --danger-soft: #fff0f1;
+
+  --radius-sm: 6px;
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-preview: 24px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgb(23 25 29 / 4%);
+  --shadow-popover: 0 8px 24px rgb(23 25 29 / 8%), 0 1px 4px rgb(23 25 29 / 6%);
+  --shadow-floating: 0 12px 36px rgb(23 25 29 / 10%), 0 2px 6px rgb(23 25 29 / 5%);
+
+  --motion-fast: 140ms;
+  --motion-normal: 200ms;
+  --motion-reveal: 320ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --font-sans:
+    "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  --content-max: 1200px;
+  --preview-max: 1360px;
+  --header-h: 64px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-normal: 0ms;
+    --motion-reveal: 0ms;
+  }
+}

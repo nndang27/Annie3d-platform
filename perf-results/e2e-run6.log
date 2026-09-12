@@ -1,0 +1,118 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+npm warn Unknown project config "strict-peer-dependencies". This will stop working in the next major version of npm.
+
+Running 41 tests using 1 worker
+
+[1/41] [desktop] › tests/e2e/controls.spec.ts:9:7 › control coverage › dashboard: search, filters, create/duplicate/rename/archive/delete, empty state
+  1) [desktop] › tests/e2e/controls.spec.ts:9:7 › control coverage › dashboard: search, filters, create/duplicate/rename/archive/delete, empty state 
+
+    Error: expect(received).toBeLessThan(expected)
+
+    Expected: < 0
+    Received:   3
+
+      16 |     await expect(page).toHaveURL(/q=Aria/);
+      17 |     await expect(cards.first()).toContainText('Aria Pro');
+    > 18 |     expect(await cards.count()).toBeLessThan(initial);
+         |                                 ^
+      19 |     await page.getByTestId('project-search').fill('zzz-nothing');
+      20 |     await expect(page.getByText('No projects match')).toBeVisible();
+      21 |     await page.getByRole('button', { name: 'Clear filters' }).click();
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/controls.spec.ts:18:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/controls-control-coverage--ee793--archive-delete-empty-state-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/controls-control-coverage--ee793--archive-delete-empty-state-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/controls-control-coverage--ee793--archive-delete-empty-state-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/controls-control-coverage--ee793--archive-delete-empty-state-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[2/41] [desktop] › tests/e2e/controls.spec.ts:90:7 › control coverage › new project validation keeps valid fields and explains upload rejection
+[3/41] [desktop] › tests/e2e/controls.spec.ts:118:7 › control coverage › workflow canvas: Flows-style node, footer settings, menu, palette, context menu, connection rules, undo/redo
+[4/41] [desktop] › tests/e2e/controls.spec.ts:195:7 › control coverage › composer performs meaningful actions and explains unsupported ones
+[5/41] [desktop] › tests/e2e/controls.spec.ts:225:7 › control coverage › studio controls visibly change the scene; typing stays responsive while a run streams
+[6/41] [desktop] › tests/e2e/controls.spec.ts:263:7 › control coverage › outputs: acceptance, download reference image, open in studio, library filters and detail
+[7/41] [desktop] › tests/e2e/controls.spec.ts:290:7 › control coverage › settings: profile, workspace, notifications, members/invitations, roles
+[8/41] [desktop] › tests/e2e/controls.spec.ts:327:7 › control coverage › notifications panel, scenario page, double-click safety on run start
+[9/41] [desktop] › tests/e2e/controls.spec.ts:348:7 › control coverage › flaky reads retry; timeout on mutation does not duplicate
+[10/41] [desktop] › tests/e2e/journeys.spec.ts:17:7 › journeys › J1 homepage → template → demo signup → project from that template
+[11/41] [desktop] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output
+[12/41] [desktop] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload
+[13/41] [desktop] › tests/e2e/journeys.spec.ts:111:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run
+[14/41] [desktop] › tests/e2e/journeys.spec.ts:132:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored
+[15/41] [desktop] › tests/e2e/journeys.spec.ts:168:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step
+[16/41] [desktop] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4
+[17/41] [desktop] › tests/e2e/journeys.spec.ts:236:7 › journeys › J6b WebM browser recording is a real recording
+[18/41] [desktop] › tests/e2e/journeys.spec.ts:255:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+[19/41] [desktop] › tests/e2e/journeys.spec.ts:303:7 › journeys › J8 sign out → sign in as another user → no leakage
+[20/41] [desktop] › tests/e2e/journeys.spec.ts:332:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector
+[21/41] [desktop] › tests/e2e/journeys.spec.ts:359:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact
+[22/41] [desktop] › tests/e2e/journeys.spec.ts:397:7 › journeys › J9c unsupported WebGL shows a usable fallback
+[23/41] [desktop] › tests/e2e/public.spec.ts:4:7 › public site › homepage ships useful HTML, working links, no app code
+[24/41] [desktop] › tests/e2e/public.spec.ts:29:7 › public site › 3D demo loads on intent and renders frames
+[25/41] [desktop] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link
+[26/41] [desktop] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links
+[27/41] [desktop] › tests/e2e/public.spec.ts:76:7 › public site › help articles, legal drafts and 404 status
+[28/41] [desktop] › tests/e2e/public.spec.ts:92:7 › public site › mobile menu opens by click and keyboard, closes on Escape
+[29/41] [desktop] › tests/e2e/screenshots.spec.ts:12:5 › screenshots across widths and states
+[30/41] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /
+[31/41] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /product
+[32/41] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates
+[33/41] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates/turntable-hero-skincare
+[34/41] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /pricing
+[35/41] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /help
+[36/41] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /help/quickstart
+[37/41] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /legal/privacy
+[38/41] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /nope
+[39/41] [a11y] › tests/e2e/a11y.spec.ts:28:5 › axe: app screens
+  2) [a11y] › tests/e2e/a11y.spec.ts:28:5 › axe: app screens ───────────────────────────────────────
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "billing color-contrast: button[data-testid=\"choose-team\"]",
+    + ]
+
+      35 |     expect(
+      36 |       results.violations.map((v) => `${label} ${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`),
+    > 37 |     ).toEqual([]);
+         |       ^
+      38 |   };
+      39 |   await check('signin');
+      40 |   await signIn(page, 'u_mai');
+        at check (/Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/a11y.spec.ts:37:7)
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/a11y.spec.ts:58:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-axe-app-screens-a11y/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/a11y-axe-app-screens-a11y/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-axe-app-screens-a11y/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/a11y-axe-app-screens-a11y/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[40/41] [a11y] › tests/e2e/a11y.spec.ts:63:5 › focus is visible and dialogs trap/restore focus
+[41/41] [mobile] › tests/e2e/mobile.spec.ts:3:5 › mobile: step/list workflow, studio stacked, no horizontal scroll
+  2 failed
+    [desktop] › tests/e2e/controls.spec.ts:9:7 › control coverage › dashboard: search, filters, create/duplicate/rename/archive/delete, empty state 
+    [a11y] › tests/e2e/a11y.spec.ts:28:5 › axe: app screens ────────────────────────────────────────
+  39 passed (2.1m)

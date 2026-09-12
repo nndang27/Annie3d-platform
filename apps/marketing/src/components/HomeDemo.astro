@@ -1,0 +1,86 @@
+---
+import { Image } from 'astro:assets';
+import hero from '../assets/posters/hero.webp';
+---
+
+<div class="demo-frame" data-home-demo>
+  <div class="demo-stage">
+    <Image src={hero} alt="Over-ear headphones rendered in the 3Dads studio on a white backdrop (demonstration fixture)" width={1400} height={1050} widths={[640, 960, 1400]} sizes="(min-width: 1280px) 1200px, 100vw" loading="eager" fetchpriority="high" decoding="sync" data-demo-poster />
+    <canvas data-demo-canvas hidden aria-label="Interactive 3D headphones. Drag to orbit, scroll to zoom." tabindex="-1"></canvas>
+    <div class="demo-toolbar">
+      <button type="button" class="btn btn-primary btn-sm" data-demo-start data-testid="home-demo-start">Rotate the model</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-demo-color hidden>Change colour</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-demo-reset hidden>Reset view</button>
+    </div>
+    <p class="badge" style="position:absolute;right:12px;top:12px">Demonstration fixture</p>
+  </div>
+  <div class="demo-steps" aria-label="Workflow steps behind this output">
+    <div class="demo-step"><strong>Reference</strong><span>Catalog fixture · 1 image</span></div>
+    <div class="demo-step"><strong>Build 3D model</strong><span>Labelled demo fixture</span></div>
+    <div class="demo-step"><strong>Compose scene</strong><span>Studio soft · white</span></div>
+    <div class="demo-step"><strong>Animate</strong><span>Turntable · 6 s</span></div>
+    <div class="demo-step"><strong>Ad variants</strong><span>1:1 · 9:16 · review</span></div>
+  </div>
+  <p class="visually-hidden" data-demo-status aria-live="polite"></p>
+</div>
+<script>
+  // The 3D viewer (Three.js) loads only on intent. The poster stays as the LCP image.
+  const root = document.querySelector<HTMLElement>('[data-home-demo]');
+  if (root) {
+    const start = root.querySelector<HTMLButtonElement>('[data-demo-start]')!;
+    const colorBtn = root.querySelector<HTMLButtonElement>('[data-demo-color]')!;
+    const resetBtn = root.querySelector<HTMLButtonElement>('[data-demo-reset]')!;
+    const canvas = root.querySelector<HTMLCanvasElement>('[data-demo-canvas]')!;
+    const poster = root.querySelector<HTMLImageElement>('[data-demo-poster]')!;
+    const status = root.querySelector<HTMLElement>('[data-demo-status]')!;
+    const colors = ['#2b2f36', '#5b7cff', '#c9a27e', '#b45f9a', '#7a8290'];
+    let i = 0;
+    let viewer: import('@3dads/viewer-3d').ProductViewer | null = null;
+    const scene = () => ({
+      fixtureId: 'headphones' as const,
+      background: 'studio-white' as const,
+      materialColor: colors[i % colors.length]!,
+      finish: 'satin' as const,
+      light: 'studio-soft' as const,
+      cameraPreset: 'three-quarter' as const,
+      placement: { x: 0, y: 0, rotationY: 0, scale: 1 },
+      animation: { preset: 'turntable' as const, durationSec: 6 },
+      brandColor: '#2457d6',
+    });
+    start.addEventListener('click', async () => {
+      start.disabled = true;
+      start.textContent = 'Loading 3D…';
+      status.textContent = 'Loading the interactive viewer';
+      try {
+        const mod = await import('@3dads/viewer-3d');
+        if (!mod.isWebGLAvailable()) {
+          start.textContent = '3D needs WebGL';
+          status.textContent = 'WebGL is unavailable in this browser; the poster stays visible.';
+          return;
+        }
+        canvas.hidden = false;
+        viewer = new mod.ProductViewer(canvas, { dprCap: 1.5, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
+        viewer.setScene(scene());
+        poster.hidden = true;
+        start.hidden = true;
+        colorBtn.hidden = false;
+        resetBtn.hidden = false;
+        status.textContent = 'Interactive 3D loaded. Drag to orbit, scroll to zoom.';
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          viewer.play();
+          canvas.addEventListener('pointerdown', () => viewer?.pause(), { once: true });
+        }
+        colorBtn.addEventListener('click', () => {
+          i += 1;
+          viewer?.setScene(scene());
+        });
+        resetBtn.addEventListener('click', () => viewer?.resetCamera());
+        (window as unknown as { __homeViewer?: unknown }).__homeViewer = viewer;
+      } catch (e) {
+        start.disabled = false;
+        start.textContent = 'Retry loading 3D';
+        status.textContent = `The viewer could not load: ${(e as Error).message}`;
+      }
+    });
+  }
+</script>

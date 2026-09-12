@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-09-12T10:20:53.727Z",
+  "bytes": {
+    "fixture:serum-bottle": 4014,
+    "fixture:headphones": 5270,
+    "fixture:smart-speaker": 7440,
+    "template:turntable-hero-skincare": 6120,
+    "template:feature-callouts-headphones": 14630,
+    "template:lifestyle-spin-appliance": 13064,
+    "template:social-teaser-9-16": 5012,
+    "template:color-variants-carousel": 7922,
+    "template:scale-and-dimensions": 11504,
+    "template:before-after-comparison": 6120,
+    "template:unboxing-reveal": 5908,
+    "hero": 13562
+  }
+}

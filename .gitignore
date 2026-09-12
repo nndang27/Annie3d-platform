@@ -1,0 +1,8 @@
+node_modules
+dist
+.astro
+*.tsbuildinfo
+playwright-report
+test-results
+.vite
+perf-results/poster-app

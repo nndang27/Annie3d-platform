@@ -1,0 +1,985 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+npm warn Unknown project config "strict-peer-dependencies". This will stop working in the next major version of npm.
+
+Running 53 tests using 1 worker
+
+[1/53] [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /
+[2/53] [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /product
+[3/53] [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates
+[4/53] [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates/turntable-hero-skincare
+  1) [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates/turntable-hero-skincare ─────────────
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "link-in-text-block: nav[aria-label=\"Breadcrumb\"] > a[href$=\"templates\"]",
+    + ]
+
+      22 |     expect(
+      23 |       results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`),
+    > 24 |     ).toEqual([]);
+         |       ^
+      25 |   });
+      26 | }
+      27 |
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/a11y.spec.ts:24:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-axe-templates-turntable-hero-skincare-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/a11y-axe-templates-turntable-hero-skincare-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-axe-templates-turntable-hero-skincare-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/a11y-axe-templates-turntable-hero-skincare-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[5/53] [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /pricing
+[6/53] [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /help
+[7/53] [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /help/quickstart
+[8/53] [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /legal/privacy
+[9/53] [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /nope
+[10/53] [desktop] › tests/e2e/a11y.spec.ts:28:5 › axe: app screens
+  2) [desktop] › tests/e2e/a11y.spec.ts:28:5 › axe: app screens ────────────────────────────────────
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "new project link-in-text-block: nav[aria-label=\"Breadcrumb\"] > a[href$=\"app/\"]",
+    + ]
+
+      35 |     expect(
+      36 |       results.violations.map((v) => `${label} ${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`),
+    > 37 |     ).toEqual([]);
+         |       ^
+      38 |   };
+      39 |   await check('signin');
+      40 |   await signIn(page, 'u_mai');
+        at check (/Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/a11y.spec.ts:37:7)
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/a11y.spec.ts:43:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-axe-app-screens-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/a11y-axe-app-screens-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-axe-app-screens-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/a11y-axe-app-screens-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[11/53] [desktop] › tests/e2e/a11y.spec.ts:63:5 › focus is visible and dialogs trap/restore focus
+  3) [desktop] › tests/e2e/a11y.spec.ts:63:5 › focus is visible and dialogs trap/restore focus ─────
+
+    Error: expect(received).not.toBe(expected) // Object.is equality
+
+    Expected: not "none"
+
+      70 |   await more.focus();
+      71 |   const outline = await more.evaluate((el) => getComputedStyle(el).outlineStyle);
+    > 72 |   expect(outline).not.toBe('none');
+         |                       ^
+      73 |   await page.keyboard.press('Enter');
+      74 |   await expect(page.getByRole('menu')).toBeVisible();
+      75 |   await page.keyboard.press('ArrowDown');
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/a11y.spec.ts:72:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-focus-is-visible-and-dialogs-trap-restore-focus-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/a11y-focus-is-visible-and-dialogs-trap-restore-focus-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-focus-is-visible-and-dialogs-trap-restore-focus-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/a11y-focus-is-visible-and-dialogs-trap-restore-focus-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[12/53] [desktop] › tests/e2e/controls.spec.ts:9:7 › control coverage › dashboard: search, filters, create/duplicate/rename/archive/delete, empty state
+  4) [desktop] › tests/e2e/controls.spec.ts:9:7 › control coverage › dashboard: search, filters, create/duplicate/rename/archive/delete, empty state 
+
+    Error: locator.fill: Error: strict mode violation: getByLabel('Project name') resolved to 23 elements:
+        1) <input id="_r_ug_" class="input" aria-invalid="false" data-autofocus="true" value="Radiance Serum 30 ml — Turntable hero (copy)"/> aka getByRole('textbox', { name: 'Project name' })
+        2) <input id="_r_g2_" class="input" aria-invalid="false" data-autofocus="true" value="Radiance Serum 30 ml — Turntable hero"/> aka locator('[id="_r_g2_"]')
+        3) <input id="_r_nk_" class="input" aria-invalid="false" data-autofocus="true" value="Aria Lite — Feature callouts"/> aka locator('[id="_r_nk_"]')
+        4) <input id="_r_nv_" class="input" aria-invalid="false" data-autofocus="true" value="Kitchen speaker — Lifestyle spin"/> aka locator('[id="_r_nv_"]')
+        5) <input id="_r_oa_" class="input" aria-invalid="false" data-autofocus="true" value="Radiance Serum 30 ml — Social teaser 9:16"/> aka locator('[id="_r_oa_"]')
+        6) <input id="_r_ol_" class="input" aria-invalid="false" data-autofocus="true" value="Aria Lite — Colour variants"/> aka locator('[id="_r_ol_"]')
+        7) <input id="_r_p0_" class="input" aria-invalid="false" data-autofocus="true" value="Kitchen speaker — Scale & dimensions"/> aka locator('[id="_r_p0_"]')
+        8) <input id="_r_pb_" class="input" aria-invalid="false" data-autofocus="true" value="Radiance Serum 30 ml — Comparison split"/> aka locator('[id="_r_pb_"]')
+        9) <input id="_r_pm_" class="input" aria-invalid="false" data-autofocus="true" value="Aria Lite — Unboxing reveal"/> aka locator('[id="_r_pm_"]')
+        10) <input id="_r_q1_" class="input" aria-invalid="false" data-autofocus="true" value="Aria Pro headphones — Feature callouts"/> aka locator('[id="_r_q1_"]')
+        ...
+
+    Call log:
+      - waiting for getByLabel('Project name')
+
+
+      41 |       .click();
+      42 |     await page.getByRole('menuitem', { name: 'Rename' }).click();
+    > 43 |     await page.getByLabel('Project name').fill('Renamed project');
+         |                                           ^
+      44 |     await page.getByRole('button', { name: 'Save name' }).click();
+      45 |     await expect(cards.first()).toContainText('Renamed project');
+      46 |     // archive + restore
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/controls.spec.ts:43:43
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/controls-control-coverage--ee793--archive-delete-empty-state-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/controls-control-coverage--ee793--archive-delete-empty-state-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/controls-control-coverage--ee793--archive-delete-empty-state-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/controls-control-coverage--ee793--archive-delete-empty-state-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[13/53] [desktop] › tests/e2e/controls.spec.ts:90:7 › control coverage › new project validation keeps valid fields and explains upload rejection
+[14/53] [desktop] › tests/e2e/controls.spec.ts:118:7 › control coverage › workflow canvas: select, inspector settings, add/remove step, invalid connection, undo/redo, fit
+[15/53] [desktop] › tests/e2e/controls.spec.ts:160:7 › control coverage › composer performs meaningful actions and explains unsupported ones
+[16/53] [desktop] › tests/e2e/controls.spec.ts:190:7 › control coverage › studio controls visibly change the scene; typing stays responsive while a run streams
+[17/53] [desktop] › tests/e2e/controls.spec.ts:223:7 › control coverage › outputs: acceptance, download reference image, open in studio, library filters and detail
+[18/53] [desktop] › tests/e2e/controls.spec.ts:250:7 › control coverage › settings: profile, workspace, notifications, members/invitations, roles
+  5) [desktop] › tests/e2e/controls.spec.ts:250:7 › control coverage › settings: profile, workspace, notifications, members/invitations, roles 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.app-header')
+    Expected substring: "Lumen Skincare EU"
+    Received string:    "3D3DadsDemo workspaceLumen SkincareNew projectMT"
+    Timeout: 10000ms
+
+    Call log:
+      - Expect "toContainText" locator('.app-header') with timeout 10000ms
+      - waiting for locator('.app-header')
+        24 × locator resolved to <header class="app-header">…</header>
+           - unexpected value "3D3DadsDemo workspaceLumen SkincareNew projectMT"
+
+
+      261 |     await page.getByRole('button', { name: 'Save workspace' }).click();
+      262 |     await expect(page.getByText('Workspace saved')).toBeVisible();
+    > 263 |     await expect(page.locator('.app-header')).toContainText('Lumen Skincare EU');
+          |                                               ^
+      264 |     await page.goto('/app/settings/notifications');
+      265 |     await expect(page.getByTestId('save-notifications')).toHaveAttribute('aria-disabled', 'true');
+      266 |     await page.getByRole('switch').first().click();
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/controls.spec.ts:263:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/controls-control-coverage--5cf2b-s-members-invitations-roles-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/controls-control-coverage--5cf2b-s-members-invitations-roles-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/controls-control-coverage--5cf2b-s-members-invitations-roles-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/controls-control-coverage--5cf2b-s-members-invitations-roles-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[19/53] [desktop] › tests/e2e/controls.spec.ts:287:7 › control coverage › notifications panel, scenario page, double-click safety on run start
+[20/53] [desktop] › tests/e2e/controls.spec.ts:308:7 › control coverage › flaky reads retry; timeout on mutation does not duplicate
+  6) [desktop] › tests/e2e/controls.spec.ts:308:7 › control coverage › flaky reads retry; timeout on mutation does not duplicate 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('library-item').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByTestId('library-item').first() with timeout 15000ms
+      - waiting for getByTestId('library-item').first()
+
+
+      310 |     await setScenario(page, 'flaky');
+      311 |     await page.goto('/app/library');
+    > 312 |     await expect(page.getByTestId('library-item').first()).toBeVisible({ timeout: 15_000 });
+          |                                                            ^
+      313 |     await setScenario(page, 'normal');
+      314 |   });
+      315 | });
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/controls.spec.ts:312:60
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/controls-control-coverage--03d0f-mutation-does-not-duplicate-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/controls-control-coverage--03d0f-mutation-does-not-duplicate-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/controls-control-coverage--03d0f-mutation-does-not-duplicate-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/controls-control-coverage--03d0f-mutation-does-not-duplicate-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[21/53] [desktop] › tests/e2e/journeys.spec.ts:17:7 › journeys › J1 homepage → template → demo signup → project from that template
+[22/53] [desktop] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output
+[23/53] [desktop] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload
+  7) [desktop] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 25
+    Received: 26
+
+       95 |     await page.waitForTimeout(700);
+       96 |     const f2 = await page.evaluate(() => [...window.__3dads.viewers][0]!.getStats().framesRendered);
+    >  97 |     expect(f2).toBe(f1);
+          |                ^
+       98 |     // aspect
+       99 |     await page.getByRole('radio', { name: '9:16' }).click();
+      100 |     await expect(page.getByTestId('stage')).toHaveAttribute('data-aspect', '9:16');
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:97:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J3-edit--c8b52-crub-→-aspect-→-save-reload-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J3-edit--c8b52-crub-→-aspect-→-save-reload-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J3-edit--c8b52-crub-→-aspect-→-save-reload-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J3-edit--c8b52-crub-→-aspect-→-save-reload-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[24/53] [desktop] › tests/e2e/journeys.spec.ts:109:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run
+  8) [desktop] › tests/e2e/journeys.spec.ts:109:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('run-panel')
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByTestId('run-panel') with timeout 10000ms
+      - waiting for getByTestId('run-panel')
+
+
+      121 |     await page.reload(); // full reload: the persisted scheduler continues
+      122 |     await page.goto(url.replace(/tab=\w+/, 'tab=workflow'));
+    > 123 |     await expect(page.getByTestId('run-panel')).toBeVisible();
+          |                                                 ^
+      124 |     await waitRunTerminal(page, 60_000);
+      125 |     await expect(page.getByTestId('run-history').locator('li')).toHaveCount(1);
+      126 |     await expect(page.getByTestId('run-panel').locator('.badge').first()).toHaveText('Completed');
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:123:49
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J4-start-07ea9--recovered-no-duplicate-run-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J4-start-07ea9--recovered-no-duplicate-run-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J4-start-07ea9--recovered-no-duplicate-run-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J4-start-07ea9--recovered-no-duplicate-run-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[25/53] [desktop] › tests/e2e/journeys.spec.ts:129:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored
+  9) [desktop] › tests/e2e/journeys.spec.ts:129:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: getByTestId('node-n-model').locator('.badge')
+    Expected: "Done"
+    Error: strict mode violation: getByTestId('node-n-model').locator('.badge') resolved to 2 elements:
+        1) <span class="badge badge-success">Done</span> aka getByText('Done')
+        2) <span class="badge">v1 · demo fixture</span> aka getByText('v1 · demo fixture')
+
+    Call log:
+      - Expect "toHaveText" getByTestId('node-n-model').locator('.badge') with timeout 30000ms
+      - waiting for getByTestId('node-n-model').locator('.badge')
+        4 × locator resolved to <span class="badge">Idle</span>
+          - unexpected value "Idle"
+        - locator resolved to <span class="badge">Queued</span>
+        - unexpected value "Queued"
+        2 × locator resolved to <span class="badge badge-accent">…</span>
+          - unexpected value "Running"
+
+
+      138 |     await page.getByTestId('run-workflow').click();
+      139 |     // wait for first step to complete so an artifact exists
+    > 140 |     await expect(page.getByTestId('node-n-model').locator('.badge')).toHaveText('Done', { timeout: 30_000 });
+          |                                                                      ^
+      141 |     await page.getByTestId('cancel-run').click();
+      142 |     await expect(page.getByTestId('run-panel').locator('.badge').first()).toHaveText('Cancelled', {
+      143 |       timeout: 15_000,
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:140:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J5-cance-321cd-ts-kept-late-events-ignored-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J5-cance-321cd-ts-kept-late-events-ignored-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J5-cance-321cd-ts-kept-late-events-ignored-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J5-cance-321cd-ts-kept-late-events-ignored-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[26/53] [desktop] › tests/e2e/journeys.spec.ts:163:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step
+  10) [desktop] › tests/e2e/journeys.spec.ts:163:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: getByTestId('node-n-model').locator('.badge')
+    Expected: "Done"
+    Error: strict mode violation: getByTestId('node-n-model').locator('.badge') resolved to 2 elements:
+        1) <span class="badge badge-success">Done</span> aka getByTestId('node-n-model').getByText('Done')
+        2) <span class="badge">v1 · demo fixture</span> aka getByTestId('node-n-model').getByText('v1 · demo fixture')
+
+    Call log:
+      - Expect "toHaveText" getByTestId('node-n-model').locator('.badge') with timeout 10000ms
+      - waiting for getByTestId('node-n-model').locator('.badge')
+
+
+      169 |     await waitRunTerminal(page);
+      170 |     await expect(page.getByTestId('run-panel').locator('.badge').first()).toHaveText('Failed');
+    > 171 |     await expect(page.getByTestId('node-n-model').locator('.badge')).toHaveText('Done');
+          |                                                                      ^
+      172 |     await expect(page.getByTestId('node-n-anim').locator('.badge')).toHaveText('Failed');
+      173 |     await setScenario(page, 'normal');
+      174 |     await page.getByTestId('retry-run').click();
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:171:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J5b-fail-204da-puts-retry-only-failed-step-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J5b-fail-204da-puts-retry-only-failed-step-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J5b-fail-204da-puts-retry-only-failed-step-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J5b-fail-204da-puts-retry-only-failed-step-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[27/53] [desktop] › tests/e2e/journeys.spec.ts:180:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4
+  11) [desktop] › tests/e2e/journeys.spec.ts:180:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-testid="export-job"][data-status="completed"]').first()
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('[data-testid="export-job"][data-status="completed"]').first() with timeout 30000ms
+      - waiting for locator('[data-testid="export-job"][data-status="completed"]').first()
+
+
+      214 |     await page.getByTestId('preset-mp4-render').click();
+      215 |     await page.getByTestId('export-run').click();
+    > 216 |     await expect(page.locator('[data-testid="export-job"][data-status="completed"]').first()).toBeVisible({
+          |                                                                                               ^
+      217 |       timeout: 30_000,
+      218 |     });
+      219 |     const [dl3] = await Promise.all([
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:216:95
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J6-versi-f015a-d-and-validate-PNG-JSON-MP4-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J6-versi-f015a-d-and-validate-PNG-JSON-MP4-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J6-versi-f015a-d-and-validate-PNG-JSON-MP4-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J6-versi-f015a-d-and-validate-PNG-JSON-MP4-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[28/53] [desktop] › tests/e2e/journeys.spec.ts:230:7 › journeys › J6b WebM browser recording is a real recording
+[29/53] [desktop] › tests/e2e/journeys.spec.ts:248:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+  12) [desktop] › tests/e2e/journeys.spec.ts:248:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByTestId('checkout-return')
+    Expected: "open"
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" getByTestId('checkout-return') with timeout 10000ms
+      - waiting for getByTestId('checkout-return')
+
+
+      270 |     const id = (await page.getByTestId('checkout').textContent())!.match(/checkout (chk_\w+)/)![1];
+      271 |     await page.goto(`/app/billing/return?checkout=${id}&success=true`);
+    > 272 |     await expect(page.getByTestId('checkout-return')).toHaveAttribute('data-status', 'open');
+          |                                                       ^
+      273 |     await expect(page.getByText('claimed success')).toBeVisible();
+      274 |     // delayed confirmation: pending → succeeded, once
+      275 |     await page.goto(`/app/billing/checkout?plan=team&interval=monthly&returnTo=%2Fapp%2Flibrary`);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:272:55
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J7-prici-99727-ment-and-return-destination-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J7-prici-99727-ment-and-return-destination-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J7-prici-99727-ment-and-return-destination-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J7-prici-99727-ment-and-return-destination-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[30/53] [desktop] › tests/e2e/journeys.spec.ts:296:7 › journeys › J8 sign out → sign in as another user → no leakage
+  13) [desktop] › tests/e2e/journeys.spec.ts:296:7 › journeys › J8 sign out → sign in as another user → no leakage 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('This project is not in your workspace')
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('This project is not in your workspace') with timeout 10000ms
+      - waiting for getByText('This project is not in your workspace')
+
+
+      311 |     // Deep link to a Lumen project as Alex → missing project, not data
+      312 |     await page.goto(`/app/projects/${lumen[0]}`);
+    > 313 |     await expect(page.getByText('This project is not in your workspace')).toBeVisible();
+          |                                                                           ^
+      314 |     await page.goto('/app/library');
+      315 |     const cache = await page.evaluate(() =>
+      316 |       window.__3dads.queryClient
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:313:75
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[31/53] [desktop] › tests/e2e/journeys.spec.ts:324:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector
+  14) [desktop] › tests/e2e/journeys.spec.ts:324:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByTestId('identity-u_mai')
+    Expected: focused
+    Received: inactive
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeFocused" getByTestId('identity-u_mai') with timeout 10000ms
+      - waiting for getByTestId('identity-u_mai')
+        23 × locator resolved to <button type="button" class="btn btn-secondary" data-testid="identity-u_mai">…</button>
+           - unexpected value "inactive"
+
+
+      327 |     await page.keyboard.press('Tab'); // logo
+      328 |     await page.keyboard.press('Tab'); // first identity
+    > 329 |     await expect(page.getByTestId('identity-u_mai')).toBeFocused();
+          |                                                      ^
+      330 |     await page.keyboard.press('Enter');
+      331 |     await expect(page.getByTestId('demo-label')).toBeVisible();
+      332 |     await page.getByTestId('project-card').first().locator('a').first().focus();
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:329:54
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[32/53] [desktop] › tests/e2e/journeys.spec.ts:350:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact
+  15) [desktop] › tests/e2e/journeys.spec.ts:350:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "/app/projects/proj_0000ru"
+    Received: "/app/signin"
+
+      373 |     await setScenario(page, 'normal');
+      374 |     await page.getByTestId('identity-u_mai').click();
+    > 375 |     expect(new URL(page.url()).pathname).toBe(here.split('?')[0]);
+          |                                          ^
+      376 |     // denied role
+      377 |     await setScenario(page, 'denied-role');
+      378 |     await page.getByTestId('run-workflow').click();
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:375:42
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9b-redu-48ba1-enied-role-missing-artifact-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J9b-redu-48ba1-enied-role-missing-artifact-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9b-redu-48ba1-enied-role-missing-artifact-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J9b-redu-48ba1-enied-role-missing-artifact-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[33/53] [desktop] › tests/e2e/journeys.spec.ts:388:7 › journeys › J9c unsupported WebGL shows a usable fallback
+  16) [desktop] › tests/e2e/journeys.spec.ts:388:7 › journeys › J9c unsupported WebGL shows a usable fallback 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText(/3D viewer is not available/)
+    Expected: visible
+    Error: strict mode violation: getByText(/3D viewer is not available/) resolved to 2 elements:
+        1) <p class="banner banner-warning">The 3D viewer is not available, so browser render…</p> aka getByRole('paragraph').filter({ hasText: 'The 3D viewer is not' })
+        2) <span id="_r_87_" class="visually-hidden">The 3D viewer is not available, so browser render…</span> aka locator('[id="_r_87_"]')
+
+    Call log:
+      - Expect "toBeVisible" getByText(/3D viewer is not available/) with timeout 10000ms
+      - waiting for getByText(/3D viewer is not available/)
+
+
+      407 |     await expect(page.getByTestId('headline-input')).toBeEnabled();
+      408 |     await page.getByTestId('open-export').click();
+    > 409 |     await expect(page.getByText(/3D viewer is not available/)).toBeVisible();
+          |                                                                ^
+      410 |     await page.getByTestId('preset-scene-json').click();
+      411 |     const [dl] = await Promise.all([page.waitForEvent('download'), page.getByTestId('export-run').click()]);
+      412 |     expect(dl.suggestedFilename()).toMatch(/\.json$/);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:409:64
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9c-unsu-9652f-bGL-shows-a-usable-fallback-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9c-unsu-9652f-bGL-shows-a-usable-fallback-desktop/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J9c-unsu-9652f-bGL-shows-a-usable-fallback-desktop/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9c-unsu-9652f-bGL-shows-a-usable-fallback-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J9c-unsu-9652f-bGL-shows-a-usable-fallback-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[34/53] [desktop] › tests/e2e/mobile.spec.ts:3:5 › mobile: step/list workflow, studio stacked, no horizontal scroll
+  17) [desktop] › tests/e2e/mobile.spec.ts:3:5 › mobile: step/list workflow, studio stacked, no horizontal scroll 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('.mobile-tabs')
+    Expected: visible
+    Received: hidden
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeVisible" locator('.mobile-tabs') with timeout 10000ms
+      - waiting for locator('.mobile-tabs')
+        23 × locator resolved to <nav class="mobile-tabs" aria-label="Primary (mobile)">…</nav>
+           - unexpected value "hidden"
+
+
+      4 |   await resetDemo(page);
+      5 |   await signIn(page, 'u_mai');
+    > 6 |   await expect(page.locator('.mobile-tabs')).toBeVisible();
+        |                                              ^
+      7 |   await page.getByTestId('project-card').first().locator('a').first().click();
+      8 |   await page.getByRole('tab', { name: 'Workflow' }).click();
+      9 |   // list view is the default on narrow screens
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/mobile.spec.ts:6:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/mobile-mobile-step-list-wo-dcfc1-tacked-no-horizontal-scroll-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/mobile-mobile-step-list-wo-dcfc1-tacked-no-horizontal-scroll-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/mobile-mobile-step-list-wo-dcfc1-tacked-no-horizontal-scroll-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/mobile-mobile-step-list-wo-dcfc1-tacked-no-horizontal-scroll-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[35/53] [desktop] › tests/e2e/public.spec.ts:4:7 › public site › homepage ships useful HTML, working links, no app code
+[36/53] [desktop] › tests/e2e/public.spec.ts:29:7 › public site › 3D demo loads on intent and renders frames
+[37/53] [desktop] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link
+  18) [desktop] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('[data-template]:visible')
+    Expected: 1
+    Received: 8
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('[data-template]:visible') with timeout 10000ms
+      - waiting for locator('[data-template]:visible')
+        24 × locator resolved to 8 elements
+           - unexpected value "8"
+
+
+      46 |     await page.goto('/templates');
+      47 |     await page.getByTestId('template-search').fill('vertical');
+    > 48 |     await expect(page.locator('[data-template]:visible')).toHaveCount(1);
+         |                                                           ^
+      49 |     await expect(page.locator('[data-template]:visible')).toContainText('Social teaser');
+      50 |     await page.getByRole('button', { name: 'Clear' }).click();
+      51 |     await expect(page.locator('[data-template]:visible')).toHaveCount(8);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/public.spec.ts:48:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/public-public-site-templat-b5b93-filter-and-detail-deep-link-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/public-public-site-templat-b5b93-filter-and-detail-deep-link-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/public-public-site-templat-b5b93-filter-and-detail-deep-link-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/public-public-site-templat-b5b93-filter-and-detail-deep-link-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[38/53] [desktop] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links
+[39/53] [desktop] › tests/e2e/public.spec.ts:76:7 › public site › help articles, legal drafts and 404 status
+[40/53] [desktop] › tests/e2e/public.spec.ts:92:7 › public site › mobile menu opens by click and keyboard, closes on Escape
+[41/53] [desktop] › tests/e2e/screenshots.spec.ts:12:5 › screenshots across widths and states
+  19) [desktop] › tests/e2e/screenshots.spec.ts:12:5 › screenshots across widths and states ────────
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.goto: Target page, context or browser has been closed
+
+      55 |     .click()
+      56 |     .catch(() => {});
+    > 57 |   await page.goto('/app/signup');
+         |              ^
+      58 |   await page.getByLabel('Your name').fill('Empty State');
+      59 |   await page.getByLabel('Email').fill('empty@example.demo');
+      60 |   await page.getByLabel('Workspace name').fill('Empty Co');
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/screenshots.spec.ts:57:14
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/screenshots-screenshots-across-widths-and-states-desktop/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/screenshots-screenshots-across-widths-and-states-desktop/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/screenshots-screenshots-across-widths-and-states-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/screenshots-screenshots-across-widths-and-states-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[42/53] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /
+[43/53] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /product
+[44/53] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates
+[45/53] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates/turntable-hero-skincare
+  20) [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates/turntable-hero-skincare ───────────────
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "link-in-text-block: nav[aria-label=\"Breadcrumb\"] > a[href$=\"templates\"]",
+    + ]
+
+      22 |     expect(
+      23 |       results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`),
+    > 24 |     ).toEqual([]);
+         |       ^
+      25 |   });
+      26 | }
+      27 |
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/a11y.spec.ts:24:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-axe-templates-turntable-hero-skincare-a11y/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/a11y-axe-templates-turntable-hero-skincare-a11y/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-axe-templates-turntable-hero-skincare-a11y/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/a11y-axe-templates-turntable-hero-skincare-a11y/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[46/53] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /pricing
+[47/53] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /help
+[48/53] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /help/quickstart
+[49/53] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /legal/privacy
+[50/53] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /nope
+[51/53] [a11y] › tests/e2e/a11y.spec.ts:28:5 › axe: app screens
+  21) [a11y] › tests/e2e/a11y.spec.ts:28:5 › axe: app screens ──────────────────────────────────────
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "new project link-in-text-block: nav[aria-label=\"Breadcrumb\"] > a[href$=\"app/\"]",
+    + ]
+
+      35 |     expect(
+      36 |       results.violations.map((v) => `${label} ${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`),
+    > 37 |     ).toEqual([]);
+         |       ^
+      38 |   };
+      39 |   await check('signin');
+      40 |   await signIn(page, 'u_mai');
+        at check (/Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/a11y.spec.ts:37:7)
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/a11y.spec.ts:43:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-axe-app-screens-a11y/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/a11y-axe-app-screens-a11y/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-axe-app-screens-a11y/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/a11y-axe-app-screens-a11y/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[52/53] [a11y] › tests/e2e/a11y.spec.ts:63:5 › focus is visible and dialogs trap/restore focus
+  22) [a11y] › tests/e2e/a11y.spec.ts:63:5 › focus is visible and dialogs trap/restore focus ───────
+
+    Error: expect(received).not.toBe(expected) // Object.is equality
+
+    Expected: not "none"
+
+      70 |   // Reach the control by keyboard so :focus-visible applies, then check the ring is painted.
+      71 |   await page.getByTestId('project-card').first().locator('a').nth(1).focus();
+    > 72 |   await page.keyboard.press('Tab');
+         |                       ^
+      73 |   await expect(more).toBeFocused();
+      74 |   const outline = await more.evaluate((el) => ({ style: getComputedStyle(el).outlineStyle, visible: el.matches(':focus-visible') }));
+      75 |   expect(outline.visible).toBe(true);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/a11y.spec.ts:72:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-focus-is-visible-and-dialogs-trap-restore-focus-a11y/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/a11y-focus-is-visible-and-dialogs-trap-restore-focus-a11y/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/a11y-focus-is-visible-and-dialogs-trap-restore-focus-a11y/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/a11y-focus-is-visible-and-dialogs-trap-restore-focus-a11y/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[53/53] [mobile] › tests/e2e/mobile.spec.ts:3:5 › mobile: step/list workflow, studio stacked, no horizontal scroll
+  23) [mobile] › tests/e2e/mobile.spec.ts:3:5 › mobile: step/list workflow, studio stacked, no horizontal scroll 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: locator.click: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for getByRole('tab', { name: 'Studio' })
+        - locator resolved to <button role="tab" type="button" tabindex="-1" id="tab-studio" aria-selected="false" aria-controls="panel-studio">Studio</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div>Press Run to execute the workflow. Runs continue …</div> from <div role="tabpanel" id="panel-workflow" class="workspace-body" aria-labelledby="tab-workflow">…</div> subtree intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <div>Press Run to execute the workflow. Runs continue …</div> from <div role="tabpanel" id="panel-workflow" class="workspace-body" aria-labelledby="tab-workflow">…</div> subtree intercepts pointer events
+      2 × retrying click action
+          - waiting 100ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <span class="demo-chip" data-testid="demo-label" title="This workspace runs against a simulated backend. Runs, exports and payments are demonstrations; nothing is sent to a generation service or charged.">…</span> from <header class="app-header">…</header> subtree intercepts pointer events
+      28 × retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div>Press Run to execute the workflow. Runs continue …</div> from <div role="tabpanel" id="panel-workflow" class="workspace-body" aria-labelledby="tab-workflow">…</div> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div>Press Run to execute the workflow. Runs continue …</div> from <div role="tabpanel" id="panel-workflow" class="workspace-body" aria-labelledby="tab-workflow">…</div> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span class="demo-chip" data-testid="demo-label" title="This workspace runs against a simulated backend. Runs, exports and payments are demonstrations; nothing is sent to a generation service or charged.">…</span> from <header class="app-header">…</header> subtree intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+           - waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <span class="demo-chip" data-testid="demo-label" title="This workspace runs against a simulated backend. Runs, exports and payments are demonstrations; nothing is sent to a generation service or charged.">…</span> from <header class="app-header">…</header> subtree intercepts pointer events
+      - retrying click action
+        - waiting 500ms
+
+
+       9 |   // list view is the default on narrow screens
+      10 |   await expect(page.getByTestId('workflow-list')).toBeVisible();
+    > 11 |   await page.getByRole('tab', { name: 'Studio' }).click();
+         |                                                   ^
+      12 |   await expect(page.getByTestId('viewer-canvas')).toBeVisible();
+      13 |   const overflow = await page.evaluate(
+      14 |     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/mobile.spec.ts:11:51
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/mobile-mobile-step-list-wo-dcfc1-tacked-no-horizontal-scroll-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/mobile-mobile-step-list-wo-dcfc1-tacked-no-horizontal-scroll-mobile/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/mobile-mobile-step-list-wo-dcfc1-tacked-no-horizontal-scroll-mobile/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/mobile-mobile-step-list-wo-dcfc1-tacked-no-horizontal-scroll-mobile/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  23 failed
+    [desktop] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates/turntable-hero-skincare ──────────────
+    [desktop] › tests/e2e/a11y.spec.ts:28:5 › axe: app screens ─────────────────────────────────────
+    [desktop] › tests/e2e/a11y.spec.ts:63:5 › focus is visible and dialogs trap/restore focus ──────
+    [desktop] › tests/e2e/controls.spec.ts:9:7 › control coverage › dashboard: search, filters, create/duplicate/rename/archive/delete, empty state 
+    [desktop] › tests/e2e/controls.spec.ts:250:7 › control coverage › settings: profile, workspace, notifications, members/invitations, roles 
+    [desktop] › tests/e2e/controls.spec.ts:308:7 › control coverage › flaky reads retry; timeout on mutation does not duplicate 
+    [desktop] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload 
+    [desktop] › tests/e2e/journeys.spec.ts:109:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run 
+    [desktop] › tests/e2e/journeys.spec.ts:129:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored 
+    [desktop] › tests/e2e/journeys.spec.ts:163:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step 
+    [desktop] › tests/e2e/journeys.spec.ts:180:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4 
+    [desktop] › tests/e2e/journeys.spec.ts:248:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination 
+    [desktop] › tests/e2e/journeys.spec.ts:296:7 › journeys › J8 sign out → sign in as another user → no leakage 
+    [desktop] › tests/e2e/journeys.spec.ts:324:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector 
+    [desktop] › tests/e2e/journeys.spec.ts:350:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact 
+    [desktop] › tests/e2e/journeys.spec.ts:388:7 › journeys › J9c unsupported WebGL shows a usable fallback 
+    [desktop] › tests/e2e/mobile.spec.ts:3:5 › mobile: step/list workflow, studio stacked, no horizontal scroll 
+    [desktop] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link 
+    [desktop] › tests/e2e/screenshots.spec.ts:12:5 › screenshots across widths and states ──────────
+    [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates/turntable-hero-skincare ─────────────────
+    [a11y] › tests/e2e/a11y.spec.ts:28:5 › axe: app screens ────────────────────────────────────────
+    [a11y] › tests/e2e/a11y.spec.ts:63:5 › focus is visible and dialogs trap/restore focus ─────────
+    [mobile] › tests/e2e/mobile.spec.ts:3:5 › mobile: step/list workflow, studio stacked, no horizontal scroll 
+  30 passed (5.9m)

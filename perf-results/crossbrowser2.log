@@ -1,0 +1,183 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+npm warn Unknown project config "strict-peer-dependencies". This will stop working in the next major version of npm.
+
+Running 80 tests using 1 worker
+
+[1/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-portrait (390×844)
+[2/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-portrait (390×844)
+[3/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-landscape (844×390)
+[4/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-landscape (844×390)
+[5/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit small-phone (320×568)
+[6/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit small-phone (320×568)
+[7/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-portrait (768×1024)
+[8/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-portrait (768×1024)
+[9/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-landscape (1024×768)
+[10/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-landscape (1024×768)
+[11/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit laptop (1280×800)
+[12/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit laptop (1280×800)
+[13/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit wide (1600×1000)
+[14/80] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit wide (1600×1000)
+[15/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-portrait (390×844)
+[16/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-portrait (390×844)
+[17/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-landscape (844×390)
+[18/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-landscape (844×390)
+[19/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit small-phone (320×568)
+[20/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit small-phone (320×568)
+[21/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-portrait (768×1024)
+[22/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-portrait (768×1024)
+[23/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-landscape (1024×768)
+[24/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-landscape (1024×768)
+[25/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit laptop (1280×800)
+[26/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit laptop (1280×800)
+[27/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit wide (1600×1000)
+[28/80] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit wide (1600×1000)
+[29/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-portrait (390×844)
+[30/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-portrait (390×844)
+[31/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-landscape (844×390)
+[32/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-landscape (844×390)
+[33/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit small-phone (320×568)
+[34/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit small-phone (320×568)
+[35/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-portrait (768×1024)
+[36/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-portrait (768×1024)
+[37/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-landscape (1024×768)
+[38/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-landscape (1024×768)
+[39/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit laptop (1280×800)
+[40/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit laptop (1280×800)
+[41/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit wide (1600×1000)
+[42/80] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit wide (1600×1000)
+[43/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:17:7 › journeys › J1 homepage → template → demo signup → project from that template
+[44/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output
+[45/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload
+[46/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:111:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run
+[47/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:132:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored
+[48/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:168:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step
+[49/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4
+[50/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:233:7 › journeys › J6b WebM browser recording is a real recording
+[51/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:249:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+[52/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:297:7 › journeys › J8 sign out → sign in as another user → no leakage
+[53/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:327:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector
+  1) [journeys-webkit] › tests/e2e/journeys.spec.ts:327:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector 
+
+    Error: tabTo: element never received focus
+
+       at fixtures.ts:65
+
+      63 |     if (await locator.evaluate((el) => el === document.activeElement)) return;
+      64 |   }
+    > 65 |   throw new Error('tabTo: element never received focus');
+         |         ^
+      66 | }
+      67 |
+      68 | /**
+        at tabTo (/Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/fixtures.ts:65:9)
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:331:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[54/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:353:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact
+[55/80] [journeys-webkit] › tests/e2e/journeys.spec.ts:391:7 › journeys › J9c unsupported WebGL shows a usable fallback
+[56/80] [journeys-webkit] › tests/e2e/public.spec.ts:4:7 › public site › homepage ships useful HTML, working links, no app code
+[57/80] [journeys-webkit] › tests/e2e/public.spec.ts:29:7 › public site › 3D demo loads on intent and renders frames
+[58/80] [journeys-webkit] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link
+[59/80] [journeys-webkit] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links
+[60/80] [journeys-webkit] › tests/e2e/public.spec.ts:76:7 › public site › help articles, legal drafts and 404 status
+[61/80] [journeys-webkit] › tests/e2e/public.spec.ts:92:7 › public site › mobile menu opens by click and keyboard, closes on Escape
+[62/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:17:7 › journeys › J1 homepage → template → demo signup → project from that template
+[63/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output
+[64/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload
+[65/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:111:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run
+[66/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:132:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored
+[67/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:168:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step
+[68/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4
+[69/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:233:7 › journeys › J6b WebM browser recording is a real recording
+[70/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:249:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+  2) [journeys-firefox] › tests/e2e/journeys.spec.ts:249:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination 
+
+    Error: page.goto: NS_ERROR_FAILURE
+    Call log:
+      - navigating to "http://localhost:4173/pricing", waiting until "load"
+
+
+      248 |
+      249 |   test('J7 pricing → sign-in → checkout outcomes → entitlement and return destination', async ({ page }) => {
+    > 250 |     await page.goto('/pricing');
+          |                ^
+      251 |     await page.getByRole('radio', { name: /Yearly/ }).click();
+      252 |     await page.getByTestId('choose-team').click();
+      253 |     await expect(page).toHaveURL(/\/app\/signin\?.*plan=team.*interval=yearly/);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:250:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J7-prici-99727-ment-and-return-destination-journeys-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J7-prici-99727-ment-and-return-destination-journeys-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J7-prici-99727-ment-and-return-destination-journeys-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J7-prici-99727-ment-and-return-destination-journeys-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[71/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:297:7 › journeys › J8 sign out → sign in as another user → no leakage
+  3) [journeys-firefox] › tests/e2e/journeys.spec.ts:297:7 › journeys › J8 sign out → sign in as another user → no leakage 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 5
+    Received:   0
+
+      300 |       .getByTestId('project-card')
+      301 |       .evaluateAll((els) => els.map((e) => e.getAttribute('data-project-id')));
+    > 302 |     expect(lumen.length).toBeGreaterThan(5);
+          |                          ^
+      303 |     await page.getByTestId('account-menu').click();
+      304 |     await page.getByRole('menuitem', { name: 'Sign out' }).click();
+      305 |     await expect(page).toHaveURL(/\/app\/signin/);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:302:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-journeys-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-journeys-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-journeys-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-journeys-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[72/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:327:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector
+[73/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:353:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact
+[74/80] [journeys-firefox] › tests/e2e/journeys.spec.ts:391:7 › journeys › J9c unsupported WebGL shows a usable fallback
+[75/80] [journeys-firefox] › tests/e2e/public.spec.ts:4:7 › public site › homepage ships useful HTML, working links, no app code
+[76/80] [journeys-firefox] › tests/e2e/public.spec.ts:29:7 › public site › 3D demo loads on intent and renders frames
+[77/80] [journeys-firefox] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link
+[78/80] [journeys-firefox] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links
+[79/80] [journeys-firefox] › tests/e2e/public.spec.ts:76:7 › public site › help articles, legal drafts and 404 status
+[80/80] [journeys-firefox] › tests/e2e/public.spec.ts:92:7 › public site › mobile menu opens by click and keyboard, closes on Escape
+  3 failed
+    [journeys-webkit] › tests/e2e/journeys.spec.ts:327:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector 
+    [journeys-firefox] › tests/e2e/journeys.spec.ts:249:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination 
+    [journeys-firefox] › tests/e2e/journeys.spec.ts:297:7 › journeys › J8 sign out → sign in as another user → no leakage 
+  77 passed (2.6m)

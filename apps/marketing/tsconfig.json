@@ -1,0 +1,5 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": { "strictNullChecks": true, "verbatimModuleSyntax": true },
+  "include": ["src", ".astro/types.d.ts", "astro.config.mjs"]
+}

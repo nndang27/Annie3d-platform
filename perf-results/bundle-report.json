@@ -1,0 +1,365 @@
+{
+  "generatedAt": "2026-09-12T13:58:27.496Z",
+  "reports": [
+    {
+      "label": "apps/web (JS)",
+      "files": [
+        {
+          "file": "apps/web/dist/assets/viewer-3d-Dj5NT-BV.js",
+          "raw": 603220,
+          "gzip": 150198,
+          "brotli": 122846
+        },
+        {
+          "file": "apps/web/dist/assets/WorkflowTab-BEFppWtQ.js",
+          "raw": 227195,
+          "gzip": 71338,
+          "brotli": 61484
+        },
+        {
+          "file": "apps/web/dist/assets/react-BOEoycWw.js",
+          "raw": 222175,
+          "gzip": 68561,
+          "brotli": 58999
+        },
+        {
+          "file": "apps/web/dist/assets/tanstack-1loMNLXy.js",
+          "raw": 107062,
+          "gzip": 34744,
+          "brotli": 31436
+        },
+        {
+          "file": "apps/web/dist/assets/services-CAbWCneg.js",
+          "raw": 62569,
+          "gzip": 18587,
+          "brotli": 16458
+        },
+        {
+          "file": "apps/web/dist/assets/ProjectWorkspace-CnBQBhGt.js",
+          "raw": 31247,
+          "gzip": 10347,
+          "brotli": 9291
+        },
+        {
+          "file": "apps/web/dist/assets/index-DaXkrmOf.js",
+          "raw": 23595,
+          "gzip": 8530,
+          "brotli": 7450
+        },
+        {
+          "file": "apps/web/dist/assets/StudioTab-BFmW5rkT.js",
+          "raw": 25485,
+          "gzip": 8395,
+          "brotli": 7448
+        },
+        {
+          "file": "apps/web/dist/assets/src-B7FJrpdj.js",
+          "raw": 17921,
+          "gzip": 5419,
+          "brotli": 4647
+        },
+        {
+          "file": "apps/web/dist/assets/src-CVkW7pN_.js",
+          "raw": 12740,
+          "gzip": 4749,
+          "brotli": 4286
+        },
+        {
+          "file": "apps/web/dist/assets/NewProject-CJh3pYO6.js",
+          "raw": 11197,
+          "gzip": 3799,
+          "brotli": 3299
+        },
+        {
+          "file": "apps/web/dist/assets/Dashboard-CJClS0wc.js",
+          "raw": 10337,
+          "gzip": 3789,
+          "brotli": 3363
+        },
+        {
+          "file": "apps/web/dist/assets/OutputsTab-BMas047P.js",
+          "raw": 10853,
+          "gzip": 3746,
+          "brotli": 3379
+        },
+        {
+          "file": "apps/web/dist/assets/Billing-BqfOLmsq.js",
+          "raw": 8400,
+          "gzip": 2905,
+          "brotli": 2577
+        },
+        {
+          "file": "apps/web/dist/assets/Library-44vUxhfb.js",
+          "raw": 7814,
+          "gzip": 2770,
+          "brotli": 2454
+        },
+        {
+          "file": "apps/web/dist/assets/Members-Bi4oVgkb.js",
+          "raw": 6148,
+          "gzip": 2352,
+          "brotli": 2065
+        },
+        {
+          "file": "apps/web/dist/assets/SignIn-Cn88q7Y7.js",
+          "raw": 3795,
+          "gzip": 1772,
+          "brotli": 1551
+        },
+        {
+          "file": "apps/web/dist/assets/Return-CHXtrD_3.js",
+          "raw": 4102,
+          "gzip": 1749,
+          "brotli": 1521
+        },
+        {
+          "file": "apps/web/dist/assets/Checkout-BeMvjsxN.js",
+          "raw": 4210,
+          "gzip": 1748,
+          "brotli": 1536
+        },
+        {
+          "file": "apps/web/dist/assets/Notifications-CHoekcWi.js",
+          "raw": 3541,
+          "gzip": 1503,
+          "brotli": 1298
+        },
+        {
+          "file": "apps/web/dist/assets/workflowStore-DIe7sWrJ.js",
+          "raw": 3680,
+          "gzip": 1404,
+          "brotli": 1287
+        },
+        {
+          "file": "apps/web/dist/assets/Scenarios-CmmE3gdn.js",
+          "raw": 3083,
+          "gzip": 1375,
+          "brotli": 1202
+        },
+        {
+          "file": "apps/web/dist/assets/Recover-D847qA0r.js",
+          "raw": 2468,
+          "gzip": 1247,
+          "brotli": 1071
+        },
+        {
+          "file": "apps/web/dist/assets/scenarios-DDcN_fHz.js",
+          "raw": 2674,
+          "gzip": 1245,
+          "brotli": 987
+        },
+        {
+          "file": "apps/web/dist/assets/queries-CGFXWV4_.js",
+          "raw": 3710,
+          "gzip": 1195,
+          "brotli": 1046
+        },
+        {
+          "file": "apps/web/dist/assets/SignUp-BIFD1CgX.js",
+          "raw": 2525,
+          "gzip": 1179,
+          "brotli": 1010
+        },
+        {
+          "file": "apps/web/dist/assets/WorkspaceSettings-DOiv_iDe.js",
+          "raw": 2075,
+          "gzip": 1047,
+          "brotli": 898
+        },
+        {
+          "file": "apps/web/dist/assets/Profile-DJDZ48H7.js",
+          "raw": 1943,
+          "gzip": 990,
+          "brotli": 843
+        },
+        {
+          "file": "apps/web/dist/assets/RunStatusBadge-DKlDMPH-.js",
+          "raw": 2072,
+          "gzip": 929,
+          "brotli": 841
+        },
+        {
+          "file": "apps/web/dist/assets/plans-BNs48A1v.js",
+          "raw": 1954,
+          "gzip": 869,
+          "brotli": 707
+        },
+        {
+          "file": "apps/web/dist/assets/ErrorState-9ejnlyPL.js",
+          "raw": 1855,
+          "gzip": 863,
+          "brotli": 771
+        },
+        {
+          "file": "apps/web/dist/assets/context-CQ6wkuU2.js",
+          "raw": 1186,
+          "gzip": 604,
+          "brotli": 541
+        },
+        {
+          "file": "apps/web/dist/assets/SettingsLayout-D7DJD_fG.js",
+          "raw": 1055,
+          "gzip": 566,
+          "brotli": 479
+        },
+        {
+          "file": "apps/web/dist/assets/errors-DaNr5UvF.js",
+          "raw": 1397,
+          "gzip": 498,
+          "brotli": 392
+        },
+        {
+          "file": "apps/web/dist/assets/artifacts-BEEoIaK7.js",
+          "raw": 963,
+          "gzip": 463,
+          "brotli": 362
+        },
+        {
+          "file": "apps/web/dist/assets/undo-2-dD3aH8uL.js",
+          "raw": 926,
+          "gzip": 454,
+          "brotli": 418
+        },
+        {
+          "file": "apps/web/dist/assets/rolldown-runtime-hePW80VL.js",
+          "raw": 716,
+          "gzip": 428,
+          "brotli": 381
+        },
+        {
+          "file": "apps/web/dist/assets/navigation-BqTLbDky.js",
+          "raw": 645,
+          "gzip": 406,
+          "brotli": 374
+        },
+        {
+          "file": "apps/web/dist/assets/download-CgN6xL19.js",
+          "raw": 475,
+          "gzip": 348,
+          "brotli": 313
+        },
+        {
+          "file": "apps/web/dist/assets/trash-CgGck6ku.js",
+          "raw": 599,
+          "gzip": 327,
+          "brotli": 327
+        },
+        {
+          "file": "apps/web/dist/assets/services-CpfPRiVh.js",
+          "raw": 441,
+          "gzip": 325,
+          "brotli": 262
+        },
+        {
+          "file": "apps/web/dist/assets/FixtureThumb-CAwary1F.js",
+          "raw": 373,
+          "gzip": 272,
+          "brotli": 243
+        },
+        {
+          "file": "apps/web/dist/assets/image-plus-CWlTiOoL.js",
+          "raw": 390,
+          "gzip": 272,
+          "brotli": 266
+        },
+        {
+          "file": "apps/web/dist/assets/context-CY4qGtVY.js",
+          "raw": 348,
+          "gzip": 254,
+          "brotli": 203
+        },
+        {
+          "file": "apps/web/dist/assets/pause-8i_sGCTC.js",
+          "raw": 334,
+          "gzip": 234,
+          "brotli": 201
+        },
+        {
+          "file": "apps/web/dist/assets/ids-DAZKueMA.js",
+          "raw": 261,
+          "gzip": 216,
+          "brotli": 191
+        },
+        {
+          "file": "apps/web/dist/assets/runs-CIwq8oxd.js",
+          "raw": 406,
+          "gzip": 208,
+          "brotli": 182
+        },
+        {
+          "file": "apps/web/dist/assets/search-CfAl256c.js",
+          "raw": 201,
+          "gzip": 185,
+          "brotli": 191
+        },
+        {
+          "file": "apps/web/dist/assets/notifications-DkX4I89q.js",
+          "raw": 175,
+          "gzip": 129,
+          "brotli": 98
+        },
+        {
+          "file": "apps/web/dist/assets/identity-BQEyqayT.js",
+          "raw": 137,
+          "gzip": 125,
+          "brotli": 107
+        }
+      ],
+      "totalGzip": 425658
+    },
+    {
+      "label": "apps/web (CSS)",
+      "files": [
+        {
+          "file": "apps/web/dist/assets/index-CoTN4tI4.css",
+          "raw": 77734,
+          "gzip": 15628,
+          "brotli": 13391
+        },
+        {
+          "file": "apps/web/dist/assets/WorkflowTab-DLioOiRN.css",
+          "raw": 15413,
+          "gzip": 2548,
+          "brotli": 2206
+        }
+      ],
+      "totalGzip": 18176
+    },
+    {
+      "label": "apps/marketing (JS)",
+      "files": [
+        {
+          "file": "apps/marketing/dist/_astro/viewer-3d.C2jM91s9.js",
+          "raw": 603515,
+          "gzip": 150335,
+          "brotli": 122855
+        },
+        {
+          "file": "apps/marketing/dist/_astro/HomeDemo.astro_astro_type_script_index_0_lang.P-K6Pudd.js",
+          "raw": 2929,
+          "gzip": 1455,
+          "brotli": 1240
+        },
+        {
+          "file": "apps/marketing/dist/_astro/page.BDh2vuYI.js",
+          "raw": 2487,
+          "gzip": 1118,
+          "brotli": 953
+        }
+      ],
+      "totalGzip": 152908
+    },
+    {
+      "label": "apps/marketing (CSS)",
+      "files": [
+        {
+          "file": "apps/marketing/dist/_astro/Base.5p_ot-c5.css",
+          "raw": 22557,
+          "gzip": 5731,
+          "brotli": 5066
+        }
+      ],
+      "totalGzip": 5731
+    }
+  ]
+}

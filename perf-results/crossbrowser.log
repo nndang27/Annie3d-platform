@@ -1,0 +1,331 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+npm warn Unknown project config "strict-peer-dependencies". This will stop working in the next major version of npm.
+
+Running 38 tests using 1 worker
+
+[1/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:17:7 › journeys › J1 homepage → template → demo signup → project from that template
+[2/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output
+  1) [journeys-webkit] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /tab=workflow/
+    Received string:  "http://localhost:4173/app/projects/new"
+    Timeout: 10000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 10000ms
+        23 × locator resolved to <html lang="en">…</html>
+           - unexpected value "http://localhost:4173/app/projects/new"
+
+
+      50 |     await page.getByTestId('brief-goal').fill('Launch the serum with a clean turntable.');
+      51 |     await page.getByTestId('create-project').click();
+    > 52 |     await expect(page).toHaveURL(/tab=workflow/);
+         |                        ^
+      53 |     // Real uploaded preview is shown in the reference node and the overview
+      54 |     await expect(page.locator('[data-testid="node-n-ref"] img')).toHaveAttribute('alt', /my-product\.png/);
+      55 |     await page.getByTestId('run-workflow').click();
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:52:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J2-uploa-02028-f-→-run-→-inspect-3D-output-journeys-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J2-uploa-02028-f-→-run-→-inspect-3D-output-journeys-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J2-uploa-02028-f-→-run-→-inspect-3D-output-journeys-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J2-uploa-02028-f-→-run-→-inspect-3D-output-journeys-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[3/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload
+[4/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:111:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run
+[5/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:132:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored
+[6/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:168:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step
+[7/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4
+  2) [journeys-webkit] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.waitForEvent: Test timeout of 60000ms exceeded.
+    =========================== logs ===========================
+    waiting for event "download"
+    ============================================================
+
+      204 |     await page.getByTestId('open-export').click();
+      205 |     await page.getByTestId('preset-png-snapshot').click();
+    > 206 |     const [dl] = await Promise.all([page.waitForEvent('download'), page.getByTestId('export-run').click()]);
+          |                                          ^
+      207 |     expect(dl.suggestedFilename()).toMatch(/\.png$/);
+      208 |     const pngPath = await dl.path();
+      209 |     const png = readFileSync(pngPath!);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:206:42
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J6-versi-f015a-d-and-validate-PNG-JSON-MP4-journeys-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J6-versi-f015a-d-and-validate-PNG-JSON-MP4-journeys-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J6-versi-f015a-d-and-validate-PNG-JSON-MP4-journeys-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J6-versi-f015a-d-and-validate-PNG-JSON-MP4-journeys-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[8/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:236:7 › journeys › J6b WebM browser recording is a real recording
+  3) [journeys-webkit] › tests/e2e/journeys.spec.ts:236:7 › journeys › J6b WebM browser recording is a real recording 
+
+    TimeoutError: page.waitForEvent: Timeout 30000ms exceeded while waiting for event "download"
+    =========================== logs ===========================
+    waiting for event "download"
+    ============================================================
+
+      244 |     await page.getByTestId('preset-webm-preview').click();
+      245 |     const [dl] = await Promise.all([
+    > 246 |       page.waitForEvent('download', { timeout: 30_000 }),
+          |            ^
+      247 |       page.getByTestId('export-run').click(),
+      248 |     ]);
+      249 |     expect(dl.suggestedFilename()).toMatch(/\.webm$/);
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:246:12
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J6b-WebM-88a28-cording-is-a-real-recording-journeys-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J6b-WebM-88a28-cording-is-a-real-recording-journeys-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J6b-WebM-88a28-cording-is-a-real-recording-journeys-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J6b-WebM-88a28-cording-is-a-real-recording-journeys-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[9/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:255:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+[10/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:303:7 › journeys › J8 sign out → sign in as another user → no leakage
+  4) [journeys-webkit] › tests/e2e/journeys.spec.ts:303:7 › journeys › J8 sign out → sign in as another user → no leakage 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'window.__3dads.queryClient')
+
+      321 |     await expect(page.getByText('This project is not in your workspace')).toBeVisible();
+      322 |     await page.goto('/app/library');
+    > 323 |     const cache = await page.evaluate(() =>
+          |                              ^
+      324 |       window.__3dads.queryClient
+      325 |         .getQueryCache()
+      326 |         .getAll()
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:323:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-journeys-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-journeys-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-journeys-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J8-sign--e1aec-s-another-user-→-no-leakage-journeys-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[11/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:332:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector
+  5) [journeys-webkit] › tests/e2e/journeys.spec.ts:332:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByTestId('identity-u_mai')
+    Expected: focused
+    Received: inactive
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeFocused" getByTestId('identity-u_mai') with timeout 10000ms
+      - waiting for getByTestId('identity-u_mai')
+        24 × locator resolved to <button type="button" class="btn btn-secondary" data-testid="identity-u_mai">…</button>
+           - unexpected value "inactive"
+
+
+      336 |     await page.keyboard.press('Tab'); // logo
+      337 |     await page.keyboard.press('Tab'); // first identity
+    > 338 |     await expect(page.getByTestId('identity-u_mai')).toBeFocused();
+          |                                                      ^
+      339 |     await page.keyboard.press('Enter');
+      340 |     await expect(page.getByTestId('demo-label')).toBeVisible();
+      341 |     await page.getByTestId('project-card').first().locator('a').first().focus();
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:338:54
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[12/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:359:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact
+[13/38] [journeys-webkit] › tests/e2e/journeys.spec.ts:397:7 › journeys › J9c unsupported WebGL shows a usable fallback
+  6) [journeys-webkit] › tests/e2e/journeys.spec.ts:397:7 › journeys › J9c unsupported WebGL shows a usable fallback 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.waitForEvent: Test ended.
+    =========================== logs ===========================
+    waiting for event "download"
+    ============================================================
+
+      418 |     await expect(page.getByText(/3D viewer is not available/).first()).toBeVisible();
+      419 |     await page.getByTestId('preset-scene-json').click();
+    > 420 |     const [dl] = await Promise.all([page.waitForEvent('download'), page.getByTestId('export-run').click()]);
+          |                                          ^
+      421 |     expect(dl.suggestedFilename()).toMatch(/\.json$/);
+      422 |     await ctx.close();
+      423 |   });
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:420:42
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9c-unsu-9652f-bGL-shows-a-usable-fallback-journeys-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9c-unsu-9652f-bGL-shows-a-usable-fallback-journeys-webkit/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J9c-unsu-9652f-bGL-shows-a-usable-fallback-journeys-webkit/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9c-unsu-9652f-bGL-shows-a-usable-fallback-journeys-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J9c-unsu-9652f-bGL-shows-a-usable-fallback-journeys-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[14/38] [journeys-webkit] › tests/e2e/public.spec.ts:4:7 › public site › homepage ships useful HTML, working links, no app code
+[15/38] [journeys-webkit] › tests/e2e/public.spec.ts:29:7 › public site › 3D demo loads on intent and renders frames
+[16/38] [journeys-webkit] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link
+[17/38] [journeys-webkit] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links
+  7) [journeys-webkit] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('[data-plan="studio"] [data-price-monthly]')
+    Expected: "$29"
+    Received: "$24.17"
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveText" locator('[data-plan="studio"] [data-price-monthly]') with timeout 10000ms
+      - waiting for locator('[data-plan="studio"] [data-price-monthly]')
+        24 × locator resolved to <span data-price-monthly="29" data-price-yearly="24.17">$24.17</span>
+           - unexpected value "$24.17"
+
+
+      71 |     await expect(page).toHaveURL(/interval=yearly/);
+      72 |     await page.keyboard.press('ArrowLeft');
+    > 73 |     await expect(studioPrice).toHaveText('$29');
+         |                               ^
+      74 |   });
+      75 |
+      76 |   test('help articles, legal drafts and 404 status', async ({ page }) => {
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/public.spec.ts:73:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/public-public-site-pricing-1f3a0-dates-prices-and-plan-links-journeys-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/public-public-site-pricing-1f3a0-dates-prices-and-plan-links-journeys-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/public-public-site-pricing-1f3a0-dates-prices-and-plan-links-journeys-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/public-public-site-pricing-1f3a0-dates-prices-and-plan-links-journeys-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[18/38] [journeys-webkit] › tests/e2e/public.spec.ts:76:7 › public site › help articles, legal drafts and 404 status
+[19/38] [journeys-webkit] › tests/e2e/public.spec.ts:92:7 › public site › mobile menu opens by click and keyboard, closes on Escape
+[20/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:17:7 › journeys › J1 homepage → template → demo signup → project from that template
+[21/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output
+[22/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload
+[23/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:111:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run
+[24/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:132:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored
+[25/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:168:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step
+[26/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4
+[27/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:236:7 › journeys › J6b WebM browser recording is a real recording
+[28/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:255:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+[29/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:303:7 › journeys › J8 sign out → sign in as another user → no leakage
+[30/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:332:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector
+  8) [journeys-firefox] › tests/e2e/journeys.spec.ts:332:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector 
+
+    Error: page.goto: <unknown error>
+    Call log:
+      - navigating to "http://localhost:4173/app/signin", waiting until "load"
+
+
+      331 |
+      332 |   test('J9a keyboard-only: sign in, open project, list view, run, inspector', async ({ page }) => {
+    > 333 |     await page.goto('/app/signin');
+          |                ^
+      334 |     await expect(page.getByTestId('identity-u_mai')).toBeVisible();
+      335 |     await page.keyboard.press('Tab'); // skip link
+      336 |     await page.keyboard.press('Tab'); // logo
+        at /Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/tests/e2e/journeys.spec.ts:333:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/artifacts/journeys-journeys-J9a-keyb-53118-ect-list-view-run-inspector-journeys-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[31/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:359:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact
+[32/38] [journeys-firefox] › tests/e2e/journeys.spec.ts:397:7 › journeys › J9c unsupported WebGL shows a usable fallback
+[33/38] [journeys-firefox] › tests/e2e/public.spec.ts:4:7 › public site › homepage ships useful HTML, working links, no app code
+[34/38] [journeys-firefox] › tests/e2e/public.spec.ts:29:7 › public site › 3D demo loads on intent and renders frames
+[35/38] [journeys-firefox] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link
+[36/38] [journeys-firefox] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links
+[37/38] [journeys-firefox] › tests/e2e/public.spec.ts:76:7 › public site › help articles, legal drafts and 404 status
+[38/38] [journeys-firefox] › tests/e2e/public.spec.ts:92:7 › public site › mobile menu opens by click and keyboard, closes on Escape
+  8 failed
+    [journeys-webkit] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output 
+    [journeys-webkit] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4 
+    [journeys-webkit] › tests/e2e/journeys.spec.ts:236:7 › journeys › J6b WebM browser recording is a real recording 
+    [journeys-webkit] › tests/e2e/journeys.spec.ts:303:7 › journeys › J8 sign out → sign in as another user → no leakage 
+    [journeys-webkit] › tests/e2e/journeys.spec.ts:332:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector 
+    [journeys-webkit] › tests/e2e/journeys.spec.ts:397:7 › journeys › J9c unsupported WebGL shows a usable fallback 
+    [journeys-webkit] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links 
+    [journeys-firefox] › tests/e2e/journeys.spec.ts:332:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector 
+  30 passed (4.4m)

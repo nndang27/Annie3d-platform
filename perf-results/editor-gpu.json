@@ -1,0 +1,261 @@
+{
+  "identity": {
+    "commit": "4eb67b7",
+    "node": "v25.5.0",
+    "date": "2026-09-12T13:54:46.111Z",
+    "platform": "darwin arm64"
+  },
+  "sections": {
+    "coldEditorEntry": {
+      "samples": [
+        {
+          "wall": 1640,
+          "import": 92.89999997615814,
+          "firstUsefulFrame": 468.5
+        },
+        {
+          "wall": 816,
+          "import": 8.400000035762787,
+          "firstUsefulFrame": 51.5
+        },
+        {
+          "wall": 811,
+          "import": 7.699999988079071,
+          "firstUsefulFrame": 48
+        }
+      ],
+      "wall": {
+        "n": 3,
+        "min": 811,
+        "p50": 816,
+        "p75": 816,
+        "p95": 816,
+        "max": 1640,
+        "mean": 1089
+      },
+      "importMs": {
+        "n": 3,
+        "min": 7.699999988079071,
+        "p50": 8.400000035762787,
+        "p75": 8.400000035762787,
+        "p95": 8.400000035762787,
+        "max": 92.89999997615814,
+        "mean": 36.333333333333336
+      },
+      "firstUsefulFrameMs": {
+        "n": 3,
+        "min": 48,
+        "p50": 51.5,
+        "p75": 51.5,
+        "p95": 51.5,
+        "max": 468.5,
+        "mean": 189.33333333333334
+      }
+    },
+    "warmTabNavigation": {
+      "n": 6,
+      "min": 19,
+      "p50": 28,
+      "p75": 32,
+      "p95": 35,
+      "max": 78,
+      "mean": 35.666666666666664
+    },
+    "actionAcknowledgementMs": {
+      "n": 3,
+      "min": 5.200000047683716,
+      "p50": 6,
+      "p75": 6,
+      "p95": 6,
+      "max": 238.80000001192093,
+      "mean": 83.33333335320155
+    },
+    "typingWhileStreaming": {
+      "keystrokeToPaintMs": {
+        "n": 35,
+        "min": 9.200000047683716,
+        "p50": 10.399999976158142,
+        "p75": 11,
+        "p95": 12,
+        "max": 13.299999952316284,
+        "mean": 10.639999999318803
+      },
+      "allKeysApplied": true,
+      "overlayUpdated": true
+    },
+    "orbit": {
+      "rafIntervalMs": {
+        "n": 545,
+        "min": 7.5,
+        "p50": 8.300000000000182,
+        "p75": 8.5,
+        "p95": 16.700000000000045,
+        "max": 25.100000000000023,
+        "mean": 9.740183486238537
+      },
+      "droppedOver33ms": 0,
+      "droppedPct": 0,
+      "renderMs": {
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "max": 0.10000002384185791,
+        "samples": 120
+      },
+      "drawCalls": 5,
+      "triangles": 3250,
+      "dpr": 2
+    },
+    "playback": {
+      "rafIntervalMs": {
+        "n": 587,
+        "min": 7.199999999999818,
+        "p50": 8.300000000000182,
+        "p75": 8.400000000000546,
+        "p95": 9.199999999999818,
+        "max": 100,
+        "mean": 8.487904599659286
+      },
+      "droppedPct": 0.17035775127768313,
+      "renderMs": {
+        "p50": 0.3999999761581421,
+        "p95": 0.5999999642372131,
+        "max": 0.9000000357627869,
+        "samples": 120
+      }
+    },
+    "idle": {
+      "framesBefore": 18061,
+      "framesAfter2s": 18061,
+      "idleFlag": true,
+      "extraFrames": 0
+    },
+    "resourcePlateau": {
+      "cycles": [
+        {
+          "cycle": 1,
+          "fixture": "serum-bottle",
+          "geometries": 6,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 5712804,
+          "nodes": 518,
+          "listeners": 215
+        },
+        {
+          "cycle": 2,
+          "fixture": "headphones",
+          "geometries": 10,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4641516,
+          "nodes": 518,
+          "listeners": 215
+        },
+        {
+          "cycle": 3,
+          "fixture": "smart-speaker",
+          "geometries": 6,
+          "textures": 5,
+          "liveViewers": 0,
+          "jsHeap": 4638656,
+          "nodes": 518,
+          "listeners": 215
+        },
+        {
+          "cycle": 4,
+          "fixture": "serum-bottle",
+          "geometries": 6,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4691344,
+          "nodes": 518,
+          "listeners": 215
+        },
+        {
+          "cycle": 5,
+          "fixture": "headphones",
+          "geometries": 10,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4641136,
+          "nodes": 518,
+          "listeners": 215
+        },
+        {
+          "cycle": 6,
+          "fixture": "smart-speaker",
+          "geometries": 6,
+          "textures": 5,
+          "liveViewers": 0,
+          "jsHeap": 4651280,
+          "nodes": 522,
+          "listeners": 215
+        },
+        {
+          "cycle": 7,
+          "fixture": "serum-bottle",
+          "geometries": 6,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4655720,
+          "nodes": 518,
+          "listeners": 215
+        },
+        {
+          "cycle": 8,
+          "fixture": "headphones",
+          "geometries": 10,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4608620,
+          "nodes": 522,
+          "listeners": 215
+        },
+        {
+          "cycle": 9,
+          "fixture": "smart-speaker",
+          "geometries": 6,
+          "textures": 5,
+          "liveViewers": 0,
+          "jsHeap": 4632968,
+          "nodes": 518,
+          "listeners": 215
+        },
+        {
+          "cycle": 10,
+          "fixture": "serum-bottle",
+          "geometries": 6,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4626780,
+          "nodes": 523,
+          "listeners": 215
+        }
+      ],
+      "heapGrowthPctFromCycle3": -0.2560224340843555,
+      "nodesGrowth": 5,
+      "listenersGrowth": 0,
+      "liveViewersAtEnd": 0
+    },
+    "graphPan": {
+      "nodesRendered": 5,
+      "rafIntervalMs": {
+        "n": 103,
+        "min": 7.2999999999999545,
+        "p50": 8.300000000000068,
+        "p75": 8.400000000000091,
+        "p95": 9.099999999999909,
+        "max": 117.10000000000002,
+        "mean": 9.392233009708736
+      },
+      "droppedPct": 0.970873786407767
+    }
+  },
+  "env": {
+    "browser": "Chromium 153.0.8010.12",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+    "cpuThrottle": 1,
+    "network": "none",
+    "viewport": "1440x900 @2x"
+  }
+}

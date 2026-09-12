@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - packages/*
+# Supply-chain hygiene (TECH_PREPARE 3.7): postinstall scripts only for an explicit allow-list.
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - '@biomejs/biome'
+  - '@tailwindcss/oxide'

@@ -1,0 +1,39 @@
+{
+  "name": "3dads-platform",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=22.12 <26",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "dev": "concurrently -n site,app -c cyan,magenta \"pnpm --filter @3dads/marketing dev\" \"pnpm --filter @3dads/web dev\"",
+    "dev:site": "pnpm --filter @3dads/marketing dev",
+    "dev:app": "pnpm --filter @3dads/web dev",
+    "build": "pnpm --filter @3dads/viewer-3d build:fixtures && pnpm -r --filter './apps/*' build",
+    "preview": "node scripts/preview-server.mjs",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test --project=a11y",
+    "perf": "node tests/perf/run-all.mjs",
+    "fixtures:reset": "node scripts/reset-fixtures.mjs",
+    "bundle:report": "node scripts/bundle-report.mjs",
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@biomejs/biome": "^2.4.0",
+    "@playwright/test": "^1.63.0",
+    "concurrently": "^10.0.5",
+    "fake-indexeddb": "^6.0.0",
+    "happy-dom": "^20.14.5",
+    "sirv": "^3.0.2",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.0",
+    "vitest": "^4.0.0"
+  }
+}

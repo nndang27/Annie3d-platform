@@ -1,0 +1,104 @@
+---
+import { TEMPLATES } from '@3dads/contracts';
+import Base from '../layouts/Base.astro';
+import HomeDemo from '../components/HomeDemo.astro';
+import TemplateCard from '../components/TemplateCard.astro';
+import { appLink } from '../lib/site';
+const featured = TEMPLATES.slice(0, 3);
+---
+
+<Base title="3D product ads from one reference image" description="3Dads turns a product photo and a short brief into 3D scenes, turntable animations and ad variants for ecommerce. Demonstration release.">
+  <section class="container-wide hero">
+    <div>
+      <p class="eyebrow">3D advertising for ecommerce</p>
+      <h1 class="h1" style="margin-top:12px">Turn a product photo into 3D ads that sell.</h1>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-lg btn-pill" href={appLink('/signup', { template: 'turntable-hero-skincare' })} data-testid="hero-start">Start with a template</a>
+        <a class="btn btn-secondary btn-lg btn-pill" href="/templates">Explore examples</a>
+      </div>
+    </div>
+    <div>
+      <p class="lead">Upload one reference image, write a short brief, and run a repeatable workflow that builds the 3D model, composes the scene, animates it and lays out ad variants in 1:1, 4:5 and 9:16. Review every version, keep what works, export the rest.</p>
+      <p class="notice" style="margin-top:16px">Demonstration release: this site and the workspace run against a simulated backend. 3D outputs are labelled fixtures, not reconstructions of your image, and no payment is processed.</p>
+    </div>
+  </section>
+
+  <section class="container-wide" style="padding-bottom:32px">
+    <HomeDemo />
+  </section>
+
+  <section class="section container" aria-labelledby="h-how">
+    <p class="eyebrow">How it works</p>
+    <h2 id="h-how" class="h2" style="margin-top:10px">Reference in. Reviewed ad out.</h2>
+    <div class="steps" style="margin-top:32px">
+      <div class="step"><h3 class="h3">Supply the reference and brief</h3><p class="body" style="margin-top:8px">A product image or catalog fixture, the product name, the campaign goal, the tone and the formats you need.</p></div>
+      <div class="step"><h3 class="h3">Run a reusable workflow</h3><p class="body" style="margin-top:8px">Build model → compose scene → animate → ad variants. Each step has explicit inputs, settings, status and its own output version.</p></div>
+      <div class="step"><h3 class="h3">Inspect, refine, export</h3><p class="body" style="margin-top:8px">Orbit the model, change background, material, light and copy, compare versions, accept one and export stills, clips and editable scene data.</p></div>
+    </div>
+  </section>
+
+  <section class="section container" style="padding-top:0" aria-labelledby="h-cap">
+    <div class="feature">
+      <div>
+        <p class="eyebrow">Studio</p>
+        <h2 id="h-cap" class="h2" style="margin-top:10px">A calm workspace with the model in the middle.</h2>
+        <p class="body" style="margin-top:12px">One interactive 3D view with orbit, zoom, part selection, preset cameras and fit-to-object. A small set of controls that visibly change the output: background, material and finish, light, camera, placement and a timeline with turntable, orbit and dolly presets.</p>
+      </div>
+      <div class="preview-frame" style="padding:16px;display:grid;gap:8px">
+        <div class="timeline"><span class="btn btn-primary btn-sm btn-icon" aria-hidden="true">▶</span><span style="flex:1;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--action-primary) 0 38%,var(--bg-hover) 38%)"></span><span class="numeric" style="font-size:0.8125rem">2.3 / 6.0 s</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.875rem"><span class="card card-pad" style="padding:10px">Background · Studio white</span><span class="card card-pad" style="padding:10px">Light · Studio soft</span><span class="card card-pad" style="padding:10px">Material · Satin #2b2f36</span><span class="card card-pad" style="padding:10px">Camera · Three-quarter</span></div>
+      </div>
+    </div>
+    <div class="feature reverse" style="margin-top:64px">
+      <div>
+        <p class="eyebrow">Workflow</p>
+        <h2 class="h2" style="margin-top:10px">Understandable steps, honest status.</h2>
+        <p class="body" style="margin-top:12px">Steps show what they need, what they produced and where they are: queued, running, waiting for your input, paused, completed, failed or cancelled. Retry runs only the failed step and keeps earlier outputs. Leave the page; the run keeps going.</p>
+      </div>
+      <div class="preview-frame" style="padding:16px;display:grid;gap:8px;font-size:0.875rem">
+        <div class="card" style="padding:10px 12px;display:flex;justify-content:space-between"><span>Build 3D model</span><span class="badge badge-success">Done · v2</span></div>
+        <div class="card" style="padding:10px 12px;display:flex;justify-content:space-between"><span>Compose scene</span><span class="badge badge-success">Done · v2</span></div>
+        <div class="card" style="padding:10px 12px;display:flex;justify-content:space-between"><span>Animate · 6 s</span><span class="badge badge-accent">Running · 14/24 frames</span></div>
+        <div class="card" style="padding:10px 12px;display:flex;justify-content:space-between"><span>Ad variants · 1:1, 9:16</span><span class="badge">Queued</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section container" style="padding-top:0" aria-labelledby="h-templates">
+    <div style="display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap">
+      <div><p class="eyebrow">Templates</p><h2 id="h-templates" class="h2" style="margin-top:10px">Start from an outcome, not a blank canvas.</h2></div>
+      <a class="btn btn-secondary" href="/templates">All templates</a>
+    </div>
+    <div class="grid-3" style="margin-top:28px">{featured.map((t) => <TemplateCard template={t} />)}</div>
+    <p style="margin-top:12px;font-size:0.8125rem;color:var(--text-muted)">Sample outputs are demonstration renders of catalog fixtures.</p>
+  </section>
+
+  <section class="section container" style="padding-top:0" aria-labelledby="h-trust">
+    <p class="eyebrow">Control and trust</p>
+    <h2 id="h-trust" class="h2" style="margin-top:10px">Nothing good gets overwritten.</h2>
+    <div class="grid-3" style="margin-top:28px">
+      <div class="card card-pad"><h3 class="h3">Versions, not replacements</h3><p class="body" style="margin-top:8px;font-size:0.95rem">Every run adds a version. Compare two side by side, pick one, and later runs never silently replace your choice.</p></div>
+      <div class="card card-pad"><h3 class="h3">Undo, redo, saved</h3><p class="body" style="margin-top:8px;font-size:0.95rem">Manual edits are undoable and saved at meaningful boundaries. Unsaved work is protected when you leave.</p></div>
+      <div class="card card-pad"><h3 class="h3">Honest labels</h3><p class="body" style="margin-top:8px;font-size:0.95rem">Simulated outputs, sample media and browser renders are labelled as such. Completion means finished, not verified fidelity.</p></div>
+    </div>
+  </section>
+
+  <section class="section container" style="padding-top:0" aria-labelledby="h-pricing">
+    <div class="card card-pad" style="display:grid;gap:12px;padding:32px">
+      <p class="eyebrow">Pricing</p>
+      <h2 id="h-pricing" class="h2">Pay for renders, not seats.</h2>
+      <p class="body">Plans include a monthly allowance of render credits; one credit is one model build step or one 1080p clip up to 10 seconds. Stills cost one. Illustrative prices for the demonstration.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-primary" href="/pricing">Compare plans</a><a class="btn btn-secondary" href="/help">Read the quickstart</a></div>
+    </div>
+  </section>
+
+  <section class="section container" style="padding-top:0" aria-labelledby="h-faq">
+    <h2 id="h-faq" class="h2">Questions before you start</h2>
+    <div class="faq" style="margin-top:20px;max-width:760px">
+      <details><summary>Does the demo reconstruct my uploaded image?</summary><p>No. Your image is stored in your browser and shown as the reference. The 3D model is a labelled catalog fixture chosen to demonstrate the workflow. A connected engine replaces this step.</p></details>
+      <details><summary>What do I actually download?</summary><p>PNG stills and WebM clips rendered by your browser from your edited scene, editable scene JSON, and — for the simulated MP4 render — a clearly labelled sample clip.</p></details>
+      <details><summary>Is any payment processed?</summary><p>No. Checkout is simulated end to end, including declined, cancelled and delayed outcomes. No card details are requested.</p></details>
+    </div>
+    <div style="margin-top:40px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-primary btn-lg btn-pill" href={appLink('/signup')}>Start a project</a><a class="btn btn-tertiary btn-lg" href={appLink('/signin')}>Sign in to the demo</a></div>
+  </section>
+</Base>

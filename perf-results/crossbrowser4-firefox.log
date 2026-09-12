@@ -1,0 +1,28 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+npm warn Unknown project config "strict-peer-dependencies". This will stop working in the next major version of npm.
+
+Running 19 tests using 1 worker
+
+[1/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:17:7 › journeys › J1 homepage → template → demo signup → project from that template
+[2/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output
+[3/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload
+[4/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:111:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run
+[5/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:132:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored
+[6/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:168:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step
+[7/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4
+[8/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:233:7 › journeys › J6b WebM browser recording is a real recording
+[9/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:249:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+[journeys-firefox] › tests/e2e/journeys.spec.ts:249:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+[fixtures] page.goto retried once after: Error: page.orig: <unknown error> (/app/settings/billing)
+
+[10/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:297:7 › journeys › J8 sign out → sign in as another user → no leakage
+[11/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:328:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector
+[12/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:354:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact
+[13/19] [journeys-firefox] › tests/e2e/journeys.spec.ts:392:7 › journeys › J9c unsupported WebGL shows a usable fallback
+[14/19] [journeys-firefox] › tests/e2e/public.spec.ts:4:7 › public site › homepage ships useful HTML, working links, no app code
+[15/19] [journeys-firefox] › tests/e2e/public.spec.ts:29:7 › public site › 3D demo loads on intent and renders frames
+[16/19] [journeys-firefox] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link
+[17/19] [journeys-firefox] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links
+[18/19] [journeys-firefox] › tests/e2e/public.spec.ts:76:7 › public site › help articles, legal drafts and 404 status
+[19/19] [journeys-firefox] › tests/e2e/public.spec.ts:92:7 › public site › mobile menu opens by click and keyboard, closes on Escape
+  19 passed (48.7s)

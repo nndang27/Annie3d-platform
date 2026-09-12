@@ -1,0 +1,261 @@
+{
+  "identity": {
+    "commit": "4eb67b7",
+    "node": "v25.5.0",
+    "date": "2026-09-12T13:53:01.153Z",
+    "platform": "darwin arm64"
+  },
+  "sections": {
+    "coldEditorEntry": {
+      "samples": [
+        {
+          "wall": 3496,
+          "import": 8.199999988079071,
+          "firstUsefulFrame": 1144.300000011921
+        },
+        {
+          "wall": 1809,
+          "import": 3,
+          "firstUsefulFrame": 901.7000000476837
+        },
+        {
+          "wall": 1858,
+          "import": 3,
+          "firstUsefulFrame": 884.8000000119209
+        }
+      ],
+      "wall": {
+        "n": 3,
+        "min": 1809,
+        "p50": 1858,
+        "p75": 1858,
+        "p95": 1858,
+        "max": 3496,
+        "mean": 2387.6666666666665
+      },
+      "importMs": {
+        "n": 3,
+        "min": 3,
+        "p50": 3,
+        "p75": 3,
+        "p95": 3,
+        "max": 8.199999988079071,
+        "mean": 4.733333329359691
+      },
+      "firstUsefulFrameMs": {
+        "n": 3,
+        "min": 884.8000000119209,
+        "p50": 901.7000000476837,
+        "p75": 901.7000000476837,
+        "p95": 901.7000000476837,
+        "max": 1144.300000011921,
+        "mean": 976.9333333571752
+      }
+    },
+    "warmTabNavigation": {
+      "n": 6,
+      "min": 28,
+      "p50": 34,
+      "p75": 36,
+      "p95": 42,
+      "max": 1572,
+      "mean": 290.8333333333333
+    },
+    "actionAcknowledgementMs": {
+      "n": 3,
+      "min": 1.5,
+      "p50": 2.300000011920929,
+      "p75": 2.300000011920929,
+      "p95": 2.300000011920929,
+      "max": 19.799999952316284,
+      "mean": 7.866666654745738
+    },
+    "typingWhileStreaming": {
+      "keystrokeToPaintMs": {
+        "n": 35,
+        "min": 1.100000023841858,
+        "p50": 2.199999988079071,
+        "p75": 19.19999998807907,
+        "p95": 29.69999998807907,
+        "max": 52.5,
+        "mean": 12.234285707133157
+      },
+      "allKeysApplied": true,
+      "overlayUpdated": true
+    },
+    "orbit": {
+      "rafIntervalMs": {
+        "n": 32,
+        "min": 16.599999999998545,
+        "p50": 283.3000000000002,
+        "p75": 1466.5999999999995,
+        "p95": 1516.5999999999985,
+        "max": 1566.699999999999,
+        "mean": 634.871875
+      },
+      "droppedOver33ms": 26,
+      "droppedPct": 81.25,
+      "renderMs": {
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "max": 0.30000001192092896,
+        "samples": 120
+      },
+      "drawCalls": 5,
+      "triangles": 3250,
+      "dpr": 2
+    },
+    "playback": {
+      "rafIntervalMs": {
+        "n": 30,
+        "min": 16.700000000000728,
+        "p50": 66.69999999999709,
+        "p75": 66.70000000000073,
+        "p95": 83.29999999999927,
+        "max": 1633.2999999999993,
+        "mean": 113.33000000000006
+      },
+      "droppedPct": 96.66666666666667,
+      "renderMs": {
+        "p50": 0,
+        "p95": 0.20000004768371582,
+        "max": 0.30000001192092896,
+        "samples": 120
+      }
+    },
+    "idle": {
+      "framesBefore": 742,
+      "framesAfter2s": 742,
+      "idleFlag": true,
+      "extraFrames": 0
+    },
+    "resourcePlateau": {
+      "cycles": [
+        {
+          "cycle": 1,
+          "fixture": "serum-bottle",
+          "geometries": 6,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 5638252,
+          "nodes": 579,
+          "listeners": 228
+        },
+        {
+          "cycle": 2,
+          "fixture": "headphones",
+          "geometries": 10,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4542668,
+          "nodes": 583,
+          "listeners": 228
+        },
+        {
+          "cycle": 3,
+          "fixture": "smart-speaker",
+          "geometries": 6,
+          "textures": 5,
+          "liveViewers": 0,
+          "jsHeap": 4536900,
+          "nodes": 579,
+          "listeners": 228
+        },
+        {
+          "cycle": 4,
+          "fixture": "serum-bottle",
+          "geometries": 6,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4541940,
+          "nodes": 583,
+          "listeners": 228
+        },
+        {
+          "cycle": 5,
+          "fixture": "headphones",
+          "geometries": 10,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4551500,
+          "nodes": 583,
+          "listeners": 228
+        },
+        {
+          "cycle": 6,
+          "fixture": "smart-speaker",
+          "geometries": 6,
+          "textures": 5,
+          "liveViewers": 0,
+          "jsHeap": 4540176,
+          "nodes": 579,
+          "listeners": 228
+        },
+        {
+          "cycle": 7,
+          "fixture": "serum-bottle",
+          "geometries": 6,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4603884,
+          "nodes": 579,
+          "listeners": 228
+        },
+        {
+          "cycle": 8,
+          "fixture": "headphones",
+          "geometries": 10,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4534564,
+          "nodes": 583,
+          "listeners": 228
+        },
+        {
+          "cycle": 9,
+          "fixture": "smart-speaker",
+          "geometries": 6,
+          "textures": 5,
+          "liveViewers": 0,
+          "jsHeap": 4554600,
+          "nodes": 583,
+          "listeners": 228
+        },
+        {
+          "cycle": 10,
+          "fixture": "serum-bottle",
+          "geometries": 6,
+          "textures": 4,
+          "liveViewers": 0,
+          "jsHeap": 4527528,
+          "nodes": 583,
+          "listeners": 228
+        }
+      ],
+      "heapGrowthPctFromCycle3": -0.20657276995305165,
+      "nodesGrowth": 4,
+      "listenersGrowth": 0,
+      "liveViewersAtEnd": 0
+    },
+    "graphPan": {
+      "nodesRendered": 5,
+      "rafIntervalMs": {
+        "n": 104,
+        "min": 16.59999999999991,
+        "p50": 16.699999999999818,
+        "p75": 16.700000000000045,
+        "p95": 33.30000000000007,
+        "max": 50.09999999999991,
+        "mean": 18.589423076923076
+      },
+      "droppedPct": 8.653846153846153
+    }
+  },
+  "env": {
+    "browser": "Chromium 153.0.8010.12",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "cpuThrottle": 1,
+    "network": "none",
+    "viewport": "1440x900 @2x"
+  }
+}

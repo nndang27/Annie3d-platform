@@ -18,7 +18,7 @@ const path = Astro.url.pathname;
   <div id="mobile-menu" class="mobile-menu" hidden>
     {NAV.map((n) => <a href={n.href}>{n.label}</a>)}
     <a href={appLink('/signin')}>Sign in</a>
-    <a href={appLink('/signup')} class="btn btn-primary" style="margin-top:12px;border-bottom:0">Start a project</a>
+    <a href={appLink('/signup')} class="btn btn-primary" data-testid="mobile-menu-start">Start a project</a>
   </div>
 </header>
 <script>

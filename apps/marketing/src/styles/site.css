@@ -84,13 +84,30 @@
 }
 .mobile-menu {
   display: none;
-  position: fixed;
-  inset: var(--header-h) 0 0 0;
+  /* The sticky header's backdrop-filter makes it the containing block for fixed descendants,
+     which collapsed a `position: fixed` menu to a 0-height box; anchor to the header instead. */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: calc(100dvh - var(--header-h));
+  overflow-y: auto;
   background: #fff;
   padding: 16px 20px;
   z-index: 49;
   flex-direction: column;
   gap: 4px;
+}
+@supports not (height: 100dvh) {
+  .mobile-menu {
+    height: calc(100vh - var(--header-h));
+  }
+}
+.mobile-menu a.btn-primary {
+  color: #fff;
+  border-bottom: 0;
+  margin-top: 12px;
+  justify-content: center;
 }
 .mobile-menu.is-open {
   display: flex;

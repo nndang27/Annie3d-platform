@@ -20,3 +20,30 @@ test('mobile: step/list workflow, studio stacked, no horizontal scroll', async (
   );
   expect(ov2).toBeLessThanOrEqual(1);
 });
+
+test('public site: mobile menu covers the page and its CTA is legible', async ({ page }) => {
+  await page.goto('/product');
+  const hero = page.locator('main h1');
+  await expect(hero).toBeVisible();
+  await page.getByRole('button', { name: 'Menu' }).click();
+  const menu = page.locator('#mobile-menu');
+  await expect(menu).toBeVisible();
+  // The menu must be a full-height opaque sheet under the header, not a collapsed box.
+  const box = await menu.boundingBox();
+  const vp = page.viewportSize()!;
+  expect(box!.height).toBeGreaterThan(vp.height * 0.6);
+  expect(box!.y).toBeLessThan(80);
+  // The hero heading is covered: the element at its centre belongs to the menu.
+  const heroBox = await hero.boundingBox();
+  const covered = await page.evaluate(
+    ([x, y]) => !!document.elementFromPoint(x, y)?.closest('#mobile-menu'),
+    [heroBox!.x + heroBox!.width / 2, heroBox!.y + heroBox!.height / 2],
+  );
+  expect(covered).toBe(true);
+  const cta = page.getByTestId('mobile-menu-start');
+  await expect(cta).toHaveText('Start a project');
+  const color = await cta.evaluate((el) => getComputedStyle(el).color);
+  expect(color).toBe('rgb(255, 255, 255)');
+  await page.keyboard.press('Escape');
+  await expect(menu).toBeHidden();
+});

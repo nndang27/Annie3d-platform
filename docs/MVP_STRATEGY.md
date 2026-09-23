@@ -51,6 +51,7 @@ Motion → Render → Package. Details per line: `MVP_VERTICAL_WORKFLOWS.md`.
 | F9 | **Versions** | Every run and edit is a version on its node, with before/after compare and one-click revert. |
 | F10 | **Cloud share link** | Public or unlisted link opening a viewer with the model orbiting in about a second, download button, embed code, and a "Make your own" call to action. Rich previews (image + short video) for Facebook, Telegram, X, Zalo, Messenger. |
 | F11 | **Accounts and billing** | Everything on the example project works without an account. One-tap Google sign-in at the first run on the user's own photo; one full run free; further runs need a subscription. Credit cost shown before Run. |
+| F12 | **Process reel** | Every finished run can export a vertical 9:16 MP4 (10–20 s): the final ad on the top half, the canvas below replaying the run as nodes light up in order with their output thumbnails, time-compressed, with a caption such as "1 photo → 3D ad in 4 min" and an end card carrying the share link and "Made with 3Dads". Built by replaying the run's event log, not by screen recording, so it is sharp and deterministic. Free runs keep the watermark; paid plans may remove it. We use the same reels for our own daily build-in-public series. |
 
 ### Toolbar (bottom of the canvas)
 
@@ -98,6 +99,7 @@ arrives with attention (section 9). Waves keep quality visible and the bill boun
 | Run success rate in production | Must track the eval pass rate; a gap means the eval set is unrepresentative. |
 | Share rate (runs whose link is opened by someone else) | The growth engine. |
 | Signups per 100 share-link views | Viral loop strength. |
+| Process reels exported and posted | Whether users market 3Dads for us (F12). |
 | Free→paid conversion after the free run | Pricing and value check. |
 | Week-4 retention of paying users | Whether this is a habit or a one-off. |
 | Gross margin per run | GPU + LLM + render cost vs price. |
@@ -135,7 +137,10 @@ Patterns that apply to us:
 
 1. **The output is the marketing.** Midjourney's public channels, ElevenLabs' memes and
    Lovable's before/after clips all spread because the result was shareable. Our share
-   link and the ad itself must carry "Made with 3Dads".
+   link, the ad and the process reel (F12) must carry "Made with 3Dads".
+   The process-reel format (result on top, node graph below) already performs in
+   creator communities: a DaVinci Resolve Fusion "Day 13" learn-in-public reel in this
+   format reached ~6.9k likes and ~395 shares (Facebook, jilmotion, viewed 2026-09-24).
 2. **Launch early to a few, go wide when the loop is reliable.** Everyone shipped early
    to controlled groups; wide attention before guardrails cost ElevenLabs its first
    crisis week.

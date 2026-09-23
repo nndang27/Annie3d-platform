@@ -1,5 +1,7 @@
 # MVP verticals and one-image auto-workflows
 
+> Scope and feature list are consolidated in `MVP_STRATEGY.md` (2026-09-24); this document keeps the per-line node detail.
+
 Status: proposal for founder review (2026-09-24). Supersedes the node catalogue in
 `WORKFLOW_3D_DESIGN.md` for the first public release. Nothing here is implemented yet.
 Numbers marked *initial* are starting thresholds to calibrate on the eval sets in section 7,

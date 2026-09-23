@@ -1,5 +1,7 @@
 # 3Dads 3D workflow design
 
+> Superseded for the first release by `MVP_STRATEGY.md` and `MVP_VERTICAL_WORKFLOWS.md` (2026-09-24). Kept as the long-term catalogue.
+
 Status: proposal for founder review (2026-09-13). Nothing in this document is implemented yet
 unless the "Current implementation" section says so. The demo app today ships the Flows-style
 canvas and a first node catalogue; this document defines the catalogue we should converge on.

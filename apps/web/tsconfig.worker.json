@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/worker.tsbuildinfo",
+    "lib": ["ES2023"],
+    "types": ["@cloudflare/workers-types", "node"]
+  },
+  "include": ["src/worker"]
+}

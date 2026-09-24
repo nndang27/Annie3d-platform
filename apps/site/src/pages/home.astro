@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import { CANVAS } from '../lib/site';
+---
+
+<Base title="3D product ads from one photo" description="Annie 3D turns one product photo into a true 3D model, ad videos, packshots at any angle and an animated GLB, on a canvas you can open without signing up.">
+  <section class="container-wide hero">
+    <div>
+      <p class="eyebrow">3D advertising workspace</p>
+      <h1 class="h1" style="margin-top:12px">One product photo in. A 3D ad out.</h1>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-lg btn-pill" href={CANVAS} data-testid="hero-open-canvas">Open the canvas</a>
+      </div>
+    </div>
+    <div>
+      <p class="lead">Drop a product photo on the canvas. Annie 3D builds the product as a real 3D model, then gives you an ad video, packshots from any angle, an animated GLB for your store and a link anyone can open. Because every output comes from the same model, your product looks exactly right in all of them.</p>
+    </div>
+  </section>
+
+  <section class="section container" aria-labelledby="h-what">
+    <p class="eyebrow">What you get</p>
+    <h2 id="h-what" class="h2" style="margin-top:10px">Everything from one model</h2>
+    <div class="steps" style="margin-top:32px">
+      <div class="step"><h3 class="h3">Ad videos</h3><p class="body" style="margin-top:8px">Teardown reveals for tech, stone and water for jewelry, splash heroes for beauty, in 1:1, 4:5 and 9:16.</p></div>
+      <div class="step"><h3 class="h3">Packshots at any angle</h3><p class="body" style="margin-top:8px">Frame the camera yourself or take four standard angles.</p></div>
+      <div class="step"><h3 class="h3">Animated GLB</h3><p class="body" style="margin-top:8px">Checked against web, Google Merchant and Google Swirl limits before you download.</p></div>
+    </div>
+  </section>
+
+  <section class="section container" style="padding-top:0" aria-labelledby="h-how">
+    <p class="eyebrow">How it works</p>
+    <h2 id="h-how" class="h2" style="margin-top:10px">A canvas of nodes you can rewire</h2>
+    <p class="body" style="margin-top:12px;max-width:60ch">Start from a ready-made graph or add your own nodes: photo, text, 3D model, stage, packshot, ad video and export. Select a region on the model and describe the change; every edit becomes a new version you can compare or undo.</p>
+    <p style="margin-top:24px"><a class="btn btn-secondary" href={CANVAS}>Try the example board</a></p>
+  </section>
+</Base>

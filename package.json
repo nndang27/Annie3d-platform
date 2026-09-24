@@ -8,20 +8,17 @@
     "pnpm": ">=10"
   },
   "scripts": {
-    "dev": "concurrently -n site,app -c cyan,magenta \"pnpm --filter @annie3d/marketing dev\" \"pnpm --filter @annie3d/web dev\"",
-    "dev:site": "pnpm --filter @annie3d/marketing dev",
-    "dev:app": "pnpm --filter @annie3d/web dev",
-    "build": "pnpm --filter @annie3d/viewer-3d build:fixtures && pnpm -r --filter './apps/*' build",
-    "preview": "node scripts/preview-server.mjs",
+    "dev": "pnpm --filter @annie3d/web dev",
+    "build": "pnpm --filter @annie3d/site build && node scripts/copy-site.mjs && pnpm --filter @annie3d/web build",
+    "preview": "pnpm --filter @annie3d/web preview",
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "test:a11y": "playwright test --project=a11y",
     "perf": "node tests/perf/run-all.mjs",
-    "fixtures:reset": "node scripts/reset-fixtures.mjs",
-    "bundle:report": "node scripts/bundle-report.mjs",
+    "db:generate": "pnpm --filter @annie3d/db generate",
+    "db:migrate": "pnpm --filter @annie3d/db migrate",
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"
   },
   "devDependencies": {
@@ -30,6 +27,7 @@
     "@neon/config": "^1.7.3",
     "@neon/env": "^1.4.4",
     "@playwright/test": "^1.63.0",
+    "@types/node": "^24.13.4",
     "concurrently": "^10.0.5",
     "fake-indexeddb": "^6.0.0",
     "happy-dom": "^20.14.5",

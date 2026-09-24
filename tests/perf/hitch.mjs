@@ -20,7 +20,8 @@ const APP =
 
 async function record(page, drive) {
   await page.evaluate(() => {
-    const r = (window.__h = { t0: performance.now(), gaps: [], loaf: [], on: true });
+    const r = { t0: performance.now(), gaps: [], loaf: [], on: true };
+    window.__h = r;
     let last = performance.now();
     const loop = (t) => {
       if (t - last > 25) r.gaps.push({ at: Math.round(last - r.t0), ms: +(t - last).toFixed(1) });

@@ -117,6 +117,9 @@ function createWindow() {
     show: false,
     backgroundColor: '#f2f2f2',
     title: 'Annie 3D',
+    // macOS: a click on the inactive window also reaches the page, as in Chrome (Electron's
+    // default only activates the window, so the first click after switching apps is lost).
+    acceptFirstMouse: true,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       contextIsolation: true,

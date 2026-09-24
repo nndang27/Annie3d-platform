@@ -54,3 +54,25 @@ Use `pnpm run pack`, not `pnpm pack` (a pnpm built-in that makes a tarball).
   the user allows them in System Settings → Privacy & Security, and shell auto-updates stay off on
   macOS; Windows shows a SmartScreen warning ("More info → Run anyway"). Web-pack updates work
   without signing on all systems.
+
+## App vs Chrome responsiveness (measured 2026-09-25)
+
+Same build, M5 MacBook, Retina 2x, 120 Hz display. Scripts: `tests/perf/desktop-vs-web.mjs`
+(synthetic input, 3 runs each) and `tests/perf/live-input.mjs` (a person's real trackpad input,
+40 s in each). Results in `perf-results/desktop-vs-web-*.json` and `perf-results/live-input.json`.
+
+| Metric | Chrome 153 | Annie 3D.app (Electron 44) |
+| --- | --- | --- |
+| Frame rate, idle / drag / pan | 120 / 120 / 120 Hz | 120 / 120 / 120 Hz |
+| Interaction duration p50 (synthetic) | 24 ms | 24 ms |
+| Real pointermove: event to 2nd frame p50 / p95 | 17.3 / 19.5 ms | 17.0 / 19.7 ms |
+| Real wheel: event to 2nd frame p50 / p95 | 18.5 / 26.6 ms | 18.2 / 25.9 ms |
+| API call p50 (production) | ~22 ms | ~22 ms |
+| Static file | 28 ms (network) | 1 ms (local pack) |
+| Main process timer lateness p95 | n/a | 0.8 ms |
+
+No measured difference in rendering, input latency or network. One verified behaviour
+difference was fixed: Electron's default `acceptFirstMouse: false` swallowed the first click on an
+inactive macOS window (Chrome passes it through); the window now sets `acceptFirstMouse: true`.
+A first synthetic run showed the app slower only because Playwright had emulated a 1x pixel ratio
+for Chrome; compare both at the display's own ratio.

@@ -1,0 +1,165 @@
+{
+  "build": {
+    "commit": "94a4f49",
+    "node": "v25.5.0",
+    "date": "2026-09-24T16:28:17.008Z",
+    "platform": "darwin arm64"
+  },
+  "base": "https://annie3d.nndang2701.workers.dev",
+  "app": "/Users/nndang27/Documents/3Dads_Agent_OS/Production_system/3dads-platform/apps/desktop/release/mac-arm64/Annie 3D.app/Contents/MacOS/Annie 3D",
+  "runs": {
+    "chrome": {
+      "env": {
+        "ua": "Chrome/153.0.0.0",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "dpr": 1,
+        "size": "1440x900"
+      },
+      "idleFrameMs": {
+        "p50": 8.3,
+        "hz": 120
+      },
+      "interactions": {
+        "duration": {
+          "n": 50,
+          "p50": 24,
+          "p95": 32,
+          "max": 32
+        },
+        "inputDelay": {
+          "n": 50,
+          "p50": 1.5,
+          "p95": 4.1,
+          "max": 6.6
+        },
+        "processing": {
+          "n": 50,
+          "p50": 0.2,
+          "p95": 2.7,
+          "max": 3.6
+        },
+        "presentation": {
+          "n": 50,
+          "p50": 21.5,
+          "p95": 28.9,
+          "max": 30.3
+        }
+      },
+      "pointerQueueMs": {
+        "n": 99,
+        "p50": 5.2,
+        "p95": 8.5,
+        "max": 8.9
+      },
+      "pointerToSecondFrameMs": {
+        "n": 17,
+        "p50": 7.5,
+        "p95": 15.1,
+        "max": 39.7
+      },
+      "drag": {
+        "fps": 120,
+        "p50": 8.3,
+        "p95": 9.2,
+        "max": 9.4
+      },
+      "pan": {
+        "fps": 120,
+        "p50": 8.3,
+        "p95": 8.9,
+        "max": 9.4
+      },
+      "requests": 31
+    },
+    "app": {
+      "env": {
+        "ua": "Chrome/152.0.7977.130",
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "dpr": 2,
+        "size": "1440x837"
+      },
+      "idleFrameMs": {
+        "p50": 8.3,
+        "hz": 120
+      },
+      "interactions": {
+        "duration": {
+          "n": 17,
+          "p50": 24,
+          "p95": 48,
+          "max": 48
+        },
+        "inputDelay": {
+          "n": 17,
+          "p50": 1,
+          "p95": 3.7,
+          "max": 4.4
+        },
+        "processing": {
+          "n": 17,
+          "p50": 0.1,
+          "p95": 2.6,
+          "max": 6.9
+        },
+        "presentation": {
+          "n": 17,
+          "p50": 23.1,
+          "p95": 43.7,
+          "max": 45.3
+        }
+      },
+      "pointerQueueMs": {
+        "n": 99,
+        "p50": 1.5,
+        "p95": 8.3,
+        "max": 9.5
+      },
+      "pointerToSecondFrameMs": {
+        "n": 17,
+        "p50": 7.4,
+        "p95": 16.4,
+        "max": 17.6
+      },
+      "drag": {
+        "fps": 120,
+        "p50": 8.3,
+        "p95": 9.2,
+        "max": 9.3
+      },
+      "pan": {
+        "fps": 120,
+        "p50": 8.3,
+        "p95": 9.2,
+        "max": 9.4
+      },
+      "mainProcess": {
+        "timerLateMs": {
+          "p50": 0.7,
+          "p95": 0.8,
+          "max": 20.8
+        },
+        "blockedOver16ms": 1,
+        "requests": 55,
+        "byHost": {
+          "annie3d.nndang2701.workers.dev": 55
+        }
+      },
+      "gpuFeatureStatus": {
+        "2d_canvas": "enabled",
+        "direct_rendering_display_compositor": "disabled_off_ok",
+        "gpu_compositing": "enabled",
+        "multiple_raster_threads": "enabled_on",
+        "opengl": "enabled_on",
+        "rasterization": "enabled",
+        "raw_draw": "disabled_off_ok",
+        "skia_graphite": "enabled_on",
+        "trees_in_viz": "disabled_off",
+        "video_decode": "enabled",
+        "video_encode": "enabled",
+        "webgl": "enabled",
+        "webgpu": "enabled",
+        "webnn": "disabled_off"
+      }
+    }
+  }
+}

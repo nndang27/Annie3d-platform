@@ -110,7 +110,9 @@ async function runChrome() {
 }
 
 async function runApp() {
-  const userData = mkdtempSync(join(tmpdir(), 'annie3d-hitch-'));
+  // HITCH_USER_DATA measures a real profile (kept); otherwise a fresh temporary one (deleted).
+  const keep = process.env.HITCH_USER_DATA;
+  const userData = keep ?? mkdtempSync(join(tmpdir(), 'annie3d-hitch-'));
   const app = await electron.launch({
     executablePath: APP,
     // Extra Chromium switches for experiments, e.g. APP_ARGS=--disable-features=SkiaGraphite
@@ -169,7 +171,7 @@ async function runApp() {
   const g = await app.evaluate(({ app }) => app.getGPUFeatureStatus());
   r.gpu = `compositing=${g.gpu_compositing} graphite=${g.skia_graphite} webgl=${g.webgl} warmup=${r.warmMs}ms`;
   await app.close();
-  rmSync(userData, { recursive: true, force: true });
+  if (!keep) rmSync(userData, { recursive: true, force: true });
   return r;
 }
 

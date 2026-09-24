@@ -28,6 +28,8 @@ protocols:
     schemes: [annie3d]
 mac:
   category: public.app-category.graphics-design
+  # Icons are rendered from the website logo: node apps/desktop/build/make-icons.mjs
+  icon: build/icon.png
   target:
     - target: dmg
       arch: [universal]
@@ -37,6 +39,7 @@ mac:
   # Signing identity is picked up from the keychain when one exists; none yet.
   identity: null
 win:
+  icon: build/icon-square.png
   target:
     - target: nsis
       arch: [x64]
@@ -45,6 +48,7 @@ nsis:
   perMachine: false
   differentialPackage: true
 linux:
+  icon: build/icon-square.png
   category: Graphics
   target: [AppImage, deb]
   maintainer: Annie 3D <hello@annie3d.app>

@@ -396,7 +396,7 @@ export const ROUTES: RouteDef[] = [
     path: '/api/me',
     auth: 'user',
     feature: 'F11',
-    summary: 'Current user, workspace, credits',
+    summary: 'Current user, workspace, credits. With ?optional=1 a guest gets 200 null instead of 401.',
     response: MeResponse,
   },
   {

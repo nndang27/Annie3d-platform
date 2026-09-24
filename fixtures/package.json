@@ -1,0 +1,22 @@
+{
+  "name": "@annie3d/fixtures",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node generate.mjs",
+    "upload": "node upload.mjs"
+  },
+  "dependencies": {
+    "@annie3d/viewer-3d": "workspace:*",
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./manifest.json": "./out/manifest.json"
+  },
+  "types": "./index.ts"
+}

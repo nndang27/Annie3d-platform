@@ -22,3 +22,9 @@ apps/web/public/home
 apps/web/public/legal
 apps/web/public/_astro
 apps/web/public/sitemap-*.xml
+
+# Generated fixture pack (uploaded to R2 public bucket)
+fixtures/out/*
+!fixtures/out/manifest.json
+perf-results/lighthouse-*/
+perf-results/trace-*.json.gz

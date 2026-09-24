@@ -2,16 +2,16 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "annie3d-dev",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/dev.mjs"],
+      "port": 5173
+    },
+    {
       "name": "preview",
       "runtimeExecutable": "node",
       "runtimeArgs": ["scripts/preview-server.mjs"],
       "port": 4173
-    },
-    {
-      "name": "app-dev",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@annie3d/web", "dev"],
-      "port": 5173
     },
     {
       "name": "site-dev",

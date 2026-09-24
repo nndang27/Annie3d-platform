@@ -78,6 +78,9 @@ importers:
       '@annie3d/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@annie3d/fixtures':
+        specifier: workspace:*
+        version: link:../../fixtures
       '@annie3d/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -105,6 +108,9 @@ importers:
       idb:
         specifier: ^8.0.3
         version: 8.0.3
+      lucide-react:
+        specifier: ^1.45.0
+        version: 1.45.0(react@19.3.0)
       pg:
         specifier: ^8.23.0
         version: 8.23.0
@@ -148,6 +154,19 @@ importers:
       wrangler:
         specifier: ^4.137.0
         version: 4.137.0(@cloudflare/workers-types@5.20260924.1)(@types/node@24.13.4)
+
+  fixtures:
+    dependencies:
+      '@annie3d/viewer-3d':
+        specifier: workspace:*
+        version: link:../packages/viewer-3d
+      three:
+        specifier: ^0.186.0
+        version: 0.186.0
+    devDependencies:
+      vite:
+        specifier: ^8.3.0
+        version: 8.3.0(@types/node@24.13.4)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
 
   packages/contracts:
     dependencies:

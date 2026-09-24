@@ -1,0 +1,330 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-24T05:08:05.341Z",
+  "products": {
+    "serum": {
+      "vertical": "beauty",
+      "fixture": "serum-bottle",
+      "triangles": 3248,
+      "headline": "Meet the new formula",
+      "files": {
+        "photo.png": {
+          "bytes": 60632,
+          "sha256": "4707718b1695a4c5fa787d2e457dd0621f1bb8855dc1d2792acf170cb52217c7"
+        },
+        "photo_thumb_256.webp": {
+          "bytes": 1360,
+          "sha256": "e24e81f7fa78b5a3fde072c7d508c15bd0e615aa248956d8ae6c309e1c86ae1b"
+        },
+        "model.glb": {
+          "bytes": 91008,
+          "sha256": "3262c6504e769ab204eed12f1ef40533e02c85a14ef11fe6a1e911e2429c397b"
+        },
+        "model_poster_1024.webp": {
+          "bytes": 6020,
+          "sha256": "7b8678032c8d60573f3969d9e984d33ceb18b75d23ba7b2d6c120805de982b2e"
+        },
+        "model_thumb_256.webp": {
+          "bytes": 1358,
+          "sha256": "acaefbf2ca55c387845e5b269941acca2b53281de7f8acc3053a3dd6aca76fc9"
+        },
+        "packshot_front.png": {
+          "bytes": 54364,
+          "sha256": "1671fcfd6315ac85986047dd2ffd03105fefe004eed2da842691e8cdb8fe673a"
+        },
+        "packshot_front_thumb_256.webp": {
+          "bytes": 1256,
+          "sha256": "725b8805adfc457e78afa538632c95acbe151777c8f04f2fe5995a7801f47be5"
+        },
+        "packshot_front_512.webp": {
+          "bytes": 2322,
+          "sha256": "c60f86dc2ee8f50f66508b482caf93d5cf9621c7a35092f8f95d6e8a7f69c34b"
+        },
+        "packshot_top.png": {
+          "bytes": 64055,
+          "sha256": "90b2d9e93a330f6673757f843ba39f8e114ed8e88da4627bd58f4e15e2c49cae"
+        },
+        "packshot_top_thumb_256.webp": {
+          "bytes": 1242,
+          "sha256": "f4f5b7dce4ed54c014d04f7efeb70717eb9fb19e25ae3dd344fdcc132be1335a"
+        },
+        "packshot_top_512.webp": {
+          "bytes": 2262,
+          "sha256": "fc33a7bc3f1450a0ecbd80fddb2819f519b88c8e0f082c5a4e61f737424f5644"
+        },
+        "packshot_detail.png": {
+          "bytes": 116603,
+          "sha256": "641f3ce00e261bc455a003223ad8c7d776035819b4d4a1377ffcd59c8d4ffd30"
+        },
+        "packshot_detail_thumb_256.webp": {
+          "bytes": 2054,
+          "sha256": "1ac7ff90d8494da92d54af151a21a4a746efdd97961870d058b40d5e214d0272"
+        },
+        "packshot_detail_512.webp": {
+          "bytes": 4030,
+          "sha256": "45f88ac9a00fc28ebdbb88784537f4f371c12c1e7f9dce569c32ec059ce53ef5"
+        },
+        "packshot_three_quarter.png": {
+          "bytes": 60608,
+          "sha256": "94c4c3241b1fdffa08858824338f6eab344f34476649e85c1e506452c4a946e3"
+        },
+        "packshot_three_quarter_thumb_256.webp": {
+          "bytes": 1358,
+          "sha256": "acaefbf2ca55c387845e5b269941acca2b53281de7f8acc3053a3dd6aca76fc9"
+        },
+        "packshot_three_quarter_512.webp": {
+          "bytes": 2572,
+          "sha256": "efc5610a378c671f0a4b93f5b9a999f57c5a0b141ea3b625b099cef38bd34fc2"
+        },
+        "photo_512.webp": {
+          "bytes": 2562,
+          "sha256": "bac4bbd54523c217197ce19b0c8352065dccf5a9f2332ac00cef7fcfbfe67b1e"
+        },
+        "stage.png": {
+          "bytes": 61238,
+          "sha256": "cb3a006136b3613ff459d1391aa9b25ef46b569f2fe325f99ed3a13a42438795"
+        },
+        "stage_poster_1024.webp": {
+          "bytes": 5840,
+          "sha256": "8af828af3c12c60b6af2a412dc89a3f77e5e33d3179e9a6f49d68b8723d6443e"
+        },
+        "stage_thumb_256.webp": {
+          "bytes": 1364,
+          "sha256": "ad0d436465b53431ac7bfa6c5dbd032f95dc23423941cc52bbc82ee0e9622949"
+        },
+        "turntable.mp4": {
+          "bytes": 13879,
+          "sha256": "a8f6aed52ebee6e3ee400ee040ecc5471840f4b01d2bfd270dca6099dcfdea85"
+        },
+        "music.m4a": {
+          "bytes": 151729,
+          "sha256": "f7bc9f00e4f7e1563d940f0dd99732664224c2e51c3ae1e7e654bb453e8df1bb"
+        },
+        "ad_9x16.mp4": {
+          "bytes": 226385,
+          "sha256": "ac057eb9cd85d29c796ed70c2b86d1702d8e97fb58d3fae613823687d05160c4"
+        },
+        "ad_poster_540.webp": {
+          "bytes": 10134,
+          "sha256": "828939aedc14f515e9714f82488f4998e8c67f3f35468706c4a3fbdaa7a9a4f9"
+        }
+      }
+    },
+    "headphones": {
+      "vertical": "electronics",
+      "fixture": "headphones",
+      "triangles": 15744,
+      "headline": "Engineered to the last screw",
+      "files": {
+        "photo.png": {
+          "bytes": 106773,
+          "sha256": "36186d1c4f70c3ee9b6ab3a11fb164718e73ef2741221b241fc36129c3d0fc91"
+        },
+        "photo_thumb_256.webp": {
+          "bytes": 1790,
+          "sha256": "08e855ecc5680d1b6d4840d76888c0b45ea8d8e9461e83ae2d924cad76215bfa"
+        },
+        "model.glb": {
+          "bytes": 375544,
+          "sha256": "23e096aaf0dfe14e901a6a1e1676402e10ace508d13767e2acd49cda9b362d39"
+        },
+        "model_poster_1024.webp": {
+          "bytes": 7930,
+          "sha256": "4fd47cf5de8952c8b1ab0bb6e9d4d094a697d6822b81fdfb208104fbd5bb6838"
+        },
+        "model_thumb_256.webp": {
+          "bytes": 1858,
+          "sha256": "741bc403ec652bbaafc562eba5876985c6f172be01f728b0b27738fafcad6da8"
+        },
+        "packshot_front.png": {
+          "bytes": 101022,
+          "sha256": "69198ce73439ba5c6cc9f1c2195fdf512b7aff25f0971502de26a64ae5d63a38"
+        },
+        "packshot_front_thumb_256.webp": {
+          "bytes": 1842,
+          "sha256": "5748671eb8ac0aca27f622139e420f8724bdb1c828057afb3ff39b558022d6c0"
+        },
+        "packshot_front_512.webp": {
+          "bytes": 3490,
+          "sha256": "febc4fc914afe66cefe1901746761836012cf9de60e84b7286053d0e12aea315"
+        },
+        "packshot_top.png": {
+          "bytes": 104782,
+          "sha256": "8de3eefffd2bab1aed21b995615f097d621ddd4ece8a3a08f1c0e4b8325791fd"
+        },
+        "packshot_top_thumb_256.webp": {
+          "bytes": 1576,
+          "sha256": "16f9c5871fb5761b789bd014b3fe8b779fe69de435c520d4bffc76d3b422bccf"
+        },
+        "packshot_top_512.webp": {
+          "bytes": 2906,
+          "sha256": "25b9cec0340e052c60f27dbc7a4ac67f432750431a29929632c730aaab1669a1"
+        },
+        "packshot_detail.png": {
+          "bytes": 236077,
+          "sha256": "1ca368bd2b9599cbf8ce9f5bbae16fd3868f759da4fe01bcc41b3df2c0d4fdce"
+        },
+        "packshot_detail_thumb_256.webp": {
+          "bytes": 2870,
+          "sha256": "35b088182f8b04be2325d98a2b4c4ad7fe510a7322e2b38def635a4ceb83665b"
+        },
+        "packshot_detail_512.webp": {
+          "bytes": 5604,
+          "sha256": "030f036d2fe233ab8e82a61146860bc9365f3c978c02e9dc3255903ea1382c8c"
+        },
+        "packshot_three_quarter.png": {
+          "bytes": 100329,
+          "sha256": "3179f072c8d778220ca7c657c3e929e41230a65ca31c85a5a0fd29814bafc147"
+        },
+        "packshot_three_quarter_thumb_256.webp": {
+          "bytes": 1858,
+          "sha256": "741bc403ec652bbaafc562eba5876985c6f172be01f728b0b27738fafcad6da8"
+        },
+        "packshot_three_quarter_512.webp": {
+          "bytes": 3466,
+          "sha256": "dc839a26314668065c64dc814f383f6166763fa9d8eb9ede8fced661d683b38a"
+        },
+        "photo_512.webp": {
+          "bytes": 3450,
+          "sha256": "4d8181ff3444eaf0ed0f7bf1cefa8da3209825e7efb8b7fc6e7f9507176805d3"
+        },
+        "stage.png": {
+          "bytes": 100464,
+          "sha256": "e2f8c0fa67446db5d4887e03298a2c00fc64b1e2eff560364e6b7aa9e89301f3"
+        },
+        "stage_poster_1024.webp": {
+          "bytes": 4550,
+          "sha256": "8f1b0edde1d19e73eb6d6dce1623ce8ec0fbff69571aa23004d001ae281c0903"
+        },
+        "stage_thumb_256.webp": {
+          "bytes": 1098,
+          "sha256": "0da88d4378fec9b4f9bd43dc78981b65b9c08838d93e0635b1a1e0be548c2d27"
+        },
+        "turntable.mp4": {
+          "bytes": 92063,
+          "sha256": "620181987553b368244521358a8514556984ed5afb7eb286274162fc49a96f54"
+        },
+        "music.m4a": {
+          "bytes": 156456,
+          "sha256": "aef24c1c14fb6d262d1226ef449c0c795e596c90d151622e05dfbffe8ada16cb"
+        },
+        "ad_9x16.mp4": {
+          "bytes": 242265,
+          "sha256": "91c88e7998659cb644da76937c635d81b77ea6ed5682ee387e24b29cf3686fa1"
+        },
+        "ad_poster_540.webp": {
+          "bytes": 5884,
+          "sha256": "bf7ab061f99110733bb5d01ea2a86502abede6054c5d1cc401f485de43c8361d"
+        }
+      }
+    },
+    "ring": {
+      "vertical": "jewelry",
+      "fixture": "ring",
+      "triangles": 8544,
+      "headline": "Made to be noticed",
+      "files": {
+        "photo.png": {
+          "bytes": 132147,
+          "sha256": "50f5b817dea7cfad31da6b01f55ee687f2675308b04fa6cc20af9c22f2a0af7c"
+        },
+        "photo_thumb_256.webp": {
+          "bytes": 2536,
+          "sha256": "7e7b745feeaba35311ba515cb3f6e770d46ef14b366f50141c0583e91b475e77"
+        },
+        "model.glb": {
+          "bytes": 197388,
+          "sha256": "14f3d778ccd63d75ca4295504fba10a5fe2b5cb942a162f799269158c4fb4888"
+        },
+        "model_poster_1024.webp": {
+          "bytes": 14792,
+          "sha256": "dde82e26ba9da359af7e7d23ffdbdd6b25a0b073bfa654631230d8645304811e"
+        },
+        "model_thumb_256.webp": {
+          "bytes": 2452,
+          "sha256": "23eff87f585152f7b9cb5516eace5090ac141d171a60bcccfb35955cfa56697a"
+        },
+        "packshot_front.png": {
+          "bytes": 131447,
+          "sha256": "3c9830fd40ee575bbbd71014b3fed2808f754edee543c3c3213c93f2d3e70841"
+        },
+        "packshot_front_thumb_256.webp": {
+          "bytes": 2540,
+          "sha256": "6dcfb4281f7af42c5240ad4e1aba243c76f1368cb59b0a6e04d46357c00e2a7b"
+        },
+        "packshot_front_512.webp": {
+          "bytes": 5782,
+          "sha256": "e439f274aef3ca2618d282b7b58ddf04e568728de9c7f8d2f8f2ad3738aedb90"
+        },
+        "packshot_top.png": {
+          "bytes": 143332,
+          "sha256": "b95dba2bcfe2383e33e506767ddede68bb6c5c506f0aced62548de44dec783cb"
+        },
+        "packshot_top_thumb_256.webp": {
+          "bytes": 2196,
+          "sha256": "7b523b91d54bc5c39924dd35e9eef247e636a9d6a726e6543dbb31369c17652b"
+        },
+        "packshot_top_512.webp": {
+          "bytes": 5004,
+          "sha256": "b7777dad9dac3451ab0e709c4e2ee306e0dba9333e4121684e7fe1b2cf94a8b1"
+        },
+        "packshot_detail.png": {
+          "bytes": 304270,
+          "sha256": "4d9c936f95e0f72295dc052bdef7dde20e28b33caff63c1a031eef641d44200a"
+        },
+        "packshot_detail_thumb_256.webp": {
+          "bytes": 4558,
+          "sha256": "77bf3f142cc302ea04b776c2c1857fae6e7e38468b9e2ab018b7e7625d380670"
+        },
+        "packshot_detail_512.webp": {
+          "bytes": 10632,
+          "sha256": "5d9241053c9eb3bd4532a13cbad0359a54bf3854f1f05826dd163308b9854526"
+        },
+        "packshot_three_quarter.png": {
+          "bytes": 135183,
+          "sha256": "dec76ece3e990884a53f406870138d0b8214ddbf18486dcb037ac8e0109b6bb3"
+        },
+        "packshot_three_quarter_thumb_256.webp": {
+          "bytes": 2452,
+          "sha256": "23eff87f585152f7b9cb5516eace5090ac141d171a60bcccfb35955cfa56697a"
+        },
+        "packshot_three_quarter_512.webp": {
+          "bytes": 5586,
+          "sha256": "83508c43cca0bc6641afe4fde2c63731c800d90f674df78a264ac15dfeccf024"
+        },
+        "photo_512.webp": {
+          "bytes": 5574,
+          "sha256": "ba7b22888fdcc9c1f71bdc493e1b2df84a6252807e01ba364533e6a66f241fff"
+        },
+        "stage.png": {
+          "bytes": 135652,
+          "sha256": "ec31630cd2bf30607bd264a0c14d2f26e247d3f92981558702bba4ed0d4f6a30"
+        },
+        "stage_poster_1024.webp": {
+          "bytes": 15032,
+          "sha256": "573fcf709efe28c60e35b01805638954d152b3807dfca9bc611d1be2597941d2"
+        },
+        "stage_thumb_256.webp": {
+          "bytes": 2482,
+          "sha256": "2694fd70c526af407c46a93b8b27ddfe4c5e29836a63a188d2cba5c04243b0e0"
+        },
+        "turntable.mp4": {
+          "bytes": 180819,
+          "sha256": "5c40fcedaff165e9b71c5a76436dbd7adc56b53135877b4af4fee9d3b1feb02b"
+        },
+        "music.m4a": {
+          "bytes": 154033,
+          "sha256": "89cb1480d256f62181ccb0e75da215d970e90c92719698414a5134d179a7f66c"
+        },
+        "ad_9x16.mp4": {
+          "bytes": 572179,
+          "sha256": "81cc29347c31be181c499c6cab5c7c87a6812fd6682352088c76403dda349609"
+        },
+        "ad_poster_540.webp": {
+          "bytes": 19436,
+          "sha256": "96caa884f8e19e3b55111ba9358a017629bbd094ea83eb1639a52fc7f9825249"
+        }
+      }
+    }
+  }
+}

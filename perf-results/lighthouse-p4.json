@@ -1,0 +1,31 @@
+{
+  "url": "http://localhost:4173/",
+  "fetchTime": "2026-09-24T05:13:33.153Z",
+  "lighthouse": "12.8.2",
+  "preset": "desktop",
+  "scores": {
+    "performance": 0.97,
+    "accessibility": 1,
+    "best-practices": 1,
+    "seo": 1
+  },
+  "metrics": {
+    "first-contentful-paint": "0.8\u00a0s",
+    "largest-contentful-paint": "1.1\u00a0s",
+    "total-blocking-time": "0\u00a0ms",
+    "cumulative-layout-shift": "0.001",
+    "speed-index": "0.8\u00a0s"
+  },
+  "open": [
+    "prioritize-lcp-image",
+    "render-blocking-resources",
+    "unused-css-rules",
+    "unused-javascript",
+    "uses-text-compression",
+    "uses-responsive-images",
+    "image-delivery-insight",
+    "lcp-discovery-insight",
+    "network-dependency-tree-insight",
+    "render-blocking-insight"
+  ]
+}

@@ -4,6 +4,9 @@
 import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 
+// Run from the repo root regardless of the caller's cwd (launch.json may start us elsewhere).
+process.chdir(new URL('..', import.meta.url).pathname);
+
 const vars = Object.fromEntries(
   readFileSync('.dev.vars', 'utf8')
     .split('\n')
@@ -17,13 +20,16 @@ const u = new URL(raw);
 u.searchParams.delete('channel_binding');
 const db = u.toString();
 const env = { ...process.env, CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE: db };
+// `node scripts/dev.mjs --preview` serves the production build (vite preview runs the built Worker).
+const preview = process.argv.includes('--preview');
 const args = [
   '--filter',
   '@annie3d/web',
   'exec',
   'vite',
+  ...(preview ? ['preview'] : []),
   '--port',
-  process.env.PORT ?? '5173',
+  process.env.PORT ?? (preview ? '4173' : '5173'),
   '--strictPort',
 ];
 const child = spawn('pnpm', args, { env, stdio: 'inherit' });

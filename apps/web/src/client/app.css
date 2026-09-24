@@ -1,0 +1,836 @@
+@import "@annie3d/ui/tokens.css";
+@import "@annie3d/ui/base.css";
+/* base.css only: React Flow's full theme is not needed (xyflow docs: base.css for custom styling). */
+@import "@xyflow/react/dist/base.css";
+
+:root {
+  --canvas-bg: #f6f6f4;
+  --dot: #d6d6d0;
+  --pill-bg: #ffffff;
+  --pill-border: #e4e4df;
+  --node-w: 300px;
+  --port-image: #378add;
+  --port-text: #888780;
+  --port-model3d: #7f77dd;
+  --port-scene: #1d9e75;
+  --port-video: #d85a30;
+  --port-audio: #d4537e;
+  --port-file: #5f5e5a;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--canvas-bg);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------- shell */
+.shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+.shell.agent-closed {
+  grid-template-columns: 1fr 0;
+}
+.canvas-wrap {
+  position: relative;
+  min-width: 0;
+}
+.pill {
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  border-radius: 12px;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.04),
+    0 4px 12px rgb(0 0 0 / 0.04);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  font-size: 13px;
+}
+.pill button,
+.pill a {
+  white-space: nowrap;
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+.pill button:hover,
+.pill a:hover {
+  background: var(--bg-hover);
+}
+.pill button[aria-pressed="true"] {
+  background: var(--bg-subtle);
+}
+.pill .sep {
+  width: 1px;
+  height: 20px;
+  background: var(--pill-border);
+  margin: 0 2px;
+}
+.pill button.primary {
+  background: var(--action-primary);
+  color: #fff;
+}
+.pill button.primary:hover {
+  background: var(--action-primary-hover);
+}
+:where(button, a, input, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.topbar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+.topbar > * {
+  pointer-events: auto;
+}
+.topbar .spacer {
+  flex: 1;
+}
+.logo-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #17191d;
+  color: #fff;
+  display: inline-grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+.title-input {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-weight: 500;
+  padding: 6px 8px;
+  border-radius: 8px;
+  width: 16ch;
+}
+.title-input:hover {
+  background: var(--bg-hover);
+}
+.save-state {
+  font-size: 12px;
+  color: var(--success);
+  padding: 0 8px;
+}
+.save-state[data-state="saving"] {
+  color: var(--text-muted);
+}
+.save-state[data-state="offline"],
+.save-state[data-state="error"] {
+  color: var(--warning);
+}
+.credits {
+  background: var(--warning-soft);
+  color: #7a4d00;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.toolbar {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+.toolbar svg {
+  width: 18px;
+  height: 18px;
+}
+
+.hint {
+  position: absolute;
+  bottom: 20px;
+  left: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  z-index: 5;
+}
+
+/* ---------------------------------------------------------------- react flow */
+.react-flow {
+  --xy-background-color: var(--canvas-bg);
+}
+.react-flow__pane {
+  cursor: default;
+}
+.react-flow__pane.draggable {
+  cursor: grab;
+}
+.react-flow__edge-path {
+  stroke-width: 1.75;
+}
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke-width: 3;
+}
+.react-flow__connection-path {
+  stroke: var(--text-muted);
+  stroke-width: 1.75;
+  stroke-dasharray: 5 4;
+}
+.react-flow__handle {
+  width: 11px;
+  height: 11px;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08);
+}
+.react-flow__handle.connectingfrom,
+.react-flow__handle.valid {
+  transform: scale(1.35);
+}
+.react-flow__node {
+  font-size: 13px;
+}
+.react-flow__node.selected .node {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 6px 20px rgb(0 0 0 / 0.08);
+}
+
+/* ---------------------------------------------------------------- node */
+.node {
+  width: var(--node-w);
+  background: #fff;
+  border: 1px solid var(--pill-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
+}
+.node-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.node-head .label {
+  color: var(--text-primary);
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.node-head .ver {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.node-head .ver button {
+  border: 0;
+  background: transparent;
+  padding: 0 3px;
+  cursor: pointer;
+  color: inherit;
+  border-radius: 4px;
+}
+.node-head .ver button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.badge-stale {
+  background: var(--warning-soft);
+  color: #7a4d00;
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 11px;
+}
+.node-preview {
+  margin: 0 10px;
+  height: 168px;
+  border-radius: 8px;
+  background: var(--bg-subtle);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  position: relative;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+/* Absolute fill: a percentage height inside an auto-sized grid area resolves to the image's intrinsic height. */
+.node-preview > img,
+.node-preview > video,
+.node-preview > .grid4 {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.node-preview img,
+.node-preview video {
+  object-fit: contain;
+  display: block;
+}
+.node-preview.contain img,
+.node-preview.contain video {
+  object-fit: contain;
+}
+.node-preview .grid4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+.node-preview .grid4 img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+}
+.node-preview .grid4 {
+  grid-template-rows: 1fr 1fr;
+}
+.node-preview .open3d {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  background: rgb(23 25 29 / 0.82);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.node:hover .open3d,
+.open3d:focus-visible {
+  opacity: 1;
+}
+.node-preview .progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--accent-soft);
+}
+.node-preview .progress > i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 200ms linear;
+}
+.node-preview .stage-label {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  background: rgb(255 255 255 / 0.92);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.drop-slot {
+  border: 1.5px dashed var(--border-control);
+  background: transparent;
+}
+.drop-slot.dragover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.node-body {
+  padding: 8px 10px 10px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+.prompt {
+  flex: 1;
+  min-width: 0;
+  min-height: 34px;
+  max-height: 96px;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  line-height: 1.4;
+  border-radius: 6px;
+  padding: 4px 6px;
+  cursor: text;
+  white-space: pre-wrap;
+}
+.prompt:hover {
+  background: var(--bg-hover);
+}
+.prompt.empty {
+  color: var(--text-muted);
+}
+textarea.prompt {
+  border: 1px solid var(--accent);
+  resize: none;
+  font: inherit;
+  color: var(--text-primary);
+  background: #fff;
+  min-height: 60px;
+  max-height: 160px;
+  overflow: auto;
+}
+.run-btn {
+  border: 1px solid var(--border-control);
+  background: #fff;
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.run-btn:hover {
+  background: var(--bg-hover);
+}
+.run-btn.primary {
+  background: #17191d;
+  color: #fff;
+  border-color: #17191d;
+}
+.node-foot {
+  position: absolute;
+  left: 10px;
+  top: calc(100% + 6px);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition:
+    opacity 120ms,
+    transform 120ms;
+  pointer-events: none;
+}
+.react-flow__node.selected .node-foot,
+.react-flow__node:hover .node-foot {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.node-foot .pill {
+  font-size: 12px;
+  padding: 2px;
+}
+.node-foot select {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  padding: 4px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.node-foot select:hover {
+  background: var(--bg-hover);
+}
+.port-label {
+  position: absolute;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.react-flow__node:hover .port-label,
+.react-flow__node.selected .port-label {
+  opacity: 1;
+}
+
+/* LOD: medium hides the editor and footer; compact is a coloured card (tldraw shape LOD). */
+.node.lod-medium .node-body .prompt {
+  max-height: 36px;
+}
+.node.lod-medium .node-foot {
+  display: none;
+}
+/* Compact cards counter-scale by the settled zoom (set on :root by Canvas) so titles stay readable. */
+.node.lod-compact {
+  --k: calc(1 / var(--settled-zoom, 0.25));
+  padding: calc(6px * var(--k));
+  min-height: 120px;
+  box-sizing: border-box;
+}
+.node.lod-compact .compact-title {
+  font-size: min(calc(15px * var(--k)), 72px);
+  font-weight: 600;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.node.lod-compact .compact-kind {
+  font-size: min(calc(11px * var(--k)), 52px);
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------- agent dock */
+.agent {
+  width: 340px;
+  height: 100%;
+  background: #fff;
+  border-left: 1px solid var(--pill-border);
+  display: flex;
+  flex-direction: column;
+}
+.agent header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--pill-border);
+  font-weight: 500;
+}
+.agent .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+}
+.agent .msgs {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+}
+.agent .empty {
+  margin: auto;
+  color: var(--text-muted);
+  text-align: center;
+}
+.agent .composer {
+  margin: 12px;
+  border: 1px solid var(--pill-border);
+  border-radius: 12px;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+.agent .composer textarea {
+  border: 0;
+  resize: none;
+  font: inherit;
+  min-height: 56px;
+  outline: none;
+}
+.agent .composer .row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.agent .composer .row select {
+  border: 0;
+  background: var(--bg-subtle);
+  border-radius: 8px;
+  padding: 4px 6px;
+  font: inherit;
+}
+.agent .composer .send {
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 0;
+  background: #17191d;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------- popovers */
+.popover {
+  position: fixed;
+  z-index: 50;
+  background: #fff;
+  border: 1px solid var(--pill-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-popover);
+  min-width: 240px;
+  padding: 6px;
+  font-size: 13px;
+}
+.popover input[type="search"] {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border-control);
+  border-radius: 8px;
+  padding: 7px 9px;
+  font: inherit;
+  margin-bottom: 6px;
+}
+.popover .group {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 6px 8px 2px;
+  text-transform: none;
+}
+.popover button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  padding: 7px 8px;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.popover button:hover,
+.popover button[aria-selected="true"] {
+  background: var(--bg-hover);
+}
+.popover kbd {
+  margin-left: auto;
+  font: 11px var(--font-mono);
+  color: var(--text-muted);
+}
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+.toasts {
+  position: fixed;
+  bottom: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  gap: 8px;
+  z-index: 60;
+}
+.toast {
+  background: #17191d;
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  box-shadow: var(--shadow-floating);
+}
+.toast[data-tone="error"] {
+  background: #8a1f1f;
+}
+
+/* ---------------------------------------------------------------- chrome extras */
+.logo-link {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 8px;
+}
+.avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  background: var(--bg-subtle);
+  font-size: 12px;
+  font-weight: 600;
+  object-fit: cover;
+}
+.pill button.credits {
+  background: var(--warning-soft);
+  color: #7a4d00;
+  font-variant-numeric: tabular-nums;
+}
+.pill button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.pill button:focus-visible,
+.popover button:focus-visible,
+.run-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.icon-btn {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: inline-grid;
+  place-items: center;
+}
+.icon-btn:hover {
+  background: var(--bg-hover);
+}
+.splash {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+.agent .msg {
+  max-width: 92%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+.agent .msg-user {
+  align-self: flex-end;
+  background: #17191d;
+  color: #fff;
+}
+.agent .msg-agent {
+  align-self: flex-start;
+  background: var(--bg-subtle);
+}
+.agent .typing {
+  color: var(--text-muted);
+}
+.agent .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.chip,
+.op-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 11.5px;
+}
+.op-chip {
+  margin: 6px 4px 0 0;
+  background: #fff;
+  border: 1px solid var(--pill-border);
+  color: var(--text-secondary);
+}
+.agent .composer .send:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.modal {
+  border: 0;
+  border-radius: 16px;
+  padding: 24px;
+  width: min(380px, calc(100vw - 32px));
+  box-shadow: var(--shadow-popover);
+}
+.modal::backdrop {
+  background: rgb(15 17 20 / 0.35);
+}
+.modal h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+.modal p {
+  margin: 0 0 18px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.btn-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid var(--border-control);
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn-google:hover {
+  background: var(--bg-hover);
+}
+.btn-link {
+  display: block;
+  margin: 10px auto 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.editor-loading {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(255 255 255 / 0.6);
+  z-index: 70;
+}
+.editor {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: #fff;
+}
+@media (max-width: 1280px) {
+  .toolbar .hide-md {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr 0;
+  }
+  .agent {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    width: auto;
+    height: 55vh;
+    border-left: 0;
+    border-top: 1px solid var(--pill-border);
+    border-radius: 16px 16px 0 0;
+    z-index: 40;
+  }
+  .topbar .hide-sm {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

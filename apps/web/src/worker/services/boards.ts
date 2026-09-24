@@ -246,8 +246,16 @@ export async function persistDiff(
   before: Graph,
   after: Graph,
   touched: Set<string>,
+  deferredVersions: Map<string, string> = new Map(),
 ) {
-  const upserts = [...touched].map((id) => after.nodes.get(id)).filter((n): n is NodeRecord => !!n);
+  const upserts = [...touched]
+    .map((id) => after.nodes.get(id))
+    .filter((n): n is NodeRecord => !!n)
+    .map((n) =>
+      deferredVersions.has(n.id)
+        ? { ...n, currentVersionId: before.nodes.get(n.id)?.currentVersionId ?? null }
+        : n,
+    );
   const removed = [...touched].filter((id) => before.nodes.has(id) && !after.nodes.has(id));
   if (upserts.length) {
     await db
@@ -371,12 +379,87 @@ export async function applyBatch(
       );
       if (foreign.rows.length) throw httpError(409, 'conflict', 'Node id belongs to another board');
     }
-    await persistDiff(tx, boardId, workspaceId, userId, graph, result.graph, result.touched);
+    // Upload versions: write the node first (old version pointer), insert the version, then point
+    // the node at it — satisfies both the FK and the "current version belongs to node" trigger.
+    const deferred = uploadVersionTargets(graph, ops);
+    await persistDiff(tx, boardId, workspaceId, userId, graph, result.graph, result.touched, deferred);
+    await createUploadVersions(tx, boardId, workspaceId, userId, result.graph, ops);
+    for (const [nodeId, versionId] of deferred) {
+      await tx
+        .update(boardNodes)
+        .set({ currentVersionId: versionId })
+        .where(and(eq(boardNodes.id, nodeId), eq(boardNodes.boardId, boardId)));
+    }
     const seq = Number(row.seq) + 1;
     await tx.update(boards).set({ seq }).where(eq(boards.id, boardId));
     await tx.insert(boardOps).values({ boardId, seq, opId, actorId: userId, ops });
     return { seq, duplicate: false };
   });
+}
+
+/**
+ * Input nodes (photo, upload3d, audio) get a version per attached file so history, previews and
+ * cache keys work the same as for generated outputs. The client picks the version id (UUIDv7)
+ * and sends it with the settings change; the server verifies the asset is in this workspace.
+ */
+function uploadVersionTargets(graph: Graph, ops: GraphOp[]): Map<string, string> {
+  const m = new Map<string, string>();
+  const created = new Map(
+    ops
+      .filter((o) => o.type === 'node.create')
+      .map((o) => [
+        (o as Extract<GraphOp, { type: 'node.create' }>).node.id,
+        (o as Extract<GraphOp, { type: 'node.create' }>).node.kind,
+      ]),
+  );
+  for (const op of ops) {
+    if (op.type !== 'node.update' || !op.patch.currentVersionId) continue;
+    const kind = graph.nodes.get(op.id)?.kind ?? created.get(op.id);
+    if (kind && ['photo', 'upload3d', 'audio'].includes(kind)) m.set(op.id, op.patch.currentVersionId);
+  }
+  return m;
+}
+
+async function createUploadVersions(
+  tx: Db,
+  boardId: string,
+  workspaceId: string,
+  userId: string,
+  graph: Graph,
+  ops: GraphOp[],
+) {
+  for (const op of ops) {
+    if (op.type !== 'node.update' || !op.patch.currentVersionId) continue;
+    const node = graph.nodes.get(op.id);
+    if (!node || !['photo', 'upload3d', 'audio'].includes(node.kind)) continue;
+    const assetId = op.patch.settings?.assetId as string | undefined;
+    if (!assetId) throw httpError(400, 'bad_request', 'Upload versions need settings.assetId');
+    const asset = await tx.query.assets.findFirst({
+      where: (t, { and, eq }) =>
+        and(eq(t.id, assetId), eq(t.workspaceId, workspaceId), eq(t.status, 'ready')),
+    });
+    if (!asset) throw httpError(400, 'bad_request', 'Unknown asset');
+    const existing = await tx.query.nodeVersions.findFirst({
+      where: (t, { eq }) => eq(t.id, op.patch.currentVersionId!),
+    });
+    if (existing) continue; // retried batch
+    const max = await tx.execute<{ n: number }>(
+      sql`SELECT coalesce(max(version_no), 0)::int AS n FROM node_versions WHERE node_id = ${node.id}`,
+    );
+    await tx.insert(nodeVersions).values({
+      id: op.patch.currentVersionId,
+      nodeId: node.id,
+      boardId,
+      workspaceId,
+      versionNo: (max.rows[0]?.n ?? 0) + 1,
+      source: 'upload',
+      outputAssetId: asset.id,
+      createdBy: userId,
+    });
+    await tx
+      .insert(nodeVersionOutputs)
+      .values({ versionId: op.patch.currentVersionId, assetId: asset.id, role: 'primary', position: 0 });
+  }
 }
 
 export { sha256Hex };

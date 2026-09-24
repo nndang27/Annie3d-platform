@@ -17,7 +17,7 @@ import {
   Vector3,
 } from 'three';
 
-export type FixtureId = 'serum-bottle' | 'headphones' | 'smart-speaker';
+export type FixtureId = 'serum-bottle' | 'headphones' | 'smart-speaker' | 'ring';
 export type Finish = 'matte' | 'satin' | 'gloss';
 
 export interface FixturePart {
@@ -392,7 +392,85 @@ export function buildFixture(id: FixtureId, color: string, finish: Finish): Buil
       return buildHeadphones(color, finish);
     case 'smart-speaker':
       return buildSmartSpeaker(color, finish);
+    case 'ring':
+      return buildRing(color, finish);
   }
 }
 
-export const FIXTURE_IDS: FixtureId[] = ['serum-bottle', 'headphones', 'smart-speaker'];
+export const FIXTURE_IDS: FixtureId[] = ['serum-bottle', 'headphones', 'smart-speaker', 'ring'];
+
+/**
+ * Solitaire ring for the jewelry line: torus band, brilliant-cut stone (lathe profile of
+ * crown + pavilion, 16 facets) with physical transmission, and four prongs.
+ */
+function buildRing(color: string, finish: Finish): BuiltFixture {
+  const root = new Group();
+  const parts: FixturePart[] = [];
+  let triangles = 0;
+  const metal = new MeshPhysicalMaterial({ color: new Color(color), metalness: 1, roughness: 0.18 });
+  applyFinish(metal, finish);
+  metal.metalness = 1;
+  const bandGeo = new TorusGeometry(0.42, 0.055, 32, 128);
+  const band = new Mesh(bandGeo, metal);
+  band.position.y = 0.42;
+  band.castShadow = true;
+  root.add(band);
+  parts.push({ id: 'band', mesh: band, colorable: true });
+  triangles += tri(bandGeo);
+  // Brilliant cut profile: table, crown, girdle, pavilion to culet.
+  const cut: [number, number][] = [
+    [0, 0],
+    [0.2, 0.2],
+    [0.21, 0.215],
+    [0.16, 0.29],
+    [0.1, 0.305],
+    [0, 0.305],
+  ];
+  const gemGeo = new LatheGeometry(
+    cut.map(([r, y]) => new Vector2(r, y)),
+    16,
+  );
+  const gemMat = new MeshPhysicalMaterial({
+    color: new Color('#ffffff'),
+    metalness: 0,
+    roughness: 0,
+    transmission: 1,
+    ior: 2.42,
+    thickness: 0.3,
+    dispersion: 5,
+    flatShading: true,
+  });
+  const gem = new Mesh(gemGeo, gemMat);
+  gem.position.y = 0.42 + 0.42 - 0.02;
+  gem.castShadow = true;
+  root.add(gem);
+  parts.push({ id: 'stone', mesh: gem, colorable: false });
+  triangles += tri(gemGeo);
+  const prongGeo = new CylinderGeometry(0.018, 0.022, 0.28, 12);
+  for (let i = 0; i < 4; i++) {
+    const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
+    const prong = new Mesh(prongGeo, metal);
+    prong.position.set(Math.cos(a) * 0.17, 0.42 + 0.42 + 0.1, Math.sin(a) * 0.17);
+    prong.rotation.z = Math.cos(a) * 0.18;
+    prong.rotation.x = -Math.sin(a) * 0.18;
+    prong.castShadow = true;
+    root.add(prong);
+    parts.push({ id: `prong-${i + 1}`, mesh: prong, colorable: true });
+    triangles += tri(prongGeo);
+  }
+  return {
+    id: 'ring',
+    root,
+    parts,
+    triangles,
+    radius: 0.62,
+    height: 1.15,
+    dispose() {
+      bandGeo.dispose();
+      gemGeo.dispose();
+      prongGeo.dispose();
+      metal.dispose();
+      gemMat.dispose();
+    },
+  };
+}

@@ -13,7 +13,11 @@
       "!**/test-results",
       "!**/perf-results",
       "!fixtures/fixture-report.json",
-      "!**/*.astro"
+      "!**/*.astro",
+      "!apps/web/public/home",
+      "!apps/web/public/legal",
+      "!apps/web/public/_astro",
+      "!fixtures/out"
     ]
   },
   "formatter": {
@@ -31,7 +35,8 @@
       },
       "style": {
         "noNonNullAssertion": "off",
-        "useTemplate": "off"
+        "useTemplate": "off",
+        "noDescendingSpecificity": "off"
       },
       "complexity": {
         "noForEach": "off",
@@ -61,5 +66,17 @@
     "parser": {
       "tailwindDirectives": true
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["tests/**", "**/*.test.ts", "**/*.test.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ]
 }

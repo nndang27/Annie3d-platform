@@ -1,0 +1,290 @@
+import {
+  canConnect,
+  type EdgeRecord,
+  NODE_DEFS,
+  type NodeRecord,
+  newId,
+  PORT_COLOR,
+} from '@annie3d/contracts';
+import {
+  Background,
+  BackgroundVariant,
+  type Connection,
+  type Edge,
+  type Node,
+  type NodeChange,
+  type OnConnectEnd,
+  type OnConnectStart,
+  ReactFlow,
+  useReactFlow,
+  type Viewport,
+} from '@xyflow/react';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { throttleRAF } from '../lib/throttleRaf';
+import { dispatch, setPositionsLocal, useBoard } from '../store/board';
+import { lodFor, useUi } from '../store/ui';
+import { FlowNode } from './FlowNode';
+
+// Defined once at module level (React Flow custom-nodes guide: prevents re-mounting every render).
+const nodeTypes = { annie: FlowNode };
+
+/** Stable React Flow node objects: rebuilt only when the record or selection changes. */
+const rfNodeCache = new WeakMap<NodeRecord, Node>();
+function toRfNode(n: NodeRecord, selected: boolean): Node {
+  const hit = rfNodeCache.get(n);
+  if (hit && hit.selected === selected) return hit;
+  const rf: Node = { id: n.id, type: 'annie', position: { x: n.x, y: n.y }, data: {}, selected };
+  rfNodeCache.set(n, rf);
+  return rf;
+}
+const rfEdgeCache = new WeakMap<EdgeRecord, Edge>();
+function toRfEdge(e: EdgeRecord, color: string): Edge {
+  const hit = rfEdgeCache.get(e);
+  if (hit) return hit;
+  const rf: Edge = {
+    id: e.id,
+    source: e.source,
+    sourceHandle: 'out',
+    target: e.target,
+    targetHandle: e.targetPort,
+    style: { stroke: color },
+  };
+  rfEdgeCache.set(e, rf);
+  return rf;
+}
+
+export function Canvas() {
+  const graph = useBoard((s) => s.graph);
+  const selected = useUi((s) => s.selected);
+  const tool = useUi((s) => s.tool);
+  const rf = useReactFlow();
+  const dragStart = useRef(new Map<string, { x: number; y: number }>());
+  const connectFrom = useRef<{ nodeId: string } | null>(null);
+
+  const nodes = useMemo(
+    () =>
+      [...graph.nodes.values()]
+        .sort((a, b) => (a.zKey < b.zKey ? -1 : 1))
+        .map((n) => toRfNode(n, selected.has(n.id))),
+    [graph.nodes, selected],
+  );
+  const edges = useMemo(
+    () =>
+      [...graph.edges.values()].map((e) => {
+        const src = graph.nodes.get(e.source);
+        const out = src ? NODE_DEFS[src.kind].output?.type : undefined;
+        return toRfEdge(e, out ? PORT_COLOR[out] : '#999');
+      }),
+    [graph.edges, graph.nodes],
+  );
+
+  // Drag frames: coalesce to one store update per animation frame (Excalidraw throttleRAF).
+  const moveLocal = useMemo(
+    () => throttleRAF((moves: { id: string; x: number; y: number }[]) => setPositionsLocal(moves)),
+    [],
+  );
+
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      const moves: { id: string; x: number; y: number }[] = [];
+      let sel: Set<string> | null = null;
+      const removed: string[] = [];
+      for (const c of changes) {
+        if (c.type === 'position' && c.position) {
+          const cur = useBoard.getState().graph.nodes.get(c.id);
+          if (cur && c.dragging && !dragStart.current.has(c.id))
+            dragStart.current.set(c.id, { x: cur.x, y: cur.y });
+          moves.push({ id: c.id, x: c.position.x, y: c.position.y });
+        } else if (c.type === 'select') {
+          sel ??= new Set(useUi.getState().selected);
+          if (c.selected) sel.add(c.id);
+          else sel.delete(c.id);
+        } else if (c.type === 'remove') removed.push(c.id);
+      }
+      if (moves.length) moveLocal(...[moves]);
+      if (sel) useUi.setState({ selected: sel });
+      if (removed.length) dispatch([{ type: 'node.delete', ids: removed }]);
+    },
+    [moveLocal],
+  );
+
+  /** One undoable node.move op per drag gesture, sent on drag stop. */
+  const onNodeDragStop = useCallback(() => {
+    moveLocal.flush();
+    const starts = dragStart.current;
+    dragStart.current = new Map();
+    const g = useBoard.getState().graph;
+    const moves = [...starts.keys()]
+      .map((id) => g.nodes.get(id))
+      .filter((n): n is NodeRecord => !!n)
+      .map((n) => ({ id: n.id, x: n.x, y: n.y }));
+    if (!moves.length) return;
+    // Reset to start positions, then apply the move through the op path so undo has the inverse.
+    setPositionsLocal([...starts.entries()].map(([id, p]) => ({ id, ...p })));
+    dispatch([{ type: 'node.move', moves }]);
+  }, [moveLocal]);
+
+  const onEdgesChange = useCallback((changes: { type: string; id: string }[]) => {
+    const ids = changes.filter((c) => c.type === 'remove').map((c) => c.id);
+    if (ids.length) dispatch([{ type: 'edge.delete', ids }]);
+  }, []);
+
+  const isValidConnection = useCallback((c: Connection | Edge) => {
+    if (!c.source || !c.target || !c.targetHandle) return false;
+    return canConnect(useBoard.getState().graph, {
+      source: c.source,
+      sourcePort: 'out',
+      target: c.target,
+      targetPort: c.targetHandle,
+    }).ok;
+  }, []);
+
+  const onConnect = useCallback((c: Connection) => {
+    connectFrom.current = null;
+    if (!c.targetHandle) return;
+    dispatch([
+      {
+        type: 'edge.create',
+        edge: {
+          id: newId(),
+          source: c.source,
+          sourcePort: 'out',
+          target: c.target,
+          targetPort: c.targetHandle,
+        },
+      },
+    ]);
+  }, []);
+
+  const onConnectStart: OnConnectStart = useCallback((_, { nodeId, handleType }) => {
+    connectFrom.current = nodeId && handleType === 'source' ? { nodeId } : null;
+  }, []);
+
+  /** Wire dropped on empty canvas → palette filtered to nodes accepting that type (xyflow AddNodeOnEdgeDrop, MIT). */
+  const onConnectEnd: OnConnectEnd = useCallback(
+    (event) => {
+      const from = connectFrom.current;
+      connectFrom.current = null;
+      if (!from) return;
+      const targetIsPane = (event.target as Element | null)?.classList?.contains('react-flow__pane');
+      if (!targetIsPane || !('clientX' in event)) return;
+      const pos = rf.screenToFlowPosition({ x: event.clientX, y: event.clientY });
+      const src = useBoard.getState().graph.nodes.get(from.nodeId);
+      const accepts = src ? NODE_DEFS[src.kind].output?.type : undefined;
+      useUi.setState({
+        palette: {
+          x: event.clientX,
+          y: event.clientY,
+          flowX: pos.x,
+          flowY: pos.y,
+          accepts,
+          fromNodeId: from.nodeId,
+        },
+      });
+    },
+    [rf],
+  );
+
+  /**
+   * LOD from the SETTLED zoom only (tldraw getEfficientZoomLevel: debounced while the camera moves).
+   * A timer after the last move, not onMoveEnd alone: WebKit/Firefox skip onMoveEnd when a zoom
+   * transition is interrupted by the next one (E2E, 2026-09-24).
+   */
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const applyZoom = useCallback((zoom: number) => {
+    // Compact cards counter-scale their text by the settled zoom so titles stay readable (Miro/tldraw).
+    document.documentElement.style.setProperty('--settled-zoom', String(Math.max(zoom, 0.1)));
+    const lod = lodFor(zoom);
+    const s = useUi.getState();
+    if (s.lod !== lod || Math.abs(s.zoom - zoom) > 0.05) useUi.setState({ lod, zoom });
+  }, []);
+  const onMove = useCallback(
+    (_: unknown, vp: Viewport) => {
+      if (settleTimer.current) clearTimeout(settleTimer.current);
+      settleTimer.current = setTimeout(() => applyZoom(vp.zoom), 150);
+    },
+    [applyZoom],
+  );
+  const onMoveEnd = useCallback(
+    (_: unknown, vp: Viewport) => {
+      if (settleTimer.current) clearTimeout(settleTimer.current);
+      applyZoom(vp.zoom);
+    },
+    [applyZoom],
+  );
+
+  /**
+   * First paint frames `initialFit` (the example's first line) or the whole board. Passed as the `fitView` prop so
+   * React Flow waits until nodes are measured (a manual fitView in onInit ran before measuring).
+   */
+  const [fitOptions] = useState(() => {
+    const ids = useUi.getState().initialFit;
+    return {
+      nodes: ids?.map((id) => ({ id })),
+      padding: { top: '84px', bottom: '84px', left: '40px', right: '40px' } as const,
+      maxZoom: 1,
+    };
+  });
+  const onInit = useCallback(() => applyZoom(rf.getZoom()), [rf, applyZoom]);
+
+  const onNodeContextMenu = useCallback(
+    (e: React.MouseEvent, node: Node) => {
+      e.preventDefault();
+      const pos = rf.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      useUi.setState({
+        contextMenu: { x: e.clientX, y: e.clientY, flowX: pos.x, flowY: pos.y, nodeId: node.id },
+      });
+    },
+    [rf],
+  );
+
+  const onPaneContextMenu = useCallback(
+    (e: MouseEvent | React.MouseEvent) => {
+      e.preventDefault();
+      const pos = rf.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      useUi.setState({ contextMenu: { x: e.clientX, y: e.clientY, flowX: pos.x, flowY: pos.y } });
+    },
+    [rf],
+  );
+
+  return (
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      nodeTypes={nodeTypes}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange as never}
+      onNodeDragStop={onNodeDragStop}
+      onConnect={onConnect}
+      onConnectStart={onConnectStart}
+      onConnectEnd={onConnectEnd}
+      isValidConnection={isValidConnection}
+      onMove={onMove}
+      onMoveEnd={onMoveEnd}
+      onInit={onInit}
+      fitView
+      fitViewOptions={fitOptions}
+      onPaneContextMenu={onPaneContextMenu}
+      onNodeContextMenu={onNodeContextMenu}
+      onPaneClick={() => useUi.setState({ contextMenu: null, palette: null })}
+      // Viewport culling: off-screen nodes are not rendered (React Flow perf guide; tldraw culling).
+      onlyRenderVisibleElements
+      minZoom={0.1}
+      maxZoom={2}
+      panOnDrag={tool === 'hand' ? true : [1, 2]}
+      selectionOnDrag={tool === 'select'}
+      panOnScroll
+      zoomOnPinch
+      deleteKeyCode={['Backspace', 'Delete']}
+      multiSelectionKeyCode={['Meta', 'Shift']}
+      nodeDragThreshold={2}
+      connectionRadius={28}
+      elevateNodesOnSelect={false}
+      proOptions={{ hideAttribution: false }}
+      style={{ background: 'var(--canvas-bg)' }}
+    >
+      {/* One SVG <pattern> for the whole grid (xyflow Background), not one element per dot. */}
+      <Background variant={BackgroundVariant.Dots} gap={20} size={1.2} color="var(--dot)" />
+    </ReactFlow>
+  );
+}

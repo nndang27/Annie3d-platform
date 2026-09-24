@@ -27,7 +27,7 @@ export function createAuth(env: Env, db: Db) {
     // Local dev and the API test server run on fixed localhost ports; production trusts APP_URL only.
     trustedOrigins:
       env.APP_ENV === 'development'
-        ? [env.APP_URL, 'http://localhost:4173', 'http://localhost:5190']
+        ? [env.APP_URL, 'http://localhost:4173', 'http://localhost:5190', 'http://localhost:5191']
         : [env.APP_URL],
     telemetry: { enabled: false },
     database: drizzleAdapter(db, {

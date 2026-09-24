@@ -1,0 +1,7 @@
+User-agent: *
+# Private boards, API and auth callbacks are not for crawlers.
+Disallow: /api/
+Disallow: /b/
+Allow: /
+
+Sitemap: https://annie3d.nndang2701.workers.dev/sitemap-index.xml

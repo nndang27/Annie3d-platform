@@ -1,0 +1,67 @@
+import { FREE_RUN_CREDITS } from '@annie3d/contracts';
+import { useEffect, useRef } from 'react';
+import { signInWithGoogle } from '../lib/auth';
+import { useUi } from '../store/ui';
+
+const COPY = {
+  run: {
+    title: 'Sign in to run it',
+    body: `Your first full run is free (${FREE_RUN_CREDITS} credits). Your board comes with you.`,
+  },
+  share: { title: 'Sign in to share', body: 'Share links need a saved board. Your board comes with you.' },
+  save: { title: 'Sign in to keep this board', body: 'Guest boards live only in this browser.' },
+} as const;
+
+/** Modal shown when a guest tries a paid or cloud action (F11: sign in at the moment of value). */
+export function SignInPrompt() {
+  const prompt = useUi((s) => s.signInPrompt);
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const d = ref.current;
+    if (!d) return;
+    if (prompt && !d.open) d.showModal();
+    if (!prompt && d.open) d.close();
+  }, [prompt]);
+  const copy = COPY[prompt?.reason ?? 'run'];
+  return (
+    <dialog
+      ref={ref}
+      className="modal"
+      aria-labelledby="signin-title"
+      onClose={() => useUi.setState({ signInPrompt: null })}
+      data-testid="signin-prompt"
+    >
+      <h2 id="signin-title">{copy.title}</h2>
+      <p>{copy.body}</p>
+      <button
+        type="button"
+        className="btn-google"
+        onClick={() => void signInWithGoogle()}
+        data-testid="google-signin"
+      >
+        <svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true">
+          <path
+            fill="#FFC107"
+            d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"
+          />
+          <path
+            fill="#FF3D00"
+            d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"
+          />
+          <path
+            fill="#4CAF50"
+            d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"
+          />
+          <path
+            fill="#1976D2"
+            d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"
+          />
+        </svg>
+        Continue with Google
+      </button>
+      <button type="button" className="btn-link" onClick={() => useUi.setState({ signInPrompt: null })}>
+        Not now
+      </button>
+    </dialog>
+  );
+}

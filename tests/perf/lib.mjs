@@ -81,23 +81,6 @@ export function stats(arr) {
   };
 }
 
-export async function resetDemo(page, scale = 0.05) {
-  await page.goto(`${BASE}/app/signin`);
-  await page.waitForFunction(() => !!window.__annie3d);
-  await page.evaluate(async (scale) => {
-    await window.__annie3d.reset();
-    localStorage.setItem('annie3d.latencyScale', String(scale));
-    localStorage.setItem('annie3d.scenario', 'normal');
-  }, scale);
-  await page.reload();
-  await page.waitForFunction(() => !!window.__annie3d);
-}
-
-export async function signIn(page) {
-  await page.getByTestId('identity-u_mai').click();
-  await page.getByTestId('demo-label').waitFor();
-}
-
 /** Web-vitals-style lab metrics via PerformanceObserver injected before navigation. */
 export const VITALS_INIT = `
 window.__vitals = { lcp: null, cls: 0, fcp: null, ttfb: null, longTasks: [] };

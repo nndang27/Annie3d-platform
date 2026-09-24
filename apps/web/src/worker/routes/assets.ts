@@ -200,7 +200,7 @@ assetRoutes.get('/api/assets/:assetId/content', requireUser, async (c) => {
   const a = await db.query.assets.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, id), eq(t.workspaceId, c.get('workspaceId')!)),
   });
-  if (!a || a.status !== 'ready') throw httpError(404, 'not_found', 'Asset not found');
+  if (a?.status !== 'ready') throw httpError(404, 'not_found', 'Asset not found');
   let key = a.storageKey;
   let mime = a.mime;
   if (variant) {

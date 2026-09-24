@@ -8,6 +8,7 @@ import { assetRoutes } from './routes/assets';
 import { boardRoutes } from './routes/boards';
 import { creditRoutes } from './routes/credits';
 import { me } from './routes/me';
+import { publicRoutes } from './routes/public';
 
 export type { Env } from './env';
 
@@ -67,5 +68,6 @@ app.route('/', me);
 app.route('/', boardRoutes);
 app.route('/', assetRoutes);
 app.route('/', creditRoutes);
+app.route('/', publicRoutes);
 
 export default app;

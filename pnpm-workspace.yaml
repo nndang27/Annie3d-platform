@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - packages/*
+  - fixtures
 # Supply-chain hygiene (TECH_PREPARE 3.7): postinstall scripts only for an explicit allow-list.
 onlyBuiltDependencies:
   - esbuild

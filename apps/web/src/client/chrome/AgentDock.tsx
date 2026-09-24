@@ -1,0 +1,132 @@
+import { NODE_DEFS } from '@annie3d/contracts';
+import { ArrowUp, X } from 'lucide-react';
+import { useState } from 'react';
+import { useBoard } from '../store/board';
+import { useUi } from '../store/ui';
+
+export interface AgentMessage {
+  id: string;
+  role: 'user' | 'agent';
+  text: string;
+  /** Op batches the agent applied, shown as undoable chips. */
+  applied?: { label: string }[];
+}
+
+/**
+ * Right dock (F7). The composer carries a budget and the selected nodes as context chips.
+ * The transport (SSE `/api/agent/messages`) is attached by `useAgentTransport` in P9.
+ */
+export function AgentDock({
+  messages = [],
+  onSend,
+  busy = false,
+}: {
+  messages?: AgentMessage[];
+  onSend?: (text: string, budget: number, nodeIds: string[]) => void;
+  busy?: boolean;
+}) {
+  const open = useUi((s) => s.agentOpen);
+  const selected = useUi((s) => s.selected);
+  const nodes = useBoard((s) => s.graph.nodes);
+  const [text, setText] = useState('');
+  const [budget, setBudget] = useState(100);
+  if (!open) return null;
+  const chips = [...selected].map((id) => nodes.get(id)).filter((n) => !!n);
+  const send = () => {
+    const t = text.trim();
+    if (!t || busy) return;
+    onSend?.(
+      t,
+      budget,
+      chips.map((n) => n.id),
+    );
+    setText('');
+  };
+  return (
+    <aside className="agent" aria-label="Agent" data-testid="agent-dock">
+      <header>
+        <span className="dot" aria-hidden="true" /> Annie agent
+        <button
+          type="button"
+          className="icon-btn"
+          aria-label="Close agent"
+          onClick={() => useUi.setState({ agentOpen: false })}
+          style={{ marginLeft: 'auto' }}
+        >
+          <X size={16} aria-hidden="true" />
+        </button>
+      </header>
+      <div className="msgs" aria-live="polite">
+        {messages.length === 0 ? (
+          <div className="empty">
+            <p>Ask for a change and I will edit the board.</p>
+            <p style={{ fontSize: 12 }}>“Make the stage warmer and add a 6-second cut.”</p>
+          </div>
+        ) : (
+          messages.map((m) => (
+            <div key={m.id} className={`msg msg-${m.role}`}>
+              {m.text}
+              {m.applied?.map((a) => (
+                <span key={a.label} className="op-chip">
+                  {a.label}
+                </span>
+              ))}
+            </div>
+          ))
+        )}
+        {busy && <div className="msg msg-agent typing">Thinking…</div>}
+      </div>
+      <div className="composer">
+        {chips.length > 0 && (
+          <div className="chips">
+            {chips.slice(0, 6).map((n) => (
+              <span key={n.id} className="chip">
+                {n.label ?? NODE_DEFS[n.kind].label}
+              </span>
+            ))}
+            {chips.length > 6 && <span className="chip">+{chips.length - 6}</span>}
+          </div>
+        )}
+        <textarea
+          aria-label="Message the agent"
+          placeholder="Describe a change…"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              send();
+            }
+          }}
+          data-testid="agent-input"
+        />
+        <div className="row">
+          <label>
+            Budget{' '}
+            <select
+              value={budget}
+              onChange={(e) => setBudget(Number(e.target.value))}
+              aria-label="Budget in credits"
+            >
+              {[25, 50, 100, 200].map((b) => (
+                <option key={b} value={b}>
+                  {b} cr
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="send"
+            aria-label="Send"
+            onClick={send}
+            disabled={busy || !text.trim()}
+            data-testid="agent-send"
+          >
+            <ArrowUp size={16} aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    </aside>
+  );
+}

@@ -16,12 +16,15 @@ async function select(page: Page, id: string) {
 
 test.describe('agent (F7)', () => {
   test('edits the selected line, runs it, and the edit is undoable', async ({ page }) => {
+    // Sign-up, example seeding, two agent turns and a full simulated run: ~50 s alone, more when
+    // three browsers run in parallel. The assertions are unchanged; only the time budget grows.
+    test.setTimeout(120_000);
     await signedIn(page);
     const video = await firstNode(page, 'adVideo');
     await select(page, video);
     await page.getByTestId('agent-input').fill('make it square');
     await page.keyboard.press('Enter');
-    await expect(page.locator('.op-chip').last()).toContainText('aspect → 1:1');
+    await expect(page.locator('.op-chip').last()).toContainText('aspect → 1:1', { timeout: 20_000 });
     const aspect = () =>
       page.evaluate(
         (id) => (window as any).__annie3d.useBoard.getState().graph.nodes.get(id).settings.aspect,

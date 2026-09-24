@@ -1,4 +1,5 @@
 import { creditsFor, NODE_DEFS, STARTER_META, STARTERS } from '@annie3d/contracts';
+import { useQuery } from '@tanstack/react-query';
 import { useReactFlow, useViewport } from '@xyflow/react';
 import { ChevronDown, Share2, Sparkles } from 'lucide-react';
 import { memo, useMemo, useRef, useState } from 'react';
@@ -150,26 +151,60 @@ function Starters() {
 function RunAll() {
   const nodes = useBoard((s) => s.graph.nodes);
   const mode = useBoard((s) => s.mode);
+  const boardId = useBoard((s) => s.boardId);
+  const seq = useBoard((s) => s.seq);
   const running = useRuns((s) => s.activeRunId !== null);
-  const cost = useMemo(() => {
+  const naive = useMemo(() => {
     let c = 0;
     for (const n of nodes.values()) if (NODE_DEFS[n.kind].runnable) c += creditsFor(n.kind, n.settings);
     return c;
   }, [nodes]);
+  // Signed-in boards show the server's number, which knows what is cached (free).
+  const est = useQuery({
+    queryKey: ['estimate', boardId, null, 'all', seq],
+    queryFn: () => api.estimate(boardId!, null, 'all'),
+    enabled: mode === 'remote' && !!boardId && !running,
+    staleTime: 10_000,
+    placeholderData: (prev) => prev,
+  });
+  const cost = mode === 'remote' && est.data ? est.data.totalCredits : naive;
   const onClick = () => {
     if (mode === 'guest') return useUi.setState({ signInPrompt: { reason: 'run' } });
-    window.dispatchEvent(new CustomEvent('annie3d:run', { detail: { nodeId: null, scope: 'all' } }));
+    useUi.setState({ dialog: { type: 'run', nodeId: null, scope: 'all' } });
   };
+  const cancel = async () => {
+    const id = useRuns.getState().activeRunId;
+    if (!id) return;
+    try {
+      await api.cancelRun(id);
+    } catch (e) {
+      toast((e as Error).message, 'error');
+    }
+  };
+  if (running) {
+    return (
+      <div className="pill">
+        <span className="running-dot" aria-hidden="true" />
+        <span className="running-label" aria-live="polite">
+          Running…
+        </span>
+        <button type="button" onClick={() => void cancel()} data-testid="cancel-run">
+          Cancel
+        </button>
+      </div>
+    );
+  }
+  const upToDate = mode === 'remote' && !!est.data && cost === 0;
   return (
     <div className="pill">
       <button
         type="button"
         className="primary"
         onClick={onClick}
-        disabled={running || cost === 0}
         data-testid="run-all"
+        title="Cached nodes are free; the exact cost is shown before you confirm"
       >
-        {running ? 'Running…' : `Run all · ${cost} cr`}
+        {upToDate ? 'Up to date' : `Run all · ${cost} cr`}
       </button>
     </div>
   );

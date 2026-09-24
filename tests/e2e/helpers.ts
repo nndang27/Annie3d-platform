@@ -33,7 +33,8 @@ export async function openCanvas(page: Page, path = '/') {
     if (m.type() === 'error' && !/ResizeObserver/.test(m.text())) errors.push(m.text());
   });
   await page.goto(path);
-  await expect(page.locator('.react-flow__node').first()).toBeVisible();
+  // First sign-in creates and seeds the example board; allow for a cold dev server.
+  await expect(page.locator('.react-flow__node').first()).toBeVisible({ timeout: 30_000 });
   await page.waitForFunction(() => (window as any).__annie3d?.useBoard.getState().mode !== 'loading');
   return errors;
 }

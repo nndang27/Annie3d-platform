@@ -6,13 +6,17 @@ type AssetRow = typeof assets.$inferSelect;
 type VariantRow = typeof assetVariants.$inferSelect;
 
 /**
- * Asset URLs are stable Worker routes, not presigned URLs: content is immutable (addressed by
+ * Asset URLs are stable same-origin Worker paths (not tied to APP_URL, not presigned): content is immutable (addressed by
  * id), so browsers can cache forever (`immutable`) and the canvas never re-downloads posters
  * when a snapshot is refetched.
  */
-export function assetDto(env: Env, a: AssetRow, variants: VariantRow[] = [], base = '/api/assets'): AssetDto {
-  const url = (variant?: string) =>
-    `${env.APP_URL}${base}/${a.id}/content${variant ? `?variant=${variant}` : ''}`;
+export function assetDto(
+  _env: Env,
+  a: AssetRow,
+  variants: VariantRow[] = [],
+  base = '/api/assets',
+): AssetDto {
+  const url = (variant?: string) => `${base}/${a.id}/content${variant ? `?variant=${variant}` : ''}`;
   const has = (v: string) => variants.some((x) => x.assetId === a.id && x.variant === v);
   return {
     id: a.id,
@@ -27,11 +31,14 @@ export function assetDto(env: Env, a: AssetRow, variants: VariantRow[] = [], bas
     status: a.status as AssetDto['status'],
     urls: {
       original: a.status === 'ready' ? url() : null,
-      poster: has('poster_1024')
-        ? url('poster_1024')
-        : a.kind === 'image' && a.status === 'ready'
-          ? url()
-          : null,
+      // 512 px is enough for node previews up to ~2× DPR; the editor asks for the original.
+      poster: has('poster_512')
+        ? url('poster_512')
+        : has('poster_1024')
+          ? url('poster_1024')
+          : a.kind === 'image' && a.status === 'ready'
+            ? url()
+            : null,
       thumb: has('thumb_256')
         ? url('thumb_256')
         : has('poster_1024')

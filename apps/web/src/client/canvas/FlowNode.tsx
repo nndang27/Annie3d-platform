@@ -137,6 +137,7 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
     node.currentVersionId ? s.versions.get(node.currentVersionId) : undefined,
   );
   const progress = useRuns((s) => s.progress.get(node.id));
+  const error = useRuns((s) => s.errors.get(node.id));
   const zoom = useUi((s) => s.zoom);
   const playing = useUi((s) => s.playingNodeId === node.id);
   const [dragOver, setDragOver] = useState(false);
@@ -241,6 +242,11 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
     >
       {content}
       {progress && <span className="stage-label">{progress.stage}</span>}
+      {error && !progress && (
+        <div className="node-error" role="alert" title={error.message} data-testid="node-error">
+          {error.code === 'gate_failed' ? `Check failed: ${error.gate}` : error.message}
+        </div>
+      )}
       {pct !== null && (
         <div className="progress" aria-label={`Progress ${pct}%`}>
           <i style={{ width: `${pct}%` }} />

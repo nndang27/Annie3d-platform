@@ -68,3 +68,57 @@ users. Each entry lists what was measured, not assumed.
 - Guest example photos are not yet carried into the imported board; P5 seeds fixture assets.
 
 **Scores:** UI 70 · Backend 82 · Tests 88 · Prod-10k 68.
+
+## P5 · Runs, engine simulator, live progress (F2–F5 core, F11 cost) — done
+- **Run API:**
+  - `POST /api/boards/:id/runs` plans the run, schedules only non-cached steps, and reserves
+    credits in the same transaction as the run rows. It is idempotent per key and allows one
+    active run per board.
+  - Also `GET /api/boards/:id/runs`, `GET /api/runs/:id`, `POST /api/runs/:id/cancel`, and the
+    `GET /api/runs/:id/events` WebSocket.
+- **RunRoom Durable Object** (one per run):
+  - Executes from `alarm()`, so an eviction retries and resumes at the first unfinished step.
+  - Stores a gap-free event log in SQLite and fans it out over hibernatable WebSockets.
+    Reconnects replay exactly what was missed (`?after=seq`).
+  - Deletes itself 24 h after the run finishes.
+- **Engine plug point:** `engines/registry.ts` maps each node kind to an `Engine`.
+  - The deterministic simulator reports staged progress, honours cancel, and writes outputs
+    through `putArtifact` into content-addressed R2 keys. It returns quality gates (`#fail`,
+    `#slow` are test hooks).
+  - Real agents replace it per kind, in process or through the External Engine Protocol.
+- **Result cache and staleness:** input hash = kind + engine version + settings + upstream
+  versions.
+  - Unchanged nodes are free and never scheduled.
+  - A result becomes current through an ordinary op, so the op log, other tabs and undo agree.
+- **Credits:** reserve at start; settle once, atomically with the final status (guarded against
+  alarm retries); failed and cancelled steps are refunded.
+- **F1 for signed-in users:** new accounts and imported guest boards open on the example
+  already run. Seeding uses a few bulk statements and copies no files (migration 0002).
+- **UI:** a cost dialog before any charge, with unchanged nodes summarised as free. Also live
+  per-node progress and stage labels, and Running… / Cancel in the top bar. Gate failures are
+  shown on the node, toasts summarise the result, and a run in progress resumes after a reload.
+  The viewport is remembered per board, and Shift+2 zooms to the selection.
+- **Bugs found by tests and fixed:**
+  - A ledger foreign-key ordering error.
+  - Duplicate storage keys when an export and its model shared the same bytes.
+  - Asset URLs were tied to `APP_URL`; they are now same-origin paths.
+  - The test harness `spawnSync` starved the server's log pipe.
+  - Seeding took >10 s; it was reduced with bulk writes.
+
+**Measured on 2026-09-24:**
+
+| Check | Result |
+| --- | --- |
+| API tests | 23/23 |
+| E2E, Chromium + WebKit + Firefox | 42/42 |
+| DB integration tests | 9/9 |
+
+The API tests cover a full line run, replay, up to date, partial re-run, 402, gate refund,
+cancel, idempotency and 409, tenant isolation, and seeding. The E2E tests cover the up-to-date
+example, cost, live progress with v2, gate error, and reload plus cancel.
+
+| Timing (local dev → Neon Sydney, no Hyperdrive pooling) | Result |
+| --- | --- |
+| Example board create + seed | 3.3 s (~45 round trips); re-measure on deploy |
+
+**Scores:** UI 76 · Backend 88 · AI-plug 85 · Tests 90 · Prod-10k 72.

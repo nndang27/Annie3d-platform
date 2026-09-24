@@ -13,6 +13,7 @@ import { getDb } from '../lib/db';
 import { body, httpError, query, uuidParam } from '../lib/http';
 import { requireEditor, requireUser } from '../lib/session';
 import { applyBatch, createBoard, loadBoard, snapshot, versionDtos } from '../services/boards';
+import { seedExample } from '../services/fixtures';
 
 export const boardRoutes = new Hono<AppEnv>();
 
@@ -53,6 +54,8 @@ boardRoutes.post('/api/boards', requireEditor, async (c) => {
     req.starter,
     req.fromGuest,
   );
+  // Guest boards built on the example keep its rendered outputs (seeded, not copied).
+  if (req.fromGuest) await seedExample(db, c.get('workspaceId')!, c.get('user')!.id, b.id);
   return c.json(await snapshot(db, c.env, c.get('workspaceId')!, b.id, c.get('role')!), 201);
 });
 

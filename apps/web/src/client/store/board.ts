@@ -140,6 +140,24 @@ export function redo() {
   enqueue(ops);
 }
 
+/**
+ * Applies ops that the server already committed (run results, other collaborators): no undo
+ * entry and no outbox. Ops that no longer apply locally are ignored; the next snapshot heals.
+ */
+export function applyRemote(ops: GraphOp[], seq?: number) {
+  const st = get();
+  try {
+    const res = applyOps(st.graph, ops);
+    set({ graph: res.graph, seq: Math.max(st.seq, seq ?? st.seq) });
+  } catch (e) {
+    if (!(e instanceof OpError)) throw e;
+  }
+}
+
+export function setStale(update: (prev: Set<string>) => Set<string>) {
+  set({ stale: update(get().stale) });
+}
+
 /** Drag frames update positions locally only; one node.move op is sent on drag stop. */
 export function setPositionsLocal(moves: { id: string; x: number; y: number }[]) {
   const g = get().graph;

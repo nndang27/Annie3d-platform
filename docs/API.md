@@ -12,7 +12,7 @@ Idempotency: op batches (`opId`), runs, edits and exports (`idempotencyKey`), pa
 | --- | --- | --- | --- | --- |
 | GET | `/api/health` | none | ops | Liveness + database round trip |
 | GET | `/api/auth/*` | none | F11 | Better Auth (Google sign-in, session, sign-out) |
-| GET | `/api/me` | user | F11 | Current user, workspace, credits |
+| GET | `/api/me` | user | F11 | Current user, workspace, credits. With ?optional=1 a guest gets 200 null instead of 401. |
 | GET | `/api/boards` | user | F1 | List boards (cursor pagination) |
 | POST | `/api/boards` | user | F1 | Create board (blank, starter, or import guest board) |
 | GET | `/api/boards/:boardId` | user | F1 | Board snapshot: nodes, edges, current versions |
@@ -63,7 +63,7 @@ Better Auth (Google sign-in, session, sign-out). Auth: none.
 
 ### GET `/api/me`
 
-Current user, workspace, credits. Auth: user.
+Current user, workspace, credits. With ?optional=1 a guest gets 200 null instead of 401.. Auth: user.
 
 Response:
 
@@ -837,7 +837,7 @@ Response:
                       "anyOf": [
                         {
                           "type": "string",
-                          "format": "uri"
+                          "pattern": "^(\\/[^/]|https:\\/\\/)"
                         },
                         {
                           "type": "null"
@@ -848,7 +848,7 @@ Response:
                       "anyOf": [
                         {
                           "type": "string",
-                          "format": "uri"
+                          "pattern": "^(\\/[^/]|https:\\/\\/)"
                         },
                         {
                           "type": "null"
@@ -859,7 +859,7 @@ Response:
                       "anyOf": [
                         {
                           "type": "string",
-                          "format": "uri"
+                          "pattern": "^(\\/[^/]|https:\\/\\/)"
                         },
                         {
                           "type": "null"
@@ -870,7 +870,7 @@ Response:
                       "anyOf": [
                         {
                           "type": "string",
-                          "format": "uri"
+                          "pattern": "^(\\/[^/]|https:\\/\\/)"
                         },
                         {
                           "type": "null"
@@ -1309,7 +1309,7 @@ Response:
                       "anyOf": [
                         {
                           "type": "string",
-                          "format": "uri"
+                          "pattern": "^(\\/[^/]|https:\\/\\/)"
                         },
                         {
                           "type": "null"
@@ -1320,7 +1320,7 @@ Response:
                       "anyOf": [
                         {
                           "type": "string",
-                          "format": "uri"
+                          "pattern": "^(\\/[^/]|https:\\/\\/)"
                         },
                         {
                           "type": "null"
@@ -1331,7 +1331,7 @@ Response:
                       "anyOf": [
                         {
                           "type": "string",
-                          "format": "uri"
+                          "pattern": "^(\\/[^/]|https:\\/\\/)"
                         },
                         {
                           "type": "null"
@@ -1342,7 +1342,7 @@ Response:
                       "anyOf": [
                         {
                           "type": "string",
-                          "format": "uri"
+                          "pattern": "^(\\/[^/]|https:\\/\\/)"
                         },
                         {
                           "type": "null"
@@ -2324,7 +2324,7 @@ Response:
                   "anyOf": [
                     {
                       "type": "string",
-                      "format": "uri"
+                      "pattern": "^(\\/[^/]|https:\\/\\/)"
                     },
                     {
                       "type": "null"
@@ -2335,7 +2335,7 @@ Response:
                   "anyOf": [
                     {
                       "type": "string",
-                      "format": "uri"
+                      "pattern": "^(\\/[^/]|https:\\/\\/)"
                     },
                     {
                       "type": "null"
@@ -2346,7 +2346,7 @@ Response:
                   "anyOf": [
                     {
                       "type": "string",
-                      "format": "uri"
+                      "pattern": "^(\\/[^/]|https:\\/\\/)"
                     },
                     {
                       "type": "null"
@@ -2357,7 +2357,7 @@ Response:
                   "anyOf": [
                     {
                       "type": "string",
-                      "format": "uri"
+                      "pattern": "^(\\/[^/]|https:\\/\\/)"
                     },
                     {
                       "type": "null"
@@ -2565,7 +2565,7 @@ Response:
                   "anyOf": [
                     {
                       "type": "string",
-                      "format": "uri"
+                      "pattern": "^(\\/[^/]|https:\\/\\/)"
                     },
                     {
                       "type": "null"
@@ -2576,7 +2576,7 @@ Response:
                   "anyOf": [
                     {
                       "type": "string",
-                      "format": "uri"
+                      "pattern": "^(\\/[^/]|https:\\/\\/)"
                     },
                     {
                       "type": "null"
@@ -2587,7 +2587,7 @@ Response:
                   "anyOf": [
                     {
                       "type": "string",
-                      "format": "uri"
+                      "pattern": "^(\\/[^/]|https:\\/\\/)"
                     },
                     {
                       "type": "null"
@@ -2598,7 +2598,7 @@ Response:
                   "anyOf": [
                     {
                       "type": "string",
-                      "format": "uri"
+                      "pattern": "^(\\/[^/]|https:\\/\\/)"
                     },
                     {
                       "type": "null"
@@ -2871,7 +2871,7 @@ Response:
           "anyOf": [
             {
               "type": "string",
-              "format": "uri"
+              "pattern": "^(\\/[^/]|https:\\/\\/)"
             },
             {
               "type": "null"
@@ -2882,7 +2882,7 @@ Response:
           "anyOf": [
             {
               "type": "string",
-              "format": "uri"
+              "pattern": "^(\\/[^/]|https:\\/\\/)"
             },
             {
               "type": "null"
@@ -2893,7 +2893,7 @@ Response:
           "anyOf": [
             {
               "type": "string",
-              "format": "uri"
+              "pattern": "^(\\/[^/]|https:\\/\\/)"
             },
             {
               "type": "null"
@@ -2904,7 +2904,7 @@ Response:
           "anyOf": [
             {
               "type": "string",
-              "format": "uri"
+              "pattern": "^(\\/[^/]|https:\\/\\/)"
             },
             {
               "type": "null"
@@ -3043,7 +3043,7 @@ Response:
           "anyOf": [
             {
               "type": "string",
-              "format": "uri"
+              "pattern": "^(\\/[^/]|https:\\/\\/)"
             },
             {
               "type": "null"
@@ -3054,7 +3054,7 @@ Response:
           "anyOf": [
             {
               "type": "string",
-              "format": "uri"
+              "pattern": "^(\\/[^/]|https:\\/\\/)"
             },
             {
               "type": "null"
@@ -3065,7 +3065,7 @@ Response:
           "anyOf": [
             {
               "type": "string",
-              "format": "uri"
+              "pattern": "^(\\/[^/]|https:\\/\\/)"
             },
             {
               "type": "null"
@@ -3076,7 +3076,7 @@ Response:
           "anyOf": [
             {
               "type": "string",
-              "format": "uri"
+              "pattern": "^(\\/[^/]|https:\\/\\/)"
             },
             {
               "type": "null"
@@ -3995,7 +3995,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4006,7 +4006,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4017,7 +4017,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4028,7 +4028,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4255,7 +4255,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4266,7 +4266,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4277,7 +4277,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4288,7 +4288,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4635,7 +4635,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4646,7 +4646,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4657,7 +4657,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4668,7 +4668,7 @@ Response:
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "uri"
+                    "pattern": "^(\\/[^/]|https:\\/\\/)"
                   },
                   {
                     "type": "null"
@@ -4943,6 +4943,290 @@ External engine callback (HMAC signed). Auth: none.
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "version": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "nodeId": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "versionNo": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "run",
+                "edit",
+                "upload",
+                "agent"
+              ]
+            },
+            "runId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "parentVersionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "outputAssetId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "outputs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "image",
+                      "model3d",
+                      "video",
+                      "audio",
+                      "text",
+                      "file"
+                    ]
+                  },
+                  "mime": {
+                    "type": "string"
+                  },
+                  "byteSize": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "sha256": {
+                    "type": "string"
+                  },
+                  "width": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "height": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "durationMs": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "triangleCount": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "ready",
+                      "failed"
+                    ]
+                  },
+                  "urls": {
+                    "type": "object",
+                    "properties": {
+                      "original": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "pattern": "^(\\/[^/]|https:\\/\\/)"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "poster": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "pattern": "^(\\/[^/]|https:\\/\\/)"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "thumb": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "pattern": "^(\\/[^/]|https:\\/\\/)"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "turntable": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "pattern": "^(\\/[^/]|https:\\/\\/)"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "original",
+                      "poster",
+                      "thumb",
+                      "turntable"
+                    ]
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "mime",
+                  "byteSize",
+                  "sha256",
+                  "width",
+                  "height",
+                  "durationMs",
+                  "triangleCount",
+                  "status",
+                  "urls",
+                  "createdAt"
+                ]
+              }
+            },
+            "params": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            },
+            "gates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "passed": {
+                    "type": "boolean"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "threshold": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "id",
+                  "passed"
+                ]
+              }
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+            }
+          },
+          "required": [
+            "id",
+            "nodeId",
+            "versionNo",
+            "source",
+            "runId",
+            "parentVersionId",
+            "outputAssetId",
+            "outputs",
+            "params",
+            "gates",
+            "createdAt"
+          ]
+        },
+        "boardSeq": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
         }
       },
       "required": [
@@ -4953,7 +5237,9 @@ External engine callback (HMAC signed). Auth: none.
         "nodeId",
         "versionId",
         "cached",
-        "credits"
+        "credits",
+        "version",
+        "boardSeq"
       ]
     },
     {
@@ -5370,6 +5656,70 @@ Engine → Annie 3D: `POST {callbackUrl}` with header `x-annie3d-signature: t=<u
                   "type": "string"
                 },
                 "additionalProperties": {}
+              },
+              "width": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "height": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "durationMs": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "triangleCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "variants": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "variant": {
+                      "type": "string",
+                      "enum": [
+                        "thumb_256",
+                        "poster_512",
+                        "poster_1024",
+                        "turntable_mp4"
+                      ]
+                    },
+                    "storageKey": {
+                      "type": "string"
+                    },
+                    "mime": {
+                      "type": "string"
+                    },
+                    "byteSize": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "width": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "height": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "variant",
+                    "storageKey",
+                    "mime",
+                    "byteSize"
+                  ]
+                }
               }
             },
             "required": [

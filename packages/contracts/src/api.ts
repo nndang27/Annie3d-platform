@@ -55,6 +55,7 @@ export const CreditsDto = z.object({
 });
 export const MeResponse = z.object({ user: UserDto, workspace: WorkspaceDto, credits: CreditsDto });
 
+const AssetUrl = z.string().regex(/^(\/[^/]|https:\/\/)/, 'absolute https URL or same-origin path');
 export const AssetKind = z.enum(['image', 'model3d', 'video', 'audio', 'text', 'file']);
 export const AssetDto = z.object({
   id: uuid,
@@ -67,11 +68,15 @@ export const AssetDto = z.object({
   durationMs: z.number().int().nullable(),
   triangleCount: z.number().int().nullable(),
   status: z.enum(['pending', 'ready', 'failed']),
+  /**
+   * Same-origin paths (e.g. `/api/assets/:id/content`), valid on every host the app is served
+   * from (preview URLs, custom domains). Resolve against the page origin when needed.
+   */
   urls: z.object({
-    original: z.string().url().nullable(),
-    poster: z.string().url().nullable(),
-    thumb: z.string().url().nullable(),
-    turntable: z.string().url().nullable(),
+    original: AssetUrl.nullable(),
+    poster: AssetUrl.nullable(),
+    thumb: AssetUrl.nullable(),
+    turntable: AssetUrl.nullable(),
   }),
   createdAt: iso,
 });

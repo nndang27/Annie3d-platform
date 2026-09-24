@@ -127,7 +127,8 @@ export function onRunNode(nodeId: string) {
     useUi.setState({ signInPrompt: { reason: 'run', nodeId } });
     return;
   }
-  window.dispatchEvent(new CustomEvent('annie3d:run', { detail: { nodeId, scope: 'with_upstream' } }));
+  // Runs this node and whatever upstream is stale or missing (cached nodes are free).
+  useUi.setState({ dialog: { type: 'run', nodeId, scope: 'with_upstream' } });
 }
 
 export function openEditor(nodeId: string) {

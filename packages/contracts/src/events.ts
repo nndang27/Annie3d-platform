@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { NodeVersionDto } from './api';
 
 /**
  * Run events. Every event carries a per-run, gap-free sequence number so a client that
@@ -32,6 +33,10 @@ export const RunEvent = z.discriminatedUnion('type', [
     versionId: z.string().uuid(),
     cached: z.boolean(),
     credits: z.number().int().nonnegative(),
+    /** The new current version, so clients render it without another request. */
+    version: NodeVersionDto,
+    /** Board op-log seq of the `node.update { currentVersionId }` this step recorded. */
+    boardSeq: z.number().int().positive(),
   }),
   z.object({
     ...base,

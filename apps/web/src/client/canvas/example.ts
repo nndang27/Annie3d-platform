@@ -50,8 +50,11 @@ export function exampleBoard() {
         gates: [],
         createdAt: '2026-09-24T00:00:00.000Z',
       });
+      // Input nodes point at their file like an upload does (settings.assetId); the server uses it
+      // to recognise the shared fixture photo when this board is imported on sign-in.
       nodes.push({
         ...n,
+        settings: n.kind === 'photo' ? { ...n.settings, assetId: outputs[0]!.id } : n.settings,
         currentVersionId: id,
         label: row === 0 || n.kind !== 'photo' ? n.label : `${n.label} · ${product}`,
       });

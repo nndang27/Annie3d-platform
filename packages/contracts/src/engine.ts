@@ -21,6 +21,8 @@ export interface ResolvedInput {
   text?: string;
   /** The upstream node version this input came from (for lineage). */
   versionId?: string;
+  /** Asset metadata (dimensions, triangle count, engine-specific notes). */
+  meta?: Record<string, unknown>;
 }
 
 export interface EngineOutput {
@@ -32,6 +34,22 @@ export interface EngineOutput {
   kind: 'image' | 'model3d' | 'video' | 'audio' | 'text' | 'file';
   role: 'primary' | 'poster' | 'turntable' | 'packshot' | 'report' | 'extra';
   meta?: Record<string, unknown>;
+  width?: number;
+  height?: number;
+  durationMs?: number;
+  triangleCount?: number;
+  /** Derived files of this output (posters, thumbnails, turntable clip) stored as asset variants. */
+  variants?: EngineVariant[];
+}
+
+export const VARIANTS = ['thumb_256', 'poster_512', 'poster_1024', 'turntable_mp4'] as const;
+export interface EngineVariant {
+  variant: (typeof VARIANTS)[number];
+  storageKey: string;
+  mime: string;
+  byteSize: number;
+  width?: number;
+  height?: number;
 }
 
 export interface EngineContext {
@@ -48,6 +66,11 @@ export interface EngineContext {
     data: ArrayBuffer | ReadableStream,
     meta: Omit<EngineOutput, 'storageKey' | 'byteSize' | 'sha256'> & { ext: string },
   ): Promise<EngineOutput>;
+  /** Stores a derived file (poster, thumbnail, clip) and returns where it went. */
+  putFile(
+    data: ArrayBuffer,
+    meta: { ext: string; mime: string },
+  ): Promise<{ storageKey: string; byteSize: number }>;
   signal: AbortSignal;
 }
 
@@ -128,6 +151,22 @@ export const ExternalJobCallback = z.discriminatedUnion('type', [
         kind: z.enum(['image', 'model3d', 'video', 'audio', 'text', 'file']),
         role: z.enum(['primary', 'poster', 'turntable', 'packshot', 'report', 'extra']),
         meta: z.record(z.string(), z.unknown()).optional(),
+        width: z.number().int().positive().optional(),
+        height: z.number().int().positive().optional(),
+        durationMs: z.number().int().positive().optional(),
+        triangleCount: z.number().int().nonnegative().optional(),
+        variants: z
+          .array(
+            z.object({
+              variant: z.enum(VARIANTS),
+              storageKey: z.string(),
+              mime: z.string(),
+              byteSize: z.number().int().positive(),
+              width: z.number().int().positive().optional(),
+              height: z.number().int().positive().optional(),
+            }),
+          )
+          .optional(),
       }),
     ),
     gates: z.array(

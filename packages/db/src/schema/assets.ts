@@ -35,7 +35,11 @@ export const assets = pgTable(
     byteSize: bigint({ mode: 'number' }).notNull(),
     sha256: text().notNull(),
     bucket: text().notNull(),
-    storageKey: text().notNull().unique(),
+    /**
+     * Unique per object, except in the PUBLIC bucket: shared immutable fixtures (the example
+     * board) are referenced by many workspaces without copying (never deleted, so sharing is safe).
+     */
+    storageKey: text().notNull(),
     status: text().notNull().default('pending'),
     width: integer(),
     height: integer(),
@@ -60,6 +64,7 @@ export const assets = pgTable(
     ),
     // Dedupe: one ready asset per (workspace, content, kind).
     uniqueIndex('assets_dedupe_uq').on(t.workspaceId, t.sha256, t.kind).where(sql`${t.status} = 'ready'`),
+    uniqueIndex('assets_storage_key_uq').on(t.storageKey).where(sql`${t.bucket} <> 'public'`),
     index('assets_workspace_created_idx').on(t.workspaceId, t.createdAt.desc()),
     index('assets_created_by_idx').on(t.createdBy),
   ],
@@ -75,13 +80,15 @@ export const assetVariants = pgTable(
     variant: text().notNull(),
     mime: text().notNull(),
     byteSize: bigint({ mode: 'number' }).notNull(),
-    storageKey: text().notNull().unique(),
+    /** Not unique: variants of shared public fixtures point at the same object. */
+    storageKey: text().notNull(),
     width: integer(),
     height: integer(),
     createdAt: createdAt(),
   },
   (t) => [
     primaryKey({ columns: [t.assetId, t.variant] }),
+    index('asset_variants_storage_key_idx').on(t.storageKey),
     check('asset_variants_variant_chk', sql`${t.variant} ~ '^[a-z0-9_]{2,40}$'`),
     check('asset_variants_size_chk', sql`${t.byteSize} > 0`),
   ],

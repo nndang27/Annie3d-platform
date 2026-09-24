@@ -53,6 +53,28 @@ function toRfEdge(e: EdgeRecord, color: string): Edge {
   return rf;
 }
 
+const VP_KEY = (id: string) => `annie3d.vp.${id}`;
+function loadViewport(boardId: string | null): Viewport | undefined {
+  if (!boardId) return undefined;
+  try {
+    const v = JSON.parse(localStorage.getItem(VP_KEY(boardId)) ?? 'null') as Viewport | null;
+    return v && Number.isFinite(v.x) && Number.isFinite(v.y) && v.zoom > 0 ? v : undefined;
+  } catch {
+    return undefined;
+  }
+}
+function saveViewport(boardId: string | null, vp: Viewport) {
+  if (!boardId) return;
+  try {
+    localStorage.setItem(
+      VP_KEY(boardId),
+      JSON.stringify({ x: Math.round(vp.x), y: Math.round(vp.y), zoom: +vp.zoom.toFixed(3) }),
+    );
+  } catch {
+    /* storage unavailable: the viewport simply is not remembered */
+  }
+}
+
 export function Canvas() {
   const graph = useBoard((s) => s.graph);
   const selected = useUi((s) => s.selected);
@@ -209,6 +231,7 @@ export function Canvas() {
     (_: unknown, vp: Viewport) => {
       if (settleTimer.current) clearTimeout(settleTimer.current);
       applyZoom(vp.zoom);
+      saveViewport(useBoard.getState().boardId, vp);
     },
     [applyZoom],
   );
@@ -217,12 +240,24 @@ export function Canvas() {
    * First paint frames `initialFit` (the example's first line) or the whole board. Passed as the `fitView` prop so
    * React Flow waits until nodes are measured (a manual fitView in onInit ran before measuring).
    */
-  const [fitOptions] = useState(() => {
-    const ids = useUi.getState().initialFit;
+  const [initial] = useState(() => {
+    // tldraw keeps the camera per page: reopening a board returns to where you were.
+    const saved = loadViewport(useBoard.getState().boardId);
+    if (saved) return { saved, fit: undefined };
+    // Otherwise frame the first line (lowest z-keys), not a whole large board at unreadable zoom.
+    const ids =
+      useUi.getState().initialFit ??
+      [...useBoard.getState().graph.nodes.values()]
+        .sort((a, b) => (a.zKey < b.zKey ? -1 : 1))
+        .slice(0, 7)
+        .map((n) => n.id);
     return {
-      nodes: ids?.map((id) => ({ id })),
-      padding: { top: '84px', bottom: '84px', left: '40px', right: '40px' } as const,
-      maxZoom: 1,
+      saved: undefined,
+      fit: {
+        nodes: ids.map((id) => ({ id })),
+        padding: { top: '84px', bottom: '84px', left: '40px', right: '40px' } as const,
+        maxZoom: 1,
+      },
     };
   });
   const onInit = useCallback(() => applyZoom(rf.getZoom()), [rf, applyZoom]);
@@ -262,8 +297,9 @@ export function Canvas() {
       onMove={onMove}
       onMoveEnd={onMoveEnd}
       onInit={onInit}
-      fitView
-      fitViewOptions={fitOptions}
+      fitView={!initial.saved}
+      fitViewOptions={initial.fit}
+      defaultViewport={initial.saved}
       onPaneContextMenu={onPaneContextMenu}
       onNodeContextMenu={onNodeContextMenu}
       onPaneClick={() => useUi.setState({ contextMenu: null, palette: null })}

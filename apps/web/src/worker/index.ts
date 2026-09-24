@@ -9,7 +9,9 @@ import { boardRoutes } from './routes/boards';
 import { creditRoutes } from './routes/credits';
 import { me } from './routes/me';
 import { publicRoutes } from './routes/public';
+import { runRoutes } from './routes/runs';
 
+export { RunRoom } from './durable/run-room';
 export type { Env } from './env';
 
 const app = new Hono<AppEnv>();
@@ -17,6 +19,8 @@ const app = new Hono<AppEnv>();
 app.use('*', async (c, next) => {
   c.set('requestId', c.req.header('cf-ray') ?? crypto.randomUUID());
   await next();
+  // WebSocket upgrades carry immutable headers from the Durable Object; leave them untouched.
+  if (c.res.status === 101) return;
   // API responses: never sniffed, never framed, no referrer leakage (best-practices skill).
   c.header('x-content-type-options', 'nosniff');
   c.header('x-frame-options', 'DENY');
@@ -69,5 +73,6 @@ app.route('/', boardRoutes);
 app.route('/', assetRoutes);
 app.route('/', creditRoutes);
 app.route('/', publicRoutes);
+app.route('/', runRoutes);
 
 export default app;

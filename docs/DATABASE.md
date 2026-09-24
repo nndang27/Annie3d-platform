@@ -36,6 +36,16 @@ Schema source: `packages/db/src/schema/*.ts` (Drizzle). Migrations: `packages/db
 | Billing | credit_accounts, credit_entries, subscriptions, payment_events | balance ≥ reserved ≥ 0; ledger append-only; webhook inbox unique per provider event |
 | Agent | agent_threads, agent_messages | structured JSON content |
 
+## Migration 0002 · shared public fixtures
+- `assets.storage_key` is unique only outside the PUBLIC bucket (partial unique index
+  `assets_storage_key_uq`), and `asset_variants.storage_key` is indexed, not unique.
+- Why: the example board (F1) gives every new workspace its own asset and version rows that
+  point at the same immutable fixture objects. Seeding therefore writes rows only. It copies no
+  files: about 0.9 MB of R2 storage saved per new user.
+- Safety: public fixtures are versioned (`fixtures/v1/…`) and never deleted, so shared
+  references cannot dangle. Engine outputs still live in ARTIFACTS under content-addressed,
+  unique keys.
+
 ## Verified behaviour (live test branch, 9/9)
 
 - 20 concurrent reservations of 5 credits against a balance of 60: exactly 12 succeed, balance

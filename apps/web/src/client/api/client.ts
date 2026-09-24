@@ -41,6 +41,16 @@ async function call<T>(path: string, init: RequestInit & { json?: unknown } = {}
   return body as T;
 }
 
+/** Dev/test only: `localStorage['annie3d.simSpeed']` speeds up the simulator (ignored in production). */
+function simHeader(): Record<string, string> {
+  try {
+    const v = localStorage.getItem('annie3d.simSpeed');
+    return v ? { 'x-annie3d-sim-speed': v } : {};
+  } catch {
+    return {};
+  }
+}
+
 export const api = {
   me: () => call<z.infer<typeof MeResponse>>('/api/me'),
   meOptional: () => call<z.infer<typeof MeResponse> | null>('/api/me?optional=1'),
@@ -66,7 +76,8 @@ export const api = {
       json: { nodeId, scope },
     }),
   startRun: (boardId: string, json: { idempotencyKey: string; nodeId: string | null; scope: string }) =>
-    call<RunDto>(`/api/boards/${boardId}/runs`, { method: 'POST', json }),
+    call<RunDto>(`/api/boards/${boardId}/runs`, { method: 'POST', json, headers: simHeader() }),
+  runs: (boardId: string) => call<{ runs: RunDto[] }>(`/api/boards/${boardId}/runs`),
   cancelRun: (runId: string) => call<RunDto>(`/api/runs/${runId}/cancel`, { method: 'POST' }),
   createUpload: (json: { kind: string; filename: string; mime: string; byteSize: number; sha256: string }) =>
     call<z.infer<typeof CreateUploadResponse>>('/api/assets/uploads', { method: 'POST', json }),

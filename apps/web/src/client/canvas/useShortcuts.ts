@@ -49,8 +49,13 @@ export function useShortcuts() {
       if (mod) return;
       if (k === 'v') useUi.setState({ tool: 'select' });
       else if (k === 'h') useUi.setState({ tool: 'hand' });
-      else if (k === '1' && e.shiftKey) void rf.fitView({ duration: 250, padding: 0.1 });
-      else if (k === 'escape') useUi.setState({ selected: new Set(), palette: null, contextMenu: null });
+      else if ((k === '1' || k === '!') && e.shiftKey) void rf.fitView({ duration: 250, padding: 0.1 });
+      // Shift+2: zoom to selection (tldraw/Figma convention).
+      else if ((k === '2' || k === '@') && e.shiftKey) {
+        const ids = [...useUi.getState().selected];
+        if (ids.length)
+          void rf.fitView({ nodes: ids.map((id) => ({ id })), duration: 250, padding: 0.3, maxZoom: 1 });
+      } else if (k === 'escape') useUi.setState({ selected: new Set(), palette: null, contextMenu: null });
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);

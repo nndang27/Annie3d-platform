@@ -29,9 +29,13 @@
     { "name": "RL_RUN", "namespace_id": "1002", "simple": { "limit": 20, "period": 60 } },
     { "name": "RL_UPLOAD", "namespace_id": "1003", "simple": { "limit": 30, "period": 60 } }
   ],
+  // One Durable Object per run: executes via alarms, streams events over hibernatable WebSockets.
+  "durable_objects": { "bindings": [{ "name": "RUN_ROOM", "class_name": "RunRoom" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RunRoom"] }],
   "vars": {
     "APP_ENV": "development",
     "APP_URL": "http://localhost:5173",
-    "R2_KEY_PREFIX": "dev/"
+    "R2_KEY_PREFIX": "dev/",
+    "SIM_SPEED": "1"
   }
 }

@@ -37,12 +37,12 @@ export default defineConfig({
     { name: 'chromium', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
     {
       name: 'webkit',
-      testMatch: /canvas\.spec\.ts/,
+      testMatch: /(canvas|runs)\.spec\.ts/,
       use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } },
     },
     {
       name: 'firefox',
-      testMatch: /canvas\.spec\.ts/,
+      testMatch: /(canvas|runs)\.spec\.ts/,
       use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 900 } },
     },
   ],

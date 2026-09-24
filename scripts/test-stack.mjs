@@ -35,17 +35,20 @@ try {
     if (!up) await new Promise((r) => setTimeout(r, 1000));
   }
   if (!up) throw new Error(`server did not start:\n${log.slice(-2000)}`);
-  code =
-    spawnSync(cmd, args, { env: { ...process.env, API_BASE: base, E2E_BASE: base }, stdio: 'inherit' })
-      .status ?? 1;
-  if (code !== 0)
-    console.log(
-      log
-        .split('\n')
-        .filter((l) => /error/i.test(l) && !/ResizeObserver/.test(l))
-        .slice(-20)
-        .join('\n'),
-    );
+  // Async spawn: spawnSync would block this event loop, leave the server's stdout pipe undrained
+  // (it can fill and stall the server) and capture no log at all.
+  code = await new Promise((resolve) => {
+    const child = spawn(cmd, args, {
+      env: { ...process.env, API_BASE: base, E2E_BASE: base },
+      stdio: 'inherit',
+    });
+    child.on('exit', (c) => resolve(c ?? 1));
+  });
+  if (code !== 0) {
+    const lines = log.split('\n').filter((l) => !/ResizeObserver/.test(l));
+    const tail = Number(process.env.STACK_LOG ?? 0);
+    console.log((tail ? lines.slice(-tail) : lines.filter((l) => /error/i.test(l)).slice(-20)).join('\n'));
+  }
 } finally {
   server?.kill('SIGTERM');
   spawnSync('pkill', ['-f', `--port ${port}`]);

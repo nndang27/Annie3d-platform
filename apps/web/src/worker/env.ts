@@ -23,6 +23,8 @@ export interface Env {
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
   BETTER_AUTH_SECRET: string;
+  /** Simulator speed multiplier (1 = realistic, 0.05 in tests). */
+  SIM_SPEED?: string;
   /** "1" only in local/test: enables email+password sign-in used by automated tests. */
   ANNIE3D_TEST_AUTH?: string;
 }

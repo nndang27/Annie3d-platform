@@ -32,7 +32,12 @@ await settle();
 await page.screenshot({ path: out('04-palette') });
 await page.keyboard.press('Escape');
 
-const h = await page.locator('.react-flow__node').filter({ has: page.getByTestId('node-model3d') }).first().locator('.react-flow__handle.source').boundingBox();
+const h = await page
+  .locator('.react-flow__node')
+  .filter({ has: page.getByTestId('node-model3d') })
+  .first()
+  .locator('.react-flow__handle.source')
+  .boundingBox();
 await page.mouse.move(h.x + 5, h.y + 5);
 await page.mouse.down();
 await page.mouse.move(h.x + 200, h.y + 380, { steps: 12 });
@@ -41,7 +46,10 @@ await settle();
 await page.screenshot({ path: out('05-wire-drop-palette') });
 await page.keyboard.press('Escape');
 
-await page.getByTestId('node-stage').first().click({ button: 'right', position: { x: 60, y: 12 } });
+await page
+  .getByTestId('node-stage')
+  .first()
+  .click({ button: 'right', position: { x: 60, y: 12 } });
 await settle();
 await page.screenshot({ path: out('06-context-menu') });
 await page.keyboard.press('Escape');

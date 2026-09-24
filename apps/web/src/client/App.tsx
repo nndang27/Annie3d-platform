@@ -10,6 +10,7 @@ import { useShortcuts } from './canvas/useShortcuts';
 import { AgentDock } from './chrome/AgentDock';
 import { ContextMenu } from './chrome/ContextMenu';
 import { Palette } from './chrome/Palette';
+import { attachRun, RunDialog } from './chrome/RunDialog';
 import { SignInPrompt } from './chrome/SignInPrompt';
 import { Toasts } from './chrome/Toasts';
 import { Toolbar } from './chrome/Toolbar';
@@ -26,6 +27,11 @@ const queryClient = new QueryClient({
 });
 
 type GuestBoard = ReturnType<typeof exampleBoard>;
+
+/** The guest board as a create-board payload (server ids stay; versions are rebuilt server-side). */
+function guestPayload(g: Pick<GuestBoard, 'nodes' | 'edges'>) {
+  return { nodes: g.nodes.map(({ version: _v, currentVersionId: _c, ...n }) => n), edges: g.edges };
+}
 
 function boardIdFromPath(): string | null {
   const m = /^\/b\/([0-9a-f-]{36})$/.exec(location.pathname);
@@ -60,10 +66,7 @@ function useBoot() {
             const snap = await api.createBoard({
               title: guest.title === 'Example board' ? 'My first board' : guest.title,
               starter: 'blank',
-              fromGuest: {
-                nodes: guest.nodes.map(({ version: _v, currentVersionId: _c, ...n }) => n),
-                edges: guest.edges,
-              },
+              fromGuest: guestPayload(guest),
             });
             pendingUploads = guest.versions.filter(
               (v) => v.source === 'upload' && !v.outputs[0]?.urls.original?.includes('/api/public/'),
@@ -72,15 +75,25 @@ function useBoot() {
             id = snap.board.id;
           } else {
             const list = await api.boards();
+            // New accounts start on the example board with its rendered outputs (F1).
             id =
               list.boards[0]?.id ??
-              (await api.createBoard({ title: 'My first board', starter: 'splash-hero' })).board.id;
+              (
+                await api.createBoard({
+                  title: 'Example board',
+                  starter: 'blank',
+                  fromGuest: guestPayload(exampleBoard()),
+                })
+              ).board.id;
           }
           history.replaceState(null, '', `/b/${id}${location.search}`);
         }
         const snap = await api.board(id);
         if (cancelled) return;
         loadSnapshot(snap);
+        // A run still going (e.g. after a reload) keeps streaming into this tab.
+        const active = (await api.runs(id)).runs.find((r) => r.status === 'queued' || r.status === 'running');
+        if (active && !cancelled) attachRun(active.id, queryClient);
         if (pendingUploads.length) {
           await importGuestUploads(pendingUploads);
           await clearGuestFiles();
@@ -132,6 +145,7 @@ function Workspace() {
       <Palette />
       <ContextMenu />
       <SignInPrompt />
+      <RunDialog />
       <Toasts />
       {editing && (
         <Suspense fallback={<div className="editor-loading">Opening 3D…</div>}>

@@ -1,9 +1,9 @@
-// Which GPU pipelines does a zoom compile? Traces Chrome for Testing (Skia Graphite on Dawn/Metal)
+// Which GPU pipelines do a zoom and a pointer sweep compile? Traces Chrome for Testing (Skia Graphite on Dawn/Metal)
 // while pinch-zooming in bursts and prints every pipeline created, in time order, with its compile
 // time. Run with a cold cache (node tests/perf/cold-compare.mjs moves it aside) to see first use.
 // Labels read like "[BGRA8+D16] CoverBoundsRenderStep + $1DBlur12[…]": $…Blur = a CSS blur or
 // blurred box-shadow, RadialGradient = a CSS gradient, AnalyticClip = drawn under a rounded clip.
-// Usage: node tests/perf/pipeline-trace.mjs <url> [out.json]
+// Usage: node tests/perf/pipeline-trace.mjs <url> [out.json]   (INJECT_CSS='…' to bisect)
 import { readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -15,10 +15,17 @@ const browser = await chromium.launch({ headless: false, args: ['--window-size=1
 const page = await (await browser.newContext({ viewport: null })).newPage();
 await page.goto(url);
 await page.waitForSelector('.react-flow__node');
+if (process.env.INJECT_CSS) await page.addStyleTag({ content: process.env.INJECT_CSS });
 await page.waitForTimeout(2500);
 await browser.startTracing(page, {
   path: out,
-  categories: ['disabled-by-default-skia.shaders', 'gpu', 'gpu.dawn', 'disabled-by-default-gpu.dawn'],
+  categories: [
+    'disabled-by-default-skia.shaders',
+    'gpu',
+    'gpu.dawn',
+    'disabled-by-default-gpu.dawn',
+    'blink.user_timing',
+  ],
 });
 const size = await page.evaluate(() => ({ w: innerWidth, h: innerHeight }));
 await page.mouse.move(size.w / 2, size.h / 2);
@@ -31,6 +38,14 @@ for (let k = 0; k < 8; k++) {
   await page.waitForTimeout(300);
 }
 await page.keyboard.up('Control');
+await page.evaluate(() => performance.mark('sweep'));
+// Pointer sweep across the board (hover effects, ports, overlay buttons).
+for (let pass = 0; pass < 3; pass++)
+  for (let i = 0; i <= 60; i++) {
+    await page.mouse.move(40 + ((size.w - 80) * i) / 60, size.h / 2 + Math.sin(i / 6) * size.h * 0.3);
+    await page.waitForTimeout(16);
+  }
+await page.waitForTimeout(500);
 await browser.stopTracing();
 await browser.close();
 
@@ -41,8 +56,10 @@ for (const e of events) if (e.ts && e.ts < t0) t0 = e.ts;
 const created = events
   .filter((e) => e.name === 'CreatePipelineAsyncEvent::InitializeImpl')
   .sort((a, b) => a.ts - b.ts);
+const sweepAt = events.find((e) => e.name === 'sweep')?.ts ?? Number.POSITIVE_INFINITY;
 for (const e of created)
   console.log(
+    e.ts >= sweepAt ? 'sweep' : 'zoom ',
     `${String(Math.round((e.ts - t0) / 1000)).padStart(6)} ms  ${String(Math.round(e.dur / 1000)).padStart(4)} ms  ${e.args.label}`,
   );
 console.log(`${created.length} pipelines; trace: ${out}`);

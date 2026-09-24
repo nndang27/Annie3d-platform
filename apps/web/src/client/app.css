@@ -414,7 +414,8 @@ body {
   border: 1px solid #e6e6e2;
   border-radius: 18px;
   box-shadow: 0 1px 0 rgb(0 0 0 / 0.04);
-  overflow: hidden;
+  /* No overflow clip: a rounded clip over images and icons compiled extra GPU pipelines when
+     zooming (tests/perf/pipeline-trace.mjs). The preview rounds its own top corners instead. */
   transition:
     border-color 120ms,
     box-shadow 120ms;
@@ -476,14 +477,28 @@ body {
   border-bottom: 1px solid #efefec;
   display: grid;
   place-items: center;
-  overflow: hidden;
   position: relative;
   color: var(--text-muted);
   font-size: 12.5px;
+  /* Inside the card's 1px border: 18px - 1px. Children round themselves (below) rather than
+     being clipped, so images draw as plain rounded rects. */
+  border-radius: 17px 17px 0 0;
 }
 .node-preview.input-media {
   height: 236px;
   border-bottom: 0;
+  border-radius: 17px;
+}
+.node-preview > img,
+.node-preview > video,
+.node-preview > .grid4 {
+  border-radius: inherit;
+}
+.node-preview .grid4 > :nth-child(1) {
+  border-top-left-radius: 17px;
+}
+.node-preview .grid4 > :nth-child(2) {
+  border-top-right-radius: 17px;
 }
 .node-preview .placeholder {
   display: flex;

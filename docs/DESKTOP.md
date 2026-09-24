@@ -185,3 +185,28 @@ The sharp re-raster at the new scale is what compiles the new GPU pipelines, so 
 during the gesture only moves the stall to the settle. Only never re-rastering removes it, and
 that leaves text blurry. Warm zooming already has no long frames, so the 30–45 % raster saving
 buys nothing visible. Not shipped; revisit if a heavy board shows raster-bound zoom frames.
+
+## Fix: no rounded clip over node content (2026-09-25)
+
+`tests/perf/pipeline-trace.mjs` (now with a pointer sweep and `INJECT_CSS` bisecting) named the
+remaining cold compiles. Hiding groups of elements showed:
+
+- `Image … AnalyticClip` (116 ms) and `MiddleOutFan/TessellateCurves [EvenOdd]` (61 ms): the
+  card's `overflow: hidden` + `border-radius` clip over images, drawn as a stencil path when
+  zoomed. Fixed: the card no longer clips; `.node-preview` rounds its own top corners (all four
+  on input nodes) and its image, video and packshot-grid corners round themselves. Pixel diff of
+  all 13 example nodes at 4× density: max 7 levels (anti-aliasing), one sub-pixel edge on a Run
+  button.
+- `HWYUVImage` (113 ms) and `… DstIn` (70 ms): the hovered node's `<video>` (decoded video
+  frames, rounded corners). Inherent to showing video; compiled once, on first playback.
+- `TessellateStrokes … AnalyticClip` (58 ms): stroked SVG icons in nodes at large zoom; the
+  clip is not a rounded one (none left). Left as is.
+
+| Cold shader cache | Start of the day | After blur fix | Now |
+| --- | --- | --- | --- |
+| Chrome, zoom | 7–8 stalls, ≤258 ms | 4, ≤110 ms | 3, ≤92 ms (3 rounds) |
+| Desktop app, zoom | 9–11, ≤250 ms | 2–3, ≤258 ms | 2, ≤100 ms (2 truly cold runs) |
+| Desktop app, pointer sweep | 4–5, ≤225 ms | 1, ≤117 ms | 1, ≤92 ms |
+
+For reference, the same rig gives tldraw 1 stall (≤125 ms) and Excalidraw 1 (67 ms).
+E2E canvas, simulation and responsive: 72/72 across Chromium, WebKit and Firefox.

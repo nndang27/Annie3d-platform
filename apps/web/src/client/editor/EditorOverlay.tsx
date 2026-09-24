@@ -5,6 +5,7 @@ import { ArrowLeft, Brush, Camera, Columns2, Eraser, Lasso, Pause, Play, Rotate3
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ApiError, api } from '../api/client';
 import { attachRun } from '../chrome/RunDialog';
+import { afterNextPaint } from '../lib/afterNextPaint';
 import { perfEnd } from '../lib/perf';
 import { dispatch, useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
@@ -44,7 +45,11 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
   const queryClient = useQueryClient();
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ModelEditor | null>(null);
+  /** The WebGL editor, once built (after the overlay's first paint); effects that need it wait for it. */
+  const [glEditor, setGlEditor] = useState<ModelEditor | null>(null);
   const [tool, setTool] = useState<Tool>('orbit');
+  const toolRef = useRef(tool);
+  toolRef.current = tool;
   const [sel, setSel] = useState({ faces: 0, regions: 0 });
   const [viewing, setViewing] = useState<string | null>(null);
   const [compareId, setCompareId] = useState<string | null>(null);
@@ -82,13 +87,22 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
     canvas.setAttribute('data-testid', 'editor-canvas');
     canvas.setAttribute('aria-label', '3D viewport');
     host.prepend(canvas);
-    const ed = new ModelEditor(canvas, {
-      onSelection: (faces, regions) => setSel({ faces, regions }),
-      onTime: (t, d, playing) => setTime({ t, d, playing }),
+    // The click that opened the editor paints the overlay first; the WebGL context and the
+    // environment map (~50 ms) are built right after that paint (lib/afterNextPaint.ts).
+    let ed: ModelEditor | null = null;
+    const cancel = afterNextPaint(() => {
+      ed = new ModelEditor(canvas, {
+        onSelection: (faces, regions) => setSel({ faces, regions }),
+        onTime: (t, d, playing) => setTime({ t, d, playing }),
+      });
+      const t = toolRef.current;
+      if (t === 'brush' || t === 'lasso') ed.setTool(t);
+      editorRef.current = ed;
+      setGlEditor(ed);
     });
-    editorRef.current = ed;
     return () => {
-      ed.dispose();
+      cancel();
+      ed?.dispose();
       canvas.remove();
       editorRef.current = null;
     };
@@ -97,7 +111,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
   // (Re)load the shown version; a new current version after an edit replaces the view.
   const url = glbOf(shown);
   useEffect(() => {
-    const ed = editorRef.current;
+    const ed = glEditor;
     if (!ed || !url) return;
     setLoading(true);
     ed.load(url)
@@ -108,12 +122,12 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
       .catch((e: Error) => toast(`Could not load the model: ${e.message}`, 'error'))
       .finally(() => setLoading(false));
     setSel({ faces: 0, regions: 0 });
-  }, [url]);
+  }, [url, glEditor]);
 
   const compareUrl = glbOf(versions.find((v) => v.id === compareId));
   useEffect(() => {
-    void editorRef.current?.compareWith(compareUrl ?? null);
-  }, [compareUrl]);
+    void glEditor?.compareWith(compareUrl ?? null);
+  }, [compareUrl, glEditor]);
 
   const pick = useCallback((t: Tool) => {
     setTool(t);

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { renderSVG } from 'uqr';
+import { afterNextPaint } from '../lib/afterNextPaint';
 import { perfEnd } from '../lib/perf';
 import { dispatch, useBoard } from '../store/board';
 import { toast, useUi } from '../store/ui';
@@ -53,6 +54,8 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const slotEl = useRef<HTMLDivElement | null>(null);
   const viewer = useRef<SimViewer | null>(null);
+  /** The WebGL viewer, once built (after the overlay's first paint); the model load waits for it. */
+  const [glViewer, setGlViewer] = useState<SimViewer | null>(null);
   const [ready, setReady] = useState(false);
   const [spin, setSpin] = useState(true);
   const [room] = useState(newRoomId);
@@ -76,18 +79,24 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
     c.setAttribute('data-testid', 'sim-canvas');
     canvasRef.current = c;
     slotEl.current?.appendChild(c);
-    const v = new SimViewer(c);
-    viewer.current = v;
-    v.setSpin(true);
+    // Paint the simulator first, then build the WebGL context (see EditorOverlay).
+    let v: SimViewer | null = null;
+    const cancel = afterNextPaint(() => {
+      v = new SimViewer(c);
+      viewer.current = v;
+      v.setSpin(true);
+      setGlViewer(v);
+    });
     return () => {
-      v.dispose();
+      cancel();
+      v?.dispose();
       c.remove();
       canvasRef.current = null;
       viewer.current = null;
     };
   }, []);
   useEffect(() => {
-    const v = viewer.current;
+    const v = glViewer;
     if (!v) return;
     if (!inputs.glb) {
       perfEnd('simulator.open');
@@ -100,7 +109,7 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
         setReady(true);
       })
       .catch((e: Error) => toast(`Could not load the 3D model: ${e.message}`, 'error'));
-  }, [inputs.glb]);
+  }, [inputs.glb, glViewer]);
 
   // Two-way remote link.
   const state = useRef({ title: inputs.title, env, spin });

@@ -57,3 +57,42 @@ parallel image requests queue behind each other (≈ 1.1 s each). Visitors far f
 their own latency on top. Cloudflare documents quick tunnels as a testing tool. For links that
 must feel like the product, use a Cloudflare preview deployment (edge speed, not production
 traffic).
+
+## Opening the 3D editor and the simulator (measured 2026-09-25)
+
+`tests/perf/features.mjs` opens each overlay twice as a first-time visitor (a person's pointer
+rests 300 ms on the node before clicking) and reads the app's own Performance panel, Event
+Timing and Long Animation Frames. `--net` emulates 10 Mbps / 40 ms; `--cold` empties the GPU
+shader cache.
+
+| Local, warm GPU cache | Before | After |
+| --- | --- | --- |
+| Open 3D editor, first / second | 375 / 60 ms | 66–90 / 66 ms |
+| Open simulator, first / second | 365 / 52 ms | 74–78 / 63 ms |
+| Open 3D editor first, 10 Mbps link | 455 ms | 66 ms |
+| INP (whole session) | 136–152 ms | 56–64 ms |
+
+What the time was, and the fix for each:
+
+1. **React Suspense throttle (~300 ms).** `React.lazy` suspends on its first render even when the
+   module has already loaded, and React holds the fallback for FALLBACK_THROTTLE_MS. Timeline
+   marks showed click → editor constructor 322 ms on the first open, 20 ms later. Fix
+   (`lib/preload.ts`, the react-lazy-with-preload pattern): once the chunk is in, the overlay
+   renders the component directly; the choice is fixed at mount so it never remounts.
+2. **Download of three.js (~700 KB) on a real link.** Fix: prefetch on intent (hovering a 3D
+   result or a simulation node, as Remix `prefetch="intent"`) plus an idle prefetch of the
+   editor after the board is ready when it has a model to open (skipped with Save-Data). No long
+   frames appear during page load or the idle prefetch.
+3. **WebGL context and environment map inside the click (~50 ms).** Effects run before paint
+   after a discrete event. Fix (`lib/afterNextPaint.ts`): the overlay paints first, the WebGL
+   editor/viewer is built right after; the model load waits for it.
+
+Tried and not kept: `WebGLRenderer.compileAsync` before the first frame. On ANGLE/Metal the
+render pipeline state is still created at the first draw, so the cold first-render freeze only
+fell 202 → 130 ms for the editor, did not change for the simulator, and every warm open got
+15–20 ms slower (three.js polls completion every 10 ms).
+
+Cold GPU cache (first use on a machine) still costs one-off compiles when the editor or the
+simulator first draws (editor ~350 ms environment map + ~130 ms first frame; simulator ~260 ms):
+these are Metal pipeline compiles inside Chromium, the same class as the board's first-zoom
+stalls (docs/DESKTOP.md).

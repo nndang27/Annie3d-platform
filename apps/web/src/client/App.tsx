@@ -21,14 +21,15 @@ import { Toasts } from './chrome/Toasts';
 import { Toolbar } from './chrome/Toolbar';
 import { TopBar } from './chrome/TopBar';
 import { timed } from './lib/perf';
+import { editorOverlay, simulatorOverlay } from './lib/preload';
 import { loadGuestBoard, loadSnapshot, useBoard } from './store/board';
 import { clearGuest, clearGuestFiles, loadGuest, rehydrateGuestUrls } from './store/persist';
 import { toast, useUi } from './store/ui';
 
-// The 3D editor (three.js, ~600 kB) loads only when a node is opened (bundle-dynamic-imports).
-const EditorOverlay = lazy(() => import('./editor/EditorOverlay'));
-// F13 simulator (three.js + layouts) loads only when a Simulation node is opened.
-const SimulatorOverlay = lazy(() => import('./sim/SimulatorOverlay'));
+// The 3D editor (three.js, ~700 kB) and the F13 simulator load only when needed
+// (bundle-dynamic-imports), starting on hover over a node that opens them (lib/preload.ts).
+const EditorOverlay = editorOverlay.Component;
+const SimulatorOverlay = simulatorOverlay.Component;
 const PerfPanel = lazy(() => import('./chrome/PerfPanel'));
 // Desktop app only (window.annieDesktop from the Electron preload): a separate chunk the website never loads.
 const DesktopIntegration = lazy(() => import('./desktop/DesktopIntegration'));

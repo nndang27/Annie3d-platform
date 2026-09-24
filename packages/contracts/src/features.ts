@@ -34,7 +34,7 @@ export const FEATURES: Feature[] = [
       `${C}/{main.tsx,App.tsx,app.css,zod-setup.ts}`,
       `${C}/api/**`,
       `${C}/store/**`,
-      `${C}/lib/{media,throttleRaf,useMedia,zoom}.ts`,
+      `${C}/lib/{media,throttleRaf,useMedia,zoom,preload,afterNextPaint}.ts`,
       'packages/contracts/src/**',
       'packages/ui/**',
       'index.html',

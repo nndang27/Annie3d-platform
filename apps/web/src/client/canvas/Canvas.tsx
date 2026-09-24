@@ -21,6 +21,7 @@ import {
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { importBoardFile, isBoardFile, setViewCentre } from '../lib/boardFile';
 import { markBoardReady } from '../lib/perf';
+import { preloadEditorWhenIdle } from '../lib/preload';
 import { throttleRAF } from '../lib/throttleRaf';
 import { useMedia } from '../lib/useMedia';
 import { MAX_ZOOM, MIN_ZOOM } from '../lib/zoom';
@@ -284,7 +285,17 @@ export function Canvas() {
     // "Board ready": the first frame with node previews decoded (Performance panel).
     requestAnimationFrame(() => {
       const imgs = [...document.querySelectorAll<HTMLImageElement>('.node-preview img')];
-      void Promise.all(imgs.map((i) => i.decode().catch(() => {}))).then(markBoardReady);
+      void Promise.all(imgs.map((i) => i.decode().catch(() => {}))).then(() => {
+        markBoardReady();
+        preloadEditorWhenIdle(() => {
+          const { graph, versions } = useBoard.getState();
+          return [...graph.nodes.values()].some(
+            (n) =>
+              !!n.currentVersionId &&
+              !!versions.get(n.currentVersionId)?.outputs.some((o) => o.kind === 'model3d'),
+          );
+        });
+      });
     });
   }, [rf, applyZoom]);
 

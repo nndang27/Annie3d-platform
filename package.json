@@ -19,7 +19,8 @@
     "perf": "node tests/perf/run-all.mjs",
     "db:generate": "pnpm --filter @annie3d/db generate",
     "db:migrate": "pnpm --filter @annie3d/db migrate",
-    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build"
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "test:db": "node scripts/test-db.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

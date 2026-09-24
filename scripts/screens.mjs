@@ -65,6 +65,6 @@ await page.screenshot({ path: out('08-signin-on-run') });
 await page.keyboard.press('Escape');
 
 await zoomTo(7, 'Zoom out');
-await page.screenshot({ path: out('09-compact-lod') });
+await page.screenshot({ path: out('09-min-zoom-grid') });
 await browser.close();
 console.log('screens saved');

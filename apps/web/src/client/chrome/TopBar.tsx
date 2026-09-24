@@ -2,11 +2,12 @@ import { creditsFor, NODE_DEFS, STARTER_META, STARTERS } from '@annie3d/contract
 import { useQuery } from '@tanstack/react-query';
 import { useReactFlow, useViewport } from '@xyflow/react';
 import { ChevronDown, Share2, Sparkles } from 'lucide-react';
-import { memo, useMemo, useRef, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { api } from '../api/client';
 import { useMe } from '../api/me';
 import { insertStarter } from '../canvas/actions';
 import { signOut } from '../lib/auth';
+import { MAX_ZOOM, MIN_ZOOM, zoomStep } from '../lib/zoom';
 import { useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
 import { toast, useUi } from '../store/ui';
@@ -213,24 +214,17 @@ function RunAll() {
   );
 }
 
-const ZOOM_STEP = 1.25;
-
 const Zoom = memo(function Zoom() {
   const { zoom } = useViewport();
   const rf = useReactFlow();
-  // Rapid clicks interrupt the running transition; stepping from the live (mid-animation) zoom
-  // made five clicks move 54% → 43% (E2E, 2026-09-24). Step from the pending target instead.
-  const target = useRef<number | null>(null);
-  const step = (factor: number) => {
-    const next = Math.min(2, Math.max(0.1, (target.current ?? rf.getZoom()) * factor));
-    target.current = next;
-    void rf.zoomTo(next, { duration: 150 }).then(() => {
-      if (target.current === next) target.current = null;
-    });
-  };
   return (
     <>
-      <button type="button" aria-label="Zoom out" onClick={() => step(1 / ZOOM_STEP)}>
+      <button
+        type="button"
+        aria-label="Zoom out"
+        onClick={() => zoomStep(rf, -1)}
+        disabled={zoom <= MIN_ZOOM + 0.001}
+      >
         −
       </button>
       <button
@@ -243,7 +237,12 @@ const Zoom = memo(function Zoom() {
       >
         {Math.round(zoom * 100)}%
       </button>
-      <button type="button" aria-label="Zoom in" onClick={() => step(ZOOM_STEP)}>
+      <button
+        type="button"
+        aria-label="Zoom in"
+        onClick={() => zoomStep(rf, 1)}
+        disabled={zoom >= MAX_ZOOM - 0.001}
+      >
         +
       </button>
     </>

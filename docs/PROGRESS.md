@@ -339,3 +339,20 @@ create/reuse, public payload, cross-target isolation, the OG page without script
 | --- | --- |
 | MVP feature completeness (UI + simulated AI) | ≈ 92% |
 | Production readiness for 10,000 users, excluding the real AI engines | ≈ 82% |
+
+## 2026-09-24 — Miro-style grid and zoom (user request)
+
+Measured on a live Miro board with a canvas pixel probe (20–200%):
+
+| What | Miro (measured) | Annie 3D now |
+| --- | --- | --- |
+| Grid | two weights; minor 80 board units below 100%, 20 units from 100% (×4 per power of 4); major every 4 minors | same (`canvas/Grid.tsx`) |
+| Minor line strength | grows with on-screen cell size, ≈ clamp((px−12)/48): 16 px→0.2, 40 px→0.5, 60 px→full; majors always full | same formula |
+| Level change | seamless: old minors become the new majors, no jump or fade animation | same |
+| Colours | background #f2f2f2, lines #e2e2e2 | same |
+| +/− steps | 20, 33, 50, 75, 100, 150, 200% (animated) | 25, 33, 50, 75, 100, 150, 200% (300 ms) |
+| Range | 20–200% on an empty board | 25–200% (user: no tiny zoom) |
+| Mouse wheel | zooms around the cursor | zooms around the cursor, eased; trackpad two-finger scroll still pans, pinch zooms |
+
+Removed: the compact (text-only summary) node level. Exact Miro easing was not measurable (the
+browser pane throttles animation frames), so the 300 ms duration is our choice, not a measurement.

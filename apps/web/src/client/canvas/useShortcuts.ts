@@ -1,5 +1,6 @@
 import { useReactFlow } from '@xyflow/react';
 import { useEffect } from 'react';
+import { zoomStep, zoomToLevel } from '../lib/zoom';
 import { redo, undo } from '../store/board';
 import { useUi } from '../store/ui';
 import { duplicateNodes } from './actions';
@@ -44,6 +45,17 @@ export function useShortcuts() {
         e.preventDefault();
         const f = rf.screenToFlowPosition({ x: innerWidth / 2 - 150, y: innerHeight / 2 - 120 });
         useUi.setState({ palette: { x: innerWidth / 2 - 130, y: innerHeight / 3, flowX: f.x, flowY: f.y } });
+        return;
+      }
+      // ⌘+/⌘− (and + / − alone) step through the zoom presets; Shift+0 goes to 100% (Miro).
+      if (k === '=' || k === '+' || (k === '-' && !e.shiftKey)) {
+        e.preventDefault();
+        zoomStep(rf, k === '-' ? -1 : 1);
+        return;
+      }
+      if (e.shiftKey && (k === '0' || k === ')')) {
+        e.preventDefault();
+        zoomToLevel(rf, 1);
         return;
       }
       if (mod) return;

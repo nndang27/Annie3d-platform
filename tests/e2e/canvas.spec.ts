@@ -120,10 +120,87 @@ test.describe('guest canvas', () => {
     await expect(dialog).toBeHidden();
   });
 
-  test('LOD switches to compact cards only after zoom settles', async ({ page }) => {
+  test('zoom stays between 25% and 200%, steps through presets, never shows a summary view', async ({
+    page,
+  }) => {
     await openCanvas(page);
-    for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Zoom out' }).click();
-    await expect(page.locator('.node.lod-compact').first()).toBeVisible();
-    await expect(page.locator('.node-preview')).toHaveCount(0);
+    const level = page.getByTestId('zoom-level');
+    const out = page.getByRole('button', { name: 'Zoom out' });
+    // Each click waits for the 300 ms step to finish, so the next check sees the settled zoom.
+    const settle = async () => {
+      let prev = '';
+      await expect
+        .poll(
+          async () => {
+            const t = (await level.textContent()) ?? '';
+            const same = t === prev;
+            prev = t;
+            return same;
+          },
+          { intervals: [150] },
+        )
+        .toBe(true);
+    };
+    await settle();
+    for (let i = 0; i < 10 && (await out.isEnabled()); i++) {
+      await out.click();
+      await settle();
+    }
+    await expect(level).toHaveText('25%');
+    await expect(out).toBeDisabled();
+    await page.waitForTimeout(400);
+    // Nodes keep their previews at the smallest zoom (no text-only cards).
+    await expect(page.locator('.node-preview').first()).toBeVisible();
+    await expect(page.locator('.lod-compact')).toHaveCount(0);
+    const cell = Number(await page.getByTestId('canvas-grid').getAttribute('data-cell'));
+    // Miro grid: minor cell 80 board units at 25% = 20 px, faint; majors every 4 cells.
+    expect(cell).toBe(20);
+    const zin = page.getByRole('button', { name: 'Zoom in' });
+    await zin.click();
+    await expect(level).toHaveText('33%');
+    await settle();
+    for (let i = 0; i < 12 && (await zin.isEnabled()); i++) {
+      await zin.click();
+      await settle();
+    }
+    await expect(level).toHaveText('200%');
+    await expect(zin).toBeDisabled();
+    // Shift+0 returns to 100%.
+    await page.locator('.react-flow__pane').click({ position: { x: 10, y: 400 } });
+    await page.keyboard.press('Shift+0');
+    await expect(level).toHaveText('100%');
+  });
+
+  test('a mouse wheel zooms around the cursor within the limits; a trackpad scroll pans', async ({
+    page,
+  }) => {
+    await openCanvas(page);
+    const level = page.getByTestId('zoom-level');
+    const pane = page.locator('.react-flow__pane');
+    const wheel = (deltaY: number, deltaX = 0) =>
+      pane.dispatchEvent('wheel', {
+        deltaY,
+        deltaX,
+        deltaMode: 0,
+        clientX: 640,
+        clientY: 400,
+        bubbles: true,
+        cancelable: true,
+      });
+    const before = Number.parseInt((await level.textContent()) ?? '0', 10);
+    await wheel(-100);
+    await expect
+      .poll(async () => Number.parseInt((await level.textContent()) ?? '0', 10))
+      .toBeGreaterThan(before);
+    for (let i = 0; i < 20; i++) await wheel(-100);
+    await expect(level).toHaveText('200%');
+    for (let i = 0; i < 40; i++) await wheel(100);
+    await expect(level).toHaveText('25%');
+    const t = () =>
+      page.locator('.react-flow__viewport').evaluate((el) => (el as HTMLElement).style.transform);
+    const t0 = await t();
+    await wheel(30.5, 2);
+    await expect.poll(t).not.toBe(t0);
+    await expect(level).toHaveText('25%');
   });
 });

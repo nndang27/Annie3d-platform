@@ -40,7 +40,6 @@ export const FlowNode = memo(function FlowNode({ id, selected }: NodeProps) {
   const node = useBoard((s) => s.graph.nodes.get(id));
   const lod = useUi((s) => s.lod);
   if (!node) return null;
-  if (lod === 'compact') return <CompactNode node={node} />;
   const def = NODE_DEFS[node.kind];
   return (
     <div className={`node lod-${lod}`} data-testid={`node-${node.kind}`} data-node-id={id}>
@@ -57,23 +56,6 @@ export const FlowNode = memo(function FlowNode({ id, selected }: NodeProps) {
     </div>
   );
 });
-
-function CompactNode({ node }: { node: NodeRecord }) {
-  const stale = useBoard((s) => s.stale.has(node.id));
-  return (
-    <div
-      className="node lod-compact"
-      style={{
-        borderLeft: `6px solid ${node.kind in NODE_DEFS && NODE_DEFS[node.kind].output ? PORT_COLOR[NODE_DEFS[node.kind].output!.type] : '#ccc'}`,
-      }}
-    >
-      <Ports node={node} />
-      <div className="compact-kind">{NODE_DEFS[node.kind].label}</div>
-      <div className="compact-title">{node.label ?? NODE_DEFS[node.kind].label}</div>
-      {stale && <span className="badge-stale">stale</span>}
-    </div>
-  );
-}
 
 function Ports({ node }: { node: NodeRecord }) {
   const def = NODE_DEFS[node.kind];

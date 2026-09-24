@@ -4,8 +4,9 @@
 @import "@xyflow/react/dist/base.css";
 
 :root {
-  --canvas-bg: #f6f6f4;
+  --canvas-bg: #f2f2f2;
   --dot: #d6d6d0;
+  --grid-line: #e2e2e2;
   --pill-bg: #ffffff;
   --pill-border: #e4e4df;
   --node-w: 300px;
@@ -472,24 +473,6 @@ textarea.prompt {
 .node.lod-medium .node-foot {
   display: none;
 }
-/* Compact cards counter-scale by the settled zoom (set on :root by Canvas) so titles stay readable. */
-.node.lod-compact {
-  --k: calc(1 / var(--settled-zoom, 0.25));
-  padding: calc(6px * var(--k));
-  min-height: 120px;
-  box-sizing: border-box;
-}
-.node.lod-compact .compact-title {
-  font-size: min(calc(15px * var(--k)), 72px);
-  font-weight: 600;
-  line-height: 1.15;
-  overflow-wrap: anywhere;
-}
-.node.lod-compact .compact-kind {
-  font-size: min(calc(11px * var(--k)), 52px);
-  color: var(--text-muted);
-}
-
 /* ---------------------------------------------------------------- agent dock */
 .agent {
   width: 340px;
@@ -1379,4 +1362,12 @@ a.btn-primary {
   gap: 6px;
   align-items: center;
   text-decoration: none;
+}
+
+/* Miro-style grid layer (canvas/Grid.tsx) */
+.canvas-grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }

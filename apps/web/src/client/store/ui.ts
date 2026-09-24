@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type Lod = 'full' | 'medium' | 'compact';
+export type Lod = 'full' | 'medium';
 
 export interface UiState {
   /** Level of detail from the SETTLED zoom (tldraw getEfficientZoomLevel: LOD never changes mid-gesture). */
@@ -52,7 +52,8 @@ export const useUi = create<UiState>()(() => ({
 }));
 
 export function lodFor(zoom: number): Lod {
-  return zoom >= 0.6 ? 'full' : zoom >= 0.3 ? 'medium' : 'compact';
+  // No compact/summary level: the canvas never zooms out far enough to need it (MIN_ZOOM).
+  return zoom >= 0.6 ? 'full' : 'medium';
 }
 
 let toastId = 0;

@@ -7,8 +7,6 @@ import {
   PORT_COLOR,
 } from '@annie3d/contracts';
 import {
-  Background,
-  BackgroundVariant,
   type Connection,
   type Edge,
   type Node,
@@ -21,9 +19,12 @@ import {
 } from '@xyflow/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { throttleRAF } from '../lib/throttleRaf';
+import { MAX_ZOOM, MIN_ZOOM } from '../lib/zoom';
 import { dispatch, setPositionsLocal, useBoard } from '../store/board';
 import { lodFor, useUi } from '../store/ui';
 import { FlowNode } from './FlowNode';
+import { Grid } from './Grid';
+import { useWheelZoom } from './useWheelZoom';
 
 // Defined once at module level (React Flow custom-nodes guide: prevents re-mounting every render).
 const nodeTypes = { annie: FlowNode };
@@ -82,6 +83,8 @@ export function Canvas() {
   const rf = useReactFlow();
   const dragStart = useRef(new Map<string, { x: number; y: number }>());
   const connectFrom = useRef<{ nodeId: string } | null>(null);
+  const host = useRef<HTMLDivElement>(null);
+  useWheelZoom(host);
 
   const nodes = useMemo(
     () =>
@@ -214,8 +217,6 @@ export function Canvas() {
    */
   const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const applyZoom = useCallback((zoom: number) => {
-    // Compact cards counter-scale their text by the settled zoom so titles stay readable (Miro/tldraw).
-    document.documentElement.style.setProperty('--settled-zoom', String(Math.max(zoom, 0.1)));
     const lod = lodFor(zoom);
     const s = useUi.getState();
     if (s.lod !== lod || Math.abs(s.zoom - zoom) > 0.05) useUi.setState({ lod, zoom });
@@ -284,6 +285,7 @@ export function Canvas() {
 
   return (
     <ReactFlow
+      ref={host}
       nodes={nodes}
       edges={edges}
       nodeTypes={nodeTypes}
@@ -305,8 +307,8 @@ export function Canvas() {
       onPaneClick={() => useUi.setState({ contextMenu: null, palette: null })}
       // Viewport culling: off-screen nodes are not rendered (React Flow perf guide; tldraw culling).
       onlyRenderVisibleElements
-      minZoom={0.1}
-      maxZoom={2}
+      minZoom={MIN_ZOOM}
+      maxZoom={MAX_ZOOM}
       panOnDrag={tool === 'hand' ? true : [1, 2]}
       selectionOnDrag={tool === 'select'}
       panOnScroll
@@ -319,8 +321,7 @@ export function Canvas() {
       proOptions={{ hideAttribution: false }}
       style={{ background: 'var(--canvas-bg)' }}
     >
-      {/* One SVG <pattern> for the whole grid (xyflow Background), not one element per dot. */}
-      <Background variant={BackgroundVariant.Dots} gap={20} size={1.2} color="var(--dot)" />
+      <Grid />
     </ReactFlow>
   );
 }

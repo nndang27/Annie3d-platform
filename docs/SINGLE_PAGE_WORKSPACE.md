@@ -25,37 +25,42 @@ heavy, so the canvas never renders live 3D (section 4.1), and we add an editor o
 
 ### 2.1 Page regions
 
+The canvas is a **free node graph**, exactly like the reference: any node can be added
+anywhere and wired to any compatible port. Nothing is locked into a fixed pipeline.
+
 ```
-┌───────────────────────────────────────────────────────────────────────────────────────────┐
-│ ◧ 3Dads ▾ │ Serum launch ✎ │ ● Saved          [ ▶ Lines ▾ ]      ⊖ 72% ⊕ │ 💬 │ ⧉ │ ◐ 480 cr │ Share │ (A) │
-├───────────────────────────────────────────────────────────────────────────┬───────────────┤
-│                                                                           │ 3Dads Agent ● │
-│  ┌ Splash hero ─────────────────────────── ● Running 3/5 · 2:14 ─────┐    │ + ⟲           │
-│  │ [Photo]──▶[3D model]──▶[Stage]──▶[Ad video]──▶[Package]           │    │               │
-│  └───────────────────────────────────────────────────────────────────┘    │ plan / steps  │
-│                                                                           │ streamed here │
-│          [Packshot]◀──┘        [Text: brief]                              │               │
-│                                                                           │ ┌───────────┐ │
-│                                                                           │ │ Describe… │ │
-│                                                                           │ │ + ◎  ≤300cr▾ ↑│
-│              ┌──────────────────────────────────────┐                     │ └───────────┘ │
-│ ? Right-click│  ↖  ✋  💬 │ ＋ Photo  3D  Packshot  Video │ ⤓ Upload │      Feedback        │
-│   for menu   └──────────────────────────────────────┘                     │               │
-└───────────────────────────────────────────────────────────────────────────┴───────────────┘
+┌ ◧ 3Dads ▾ │ Serum launch ✎ │ ● Saved ─────────── [ Starters ▾ ]  [ ▶ Run all · 38 cr ] ─── 72% │ 💬 │ ⧉ │ 480 cr │ Share ▾ │ (A) ┐
+│                                                                                                           │ Agent ● │
+│  [Photo: serum front] ●──╮                    ╭──● [Packshot: ¾ hero]                                     │         │
+│                          ╰──● [3D model v3] ●─┤                                                           │  plan / │
+│                                               ╰──● [Stage: splash, pastel] ●──╮                           │  steps  │
+│  [Text: "Meet the new formula"] ●─────────────────────────────────────────────┴──● [Ad video 9:16 10s] ●  │         │
+│                                                                                                           │ ┌─────┐ │
+│  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ┐                                                                                      │ │Desc…│ │
+│    Drop your product photo                                                                                │ └─────┘ │
+│  └ ─ ─ ─ ─ ─ ─ ─ ─ ┘            ┌──────────────────────────────────────────────┐                        │         │
+│                                 │ ↖ ✋ 💬 │ ＋ Photo Text 3D Stage Packshot Video Export │                        │         │
+└─────────────────────────────────┴──────────────────────────────────────────────┴────────────────────────┴─────────┘
 ```
 
 - **Top-left pill**: logo menu (Home, My projects, Help, Sign in/out), editable project
   title, save state (Saved / Saving / Offline, local-first).
-- **Top-centre**: **Lines ▾** replaces "Create Template": a drawer of the three production
-  lines (Teardown reveal, Stone & water, Splash hero) with 4-second previews; choosing one
-  drops its node group on the canvas with the photo slot highlighted.
+- **Top-centre**: **Starters ▾** replaces "Create Template": the three production lines
+  (Teardown reveal, Stone & water, Splash hero) with 4-second previews. Choosing one drops
+  **ordinary, editable nodes** pre-wired on the canvas: no frame, no lock. The user can delete,
+  rewire, duplicate or add nodes afterwards. The line's special behaviour lives in node
+  presets (Stage look "Splash, pastel", Ad video motion "Splash hero"), so any user-built
+  graph can pick the same presets. **Run all** runs every stale node in dependency order and
+  shows the total estimated cost.
 - **Top-right pill**: zoom, comments, assets (uploads + outputs of this project), agent
   panel toggle, **credits meter** (F11), **Share ▾** (F10, F12), avatar.
 - **Right dock**: agent panel (F7), collapsible to an icon; resizable; on phones becomes a
   bottom sheet. The composer carries a credit budget (≤ N credits ▾) like the reference.
-- **Bottom-centre dock**: Select · Hand · Comment, then **＋** plus the five most-used node
-  types as one-tap buttons (Photo, 3D, Packshot, Video, Upload). Everything else stays in the
-  "+" palette. The region brush is not here; it lives in the 3D editor.
+- **Bottom-centre dock**: Select · Hand · Comment, then **＋** (full palette, also on
+  right-click and `N`) and one-tap buttons for every MVP node kind: Photo, Text, 3D model,
+  Stage, Packshot, Ad video, Export. Dragging a wire from an output port into empty space
+  opens the palette filtered to nodes that accept that port type. The region brush is not
+  here; it lives in the 3D editor.
 - **Corners**: right-click hint bottom-left; Feedback bottom-right (feeds the alpha loop).
 
 ### 2.2 Node anatomy (all node kinds share it)
@@ -79,20 +84,27 @@ heavy, so the canvas never renders live 3D (section 4.1), and we add an editor o
 - **Output preview never uses WebGL** (section 4.1). 3D nodes show a poster; on hover or
   focus they play a short pre-rendered turntable clip. **Open 3D** opens the editor.
 
-### 2.3 Node kinds (MVP)
+### 2.3 Node kinds (MVP) and port types
 
-| Node | Inputs | Output | Feature |
-| --- | --- | --- | --- |
-| Photo | — | image | F2 input; ghost "Drop your product photo" slot on first visit |
-| Text | — | text | brief, F3 prompt, headline/CTA |
-| 3D model | image and/or text | model3d | F2, F3 (Router picks code or generative builder) |
-| Stage | model3d, text | scene | look presets of the line |
-| Packshot | model3d or scene | image[] | F4; camera chosen in the editor or automatic 4 angles |
-| Ad video | scene | video | F5; line timeline, aspects, duration |
-| Package | model3d, video, image[] | delivery | F6 GLB presets with pass/fail badges, MP4 set, packshots |
+Port types, each with its own colour on the port dot and wire: `image` (blue), `text`
+(grey), `model3d` (purple), `scene` (teal), `video` (coral), `file` (neutral). A wire can
+only connect matching types; incompatible ports dim while dragging.
 
-A **line** is a labelled group frame around its nodes with one Run for the whole line and a
-single progress header (reference: none; this is ours).
+| Node | Inputs (left) | Output (right) | Prompt / settings | Feature |
+| --- | --- | --- | --- | --- |
+| Photo | — | image | replace, crop | F2 input; first-visit ghost slot |
+| Text | — | text | free text: brief, headline, CTA, or a text-to-3D description | F3, captions |
+| Upload 3D | — | model3d | GLB/glTF/OBJ/STEP import | skip building |
+| 3D model | image ×n, text | model3d | prompt; builder Auto / Code / Generative; detail | F2, F3 |
+| Stage | model3d, text, image (style ref) | scene | look preset (Studio, Splash pastel, Stone & water, Dark lab…), background, light | look |
+| Packshot | model3d or scene | image | camera: 4 auto angles or framed in the editor; size | F4 |
+| Ad video | scene or model3d, text (headline), image (logo) | video | motion preset (Turntable, Hero orbit, Teardown reveal, Splash hero, Stone & water); aspect; duration | F5 |
+| Export | model3d, scene, video, image | file | GLB presets (Web, Google Merchant, Google Swirl) with pass/fail, MP4 set, PNG set | F6 |
+| Note | — | — | sticky note | canvas notes |
+
+Rules: any number of nodes; one output fans out to many inputs; a node shows **stale** when an
+upstream node changed; `Run` on a node offers Run this node / Run from here / Run with
+upstream. Every node keeps its versions (F9).
 
 ### 2.4 3D editor overlay (F8, F9, F4)
 
@@ -129,8 +141,9 @@ ready), **Embed code**, **Download**. Visibility: public or unlisted; revoke any
 
 ### 2.6 First visit (F1)
 
-The example board loads with a finished line, output already rendered. The Photo node of a
-second copy of the line is a dashed ghost slot: "Drop your product photo". Dropping a photo
+The example board loads as ordinary nodes with outputs already rendered. Beside it a ghost
+Photo node says "Drop your product photo"; dropping a photo there fills it and the user wires
+it (or asks the agent, or picks a Starter) like any other node. Dropping a photo
 asks for Google one-tap sign-in only when Run is pressed (F11). No tour modal; a single
 coachmark on the ghost slot.
 
@@ -148,7 +161,7 @@ editor it orbits. Hover previews become tap-to-play.
 | F2 image-to-3D | Photo → 3D model node |
 | F3 text-to-3D | Text → 3D model node, or ask the agent |
 | F4 3D-to-image | Packshot node; 📷 in the editor |
-| F5 3D-to-video | Lines ▾ → Ad video node inside the line group |
+| F5 3D-to-video | Ad video node with a motion preset; Starters ▾ drops a pre-wired graph |
 | F6 GLB export | Package node and Export ▾; preset badges pass/fail |
 | F7 agent | Right dock, budgeted composer |
 | F8 region edit | Editor overlay brush/lasso + agent with selection context |

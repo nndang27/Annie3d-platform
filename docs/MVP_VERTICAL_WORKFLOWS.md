@@ -196,11 +196,12 @@ timeline, not new agents.
 
 ## 9. What the canvas shows
 
-Opening the site shows a finished example of one line on the canvas. The line's nodes are
-laid out left to right in the order of section 4, collapsed into four visible groups:
-**Photo → Build → Stage → Ad**. Each group expands to its nodes. The user replaces the photo
-node and presses Run. The first full run is free after a one-tap sign-in; the next run
-needs a plan.
+A line is a **starter graph**, not a locked pipeline. Choosing it from Starters ▾ places
+ordinary nodes (Photo → 3D model → Stage → Ad video, plus Packshot and Export) already wired,
+which the user can edit, rewire, extend or delete. The line-specific logic (asset kit, rig,
+timeline, gates) is exposed as presets on the Stage and Ad video nodes, so the same presets
+work in any graph the user builds by hand. The first full run is free after a one-tap
+sign-in; the next run needs a plan.
 
 ## 10. Open decisions
 

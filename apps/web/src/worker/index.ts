@@ -4,12 +4,14 @@ import type { AppEnv } from './env';
 import { closeDb, getDb } from './lib/db';
 import { HttpError } from './lib/http';
 import { loadSession } from './lib/session';
+import { agentRoutes } from './routes/agent';
 import { assetRoutes } from './routes/assets';
 import { boardRoutes } from './routes/boards';
 import { creditRoutes } from './routes/credits';
 import { exportRoutes } from './routes/exports';
 import { me } from './routes/me';
 import { publicRoutes } from './routes/public';
+import { reelRoutes } from './routes/reels';
 import { runRoutes } from './routes/runs';
 import { shareRoutes } from './routes/shares';
 
@@ -81,5 +83,7 @@ app.route('/', publicRoutes);
 app.route('/', runRoutes);
 app.route('/', exportRoutes);
 app.route('/', shareRoutes);
+app.route('/', agentRoutes);
+app.route('/', reelRoutes);
 
 export default app;

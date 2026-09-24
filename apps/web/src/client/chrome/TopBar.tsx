@@ -11,6 +11,7 @@ import { useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
 import { toast, useUi } from '../store/ui';
 import { Popover } from './Popover';
+import { ReelButton } from './ReelDialog';
 
 const SAVE_LABEL = {
   saved: 'Saved',
@@ -31,6 +32,7 @@ export function TopBar() {
       </div>
       <Starters />
       <RunAll />
+      <ReelButton />
       <div className="spacer" />
       <div className="pill hide-sm">
         <Zoom />

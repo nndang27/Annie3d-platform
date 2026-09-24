@@ -134,5 +134,34 @@ if (phase === 'p8') {
   await page.waitForTimeout(300);
   await page.screenshot({ path: out('05-account-menu') });
 }
+if (phase === 'p9') {
+  const say = async (text) => {
+    await page.getByTestId('agent-input').fill(text);
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(
+      () => document.querySelector('[data-testid=agent-dock]')?.getAttribute('data-busy') === 'false',
+      null,
+      { timeout: 30_000 },
+    );
+  };
+  await say('make the stage darker');
+  await page.getByTestId('node-stage').first().locator('.node-head').click();
+  await say('use the velvet look, warmer, and run it');
+  await page
+    .locator('.stage-label')
+    .first()
+    .waitFor({ timeout: 20_000 })
+    .catch(() => {});
+  await page.waitForTimeout(800);
+  await page.screenshot({ path: out('02-agent-edit-and-run') });
+  await page.getByText(/Run finished/).waitFor({ timeout: 90_000 });
+  await page.getByTestId('make-reel').click();
+  await page.getByTestId('reel-record').click();
+  await page.waitForTimeout(4500);
+  await page.screenshot({ path: out('03-reel-recording') });
+  await page.getByTestId('reel-video').waitFor({ timeout: 90_000 });
+  await page.waitForTimeout(800);
+  await page.screenshot({ path: out('04-reel-ready') });
+}
 await browser.close();
 console.log('screens saved');

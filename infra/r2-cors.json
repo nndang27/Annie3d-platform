@@ -5,6 +5,8 @@
         "origins": [
           "http://localhost:5173",
           "http://localhost:4173",
+          "http://localhost:5191",
+          "http://localhost:5190",
           "https://annie3d.nndang2701.workers.dev"
         ],
         "methods": ["PUT", "GET", "HEAD"],

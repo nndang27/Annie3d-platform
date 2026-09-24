@@ -662,6 +662,13 @@ export const ROUTES: RouteDef[] = [
     response: ReelDto,
   },
   {
+    method: 'GET',
+    path: '/api/runs/:runId/reels',
+    auth: 'user',
+    feature: 'F12',
+    summary: 'Process reels of a run',
+  },
+  {
     method: 'POST',
     path: '/api/engine/jobs/:jobId/events',
     auth: 'none',

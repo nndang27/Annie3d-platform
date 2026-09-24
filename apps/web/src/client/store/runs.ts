@@ -21,6 +21,8 @@ export interface RunsState {
   /** Nodes in the active run's plan (not marked stale while they are about to re-run). */
   plan: Set<string>;
   lastSeq: number;
+  /** Last run that finished with results (offered as a process reel, F12). */
+  lastFinishedRunId: string | null;
 }
 
 export const useRuns = create<RunsState>()(() => ({
@@ -29,6 +31,7 @@ export const useRuns = create<RunsState>()(() => ({
   activeRunId: null,
   plan: new Set(),
   lastSeq: 0,
+  lastFinishedRunId: null,
 }));
 
 export function setProgress(nodeId: string, p: NodeProgress | null) {

@@ -62,12 +62,12 @@ async function ownRun(c: Context<AppEnv>, runId: string) {
  * the same run and never reserves twice.
  */
 /** Shared pre-checks for any run on a board: rate limit, idempotent replay, one active run. */
-async function preflight(c: Context<AppEnv>, boardId: string, idempotencyKey: string) {
+async function preflight(c: Context<AppEnv>, boardId: string, idempotencyKey: string, dbIn?: Db) {
   const user = c.get('user')!;
   const ws = c.get('workspaceId')!;
   const lim = await c.env.RL_RUN.limit({ key: user.id });
   if (!lim.success) throw httpError(429, 'rate_limited', 'Too many runs. Wait a minute.');
-  const db = getDb(c);
+  const db = dbIn ?? getDb(c);
   const existing = await db.query.runs.findFirst({
     where: (t, { and, eq }) => and(eq(t.workspaceId, ws), eq(t.idempotencyKey, idempotencyKey)),
   });
@@ -149,6 +149,39 @@ async function createRun(
   });
   await room(c.env, runId).start(runId, { plan: r.steps.map((p) => p.nodeId), estimatedCredits: estimate });
   return runId;
+}
+
+/**
+ * Plans and starts a graph run (used by the Run API and by the agent). Returns null when
+ * everything is up to date; throws 402/409 like the API.
+ */
+export async function startGraphRun(
+  c: Context<AppEnv>,
+  db: Db,
+  boardId: string,
+  nodeId: string | null,
+  scope: 'node' | 'from_here' | 'with_upstream' | 'all',
+  idempotencyKey: string,
+  maxCredits = Number.POSITIVE_INFINITY,
+): Promise<{ runId: string; credits: number } | { upToDate: true } | { overBudget: number }> {
+  const { existing } = await preflight(c, boardId, idempotencyKey, db);
+  if (existing) return { runId: existing, credits: 0 };
+  const { graph } = await loadGraph(db, boardId);
+  const plan = (await planRun(db, graph, nodeId, scope)).filter(
+    (p) => NODE_DEFS[p.kind].runnable && !p.cached,
+  );
+  if (!plan.length) return { upToDate: true };
+  const credits = plan.reduce((s, p) => s + p.credits, 0);
+  if (credits > maxCredits) return { overBudget: credits };
+  const runId = await createRun(c, db, {
+    boardId,
+    kind: 'graph',
+    scope,
+    rootNodeId: nodeId,
+    idempotencyKey,
+    steps: plan,
+  });
+  return { runId, credits };
 }
 
 runRoutes.post('/api/boards/:boardId/runs', requireEditor, async (c) => {

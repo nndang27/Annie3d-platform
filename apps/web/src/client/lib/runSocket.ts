@@ -89,7 +89,11 @@ function apply(e: RunEvent, queryClient: QueryClient) {
       return;
     case 'run.finished': {
       for (const [id, p] of useRuns.getState().progress) if (p.runId === e.runId) setProgress(id, null);
-      useRuns.setState({ activeRunId: null, plan: new Set() });
+      useRuns.setState({
+        activeRunId: null,
+        plan: new Set(),
+        ...(e.status === 'succeeded' || e.status === 'partial' ? { lastFinishedRunId: e.runId } : {}),
+      });
       void queryClient.invalidateQueries({ queryKey: ['me'] });
       const msg = {
         succeeded: `Run finished · ${e.chargedCredits} credits`,

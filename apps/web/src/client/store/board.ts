@@ -144,11 +144,17 @@ export function redo() {
  * Applies ops that the server already committed (run results, other collaborators): no undo
  * entry and no outbox. Ops that no longer apply locally are ignored; the next snapshot heals.
  */
-export function applyRemote(ops: GraphOp[], seq?: number) {
+export function applyRemote(ops: GraphOp[], seq?: number, opts: { undoable?: boolean } = {}) {
   const st = get();
   try {
     const res = applyOps(st.graph, ops);
-    set({ graph: res.graph, seq: Math.max(st.seq, seq ?? st.seq) });
+    set({
+      graph: res.graph,
+      seq: Math.max(st.seq, seq ?? st.seq),
+      stale: propagateStale(res.graph, st.stale, ops, res.touched),
+      // Agent edits are undoable like your own: ⌘Z sends the inverse as a normal batch.
+      ...(opts.undoable ? { undoStack: [...st.undoStack.slice(-199), res.inverse], redoStack: [] } : {}),
+    });
   } catch (e) {
     if (!(e instanceof OpError)) throw e;
   }

@@ -94,6 +94,29 @@ export const api = {
     visibility?: 'public' | 'unlisted';
   }) => call<ShareResult>('/api/shares', { method: 'POST', json }),
   revokeShare: (id: string) => call<{ ok: true }>(`/api/shares/${id}`, { method: 'DELETE' }),
+  createReel: (runId: string, assetId: string) =>
+    call<{ id: string; runId: string; status: string; asset: AssetDto | null }>(`/api/runs/${runId}/reels`, {
+      method: 'POST',
+      json: { mode: 'client', assetId },
+    }),
+  agentThreads: (boardId: string) =>
+    call<{ threads: { id: string; title: string | null; updatedAt: string }[] }>(
+      `/api/boards/${boardId}/agent/threads`,
+    ),
+  agentMessages: (threadId: string) =>
+    call<{
+      messages: {
+        id: string;
+        role: 'user' | 'assistant';
+        parts: (
+          | { type: 'text'; text: string }
+          | { type: 'ops'; label: string }
+          | { type: 'run'; runId: string }
+        )[];
+        credits: number;
+        createdAt: string;
+      }[];
+    }>(`/api/agent/threads/${threadId}/messages`),
   plans: () =>
     call<{
       plans: { id: 'creator' | 'studio'; name: string; priceMonthlyUsd: number; creditsPerMonth: number }[];

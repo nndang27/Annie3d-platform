@@ -244,3 +244,40 @@ create/reuse, public payload, cross-target isolation, the OG page without script
 | E2E, three browsers | 66/66 after the cache fix (adds buy a plan → checkout page → back with 360 credits → history → sign out) |
 
 **Scores:** UI 90 · Backend 92 · AI-plug 88 · Tests 93 · Prod-10k 78.
+
+## P9 · Agent panel (F7) and process reel (F12) — done
+- **Agent plug point:** `worker/agents/types.ts`. An agent turns a message into streamed
+  actions: text, op batches and runs. The route applies ops through `applyBatch` (same
+  reducer, lock and op log as a person), starts runs through the normal run path within the
+  message's credit budget, and streams SSE. Threads and messages are stored for history and
+  context.
+- **Simulated agent:**
+  - Understands look, mood (warmer/cooler…), duration (nearest 6/10/15 s), aspect, motion,
+    headline, detail, export preset, add packshots, and run.
+  - Targets the selected line and asks when several nodes match instead of guessing.
+  - Skips no-op edits and says so.
+- **Dock:**
+  - SSE over fetch with streaming text and ✓ chips for applied edits.
+  - Agent edits are undoable with ⌘Z, since each is a normal inverse batch.
+  - Runs started by the agent stream into the board, and history reloads.
+- **Process reel:**
+  - Recorded in the browser at 540×960: the ad (with its music) on top, and below it a replay
+    of the run on the board timed from the run room's event log.
+  - Output is MP4 or WebM via MediaRecorder, uploaded through the presigned path and
+    registered with `POST /api/runs/:id/reels`. Server mode is a plug point and returns 501.
+- **Bugs found by tests and fixed:**
+  - "make it square" triggered a run.
+  - The SSE stream used a DB client that `closeDb` had already closed; the stream now has its
+    own connection.
+  - R2 CORS lacked the test origins, which revealed that signed-in browser uploads had no E2E.
+    A new upload E2E covers it on all browsers.
+
+**Measured on 2026-09-24:**
+
+| Check | Result |
+| --- | --- |
+| Unit tests | 23/23 (agent planner) |
+| API tests | 38/38 (agent SSE ask/edit/run/budget/history, reels) |
+| E2E, three browsers | 73 passed, 2 skipped (the reel is recorded in Chromium only); adds agent edit → undo → run → history, a recorded and downloadable reel, and browser upload |
+
+**Scores:** UI 93 · Backend 93 · AI-plug 92 · Tests 94 · Prod-10k 80.

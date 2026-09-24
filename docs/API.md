@@ -47,6 +47,7 @@ Idempotency: op batches (`opId`), runs, edits and exports (`idempotencyKey`), pa
 | POST | `/api/billing/checkout` | user | F11 | Start checkout |
 | POST | `/api/billing/webhooks/:provider` | none | F11 | Signed payment webhook (idempotent) |
 | POST | `/api/runs/:runId/reels` | user | F12 | Register or render a process reel |
+| GET | `/api/runs/:runId/reels` | user | F12 | Process reels of a run |
 | POST | `/api/engine/jobs/:jobId/events` | none | engine | External engine callback (HMAC signed) |
 
 ## ops
@@ -2407,6 +2408,10 @@ Response:
   ]
 }
 ```
+
+### GET `/api/runs/:runId/reels`
+
+Process reels of a run. Auth: user.
 
 ## F2
 

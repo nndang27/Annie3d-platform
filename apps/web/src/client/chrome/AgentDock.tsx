@@ -3,6 +3,7 @@ import { ArrowUp, X } from 'lucide-react';
 import { useState } from 'react';
 import { useBoard } from '../store/board';
 import { useUi } from '../store/ui';
+import { useAgent } from './useAgent';
 
 export interface AgentMessage {
   id: string;
@@ -14,9 +15,14 @@ export interface AgentMessage {
 
 /**
  * Right dock (F7). The composer carries a budget and the selected nodes as context chips.
- * The transport (SSE `/api/agent/messages`) is attached by `useAgentTransport` in P9.
+ * Messages stream over SSE (`POST /api/boards/:id/agent/messages`, see useAgent).
  */
-export function AgentDock({
+export function AgentDock() {
+  const { messages, busy, send: onSend } = useAgent();
+  return <AgentDockView messages={messages} onSend={onSend} busy={busy} />;
+}
+
+export function AgentDockView({
   messages = [],
   onSend,
   busy = false,
@@ -43,7 +49,7 @@ export function AgentDock({
     setText('');
   };
   return (
-    <aside className="agent" aria-label="Agent" data-testid="agent-dock">
+    <aside className="agent" aria-label="Agent" data-testid="agent-dock" data-busy={busy}>
       <header>
         <span className="dot" aria-hidden="true" /> Annie agent
         <button
@@ -63,18 +69,24 @@ export function AgentDock({
             <p style={{ fontSize: 12 }}>“Make the stage warmer and add a 6-second cut.”</p>
           </div>
         ) : (
-          messages.map((m) => (
-            <div key={m.id} className={`msg msg-${m.role}`}>
-              {m.text}
-              {m.applied?.map((a) => (
-                <span key={a.label} className="op-chip">
-                  {a.label}
-                </span>
-              ))}
-            </div>
-          ))
+          messages
+            .filter((m) => m.text || m.applied?.length)
+            .map((m) => (
+              <div key={m.id} className={`msg msg-${m.role}`} data-testid={`msg-${m.role}`}>
+                {m.text}
+                {!!m.applied?.length && (
+                  <div className="op-chips">
+                    {m.applied.map((a, i) => (
+                      <span key={`${a.label}-${i}`} className="op-chip" title="Undo with ⌘Z">
+                        ✓ {a.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))
         )}
-        {busy && <div className="msg msg-agent typing">Thinking…</div>}
+        {busy && !messages.at(-1)?.text && <div className="msg msg-agent typing">Thinking…</div>}
       </div>
       <div className="composer">
         {chips.length > 0 && (

@@ -30,6 +30,31 @@ function guessMime(f: File): string {
   return 'application/octet-stream';
 }
 
+/** Presigned upload straight to R2 (single PUT or multipart), then server-side verification. */
+export async function uploadAsset(file: File, kind: AssetDto['kind']): Promise<AssetDto> {
+  const up = await api.createUpload({
+    kind,
+    filename: file.name,
+    mime: guessMime(file),
+    byteSize: file.size,
+    sha256: await sha256(file),
+  });
+  if (up.mode === 'existing') return up.asset;
+  if (up.mode === 'single') {
+    const put = await fetch(up.url, { method: 'PUT', headers: up.headers, body: file });
+    if (!put.ok) throw new Error(`Upload failed (${put.status})`);
+    return api.completeUpload(up.assetId);
+  }
+  const parts: { partNumber: number; etag: string }[] = [];
+  for (const p of up.parts) {
+    const chunk = file.slice((p.partNumber - 1) * up.partSize, p.partNumber * up.partSize);
+    const r = await fetch(p.url, { method: 'PUT', body: chunk });
+    if (!r.ok) throw new Error(`Part ${p.partNumber} failed`);
+    parts.push({ partNumber: p.partNumber, etag: r.headers.get('etag') ?? '' });
+  }
+  return api.completeUpload(up.assetId, parts);
+}
+
 /** Upload straight to R2 (presigned), then attach it to the node as a new "upload" version. */
 export async function uploadIntoNode(node: NodeRecord, file: File) {
   const kind = KIND_BY_NODE[node.kind as keyof typeof KIND_BY_NODE];
@@ -37,31 +62,7 @@ export async function uploadIntoNode(node: NodeRecord, file: File) {
   const { mode } = useBoard.getState();
   if (mode === 'guest') return attachGuestFile(node, file, kind);
   try {
-    const mime = guessMime(file);
-    const up = await api.createUpload({
-      kind,
-      filename: file.name,
-      mime,
-      byteSize: file.size,
-      sha256: await sha256(file),
-    });
-    let asset: AssetDto;
-    if (up.mode === 'existing') asset = up.asset;
-    else if (up.mode === 'single') {
-      const put = await fetch(up.url, { method: 'PUT', headers: up.headers, body: file });
-      if (!put.ok) throw new Error(`Upload failed (${put.status})`);
-      asset = await api.completeUpload(up.assetId);
-    } else {
-      const parts: { partNumber: number; etag: string }[] = [];
-      for (const p of up.parts) {
-        const chunk = file.slice((p.partNumber - 1) * up.partSize, p.partNumber * up.partSize);
-        const r = await fetch(p.url, { method: 'PUT', body: chunk });
-        if (!r.ok) throw new Error(`Part ${p.partNumber} failed`);
-        parts.push({ partNumber: p.partNumber, etag: r.headers.get('etag') ?? '' });
-      }
-      asset = await api.completeUpload(up.assetId, parts);
-    }
-    attachAsset(node, asset);
+    attachAsset(node, await uploadAsset(file, kind));
   } catch (e) {
     toast((e as Error).message, 'error');
   }

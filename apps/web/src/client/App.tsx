@@ -12,6 +12,7 @@ import { BillingDialog } from './chrome/BillingDialog';
 import { ContextMenu } from './chrome/ContextMenu';
 import { ExportDialog } from './chrome/ExportDialog';
 import { Palette } from './chrome/Palette';
+import { ReelDialog } from './chrome/ReelDialog';
 import { attachRun, RunDialog } from './chrome/RunDialog';
 import { ShareDialog } from './chrome/ShareDialog';
 import { SignInPrompt } from './chrome/SignInPrompt';
@@ -166,6 +167,7 @@ function Workspace() {
       <ExportDialog />
       <ShareDialog />
       <BillingDialog />
+      <ReelDialog />
       <Toasts />
       {editing && (
         <EditorBoundary key={editing}>

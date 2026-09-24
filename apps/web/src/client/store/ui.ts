@@ -31,7 +31,7 @@ export interface UiState {
     | { type: 'share' }
     | { type: 'export'; nodeId?: string }
     | { type: 'billing' }
-    | { type: 'reel' }
+    | { type: 'reel'; runId: string }
     | { type: 'run'; nodeId: string | null; scope: string };
 }
 

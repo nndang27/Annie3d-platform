@@ -4,6 +4,13 @@ Status: design for founder review (2026-09-24). The product is **one page**: the
 workspace. Home/landing stays a separate static page for SEO only. Features F1–F12 are
 defined in `MVP_STRATEGY.md`. Numbers marked *target* are budgets to verify, not measurements.
 
+## Approved UI (2026-09-24)
+
+- Canvas, free node graph: `docs/ui/approved-canvas-free-graph.png`
+- 3D editor overlay: `docs/ui/approved-3d-editor-overlay.png`
+
+Engineering patterns behind these screens: `WORKSPACE_ENGINEERING_PATTERNS.md`.
+
 ## 1. What the reference screen does (ElevenLabs Flows, "Product showcase")
 
 | Region | Element | Behaviour |

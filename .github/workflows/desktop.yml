@@ -1,0 +1,45 @@
+# Desktop app: build and test the Electron shell on macOS, Windows and Linux.
+# Manual for now (Actions → Desktop → Run workflow). Unsigned builds; signing comes with the
+# Apple Developer ID / Windows certificate. Needs the secret ANNIE3D_PACK_KEY (web-pack signing
+# key, same value as in .dev.vars) for the update tests.
+name: Desktop
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      ANNIE3D_PACK_KEY: ${{ secrets.ANNIE3D_PACK_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+        if: runner.os == 'Linux'
+      - name: Desktop tests
+        if: env.ANNIE3D_PACK_KEY != ''
+        run: ${{ runner.os == 'Linux' && 'xvfb-run -a ' || '' }}pnpm test:desktop
+      - name: Package
+        working-directory: apps/desktop
+        run: pnpm exec electron-builder --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: annie3d-${{ runner.os }}
+          path: |
+            apps/desktop/release/*.dmg
+            apps/desktop/release/*.zip
+            apps/desktop/release/*.exe
+            apps/desktop/release/*.blockmap
+            apps/desktop/release/*.AppImage
+            apps/desktop/release/*.deb
+            apps/desktop/release/latest*.yml
+          if-no-files-found: ignore

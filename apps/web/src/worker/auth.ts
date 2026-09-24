@@ -62,7 +62,12 @@ export function createAuth(env: Env, db: Db, origin = env.APP_URL) {
       },
     },
     // Only automated tests sign in with a password; production is Google-only.
-    emailAndPassword: { enabled: env.ANNIE3D_TEST_AUTH === '1', autoSignIn: true, minPasswordLength: 12 },
+    // Never on a public link: `pnpm share` serves the dev build (with .dev.vars) to the internet.
+    emailAndPassword: {
+      enabled: env.ANNIE3D_TEST_AUTH === '1' && origin === env.APP_URL,
+      autoSignIn: true,
+      minPasswordLength: 12,
+    },
     session: {
       expiresIn: 60 * 60 * 24 * 30,
       updateAge: 60 * 60 * 24,

@@ -3,7 +3,11 @@ import { dragWire, emptyPanePoint, firstNode, graph, handleCenter, newestNode, o
 
 test.describe('guest canvas', () => {
   test('F1: opens on the example board with rendered outputs and no console errors', async ({ page }) => {
+    const requested: string[] = [];
+    page.on('request', (r) => requested.push(r.url()));
     const errors = await openCanvas(page);
+    // Desktop-only UI is a separate chunk the website never loads.
+    expect(requested.filter((u) => u.includes('/desktop/'))).toEqual([]);
     const g = await graph(page);
     expect(g.mode).toBe('guest');
     // 3 Starter lines × 8 nodes (incl. the F13 Simulation node) and 9 wires each.

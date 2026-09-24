@@ -8,3 +8,5 @@ onlyBuiltDependencies:
   - sharp
   - '@biomejs/biome'
   - '@tailwindcss/oxide'
+  # Desktop app: downloads the Electron binary for this OS (checksum-verified by @electron/get).
+  - electron

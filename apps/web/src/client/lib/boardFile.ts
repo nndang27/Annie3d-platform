@@ -268,6 +268,7 @@ let viewCentre: () => { x: number; y: number } = () => ({ x: 0, y: 0 });
 export function setViewCentre(fn: () => { x: number; y: number }) {
   viewCentre = fn;
 }
+export const currentViewCentre = () => viewCentre();
 
 export function openBoardFilePicker() {
   const input = document.createElement('input');

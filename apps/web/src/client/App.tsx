@@ -1,3 +1,4 @@
+import type { DesktopBridge } from '@annie3d/contracts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactFlowProvider } from '@xyflow/react';
 import { Component, lazy, type ReactNode, Suspense, useEffect, useState } from 'react';
@@ -29,6 +30,9 @@ const EditorOverlay = lazy(() => import('./editor/EditorOverlay'));
 // F13 simulator (three.js + layouts) loads only when a Simulation node is opened.
 const SimulatorOverlay = lazy(() => import('./sim/SimulatorOverlay'));
 const PerfPanel = lazy(() => import('./chrome/PerfPanel'));
+// Desktop app only (window.annieDesktop from the Electron preload): a separate chunk the website never loads.
+const DesktopIntegration = lazy(() => import('./desktop/DesktopIntegration'));
+const desktopBridge = (window as { annieDesktop?: DesktopBridge }).annieDesktop ?? null;
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
@@ -181,6 +185,11 @@ function Workspace() {
             <EditorOverlay nodeId={editing} />
           </Suspense>
         </EditorBoundary>
+      )}
+      {desktopBridge && (
+        <Suspense fallback={null}>
+          <DesktopIntegration bridge={desktopBridge} />
+        </Suspense>
       )}
       {perfOpen && (
         <Suspense fallback={null}>

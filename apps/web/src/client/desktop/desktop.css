@@ -1,0 +1,62 @@
+/* Desktop-only: loaded with the DesktopIntegration chunk. */
+.update-pill {
+  position: fixed;
+  left: max(12px, env(safe-area-inset-left));
+  /* Above the bottom toolbar (≈ 56 px tall + its 16 px offset). */
+  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 64px);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(560px, calc(100vw - 24px));
+  padding: 8px 8px 8px 14px;
+  border-radius: 14px;
+  background: #17191d;
+  color: #fff;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  animation: pill-in 180ms ease-out;
+}
+.update-pill.quiet {
+  background: #fff;
+  color: var(--text-secondary);
+  border: 1px solid var(--pill-border);
+}
+.update-pill span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.update-pill small {
+  opacity: 0.7;
+}
+.update-pill button {
+  flex: none;
+  border: 0;
+  border-radius: 9px;
+  background: #fff;
+  color: #17191d;
+  font: inherit;
+  font-weight: 600;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.update-pill button:disabled {
+  opacity: 0.6;
+}
+.update-pill .spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Slide only: a window in the background pauses animations at their first frame, and an
+   opacity fade would leave the pill invisible there. */
+@keyframes pill-in {
+  from {
+    transform: translateY(8px);
+  }
+}

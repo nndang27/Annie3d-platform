@@ -1,6 +1,6 @@
 # Annie 3D desktop app (Electron): plan
 
-Status: plan, nothing built yet (2026-09-25). Research: `docs/DESKTOP_APP_RESEARCH.md` and the
+Status (2026-09-25): D0–D3 built (shell, web-pack updater, feature registry + planner); D4 packaging built unsigned; D5 not started. How to run: `docs/DESKTOP.md`. Research: `docs/DESKTOP_APP_RESEARCH.md` and the
 sources listed at the end.
 
 ## 1. What the big apps do, and what that means for us

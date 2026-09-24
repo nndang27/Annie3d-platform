@@ -1,0 +1,55 @@
+# Packaging for macOS, Windows and Linux (electron.build). Unsigned for now: signing (Apple
+# Developer ID + notarization, Windows Authenticode) is added before public distribution.
+appId: app.annie3d.desktop
+productName: Annie 3D
+copyright: Copyright © 2026 Annie 3D
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**
+  - package.json
+# The website build is the first web pack (offline first start); later packs are downloaded.
+extraResources:
+  - from: ../web/dist/client
+    to: webpack
+    filter: ['**/*', '!**/*.map', '!desktop/chunks.json']
+asar: true
+# File names without spaces or scope characters (Linux needs a plain executable name).
+executableName: annie3d
+artifactName: Annie3D-${version}-${os}-${arch}.${ext}
+fileAssociations:
+  - ext: annie3d
+    name: Annie 3D board
+    description: Annie 3D board
+    mimeType: application/vnd.annie3d+zip
+    role: Editor
+protocols:
+  - name: Annie 3D
+    schemes: [annie3d]
+mac:
+  category: public.app-category.graphics-design
+  target:
+    - target: dmg
+      arch: [universal]
+    - target: zip
+      arch: [universal]
+  hardenedRuntime: true
+  # Signing identity is picked up from the keychain when one exists; none yet.
+  identity: null
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+nsis:
+  oneClick: true
+  perMachine: false
+  differentialPackage: true
+linux:
+  category: Graphics
+  target: [AppImage, deb]
+  maintainer: Annie 3D <hello@annie3d.app>
+  executableName: annie3d
+publish:
+  - provider: generic
+    url: https://annie3d.nndang2701.workers.dev/desktop/shell/${os}

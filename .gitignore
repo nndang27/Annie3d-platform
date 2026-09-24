@@ -30,3 +30,7 @@ fixtures/out/*
 perf-results/lighthouse-*/
 perf-results/trace-*.json.gz
 perf-results/*.heapsnapshot
+
+# Desktop app packages (electron-builder output)
+apps/desktop/release
+apps/desktop/dist

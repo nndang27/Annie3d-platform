@@ -1,0 +1,75 @@
+# Copy to .github/workflows/ci.yml when the canvas website is ready (see docs/CICD_SETUP.md).
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - uses: actions/upload-artifact@v5
+        with:
+          name: dist
+          path: |
+            apps/web/dist
+            apps/marketing/dist
+  e2e:
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [desktop, a11y, mobile, viewports-chromium, viewports-webkit, viewports-firefox, journeys-webkit, journeys-firefox]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v5
+        with:
+          name: dist
+      - run: pnpm exec playwright install --with-deps chromium webkit firefox
+      - run: pnpm exec playwright test --project=${{ matrix.project }}
+      - if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-${{ matrix.project }}
+          path: test-results
+  perf:
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v5
+        with:
+          name: dist
+      - run: pnpm exec playwright install --with-deps chromium
+      # Fails when a budget regresses by more than 20 % against perf-results/baseline.json.
+      - run: pnpm perf:gate

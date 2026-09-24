@@ -233,7 +233,7 @@ describe('API (live stack)', () => {
       method: 'POST',
       json: { planId: 'creator', returnUrl: `${BASE}/` },
     });
-    const path = new URL(co.body.checkoutUrl).pathname + new URL(co.body.checkoutUrl).search;
+    const path = `/api/billing/simulated/confirm${new URL(co.body.checkoutUrl).search}`;
     const one = await a.json(path, { method: 'POST' });
     const two = await a.json(path, { method: 'POST' });
     expect(one.body.duplicate).toBe(false);

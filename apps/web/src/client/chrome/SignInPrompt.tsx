@@ -1,6 +1,6 @@
 import { FREE_RUN_CREDITS } from '@annie3d/contracts';
 import { useEffect, useRef } from 'react';
-import { signInWithGoogle } from '../lib/auth';
+import { showOneTap, signInWithGoogle } from '../lib/auth';
 import { useUi } from '../store/ui';
 
 const COPY = {
@@ -19,7 +19,10 @@ export function SignInPrompt() {
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
-    if (prompt && !d.open) d.showModal();
+    if (prompt && !d.open) {
+      d.showModal();
+      void showOneTap();
+    }
     if (!prompt && d.open) d.close();
   }, [prompt]);
   const copy = COPY[prompt?.reason ?? 'run'];

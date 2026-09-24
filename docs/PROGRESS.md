@@ -214,3 +214,33 @@ animation for a static GLB. They also cover the Export node bundling GLB + MP4 +
 create/reuse, public payload, cross-target isolation, the OG page without scripts, and revoke.
 
 **Scores:** UI 88 · Backend 91 · AI-plug 88 · Tests 92 · Prod-10k 76.
+
+## P8 · Accounts, credits and billing (F11) — done
+- **Sign-in:** Google, plus Google One Tap through Better Auth's `oneTap` plugin.
+  - One Tap is prompted when a guest reaches a moment of value (Run, Share, Save). The Google
+    button stays as the fallback.
+  - The public client id comes from `GET /api/public/config`.
+- **Credits:**
+  - 60 free credits on sign-up cover one full Starter run; the cost is shown before every run.
+  - Only succeeded, non-cached steps are charged, and failed or cancelled steps are refunded.
+- **Billing:**
+  - Plans: Creator $19 / 300 credits and Studio $49 / 1,000 credits.
+  - Checkout goes through a hosted page (`/billing/checkout`, signed link, no scripts, strict
+    CSP) with the same shape as Stripe/Paddle. Paying posts to the signed confirm endpoint,
+    which grants idempotently and redirects back with `?checkout=success`.
+  - Return paths are same-origin only; a foreign `returnUrl` falls back to `/`.
+- **UI:**
+  - A credits dialog shows balance and held credits, plan cards and history.
+  - An account menu offers Credits & plan and Sign out.
+  - A payment toast appears on return.
+- **Fixed from tests:** a revoked share link still showed in WebKit from its 60 s cache. Share
+  pages and payloads now revalidate on every view.
+
+**Measured on 2026-09-24:**
+
+| Check | Result |
+| --- | --- |
+| API tests | 33/33 (adds the hosted checkout, the 303 return and the open-redirect guard) |
+| E2E, three browsers | 66/66 after the cache fix (adds buy a plan → checkout page → back with 360 credits → history → sign out) |
+
+**Scores:** UI 90 · Backend 92 · AI-plug 88 · Tests 93 · Prod-10k 78.

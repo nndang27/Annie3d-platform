@@ -212,7 +212,9 @@ shareRoutes.get('/api/public/shares/:token', async (c) => {
     assets: await publicAssets(c, db, r),
     ownerName: r.ownerName,
   };
-  c.header('cache-control', 'public, max-age=60');
+  // Revalidate every view: a revoked link must stop working at once (a 60 s max-age kept it
+  // alive in WebKit's cache after revocation, E2E 2026-09-24).
+  c.header('cache-control', 'no-cache');
   return c.json(res);
 });
 
@@ -320,7 +322,9 @@ shareRoutes.get('/s/:token', async (c) => {
   ${model ? `<section class="model"><img src="${esc(model.urls.poster ?? '')}" alt="3D model preview" loading="lazy"><div><h2>3D model</h2><p>${model.triangleCount ? `${model.triangleCount.toLocaleString('en')} triangles · ` : ''}${(model.byteSize / 1048576).toFixed(1)} MB</p><a class="btn" href="${esc(model.urls.original!)}?download=model.glb">Download GLB</a></div></section>` : ''}
 </main>
 <footer>Made with <a href="/">Annie 3D</a> · <a href="/legal/terms">Terms</a></footer>`;
-  c.header('cache-control', 'public, max-age=60');
+  // Revalidate every view: a revoked link must stop working at once (a 60 s max-age kept it
+  // alive in WebKit's cache after revocation, E2E 2026-09-24).
+  c.header('cache-control', 'no-cache');
   // No scripts on this page at all; media only from this origin.
   c.header(
     'content-security-policy',

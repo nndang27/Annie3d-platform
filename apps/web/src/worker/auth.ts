@@ -11,6 +11,7 @@ import {
 } from '@annie3d/db';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { oneTap } from 'better-auth/plugins';
 import type { Env } from './env';
 
 /**
@@ -30,6 +31,8 @@ export function createAuth(env: Env, db: Db) {
         ? [env.APP_URL, 'http://localhost:4173', 'http://localhost:5190', 'http://localhost:5191']
         : [env.APP_URL],
     telemetry: { enabled: false },
+    // Google One Tap (F11): verifies Google's ID token server-side; uses the Google client id above.
+    plugins: [oneTap()],
     database: drizzleAdapter(db, {
       provider: 'pg',
       usePlural: true,

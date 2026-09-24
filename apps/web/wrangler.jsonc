@@ -10,7 +10,7 @@
     // Canvas is a SPA; unknown paths serve index.html (Workers static assets SPA routing).
     "not_found_handling": "single-page-application",
     // API and share pages always hit the Worker, in dev and prod alike.
-    "run_worker_first": ["/api/*", "/s/*"]
+    "run_worker_first": ["/api/*", "/s/*", "/billing/*"]
   },
   "observability": { "enabled": true },
   // Remote bindings in dev: the Worker runs locally but reads/writes the real buckets, so

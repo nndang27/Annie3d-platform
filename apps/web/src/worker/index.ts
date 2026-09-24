@@ -31,6 +31,8 @@ app.use('*', async (c, next) => {
 });
 app.use('/api/*', closeDb);
 app.use('/s/*', closeDb);
+app.use('/billing/*', closeDb);
+app.use('/billing/*', loadSession);
 
 app.onError((err, c) => {
   if (err instanceof HttpError)

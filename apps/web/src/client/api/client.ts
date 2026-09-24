@@ -94,6 +94,18 @@ export const api = {
     visibility?: 'public' | 'unlisted';
   }) => call<ShareResult>('/api/shares', { method: 'POST', json }),
   revokeShare: (id: string) => call<{ ok: true }>(`/api/shares/${id}`, { method: 'DELETE' }),
+  plans: () =>
+    call<{
+      plans: { id: 'creator' | 'studio'; name: string; priceMonthlyUsd: number; creditsPerMonth: number }[];
+    }>('/api/billing/plans'),
+  credits: () =>
+    call<{
+      balance: number;
+      reserved: number;
+      entries: { id: string; amount: number; reason: string; runId: string | null; createdAt: string }[];
+    }>('/api/credits'),
+  checkout: (json: { planId: 'creator' | 'studio'; returnUrl: string }) =>
+    call<{ checkoutUrl: string; provider: string }>('/api/billing/checkout', { method: 'POST', json }),
   edit: (
     boardId: string,
     nodeId: string,

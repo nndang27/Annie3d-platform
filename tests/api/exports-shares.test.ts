@@ -234,3 +234,51 @@ describe('shares (F10)', () => {
     expect((await new Client().req(`/s/${share.token}`)).status).toBe(404);
   });
 });
+
+describe('hosted checkout (simulated provider)', () => {
+  it('serves a signed checkout page and returns the browser to the app after paying', async () => {
+    const c = await Client.signedUp('Payer');
+    const co = await c.json('/api/billing/checkout', {
+      method: 'POST',
+      json: { planId: 'studio', returnUrl: `${BASE}/b/123?x=1` },
+    });
+    const url = new URL(co.body.checkoutUrl);
+    expect(url.pathname).toBe('/billing/checkout');
+    const pageRes = await c.req(url.pathname + url.search);
+    const html = await pageRes.text();
+    expect(html).toContain('Studio plan');
+    expect(html).not.toContain('<script');
+    const action = /action="([^"]+)"/.exec(html)![1]!.replace(/&amp;|&#38;/g, '&');
+    const pay = await c.req(action, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: '',
+    });
+    expect(pay.status).toBe(303);
+    expect(pay.headers.get('location')).toBe('/b/123?x=1&checkout=success');
+    expect((await c.json('/api/me')).body).toMatchObject({
+      credits: { balance: 1060 },
+      workspace: { plan: 'studio' },
+    });
+    expect((await c.req(`${url.pathname}?p=${url.searchParams.get('p')}&s=${'0'.repeat(64)}`)).status).toBe(
+      400,
+    );
+  });
+
+  it('never redirects to another origin', async () => {
+    const c = await Client.signedUp('Payer2');
+    const co = await c.json('/api/billing/checkout', {
+      method: 'POST',
+      json: { planId: 'creator', returnUrl: 'https://evil.example/steal' },
+    });
+    const url = new URL(co.body.checkoutUrl);
+    const html = await (await c.req(url.pathname + url.search)).text();
+    const action = /action="([^"]+)"/.exec(html)![1]!.replace(/&amp;|&#38;/g, '&');
+    const pay = await c.req(action, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: '',
+    });
+    expect(pay.headers.get('location')).toBe('/?checkout=success');
+  });
+});

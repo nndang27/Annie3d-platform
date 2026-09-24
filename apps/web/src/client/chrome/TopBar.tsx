@@ -6,6 +6,7 @@ import { memo, useMemo, useRef, useState } from 'react';
 import { api } from '../api/client';
 import { useMe } from '../api/me';
 import { insertStarter } from '../canvas/actions';
+import { signOut } from '../lib/auth';
 import { useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
 import { toast, useUi } from '../store/ui';
@@ -278,11 +279,58 @@ function Account() {
       <button type="button" onClick={share} data-testid="share">
         <Share2 size={16} aria-hidden="true" /> Share
       </button>
-      {me.data?.user.image ? (
-        <img src={me.data.user.image} alt={me.data.user.name} width={26} height={26} className="avatar" />
-      ) : me.data ? (
-        <span className="avatar">{me.data.user.name.slice(0, 1)}</span>
-      ) : null}
+      {me.data && (
+        <AccountMenu name={me.data.user.name} email={me.data.user.email} image={me.data.user.image} />
+      )}
     </div>
+  );
+}
+
+function AccountMenu({ name, email, image }: { name: string; email: string; image: string | null }) {
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  return (
+    <>
+      <button
+        type="button"
+        className="avatar-btn"
+        aria-label={`Account: ${name}`}
+        aria-haspopup="menu"
+        aria-expanded={!!menu}
+        onClick={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          setMenu(menu ? null : { x: r.right - 220, y: r.bottom + 6 });
+        }}
+        data-testid="account"
+      >
+        {image ? (
+          <img src={image} alt="" width={26} height={26} className="avatar" />
+        ) : (
+          <span className="avatar">{name.slice(0, 1)}</span>
+        )}
+      </button>
+      {menu && (
+        <Popover x={menu.x} y={menu.y} onClose={() => setMenu(null)} label="Account" testId="account-menu">
+          <div className="account-head">
+            <b>{name}</b>
+            <span className="muted small">{email}</span>
+          </div>
+          <div role="menu">
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setMenu(null);
+                useUi.setState({ dialog: { type: 'billing' } });
+              }}
+            >
+              Credits & plan
+            </button>
+            <button type="button" role="menuitem" onClick={() => void signOut()} data-testid="sign-out">
+              Sign out
+            </button>
+          </div>
+        </Popover>
+      )}
+    </>
   );
 }

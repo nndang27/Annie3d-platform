@@ -188,7 +188,7 @@ describe('runs (live stack)', () => {
       method: 'POST',
       json: { planId: 'creator', returnUrl: `${BASE}/` },
     });
-    await a.json(new URL(co.body.checkoutUrl).pathname + new URL(co.body.checkoutUrl).search, {
+    await a.json(`/api/billing/simulated/confirm${new URL(co.body.checkoutUrl).search}`, {
       method: 'POST',
     });
     const before = (await a.json('/api/me')).body.credits.balance;

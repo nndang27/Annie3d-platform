@@ -103,7 +103,9 @@ if (phase === 'p7') {
   await page.screenshot({ path: out('02-export-report') });
   await page.keyboard.press('Escape');
   await page.getByTestId('share').click();
-  await page.waitForFunction(() => /\/s\//.test(document.querySelector('[data-testid=share-url]')?.value ?? ''));
+  await page.waitForFunction(() =>
+    /\/s\//.test(document.querySelector('[data-testid=share-url]')?.value ?? ''),
+  );
   await page.waitForTimeout(300);
   await page.screenshot({ path: out('03-share-dialog') });
   const link = await page.getByTestId('share-url').inputValue();
@@ -114,6 +116,23 @@ if (phase === 'p7') {
   await guest.setViewportSize({ width: 390, height: 844 });
   await guest.waitForTimeout(500);
   await guest.screenshot({ path: out('05-public-share-mobile') });
+}
+if (phase === 'p8') {
+  await page.getByTestId('credits').click();
+  await page.getByTestId('plan-creator').waitFor();
+  await page.getByTestId('billing-history').locator('li').first().waitFor();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: out('02-billing') });
+  await page.getByTestId('buy-creator').click();
+  await page.getByTestId('checkout-page').waitFor();
+  await page.screenshot({ path: out('03-checkout') });
+  await page.getByTestId('checkout-pay').click();
+  await page.getByText('Payment complete').waitFor({ timeout: 30_000 });
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: out('04-back-with-credits') });
+  await page.getByTestId('account').click();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: out('05-account-menu') });
 }
 await browser.close();
 console.log('screens saved');

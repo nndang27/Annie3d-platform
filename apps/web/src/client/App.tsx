@@ -8,6 +8,7 @@ import { Canvas } from './canvas/Canvas';
 import { exampleBoard } from './canvas/example';
 import { useShortcuts } from './canvas/useShortcuts';
 import { AgentDock } from './chrome/AgentDock';
+import { BillingDialog } from './chrome/BillingDialog';
 import { ContextMenu } from './chrome/ContextMenu';
 import { ExportDialog } from './chrome/ExportDialog';
 import { Palette } from './chrome/Palette';
@@ -111,6 +112,19 @@ function useBoot() {
   return error;
 }
 
+/** Back from checkout (`?checkout=success`): refresh credits, say so, clean the URL. */
+function useCheckoutReturn() {
+  useEffect(() => {
+    const u = new URL(location.href);
+    if (u.searchParams.get('checkout') !== 'success') return;
+    u.searchParams.delete('checkout');
+    history.replaceState(null, '', u);
+    void queryClient.invalidateQueries({ queryKey: ['me'] });
+    void queryClient.invalidateQueries({ queryKey: ['credits'] });
+    toast('Payment complete · credits added');
+  }, []);
+}
+
 function useEditParam() {
   useEffect(() => {
     const sync = () => useUi.setState({ editingNodeId: new URLSearchParams(location.search).get('edit') });
@@ -127,6 +141,7 @@ function Workspace() {
   const editing = useUi((s) => s.editingNodeId);
   useShortcuts();
   useEditParam();
+  useCheckoutReturn();
   useEffect(() => {
     if (error) toast(error, 'error');
   }, [error]);
@@ -150,6 +165,7 @@ function Workspace() {
       <RunDialog />
       <ExportDialog />
       <ShareDialog />
+      <BillingDialog />
       <Toasts />
       {editing && (
         <EditorBoundary key={editing}>

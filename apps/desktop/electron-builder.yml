@@ -15,8 +15,7 @@ extraResources:
     to: webpack
     filter: ['**/*', '!**/*.map', '!desktop/chunks.json']
 asar: true
-# File names without spaces or scope characters (Linux needs a plain executable name).
-executableName: annie3d
+# Installer file names without spaces; Linux also needs a plain executable name (see linux:).
 artifactName: Annie3D-${version}-${os}-${arch}.${ext}
 fileAssociations:
   - ext: annie3d

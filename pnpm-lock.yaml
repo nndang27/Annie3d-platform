@@ -87,6 +87,9 @@ importers:
       '@annie3d/viewer-3d':
         specifier: workspace:*
         version: link:../../packages/viewer-3d
+      '@gltf-transform/core':
+        specifier: ^4.5.0
+        version: 4.5.0
       '@tanstack/react-query':
         specifier: ^5.102.8
         version: 5.102.8(react@19.3.0)
@@ -233,6 +236,9 @@ importers:
       three:
         specifier: ^0.186.0
         version: 0.186.0
+      three-mesh-bvh:
+        specifier: ^0.9.15
+        version: 0.9.15(three@0.186.0)
     devDependencies:
       '@types/three':
         specifier: ^0.186.0
@@ -1274,6 +1280,9 @@ packages:
 
   '@fontsource-variable/inter@5.3.0':
     resolution: {integrity: sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==}
+
+  '@gltf-transform/core@4.5.0':
+    resolution: {integrity: sha512-JlvShvnB4AtfGZqjnESS/wfPJbpVnyHhTwJBbWN4qXqkB3C5HIoxxpu/orwGBge6Pc0zObeWj70lVf+4gbuu0A==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -2813,6 +2822,9 @@ packages:
     resolution: {integrity: sha512-tGqJW/UnclpYASFcM6Xh8D8l/BMtaQ9+CSG0vlJSJTcdMM4lDRv4c6H0Pdcsfted+bVczdYSfk2fdukg2gQkZg==}
     engines: {node: '>=18.0.0'}
 
+  property-graph@4.1.0:
+    resolution: {integrity: sha512-AvPcP7XECNWy4LGmFQ77k7un4lSKM4eS29PTvW4ck95uYeLxXPWJM7hLuBqK91FaHqCcgJvIUCuNJjjxKE7VKQ==}
+
   property-information@7.2.0:
     resolution: {integrity: sha512-IAtzIB6sUiWaJYrX9smp3V46pBGbBeLFRGdh25kg1334VcBlD8HzhPeNIWQH9zhGmo2itIe25EHt9dQP7G5hmg==}
 
@@ -2973,6 +2985,11 @@ packages:
     resolution: {integrity: sha512-bkxnTg1kSU0guhIBmibA6UUhrQmPVA1XsQLN+ylCd+UWzbnLkySOcXpyk1mrl05f+pcaCx2eHb+sp6BgMZWX+Q==}
     engines: {node: '>=16'}
     hasBin: true
+
+  three-mesh-bvh@0.9.15:
+    resolution: {integrity: sha512-9xdEDkCzFoT8VPFH9DznwFSdbaIEjMvM106Iqq7TJurrIheUKDcdW4prfJTCxryih4XS/UxWs0H3K4MLMRFyOQ==}
+    peerDependencies:
+      three: '>= 0.159.0'
 
   three@0.186.0:
     resolution: {integrity: sha512-cr/fIM2ddMSVbYVgkfD4jLJv7Fh/8ZTjvo+7gQeSVGUZHxpx9FDwoL5iC7hUz/LiRA8wMbqfnb90xKfm1/HHkQ==}
@@ -4179,6 +4196,10 @@ snapshots:
     optional: true
 
   '@fontsource-variable/inter@5.3.0': {}
+
+  '@gltf-transform/core@4.5.0':
+    dependencies:
+      property-graph: 4.1.0
 
   '@img/colour@1.1.0': {}
 
@@ -5594,6 +5615,8 @@ snapshots:
 
   process-ancestry@0.1.0: {}
 
+  property-graph@4.1.0: {}
+
   property-information@7.2.0: {}
 
   radix3@1.1.2: {}
@@ -5798,6 +5821,10 @@ snapshots:
       csso: 5.0.5
       picocolors: 1.1.1
       sax: 1.6.1
+
+  three-mesh-bvh@0.9.15(three@0.186.0):
+    dependencies:
+      three: 0.186.0
 
   three@0.186.0: {}
 

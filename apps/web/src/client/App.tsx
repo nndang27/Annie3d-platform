@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactFlowProvider } from '@xyflow/react';
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { Component, lazy, type ReactNode, Suspense, useEffect, useState } from 'react';
 import { api } from './api/client';
 import { useMe } from './api/me';
 import { importGuestUploads } from './canvas/actions';
@@ -148,12 +148,32 @@ function Workspace() {
       <RunDialog />
       <Toasts />
       {editing && (
-        <Suspense fallback={<div className="editor-loading">Opening 3D…</div>}>
-          <EditorOverlay nodeId={editing} />
-        </Suspense>
+        <EditorBoundary key={editing}>
+          <Suspense fallback={<div className="editor-loading">Opening 3D…</div>}>
+            <EditorOverlay nodeId={editing} />
+          </Suspense>
+        </EditorBoundary>
       )}
     </div>
   );
+}
+
+/** A 3D failure (no WebGL, bad file) closes the editor instead of taking the canvas down. */
+class EditorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error: Error) {
+    toast(`The 3D editor could not start: ${error.message}`, 'error');
+    useUi.setState({ editingNodeId: null });
+    const u = new URL(location.href);
+    u.searchParams.delete('edit');
+    history.replaceState(null, '', u);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
 }
 
 export function App() {

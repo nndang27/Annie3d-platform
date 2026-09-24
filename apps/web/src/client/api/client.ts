@@ -78,6 +78,21 @@ export const api = {
   startRun: (boardId: string, json: { idempotencyKey: string; nodeId: string | null; scope: string }) =>
     call<RunDto>(`/api/boards/${boardId}/runs`, { method: 'POST', json, headers: simHeader() }),
   runs: (boardId: string) => call<{ runs: RunDto[] }>(`/api/boards/${boardId}/runs`),
+  edit: (
+    boardId: string,
+    nodeId: string,
+    json: {
+      idempotencyKey: string;
+      baseVersionId: string;
+      selection: { faces: number[] };
+      instruction: string;
+    },
+  ) =>
+    call<RunDto>(`/api/boards/${boardId}/nodes/${nodeId}/edits`, {
+      method: 'POST',
+      json,
+      headers: simHeader(),
+    }),
   cancelRun: (runId: string) => call<RunDto>(`/api/runs/${runId}/cancel`, { method: 'POST' }),
   createUpload: (json: { kind: string; filename: string; mime: string; byteSize: number; sha256: string }) =>
     call<z.infer<typeof CreateUploadResponse>>('/api/assets/uploads', { method: 'POST', json }),

@@ -33,7 +33,7 @@ export function ContextMenu() {
           <>
             {NODE_DEFS[node.kind].runnable &&
               item('Run this node', () => onRunNode(node.id), undefined, 'ctx-run')}
-            {(node.kind === 'model3d' || node.kind === 'upload3d' || node.kind === 'stage') &&
+            {(node.kind === 'model3d' || node.kind === 'upload3d') &&
               node.currentVersionId &&
               item('Open 3D editor', () => openEditor(node.id))}
             {item('Duplicate', () => duplicateNodes(targets), '⌘D', 'ctx-duplicate')}

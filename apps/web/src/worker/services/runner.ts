@@ -19,9 +19,10 @@ import {
   settle,
 } from '@annie3d/db';
 import { and, asc, eq, sql } from 'drizzle-orm';
-import { engineFor } from '../engines/registry';
+import { editEngineFor, engineFor } from '../engines/registry';
 import { GateFailure } from '../engines/simulator';
 import type { Env } from '../env';
+import { bucketOf } from './assets';
 import { applyBatch, computeInputHashes, loadGraph, versionDtos } from './boards';
 
 /** Events without the envelope; the run room assigns `seq` and `at`. */
@@ -119,10 +120,13 @@ async function runStep(
 ) {
   const nodeId = step.nodeId!;
   const node = graph.nodes.get(nodeId)!;
-  const hash = (await computeInputHashes(graph)).get(nodeId)!;
+  const edit = run.kind === 'edit' ? await loadEdit(env, db, run) : null;
+  // An edit refines its base version on the same inputs, so it inherits the base input hash
+  // (the node stays fresh; an upstream change still makes it stale).
+  const hash = edit?.baseHash ?? (await computeInputHashes(graph)).get(nodeId)!;
 
   // Cache: the current version (or an older version of this node) was made from identical inputs.
-  const hit = await cachedVersion(db, run.workspaceId, nodeId, node.currentVersionId, hash);
+  const hit = edit ? null : await cachedVersion(db, run.workspaceId, nodeId, node.currentVersionId, hash);
   if (hit) {
     const boardSeq =
       hit === node.currentVersionId ? await boardSeqOf(db, run.boardId) : await pointAt(db, run, nodeId, hit);
@@ -155,12 +159,15 @@ async function runStep(
     .set({ status: 'running', startedAt: new Date(), inputHash: hash })
     .where(eq(runSteps.id, step.id));
   await out.emit({ type: 'step.started', nodeId });
-  const engine = engineFor(env, node.kind, { simSpeed: (run.params as { simSpeed?: number }).simSpeed });
+  const simSpeed = (run.params as { simSpeed?: number }).simSpeed;
+  const engine = edit ? editEngineFor(env, node.kind, { simSpeed }) : engineFor(env, node.kind, { simSpeed });
   if (!engine) throw new Error(`No engine for ${node.kind}`);
-  const inputs = await resolveInputs(db, graph, nodeId);
-  for (const port of NODE_DEFS[node.kind].inputs) {
-    if (port.required && !inputs.some((i) => i.port === port.id))
-      throw new InputMissing(`Connect "${port.label}" first`);
+  const inputs = edit ? [edit.input] : await resolveInputs(db, graph, nodeId);
+  if (!edit) {
+    for (const port of NODE_DEFS[node.kind].inputs) {
+      if (port.required && !inputs.some((i) => i.port === port.id))
+        throw new InputMissing(`Connect "${port.label}" first`);
+    }
   }
 
   let lastProgress = 0;
@@ -187,32 +194,46 @@ async function runStep(
     },
     putFile,
     putArtifact,
+    readInput: (input) => readAsset(env, db, input.assetId!),
+    edit: edit
+      ? { baseVersionId: edit.baseVersionId, faces: edit.faces, instruction: edit.instruction }
+      : undefined,
   };
   const result = await engine.run(ctx);
   if (signal.aborted) throw new DOMException('cancelled', 'AbortError');
   const versionId = await persistVersion(
     db,
-    { workspaceId: run.workspaceId, boardId: run.boardId, runId: run.id, userId: run.requestedBy },
+    {
+      workspaceId: run.workspaceId,
+      boardId: run.boardId,
+      runId: run.id,
+      userId: run.requestedBy,
+      source: edit ? 'edit' : 'run',
+      parentVersionId: edit?.baseVersionId,
+    },
     nodeId,
     hash,
     node.settings,
     result.outputs,
     result.gates,
   );
+  if (edit) await inheritVariants(db, edit.input.assetId!, versionId);
   const boardSeq = await pointAt(db, run, nodeId, versionId);
-  await db
-    .insert(resultCache)
-    .values({
-      workspaceId: run.workspaceId,
-      inputHash: hash,
-      nodeKind: node.kind,
-      engineVersion: engine.version,
-      versionId,
-    })
-    .onConflictDoUpdate({
-      target: [resultCache.workspaceId, resultCache.inputHash],
-      set: { versionId, engineVersion: engine.version },
-    });
+  // Edited versions are not cache entries: re-running the node from its inputs must regenerate.
+  if (!edit)
+    await db
+      .insert(resultCache)
+      .values({
+        workspaceId: run.workspaceId,
+        inputHash: hash,
+        nodeKind: node.kind,
+        engineVersion: engine.version,
+        versionId,
+      })
+      .onConflictDoUpdate({
+        target: [resultCache.workspaceId, resultCache.inputHash],
+        set: { versionId, engineVersion: engine.version },
+      });
   await db
     .update(runSteps)
     .set({ status: 'succeeded', outputVersionId: versionId, finishedAt: new Date() })
@@ -325,6 +346,9 @@ export interface VersionOrigin {
   userId: string | null;
   /** Where output objects live: engines write to artifacts; seeded examples reference public fixtures. */
   bucket?: 'artifacts' | 'public';
+  source?: 'run' | 'edit';
+  /** Defaults to the node's current version. */
+  parentVersionId?: string;
 }
 
 /**
@@ -423,9 +447,9 @@ export async function persistVersion(
       boardId: run.boardId,
       workspaceId: run.workspaceId,
       versionNo: (max.rows[0]?.n ?? 0) + 1,
-      source: 'run',
+      source: run.source ?? 'run',
       runId: run.runId,
-      parentVersionId: node.rows[0]?.current_version_id ?? null,
+      parentVersionId: run.parentVersionId ?? node.rows[0]?.current_version_id ?? null,
       outputAssetId: assetIds[0] ?? null,
       params: settings,
       gates,
@@ -477,4 +501,45 @@ async function finalize(db: Db, run: RunRow, out: Emitter, cancelled: boolean) {
       );
   });
   await out.emit({ type: 'run.finished', status, chargedCredits: charged });
+}
+
+/** Edit runs keep their parameters on the run row and the face list in R2 (it can be large). */
+async function loadEdit(env: Env, db: Db, run: RunRow) {
+  const p = run.params as { baseVersionId: string; facesKey: string; instruction: string };
+  const base = await db.query.nodeVersions.findFirst({ where: (t, { eq }) => eq(t.id, p.baseVersionId) });
+  if (!base?.outputAssetId) throw new InputMissing('The base version has no model');
+  const a = await db.query.assets.findFirst({ where: (t, { eq }) => eq(t.id, base.outputAssetId!) });
+  if (!a) throw new InputMissing('The base model file is missing');
+  const obj = await env.ARTIFACTS.get(p.facesKey);
+  if (!obj) throw new InputMissing('The selection expired; select the region again');
+  const faces = [...new Uint32Array(await obj.arrayBuffer())];
+  const input: ResolvedInput = {
+    port: 'base',
+    type: 'model3d',
+    assetId: a.id,
+    url: `/api/assets/${a.id}/content`,
+    mime: a.mime,
+    versionId: base.id,
+    meta: { ...(a.meta as Record<string, unknown>), sha256: a.sha256, triangleCount: a.triangleCount },
+  };
+  return { baseVersionId: base.id, baseHash: base.inputHash, faces, instruction: p.instruction, input };
+}
+
+async function readAsset(env: Env, db: Db, assetId: string): Promise<ArrayBuffer> {
+  const a = await db.query.assets.findFirst({ where: (t, { eq }) => eq(t.id, assetId) });
+  if (!a) throw new InputMissing('Input file not found');
+  const obj = await bucketOf(env, a.bucket).get(a.storageKey);
+  if (!obj) throw new InputMissing('Input file missing in storage');
+  return obj.arrayBuffer();
+}
+
+/** The edited model keeps its base's preview images until a render engine refreshes them. */
+async function inheritVariants(db: Db, baseAssetId: string, versionId: string) {
+  const v = await db.query.nodeVersions.findFirst({ where: (t, { eq }) => eq(t.id, versionId) });
+  if (!v?.outputAssetId || v.outputAssetId === baseAssetId) return;
+  await db.execute(sql`
+    INSERT INTO asset_variants (asset_id, variant, mime, byte_size, storage_key, width, height)
+    SELECT ${v.outputAssetId}, variant, mime, byte_size, storage_key, width, height
+    FROM asset_variants WHERE asset_id = ${baseAssetId}
+    ON CONFLICT DO NOTHING`);
 }

@@ -28,3 +28,4 @@ fixtures/out/*
 !fixtures/out/manifest.json
 perf-results/lighthouse-*/
 perf-results/trace-*.json.gz
+perf-results/*.heapsnapshot

@@ -122,3 +122,53 @@ example, cost, live progress with v2, gate error, and reload plus cancel.
 | Example board create + seed | 3.3 s (~45 round trips); re-measure on deploy |
 
 **Scores:** UI 76 · Backend 88 · AI-plug 85 · Tests 90 · Prod-10k 72.
+
+## P6 · 3D editor overlay (F8 region edit, F9 versions, F4 packshot camera) — done
+- **Editor:** a lazily loaded overlay (three.js chunk, 186 kB gzip, never on first load) with
+  one WebGL context per open, rendered on demand.
+  - Tools: orbit, brush, lasso, clear, packshot camera, preview light.
+  - Bottom of the viewport: a version strip and animation playback. Right: an agent panel with
+    context chips.
+- **Selection:** three-mesh-bvh in `indirect` mode keeps the GLB's triangle order.
+  - Face ids are global in glTF document order, so client and server agree on the faces.
+  - Brush uses a BVH sphere shapecast. Lasso selects front-facing triangle centroids inside
+    the screen polygon.
+- **Region edit API:** `POST /api/boards/:id/nodes/:nodeId/edits` creates an edit run (4 cr).
+  The face list is stored in R2; parameters live on the run.
+- **Simulated edit engine:** applies the instruction to the selected faces for real with
+  glTF-Transform. Colour words, matte/gloss/metal are supported, in a new primitive with a
+  derived material.
+  - The result is version n+1 (`source: edit`, parent = base). It inherits the base input
+    hash, so the node stays fresh.
+  - An empty selection fails the `selection` gate and is refunded.
+- **Versions (F9):** strip, side-by-side compare (one renderer, scissor split, shared camera),
+  and revert as an undoable op.
+- **Packshot camera (F4):** the current view sets downstream packshot nodes to custom
+  angles, or adds a connected packshot node.
+- **Memory (memory-leak-debugging skill, Chrome DevTools MCP heap snapshots):** 5 open/close
+  cycles first retained 6 editors and 12 renderers. Two causes were found and fixed:
+  - React removes DOM before passive effect cleanups, so OrbitControls could not unregister
+    its document keydown listener. Fixed with a layout-effect lifecycle plus explicit removal.
+  - three r186's shared `DFG_LUT` texture keeps a dispose listener per renderer. It is now
+    disposed after each renderer.
+  - After the fixes: 0 editors, renderers or controls retained.
+- **Robustness:**
+  - An error boundary closes the editor if WebGL fails.
+  - A stale `?edit=` link closes itself.
+  - A fresh canvas per mount avoids reusing a lost WebGL context in StrictMode.
+
+**Measured on 2026-09-24:**
+
+| Check | Result |
+| --- | --- |
+| Unit tests | 16/16 |
+| API tests | 24/24 |
+| E2E, Chromium + WebKit + Firefox | 54/54 |
+
+The API tests add a region edit that yields a new GLB and keeps the base, revert, and a gate
+refund. The E2E tests add brush and lasso, clear, close releasing the canvas, the guest
+sign-in gate, edit → v2, compare, revert, and the packshot camera.
+
+**Known gap:** edited versions reuse the base posters until a render engine refreshes them.
+
+**Scores:** UI 84 · Backend 89 · AI-plug 88 · Tests 91 · Prod-10k 74.

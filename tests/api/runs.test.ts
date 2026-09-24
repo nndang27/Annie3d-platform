@@ -301,3 +301,79 @@ describe('example board seeding (F1 for signed-in users)', () => {
     expect((await c.json('/api/me')).body.credits.balance).toBe(60);
   }, 60_000);
 });
+
+describe('region edits (F8) and versions (F9)', () => {
+  it('applies an instruction to selected faces as a new version, keeps the base, and can revert', async () => {
+    const { starterGraph } = await import('../../packages/contracts/src/index');
+    const { FIXTURE_MANIFEST, uuidFromHash } = await import('../../fixtures/index');
+    const c = await Client.signedUp('Editor');
+    const g = starterGraph('splash-hero');
+    const photoId = uuidFromHash(FIXTURE_MANIFEST.products.serum.files['photo.png']!.sha256);
+    const nodes = g.nodes.map(({ version: _v, currentVersionId: _c, ...n }) =>
+      n.kind === 'photo' ? { ...n, settings: { ...n.settings, assetId: photoId } } : n,
+    );
+    const board = await c.json('/api/boards', {
+      method: 'POST',
+      json: { title: 'E', starter: 'blank', fromGuest: { nodes, edges: g.edges } },
+    });
+    const model = board.body.nodes.find((n: { kind: string }) => n.kind === 'model3d');
+    const base = model.currentVersionId;
+    const edit = (faces: number[], key = randomUUID()) =>
+      c.json(`/api/boards/${board.body.board.id}/nodes/${model.id}/edits`, {
+        method: 'POST',
+        headers: FAST,
+        json: {
+          idempotencyKey: key,
+          baseVersionId: base,
+          selection: { faces },
+          instruction: 'Make the cap matte black',
+        },
+      });
+    const r = await edit(Array.from({ length: 60 }, (_, i) => i));
+    expect(r.status).toBe(201);
+    expect(r.body.estimatedCredits).toBe(4);
+    const events = await listen(c, r.body.id).done;
+    const ok = events.find((e) => e.type === 'step.succeeded') as unknown as {
+      versionId: string;
+      version: {
+        source: string;
+        parentVersionId: string;
+        versionNo: number;
+        outputs: { sha256: string; urls: { original: string; poster: string | null } }[];
+      };
+    };
+    expect(ok.version).toMatchObject({ source: 'edit', parentVersionId: base, versionNo: 2 });
+    expect(ok.version.outputs[0]!.urls.poster).toBeTruthy(); // inherits the base previews
+    const snap = await c.json(`/api/boards/${board.body.board.id}`);
+    const baseV = (await c.json(`/api/boards/${board.body.board.id}/nodes/${model.id}/versions`)).body
+      .versions;
+    expect(baseV.map((v: { versionNo: number }) => v.versionNo)).toEqual([2, 1]);
+    const edited = baseV[0].outputs[0];
+    const original = baseV[1].outputs[0];
+    expect(edited.sha256).not.toBe(original.sha256);
+    const glb = await c.req(edited.urls.original);
+    expect(glb.status).toBe(200);
+    expect(new TextDecoder().decode((await glb.arrayBuffer()).slice(0, 4))).toBe('glTF');
+    // The edit keeps the node fresh (same inputs), so nothing downstream is forced to re-run by itself.
+    expect(snap.body.nodes.find((n: { id: string }) => n.id === model.id).stale).toBe(false);
+    // Revert (F9) is an ordinary op.
+    const rev = await c.json(`/api/boards/${board.body.board.id}/nodes/${model.id}/select-version`, {
+      method: 'POST',
+      json: { versionId: base },
+    });
+    expect(rev.status).toBe(200);
+    expect(
+      (await c.json(`/api/boards/${board.body.board.id}`)).body.nodes.find(
+        (n: { id: string }) => n.id === model.id,
+      ).currentVersionId,
+    ).toBe(base);
+    // Faces outside the model fail the selection gate and are refunded.
+    const bad = await edit([9_999_999]);
+    const badEvents = await listen(c, bad.body.id).done;
+    expect(badEvents.find((e) => e.type === 'step.failed')).toMatchObject({
+      gate: 'selection',
+      refundedCredits: 4,
+    });
+    expect((await c.json('/api/me')).body.credits).toMatchObject({ balance: 56, reserved: 0 });
+  }, 90_000);
+});

@@ -66,6 +66,8 @@ export interface EngineContext {
     data: ArrayBuffer | ReadableStream,
     meta: Omit<EngineOutput, 'storageKey' | 'byteSize' | 'sha256'> & { ext: string },
   ): Promise<EngineOutput>;
+  /** Reads an input's bytes (in-process engines; external engines get presigned URLs). */
+  readInput(input: ResolvedInput): Promise<ArrayBuffer>;
   /** Stores a derived file (poster, thumbnail, clip) and returns where it went. */
   putFile(
     data: ArrayBuffer,

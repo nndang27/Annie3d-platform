@@ -1,5 +1,6 @@
 export type { CompositeInput } from './composite';
 export { compositeAd, contrastOn } from './composite';
+export { type EditorOptions, type EditorTool, ModelEditor } from './editor';
 export type { BuiltFixture, Finish, FixtureId } from './fixtures';
 export { buildFixture, FIXTURE_IDS } from './fixtures';
 export type { AnimationPreset, BackgroundPreset, CameraPreset, LightPreset } from './presets';

@@ -252,7 +252,7 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
           <i style={{ width: `${pct}%` }} />
         </div>
       )}
-      {(kind === 'model3d' || kind === 'upload3d' || kind === 'stage') && primary && (
+      {(kind === 'model3d' || kind === 'upload3d') && primary?.kind === 'model3d' && (
         <button
           type="button"
           className="open3d nodrag"

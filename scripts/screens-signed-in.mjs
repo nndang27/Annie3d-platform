@@ -10,7 +10,7 @@ mkdirSync('docs/screens', { recursive: true });
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 await page.goto(`${BASE}/home`);
-await page.evaluate(() => localStorage.setItem('annie3d.simSpeed', '0.6'));
+await page.evaluate(() => localStorage.setItem('annie3d.simSpeed', '0.3'));
 await page.request.post(`${BASE}/api/auth/sign-up/email`, {
   headers: { origin: BASE },
   data: { email: `shots-${Date.now()}@example.com`, password: 'correct-horse-battery', name: 'Mai Tran' },
@@ -53,6 +53,44 @@ if (phase === 'p5') {
   await page.getByTestId('node-error').first().waitFor({ timeout: 90_000 });
   await page.waitForTimeout(600);
   await page.screenshot({ path: out('06-gate-failed') });
+}
+if (phase === 'p6') {
+  const model = page.getByTestId('node-model3d').first();
+  await model.hover();
+  await model.getByTestId('open-3d').click();
+  await page.getByTestId('editor').waitFor();
+  await page.waitForFunction(() => !document.querySelector('.editor-loading-inline'), null, {
+    timeout: 30_000,
+  });
+  await page.waitForTimeout(800);
+  await page.screenshot({ path: out('02-editor-open') });
+  await page.getByTestId('tool-lasso').click();
+  const b = await page.getByTestId('editor-canvas').boundingBox();
+  const pts = [
+    [0.42, 0.12],
+    [0.58, 0.12],
+    [0.58, 0.36],
+    [0.42, 0.36],
+    [0.42, 0.12],
+  ];
+  await page.mouse.move(b.x + b.width * pts[0][0], b.y + b.height * pts[0][1]);
+  await page.mouse.down();
+  for (const [x, y] of pts.slice(1))
+    await page.mouse.move(b.x + b.width * x, b.y + b.height * y, { steps: 8 });
+  await page.mouse.up();
+  await page.getByTestId('edit-instruction').fill('Make the cap matte gold');
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: out('03-region-selected') });
+  await page.getByTestId('edit-apply').click();
+  await page.getByTestId('version-2').waitFor({ timeout: 60_000 });
+  await page.waitForFunction(() => !document.querySelector('.editor-loading-inline'), null, {
+    timeout: 30_000,
+  });
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: out('04-edited-v2') });
+  await page.getByTestId('compare').click();
+  await page.waitForTimeout(2000);
+  await page.screenshot({ path: out('05-compare-v2-v1') });
 }
 await browser.close();
 console.log('screens saved');

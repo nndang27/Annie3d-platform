@@ -21,5 +21,8 @@ export function creditsFor(kind: NodeKind, settings: Record<string, unknown>): n
   }
 }
 
+/** A region edit (F8): selected faces + instruction on one model version. */
+export const EDIT_CREDITS = 4;
+
 /** Credits granted with the first sign-in: enough for one full Starter graph run. */
 export const FREE_RUN_CREDITS = 60;

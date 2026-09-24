@@ -8,7 +8,7 @@ Neon `production` branch (Sydney) through Hyperdrive `annie3d-prod`, and R2 buck
 pnpm check          # typecheck, lint, unit tests, build
 pnpm test:api       # live API tests on a disposable Neon branch
 pnpm test:e2e       # Chromium, WebKit and Firefox on a disposable branch
-pnpm deploy         # CLOUDFLARE_ENV=production build + wrangler deploy
+pnpm run deploy:prod  # CLOUDFLARE_ENV=production build + wrangler deploy (not `pnpm deploy`: that is a pnpm built-in)
 ```
 - `CLOUDFLARE_ENV=production` selects `env.production` in `apps/web/wrangler.jsonc` at build time
   (Cloudflare Vite plugin). Deploying a non-production build would ship dev variables.

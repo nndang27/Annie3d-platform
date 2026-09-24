@@ -163,9 +163,13 @@ Wrangler.
    approve in the browser. I then create buckets, Hyperdrive, Queues, Durable Objects and
    deploy with Wrangler.
 3. **Neon**
-   - Sign up, create project `annie3d`, region **AWS Asia Pacific (Sydney)**, database
-     `annie3d`, Postgres 17.
-   - Create a branch `dev`.
+   - Done 2026-09-24 with the Neon CLI: project **Annie 3D** (`broad-sun-29393161`, region
+     `aws-ap-southeast-2` Sydney), Postgres 18, database `neondb`, branches `production`
+     (default) and `dev`. The repo is linked (`.neon`, gitignored), `neon.ts` holds the
+     config policy, Neon agent skills live in `.claude/skills/neon*`, and the Neon MCP server
+     is installed for Claude Code only with a project-scoped API key.
+   - `neon deploy` also writes `DATABASE_URL`/`DATABASE_URL_UNPOOLED` for the linked branch into
+     the gitignored `.env.local`.
    - Copy the **direct** connection strings (turn "Connection pooling" off) for `main` and
      `dev` into `DATABASE_URL_PROD` and `DATABASE_URL_DEV`.
    - Optional for preview branches in CI: Account settings → API keys → create one for GitHub

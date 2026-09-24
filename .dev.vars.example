@@ -3,7 +3,7 @@
 CLOUDFLARE_ACCOUNT_ID=
 
 # Neon Postgres: DIRECT (unpooled) connection strings; Hyperdrive does the pooling.
-DATABASE_URL_DEV=postgresql://USER:PASSWORD@HOST/annie3d?sslmode=require
+DATABASE_URL_DEV=postgresql://USER:PASSWORD@HOST/neondb?sslmode=require
 DATABASE_URL_PROD=
 
 # R2 S3-compatible API token (Object Read & Write, scoped to the annie3d buckets) for presigned uploads.

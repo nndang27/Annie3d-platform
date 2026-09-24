@@ -27,6 +27,8 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@biomejs/biome": "^2.4.0",
+    "@neon/config": "^1.7.3",
+    "@neon/env": "^1.4.4",
     "@playwright/test": "^1.63.0",
     "concurrently": "^10.0.5",
     "fake-indexeddb": "^6.0.0",

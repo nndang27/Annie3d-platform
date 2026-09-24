@@ -76,3 +76,27 @@ difference was fixed: Electron's default `acceptFirstMouse: false` swallowed the
 inactive macOS window (Chrome passes it through); the window now sets `acceptFirstMouse: true`.
 A first synthetic run showed the app slower only because Playwright had emulated a 1x pixel ratio
 for Chrome; compare both at the display's own ratio.
+
+## First-use GPU stalls (measured 2026-09-25)
+
+Symptom reported: zooming or moving the pointer "stalls once, then continues". Reproduced with
+`tests/perf/hitch.mjs` (pinch-zoom bursts and pointer sweeps; frame gaps, Long Animation Frames,
+GPU status). The stalled frames have an idle main thread (no script, style or layout): the time is
+spent in the GPU process compiling Metal pipelines for Skia Graphite on first use.
+
+| Case | Zoom stalls (worst) | Pointer-sweep stalls (worst) |
+| --- | --- | --- |
+| App, cold shader cache | 9–11 (217–250 ms) | 4–5 (150–192 ms) |
+| App, warm cache (same location, even after a rebuild) | 0 | 0 |
+| App copied to a new folder (cache is per location) | 10 (167 ms) | 4 (166 ms) |
+| Chrome 153 (for Testing), cold cache | 6 (92 ms) | 0 |
+| App, cold, hidden warm-up window first (7.2 s) | 1 (92–100 ms) | 2 (133–198 ms) |
+
+- The macOS shader cache lives in `$(getconf DARWIN_USER_CACHE_DIR)/app.annie3d.desktop.helper`.
+  Cold means the first sessions after installing or moving the app (and after Electron, macOS or
+  GPU driver updates). The user's Chrome never shows it because its cache is warm.
+- Rejected: `--disable-features=SkiaGraphite` removed the stalls only because Electron 44 then
+  fell back to software compositing with WebGL disabled (interaction p50 24 → 40 ms, editor
+  broken). `--enable-skia-graphite-precompilation` changed nothing.
+- Open decision: a hidden warm-up window on first launch cuts most stalls but not all, and costs
+  ~7 s of background GPU work. Not shipped.

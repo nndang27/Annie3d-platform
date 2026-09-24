@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "build": "pnpm --filter @annie3d/site build && node scripts/copy-site.mjs && pnpm --filter @annie3d/web build",
+    "build": "pnpm --filter @annie3d/site build && node scripts/copy-site.mjs && pnpm --filter @annie3d/web build && node scripts/strip-maps.mjs",
     "preview": "node scripts/dev.mjs --preview",
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check .",
@@ -22,7 +22,10 @@
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
     "test:db": "node scripts/test-db.mjs",
     "test:api": "node scripts/test-api.mjs",
-    "docs:api": "npx -y tsx scripts/gen-api-doc.ts"
+    "docs:api": "npx -y tsx scripts/gen-api-doc.ts",
+    "build:prod": "CLOUDFLARE_ENV=production pnpm build",
+    "deploy": "CLOUDFLARE_ENV=production pnpm build && pnpm --filter @annie3d/web exec wrangler deploy",
+    "perf:load": "node tests/perf/load.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

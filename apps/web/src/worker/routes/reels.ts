@@ -56,7 +56,7 @@ reelRoutes.post('/api/runs/:runId/reels', requireEditor, async (c) => {
   const a = await db.query.assets.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, req.assetId), eq(t.workspaceId, run.workspaceId)),
   });
-  if (!a || a.kind !== 'video' || a.status !== 'ready')
+  if (a?.kind !== 'video' || a.status !== 'ready')
     throw httpError(400, 'bad_request', 'Upload the recorded reel video first');
   const [row] = await db
     .insert(reels)

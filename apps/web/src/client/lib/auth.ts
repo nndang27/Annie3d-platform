@@ -2,6 +2,7 @@
  * Better Auth browser client, loaded on first use: ~75 kB of source that only sign-in needs
  * (react-best-practices: bundle-dynamic-imports).
  */
+// biome-ignore lint/suspicious/noExplicitAny: the plugin-extended client type is inferred per call site.
 let cached: Promise<{ client: any; googleClientId: string | null }> | null = null;
 
 async function client() {

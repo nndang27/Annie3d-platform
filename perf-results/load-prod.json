@@ -1,0 +1,43 @@
+{
+  "base": "https://annie3d.nndang2701.workers.dev",
+  "at": "2026-09-24T08:19:37.860Z",
+  "from": "developer machine (Australia), one client process",
+  "results": {
+    "app shell": {
+      "requests": 1000,
+      "concurrency": 50,
+      "errors": 0,
+      "rps": 1171,
+      "p50": 34,
+      "p95": 78,
+      "p99": 137
+    },
+    "fixture image": {
+      "requests": 1000,
+      "concurrency": 50,
+      "errors": 0,
+      "rps": 1401,
+      "p50": 31,
+      "p95": 56,
+      "p99": 100
+    },
+    "session check (guest)": {
+      "requests": 1000,
+      "concurrency": 50,
+      "errors": 0,
+      "rps": 1920,
+      "p50": 25,
+      "p95": 31,
+      "p99": 34
+    },
+    "health (DB round trip)": {
+      "requests": 1000,
+      "concurrency": 50,
+      "errors": 0,
+      "rps": 1239,
+      "p50": 36,
+      "p95": 68,
+      "p99": 117
+    }
+  }
+}

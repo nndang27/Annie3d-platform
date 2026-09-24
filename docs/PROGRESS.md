@@ -281,3 +281,61 @@ create/reuse, public payload, cross-target isolation, the OG page without script
 | E2E, three browsers | 73 passed, 2 skipped (the reel is recorded in Chromium only); adds agent edit → undo → run → history, a recorded and downloadable reel, and browser upload |
 
 **Scores:** UI 93 · Backend 93 · AI-plug 92 · Tests 94 · Prod-10k 80.
+
+## P10 · Quality pass and production deploy — done
+- **Security headers:**
+  - Static assets get CSP, HSTS, Permissions-Policy, COOP, nosniff and frame denial via
+    `_headers`. The Worker sets its own headers for API, share and checkout.
+  - CSP allows only self, Google Identity Services and R2 presigned uploads.
+  - zod runs jitless, so the CSP sees no eval probe.
+- **Build hygiene:** client source maps are moved out of the deployed assets (kept in
+  `dist/sourcemaps`), and hashed assets are cached immutably.
+- **Production deploy:**
+  - Worker `annie3d` with the `production` environment and Hyperdrive to the Neon production
+    branch (migrated).
+  - Secrets were set from stdin, including a fresh production auth secret; test sign-in is
+    disabled.
+  - Runbook: `docs/DEPLOY.md`.
+
+**Measured on production, 2026-09-24:**
+
+| Check | Result |
+| --- | --- |
+| `/api/health` DB round trip via Hyperdrive | 11 ms (local dev direct: ~167 ms) |
+| Lighthouse desktop | 99 / 100 / 100 / 100, LCP 0.7 s, TBT 0 ms, CLS 0.001 |
+| Lighthouse mobile (simulated slow 4G) | 98 / 100 / 100 / 100, LCP 1.9 s |
+| Guest smoke test | first image in 347 ms, all previews decoded, editor opens, Run asks to sign in, 0 console errors |
+| Load test, 1,000 requests × 4 endpoints at 50 concurrency from one client | 0 errors |
+| DB endpoint under load | ~1,240 req/s, p95 68 ms |
+| App shell under load | p95 78 ms |
+
+**Scores:** UI 93 · Backend 94 · AI-plug 92 · Tests 94 · Prod-10k 84.
+
+## Readiness for 10,000 users (honest summary)
+**Done and measured:**
+- All 12 features are built and wired end to end.
+- Tests: 23 unit, 38 live API and 73 E2E across three browsers, plus 9 DB tests.
+- Tenant isolation, idempotency and credit safety are tested.
+- Performance: ~120 fps canvas with 200 nodes on a real GPU; Lighthouse ≥ 98 on production;
+  a single client pushes >1,200 req/s through the DB path without errors.
+- Edge-scale architecture: Workers, Durable Objects per run, Hyperdrive pooling, and R2 with
+  CDN-cached public fixtures.
+
+**Open before a public launch:**
+1. **Real engines** (user's part) via `engines/registry.ts` or the External Engine Protocol.
+   The same goes for a real agent via `agents/registry.ts`.
+2. **Google OAuth production URIs** (owner action).
+3. **Real payments** (Stripe/Paddle webhook replacing the simulated confirm).
+4. **Error tracking and alerting.** Workers observability is on; there is no Sentry or
+   alerting yet.
+5. **CI/CD activation** (template ready).
+6. **Account deletion and data export** (privacy law), and email notifications.
+7. **Scale work for later:** `board_ops` partitioning or archiving, Postgres RLS as defence in
+   depth, and a server-side reel render worker.
+
+**Overall:**
+
+| Measure | Estimate |
+| --- | --- |
+| MVP feature completeness (UI + simulated AI) | ≈ 92% |
+| Production readiness for 10,000 users, excluding the real AI engines | ≈ 82% |

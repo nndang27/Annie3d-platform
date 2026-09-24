@@ -37,5 +37,36 @@
     "APP_URL": "http://localhost:5173",
     "R2_KEY_PREFIX": "dev/",
     "SIM_SPEED": "1"
+  },
+  // Production: CLOUDFLARE_ENV=production at build time (Cloudflare Vite plugin environments).
+  // Bindings are not inherited by environments, so each one is declared again here.
+  // Secrets (wrangler secret bulk --env production): BETTER_AUTH_SECRET, GOOGLE_CLIENT_ID,
+  // GOOGLE_CLIENT_SECRET, CLOUDFLARE_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY.
+  // ANNIE3D_TEST_AUTH is never set in production.
+  "env": {
+    "production": {
+      "name": "annie3d",
+      "workers_dev": true,
+      "r2_buckets": [
+        { "binding": "UPLOADS", "bucket_name": "annie3d-uploads" },
+        { "binding": "ARTIFACTS", "bucket_name": "annie3d-artifacts" },
+        { "binding": "PUBLIC", "bucket_name": "annie3d-public" }
+      ],
+      // Neon `production` branch (Sydney) through Hyperdrive "annie3d-prod".
+      "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "b0c9492373ec4b19a349375a4f2bdffb" }],
+      "ratelimits": [
+        { "name": "RL_WRITE", "namespace_id": "2001", "simple": { "limit": 120, "period": 60 } },
+        { "name": "RL_RUN", "namespace_id": "2002", "simple": { "limit": 20, "period": 60 } },
+        { "name": "RL_UPLOAD", "namespace_id": "2003", "simple": { "limit": 30, "period": 60 } }
+      ],
+      "durable_objects": { "bindings": [{ "name": "RUN_ROOM", "class_name": "RunRoom" }] },
+      "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RunRoom"] }],
+      "vars": {
+        "APP_ENV": "production",
+        "APP_URL": "https://annie3d.nndang2701.workers.dev",
+        "R2_KEY_PREFIX": "",
+        "SIM_SPEED": "1"
+      }
+    }
   }
 }

@@ -1,0 +1,18 @@
+{
+  "url": "https://annie3d.nndang2701.workers.dev/",
+  "fetchTime": "2026-09-24T08:18:31.382Z",
+  "device": "desktop",
+  "scores": {
+    "performance": 0.99,
+    "accessibility": 1,
+    "best-practices": 1,
+    "seo": 1
+  },
+  "metrics": {
+    "first-contentful-paint": "0.7\u00a0s",
+    "largest-contentful-paint": "0.7\u00a0s",
+    "total-blocking-time": "0\u00a0ms",
+    "cumulative-layout-shift": "0.001",
+    "speed-index": "0.8\u00a0s"
+  }
+}

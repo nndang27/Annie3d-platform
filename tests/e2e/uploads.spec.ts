@@ -10,13 +10,11 @@ test('signed-in photo upload goes to R2 (presigned) and becomes the node version
   await page.getByTestId('add-photo').click();
   const id = await newestNode(page, 'photo');
   const node = page.locator(`.react-flow__node[data-id="${id}"]`);
-  await node
-    .locator('input[type=file]')
-    .setInputFiles({
-      name: 'product.png',
-      mimeType: 'image/png',
-      buffer: readFileSync('fixtures/test-upload.png'),
-    });
+  await node.locator('input[type=file]').setInputFiles({
+    name: 'product.png',
+    mimeType: 'image/png',
+    buffer: readFileSync('fixtures/test-upload.png'),
+  });
   await expect(node.locator('.node-preview img')).toBeVisible({ timeout: 30_000 });
   await expect(page.getByTestId('save-state')).toHaveText('Saved');
   await page.reload();

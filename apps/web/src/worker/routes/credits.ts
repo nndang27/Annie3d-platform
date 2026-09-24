@@ -143,7 +143,7 @@ creditRoutes.post('/api/billing/simulated/confirm', requireEditor, async (c) => 
   const [acc] = await db.select().from(creditAccounts).where(eq(creditAccounts.workspaceId, data.ws));
   // The hosted checkout page posts a form: send the browser back to the app.
   if ((c.req.header('content-type') ?? '').includes('application/x-www-form-urlencoded')) {
-    const back = new URL(data.ret && data.ret.startsWith('/') ? data.ret : '/', new URL(c.req.url).origin);
+    const back = new URL(data.ret?.startsWith('/') ? data.ret : '/', new URL(c.req.url).origin);
     back.searchParams.set('checkout', 'success');
     return c.redirect(back.pathname + back.search, 303);
   }
@@ -180,7 +180,7 @@ a{color:#6b6f76;display:block;text-align:center;margin-top:12px;font-size:13px}<
 <div class="row"><span>${plan.creditsPerMonth} credits every month</span><span>$${plan.priceMonthlyUsd}.00</span></div>
 <div class="row total"><span>Due today</span><span>$${plan.priceMonthlyUsd}.00</span></div>
 <button type="submit" data-testid="checkout-pay">Pay $${plan.priceMonthlyUsd}.00</button>
-<a href="${esc(data.ret && data.ret.startsWith('/') ? data.ret : '/')}">Cancel and go back</a>
+<a href="${esc(data.ret?.startsWith('/') ? data.ret : '/')}">Cancel and go back</a>
 </form></body></html>`);
 });
 

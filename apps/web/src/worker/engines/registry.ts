@@ -1,6 +1,7 @@
-import type { Engine, NodeKind } from '@annie3d/contracts';
+import { type Engine, GLB_PRESETS, type GlbPresetId, type NodeKind } from '@annie3d/contracts';
 import type { Env } from '../env';
 import { applyRegionEdit } from './edit';
+import { buildBundle } from './export';
 import { GateFailure, simulator } from './simulator';
 import { ENGINE_VERSIONS } from './versions';
 
@@ -12,6 +13,8 @@ import { ENGINE_VERSIONS } from './versions';
  */
 export function engineFor(env: Env, kind: NodeKind, opts: { simSpeed?: number } = {}): Engine | null {
   if (!ENGINE_VERSIONS[kind]) return null;
+  // Export is real already: optimise + check the GLB for the preset and zip the bundle (F6).
+  if (kind === 'export') return exportEngine();
   return simulator(kind, {
     speed: opts.simSpeed ?? (Number(env.SIM_SPEED ?? '1') || 1),
     readFixture: async (key) => (await env.PUBLIC.get(key))?.arrayBuffer() ?? null,
@@ -69,6 +72,35 @@ export function editEngineFor(env: Env, kind: NodeKind, opts: { simSpeed?: numbe
         triangleCount: typeof base.meta?.triangleCount === 'number' ? base.meta.triangleCount : undefined,
       });
       return { outputs: [out], gates: [{ id: 'edit_applied', passed: true, value: changedFaces }] };
+    },
+  };
+}
+
+function exportEngine(): Engine {
+  return {
+    kind: 'export',
+    version: 'export-1',
+    async run(ctx) {
+      const s = ctx.settings as { glbPreset?: string; includeMp4?: boolean; includePng?: boolean };
+      const preset = (s.glbPreset && s.glbPreset in GLB_PRESETS ? s.glbPreset : 'web') as GlbPresetId;
+      const { outputs, report } = await buildBundle(ctx, ctx.inputs, {
+        preset,
+        includeMp4: s.includeMp4 ?? true,
+        includePng: s.includePng ?? true,
+        name: String(ctx.settings.name ?? 'annie3d'),
+      });
+      await ctx.progress(1, report?.passed === false ? 'Exported with failed checks' : 'Exported');
+      // Preset checks are reported as gates; a failed check does not fail the export (the files
+      // are still useful), the node shows which limit to fix.
+      return {
+        outputs,
+        gates: (report?.checks ?? []).map((c) => ({
+          id: `${preset}:${c.id}`,
+          passed: c.passed,
+          value: c.value,
+          threshold: c.limit,
+        })),
+      };
     },
   };
 }

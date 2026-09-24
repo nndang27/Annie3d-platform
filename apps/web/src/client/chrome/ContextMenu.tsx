@@ -36,6 +36,14 @@ export function ContextMenu() {
             {(node.kind === 'model3d' || node.kind === 'upload3d') &&
               node.currentVersionId &&
               item('Open 3D editor', () => openEditor(node.id))}
+            {(node.kind === 'model3d' || node.kind === 'upload3d' || node.kind === 'export') &&
+              node.currentVersionId &&
+              item(
+                'Export / download…',
+                () => useUi.setState({ dialog: { type: 'export', nodeId: node.id } }),
+                undefined,
+                'ctx-export',
+              )}
             {item('Duplicate', () => duplicateNodes(targets), '⌘D', 'ctx-duplicate')}
             {item('Delete', () => deleteNodes(targets), '⌫', 'ctx-delete')}
           </>

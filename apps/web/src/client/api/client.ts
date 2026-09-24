@@ -4,10 +4,12 @@ import type {
   BoardSnapshot,
   CreateUploadResponse,
   EstimateResponse,
+  ExportResponse,
   GraphOp,
   MeResponse,
   NodeVersionDto,
   RunDto,
+  ShareDto,
 } from '@annie3d/contracts';
 import type { z } from 'zod';
 
@@ -78,6 +80,20 @@ export const api = {
   startRun: (boardId: string, json: { idempotencyKey: string; nodeId: string | null; scope: string }) =>
     call<RunDto>(`/api/boards/${boardId}/runs`, { method: 'POST', json, headers: simHeader() }),
   runs: (boardId: string) => call<{ runs: RunDto[] }>(`/api/boards/${boardId}/runs`),
+  createExport: (json: {
+    idempotencyKey: string;
+    nodeId: string;
+    versionId?: string;
+    glbPreset?: string;
+    includeMp4: boolean;
+    includePng: boolean;
+  }) => call<ExportResult>('/api/exports', { method: 'POST', json }),
+  createShare: (json: {
+    targetType: 'board' | 'version';
+    targetId: string;
+    visibility?: 'public' | 'unlisted';
+  }) => call<ShareResult>('/api/shares', { method: 'POST', json }),
+  revokeShare: (id: string) => call<{ ok: true }>(`/api/shares/${id}`, { method: 'DELETE' }),
   edit: (
     boardId: string,
     nodeId: string,
@@ -101,3 +117,5 @@ export const api = {
 };
 
 export type Me = z.infer<typeof MeResponse>;
+export type ExportResult = z.infer<typeof ExportResponse>;
+export type ShareResult = z.infer<typeof ShareDto>;

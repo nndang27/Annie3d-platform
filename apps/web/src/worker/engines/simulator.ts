@@ -147,7 +147,12 @@ export function gatesFor(kind: NodeKind, product: FixtureProduct, prompt: string
         { id: 'loudness_lufs', passed: true, value: -14, threshold: -9 },
       ];
     default:
-      return [{ id: 'package_valid', passed: !fail }];
+      return (FIXTURE_MANIFEST.products[product].exportReport?.checks ?? []).map((c) => ({
+        id: `web:${c.id}`,
+        passed: c.passed && !fail,
+        value: c.value,
+        threshold: c.limit,
+      }));
   }
 }
 
@@ -254,16 +259,27 @@ export async function produce(
           variants: [await variant(ctx, opts, product, 'ad_poster_540.webp', 'poster_512', 'image/webp')],
         }),
       ];
-    default:
+    default: {
+      // Export: the pre-built bundle made by the real exporter (fixtures/export-bundles.ts).
+      const p = FIXTURE_MANIFEST.products[product];
+      const report = p.exportReport ?? null;
       return [
-        await ctx.putArtifact(await copy(opts, product, 'model.glb'), {
-          ext: 'glb',
-          mime: 'model/gltf-binary',
+        await ctx.putArtifact(await copy(opts, product, 'export_web.zip'), {
+          ext: 'zip',
+          mime: 'application/zip',
           kind: 'file',
           role: 'primary',
-          meta,
+          meta: { ...meta, filename: `${product}-web.zip`, files: p.exportFiles, report },
+        }),
+        await ctx.putArtifact(await copy(opts, product, 'export_web.glb'), {
+          ext: 'glb',
+          mime: 'model/gltf-binary',
+          kind: 'model3d',
+          role: 'extra',
+          meta: { ...meta, filename: `${product}-web.glb`, export: 'web', report },
           triangleCount: tri,
         }),
       ];
+    }
   }
 }

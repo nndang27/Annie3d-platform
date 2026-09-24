@@ -107,8 +107,65 @@
         "ad_poster_540.webp": {
           "bytes": 10134,
           "sha256": "828939aedc14f515e9714f82488f4998e8c67f3f35468706c4a3fbdaa7a9a4f9"
+        },
+        "export_web.glb": {
+          "bytes": 89984,
+          "sha256": "997866708bbcf83e0473f1878abe1f1453b907831e17d0e697030edb68ce9662"
+        },
+        "export_web.zip": {
+          "bytes": 612663,
+          "sha256": "6de09de4e18bb10af7e775844a27fe2241c8fada87d789273e12f16832f32c97"
         }
-      }
+      },
+      "exportReport": {
+        "preset": "web",
+        "passed": true,
+        "checks": [
+          {
+            "id": "bytes",
+            "passed": true,
+            "value": 89984,
+            "limit": 10485760,
+            "message": "0.09 MB of 10.00 MB"
+          },
+          {
+            "id": "triangles",
+            "passed": true,
+            "value": 3248,
+            "limit": 150000,
+            "message": "3,248 of 150,000 triangles"
+          },
+          {
+            "id": "texture",
+            "passed": true,
+            "value": 0,
+            "limit": 2048,
+            "message": "No image textures"
+          },
+          {
+            "id": "animation",
+            "passed": true,
+            "value": 1,
+            "limit": 0,
+            "message": "1 animation clip(s), none required"
+          },
+          {
+            "id": "validator",
+            "passed": true,
+            "value": 1,
+            "limit": 1,
+            "message": "Reads back as valid glTF 2.0"
+          }
+        ]
+      },
+      "exportFiles": [
+        "serum-web.glb",
+        "serum-ad.mp4",
+        "serum-image-1.png",
+        "serum-image-2.png",
+        "serum-image-3.png",
+        "serum-image-4.png"
+      ]
     },
     "headphones": {
       "vertical": "electronics",
@@ -215,8 +272,65 @@
         "ad_poster_540.webp": {
           "bytes": 5884,
           "sha256": "bf7ab061f99110733bb5d01ea2a86502abede6054c5d1cc401f485de43c8361d"
+        },
+        "export_web.glb": {
+          "bytes": 373304,
+          "sha256": "6e2f799c3d9b2f8f13be510d5fe2fdab6162fa9bcc3f0166b8918a6a34e1dd46"
+        },
+        "export_web.zip": {
+          "bytes": 1158503,
+          "sha256": "f9ddcd329a597277fe9e4d3791cc8e4d2a9973ff3d44afcd912389568418b590"
         }
-      }
+      },
+      "exportReport": {
+        "preset": "web",
+        "passed": true,
+        "checks": [
+          {
+            "id": "bytes",
+            "passed": true,
+            "value": 373304,
+            "limit": 10485760,
+            "message": "0.36 MB of 10.00 MB"
+          },
+          {
+            "id": "triangles",
+            "passed": true,
+            "value": 15744,
+            "limit": 150000,
+            "message": "15,744 of 150,000 triangles"
+          },
+          {
+            "id": "texture",
+            "passed": true,
+            "value": 0,
+            "limit": 2048,
+            "message": "No image textures"
+          },
+          {
+            "id": "animation",
+            "passed": true,
+            "value": 1,
+            "limit": 0,
+            "message": "1 animation clip(s), none required"
+          },
+          {
+            "id": "validator",
+            "passed": true,
+            "value": 1,
+            "limit": 1,
+            "message": "Reads back as valid glTF 2.0"
+          }
+        ]
+      },
+      "exportFiles": [
+        "headphones-web.glb",
+        "headphones-ad.mp4",
+        "headphones-image-1.png",
+        "headphones-image-2.png",
+        "headphones-image-3.png",
+        "headphones-image-4.png"
+      ]
     },
     "ring": {
       "vertical": "jewelry",
@@ -323,8 +437,65 @@
         "ad_poster_540.webp": {
           "bytes": 19436,
           "sha256": "96caa884f8e19e3b55111ba9358a017629bbd094ea83eb1639a52fc7f9825249"
+        },
+        "export_web.glb": {
+          "bytes": 196480,
+          "sha256": "88febeff3b3d3bb4e59ce4259f1589dd297edfbe47045e5c7e6912c8d06ac3fe"
+        },
+        "export_web.zip": {
+          "bytes": 1483543,
+          "sha256": "fbf05228eeff9c95183363ee80dd07a75a3bbf4bab100eec28e1955864caef51"
         }
-      }
+      },
+      "exportReport": {
+        "preset": "web",
+        "passed": true,
+        "checks": [
+          {
+            "id": "bytes",
+            "passed": true,
+            "value": 196480,
+            "limit": 10485760,
+            "message": "0.19 MB of 10.00 MB"
+          },
+          {
+            "id": "triangles",
+            "passed": true,
+            "value": 8544,
+            "limit": 150000,
+            "message": "8,544 of 150,000 triangles"
+          },
+          {
+            "id": "texture",
+            "passed": true,
+            "value": 0,
+            "limit": 2048,
+            "message": "No image textures"
+          },
+          {
+            "id": "animation",
+            "passed": true,
+            "value": 1,
+            "limit": 0,
+            "message": "1 animation clip(s), none required"
+          },
+          {
+            "id": "validator",
+            "passed": true,
+            "value": 1,
+            "limit": 1,
+            "message": "Reads back as valid glTF 2.0"
+          }
+        ]
+      },
+      "exportFiles": [
+        "ring-web.glb",
+        "ring-ad.mp4",
+        "ring-image-1.png",
+        "ring-image-2.png",
+        "ring-image-3.png",
+        "ring-image-4.png"
+      ]
     }
   }
 }

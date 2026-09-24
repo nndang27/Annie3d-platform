@@ -7,9 +7,11 @@ import { loadSession } from './lib/session';
 import { assetRoutes } from './routes/assets';
 import { boardRoutes } from './routes/boards';
 import { creditRoutes } from './routes/credits';
+import { exportRoutes } from './routes/exports';
 import { me } from './routes/me';
 import { publicRoutes } from './routes/public';
 import { runRoutes } from './routes/runs';
+import { shareRoutes } from './routes/shares';
 
 export { RunRoom } from './durable/run-room';
 export type { Env } from './env';
@@ -28,6 +30,7 @@ app.use('*', async (c, next) => {
   c.header('x-request-id', c.get('requestId'));
 });
 app.use('/api/*', closeDb);
+app.use('/s/*', closeDb);
 
 app.onError((err, c) => {
   if (err instanceof HttpError)
@@ -74,5 +77,7 @@ app.route('/', assetRoutes);
 app.route('/', creditRoutes);
 app.route('/', publicRoutes);
 app.route('/', runRoutes);
+app.route('/', exportRoutes);
+app.route('/', shareRoutes);
 
 export default app;

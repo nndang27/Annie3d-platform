@@ -218,8 +218,16 @@ assetRoutes.get('/api/assets/:assetId/content', requireUser, async (c) => {
     key,
     mime,
     'private, max-age=31536000, immutable',
+    downloadName(c.req.query('download')),
   );
 });
+
+/** `?download=name.ext` → attachment with a safe ASCII filename (RFC 6266). */
+export function downloadName(raw: string | undefined): string | undefined {
+  if (!raw) return undefined;
+  const safe = raw.replace(/[^A-Za-z0-9._-]+/g, '-').slice(0, 120);
+  return safe || undefined;
+}
 
 export async function streamObject(
   req: Request,
@@ -227,6 +235,7 @@ export async function streamObject(
   key: string,
   mime: string,
   cacheControl: string,
+  attachmentName?: string,
 ): Promise<Response> {
   const range = req.headers.get('range');
   const obj = await bucket.get(key, { onlyIf: req.headers, range: range ? req.headers : undefined });
@@ -238,6 +247,7 @@ export async function streamObject(
     'accept-ranges': 'bytes',
     'x-content-type-options': 'nosniff',
   });
+  if (attachmentName) headers.set('content-disposition', `attachment; filename="${attachmentName}"`);
   if (!('body' in obj) || !obj.body) return new Response(null, { status: 304, headers });
   // R2 always reports a range on the object; only answer 206 when the client asked for one.
   if (range && obj.range && 'offset' in obj.range) {

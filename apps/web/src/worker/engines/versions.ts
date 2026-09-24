@@ -6,5 +6,5 @@ export const ENGINE_VERSIONS: Partial<Record<NodeKind, string>> = {
   stage: 'sim-1',
   packshot: 'sim-1',
   adVideo: 'sim-1',
-  export: 'sim-1',
+  export: 'export-1',
 };

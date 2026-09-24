@@ -20,13 +20,22 @@ export const FIXTURE_MANIFEST = manifest as {
       triangles: number;
       headline: string;
       files: Record<string, { bytes: number; sha256: string }>;
+      /** Built by fixtures/export-bundles.ts with the Worker's exporter (preset "web"). */
+      exportReport?: ExportReportLike;
+      exportFiles?: string[];
     }
   >;
 };
 
+export interface ExportReportLike {
+  preset: string;
+  passed: boolean;
+  checks: { id: string; passed: boolean; value: number; limit: number; message: string }[];
+}
+
 export interface FixtureAsset {
   id: string;
-  kind: 'image' | 'model3d' | 'video' | 'audio';
+  kind: 'image' | 'model3d' | 'video' | 'audio' | 'file';
   mime: string;
   byteSize: number;
   sha256: string;
@@ -39,6 +48,7 @@ export interface FixtureAsset {
   createdAt: string;
   /** Source key inside the PUBLIC bucket. */
   key: string;
+  meta?: Record<string, unknown>;
 }
 
 /** Deterministic UUID (version 8, RFC 9562 custom) from a content hash, so fixture ids are stable. */
@@ -145,6 +155,25 @@ export function fixtureOutputs(base: string, product: FixtureProduct, kind: stri
           poster: 'ad_poster_540.webp',
         }),
       ];
+    case 'export': {
+      const report = FIXTURE_MANIFEST.products[product].exportReport;
+      return [
+        {
+          ...fixtureAsset(base, product, 'export_web.zip', 'file', 'application/zip'),
+          meta: {
+            filename: `${product}-web.zip`,
+            files: FIXTURE_MANIFEST.products[product].exportFiles,
+            report,
+          },
+        },
+        {
+          ...fixtureAsset(base, product, 'export_web.glb', 'model3d', 'model/gltf-binary', {
+            triangleCount: tri,
+          }),
+          meta: { filename: `${product}-web.glb`, export: 'web', report },
+        },
+      ];
+    }
     case 'audio':
       return [fixtureAsset(base, product, 'music.m4a', 'audio', 'audio/mp4', { durationMs: 10_000 })];
     default:

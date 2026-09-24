@@ -172,3 +172,45 @@ sign-in gate, edit → v2, compare, revert, and the packshot camera.
 **Known gap:** edited versions reuse the base posters until a render engine refreshes them.
 
 **Scores:** UI 84 · Backend 89 · AI-plug 88 · Tests 91 · Prod-10k 74.
+
+## P7 · Exports (F6) and share links (F10) — done
+- **Exporter (Worker, glTF-Transform):**
+  - Re-packs the GLB losslessly by pruning unused data, then checks it against the preset:
+    bytes, rendered triangles (instancing-aware), largest texture (read from PNG/JPEG/WebP
+    headers), animation, and a structural validator round trip.
+  - Presets are Web / store, Google Merchant and Google Swirl.
+  - `@gltf-transform/functions` was dropped: its ndarray dependency uses `new Function`, which
+    Workers forbid. Decimation and texture compression need WASM/native encoders, so they
+    belong to the export engine plugged in later; the report names the failing limit.
+- **Export API:**
+  - `POST /api/exports` exports a model version (from the editor or canvas menu) or an Export
+    node's inputs. The bundle is a zip plus the GLB, ad MP4 and packshot images; existing files
+    are referenced, not copied. It is idempotent per key.
+  - `GET /api/exports/:id` returns an export; `?download=` sets the attachment filename.
+- **Export node runs** use the same exporter; preset checks become the version's gates.
+  The example board's export bundles are pre-built by the same code (`fixtures/export-bundles.ts`).
+- **Shares:**
+  - Tokens are 128-bit base64url, with one live link per target; revoke is a timestamp.
+  - `GET /api/public/shares/:token` returns the payload with the hero video first.
+  - Public asset route only serves assets inside the shared target.
+- **Share page `/s/:token`:**
+  - Server-rendered with Open Graph and Twitter tags (absolute og:image and og:video), so link
+    previews work without JavaScript.
+  - No scripts; a strict CSP (`default-src 'none'`); light and dark themes; 60 s cache.
+  - Carries a "Make yours free" CTA as the growth loop.
+- **UI:** an export dialog (preset cards, pass/fail report, download zip or GLB), a share dialog
+  (copy, open preview, view count, turn off), an export summary on the Export node, and
+  "Export / download…" in the node menu.
+
+**Measured on 2026-09-24:**
+
+| Check | Result |
+| --- | --- |
+| API tests | 31/31 |
+| E2E, Chromium + WebKit + Firefox | 63/63 |
+
+The API tests add presets and idempotency, zip download headers, and Swirl failing only on
+animation for a static GLB. They also cover the Export node bundling GLB + MP4 + PNGs, share
+create/reuse, public payload, cross-target isolation, the OG page without scripts, and revoke.
+
+**Scores:** UI 88 · Backend 91 · AI-plug 88 · Tests 92 · Prod-10k 76.

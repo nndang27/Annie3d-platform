@@ -11,13 +11,16 @@ const MIME = {
   glb: 'model/gltf-binary',
   mp4: 'video/mp4',
   m4a: 'audio/mp4',
+  zip: 'application/zip',
 };
 const manifest = JSON.parse(readFileSync(new URL('./out/manifest.json', import.meta.url), 'utf8'));
 const dry = process.argv.includes('--dry-run');
+// `--only=export_` uploads just the files whose name contains the text.
+const only = (process.argv.find((a) => a.startsWith('--only=')) ?? '').slice(7);
 const webDir = new URL('../apps/web/', import.meta.url).pathname;
 let n = 0;
 for (const [product, p] of Object.entries(manifest.products)) {
-  for (const name of Object.keys(p.files)) {
+  for (const name of Object.keys(p.files).filter((n) => !only || n.includes(only))) {
     const file = new URL(`./out/${product}/${name}`, import.meta.url).pathname;
     const key = `${BUCKET}/fixtures/${VERSION}/${product}/${name}`;
     const args = [

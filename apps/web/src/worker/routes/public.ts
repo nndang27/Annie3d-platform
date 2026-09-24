@@ -10,6 +10,7 @@ const MIME: Record<string, string> = {
   mp4: 'video/mp4',
   m4a: 'audio/mp4',
   json: 'application/json',
+  zip: 'application/zip',
 };
 
 /**
@@ -18,7 +19,7 @@ const MIME: Record<string, string> = {
  * do not hit R2 (Cloudflare docs: "Cache API" + R2 public bucket guidance).
  */
 export const publicRoutes = new Hono<AppEnv>().get(
-  '/api/public/fixtures/:ver{v[0-9]+}/:product{[a-z0-9-]+}/:file{[a-z0-9_]+\\.(png|webp|jpg|glb|mp4|m4a)}',
+  '/api/public/fixtures/:ver{v[0-9]+}/:product{[a-z0-9-]+}/:file{[a-z0-9_]+\\.(png|webp|jpg|glb|mp4|m4a|zip)}',
   async (c) => {
     const { ver, product, file } = c.req.param();
     const key = `fixtures/${ver}/${product}/${file}`;

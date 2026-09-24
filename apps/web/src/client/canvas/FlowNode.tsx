@@ -200,7 +200,25 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
   let content: React.ReactNode = (
     <span>{progress ? progress.stage : NODE_DEFS[kind].runnable ? 'Not run yet' : ''}</span>
   );
-  if (kind === 'packshot' && outputs.length > 1) {
+  if (kind === 'export' && version) {
+    // Export bundle: file count and the preset checks recorded as gates.
+    const gates = version.gates;
+    const passed = gates.filter((g) => g.passed).length;
+    const preset = gates[0]?.id.split(':')[0];
+    content = (
+      <div className="export-summary" data-testid="export-summary">
+        <b>
+          {outputs.length} file{outputs.length === 1 ? '' : 's'} ready
+        </b>
+        {gates.length > 0 && (
+          <span className={passed === gates.length ? 'ok' : 'bad'}>
+            {preset ? `${GLB_PRESETS[preset as keyof typeof GLB_PRESETS]?.label ?? preset} · ` : ''}
+            {passed}/{gates.length} checks passed
+          </span>
+        )}
+      </div>
+    );
+  } else if (kind === 'packshot' && outputs.length > 1) {
     content = (
       <div className="grid4">
         {outputs.slice(0, 4).map((o) => (

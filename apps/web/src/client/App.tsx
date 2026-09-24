@@ -9,8 +9,10 @@ import { exampleBoard } from './canvas/example';
 import { useShortcuts } from './canvas/useShortcuts';
 import { AgentDock } from './chrome/AgentDock';
 import { ContextMenu } from './chrome/ContextMenu';
+import { ExportDialog } from './chrome/ExportDialog';
 import { Palette } from './chrome/Palette';
 import { attachRun, RunDialog } from './chrome/RunDialog';
+import { ShareDialog } from './chrome/ShareDialog';
 import { SignInPrompt } from './chrome/SignInPrompt';
 import { Toasts } from './chrome/Toasts';
 import { Toolbar } from './chrome/Toolbar';
@@ -146,6 +148,8 @@ function Workspace() {
       <ContextMenu />
       <SignInPrompt />
       <RunDialog />
+      <ExportDialog />
+      <ShareDialog />
       <Toasts />
       {editing && (
         <EditorBoundary key={editing}>

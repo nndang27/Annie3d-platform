@@ -92,5 +92,28 @@ if (phase === 'p6') {
   await page.waitForTimeout(2000);
   await page.screenshot({ path: out('05-compare-v2-v1') });
 }
+if (phase === 'p7') {
+  const model = page.getByTestId('node-model3d').first();
+  await model.click({ button: 'right', position: { x: 60, y: 12 } });
+  await page.getByTestId('ctx-export').click();
+  await page.getByTestId('export-dialog').getByText('Google Swirl').click();
+  await page.getByTestId('export-run').click();
+  await page.getByTestId('export-report').waitFor();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: out('02-export-report') });
+  await page.keyboard.press('Escape');
+  await page.getByTestId('share').click();
+  await page.waitForFunction(() => /\/s\//.test(document.querySelector('[data-testid=share-url]')?.value ?? ''));
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: out('03-share-dialog') });
+  const link = await page.getByTestId('share-url').inputValue();
+  const guest = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await guest.goto(link);
+  await guest.waitForTimeout(1500);
+  await guest.screenshot({ path: out('04-public-share-page') });
+  await guest.setViewportSize({ width: 390, height: 844 });
+  await guest.waitForTimeout(500);
+  await guest.screenshot({ path: out('05-public-share-mobile') });
+}
 await browser.close();
 console.log('screens saved');

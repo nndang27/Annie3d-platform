@@ -287,7 +287,7 @@ async function pointAt(db: Db, run: RunRow, nodeId: string, versionId: string) {
 }
 
 /** Inputs for the engine: upstream versions' primary assets, uploaded files, or text. */
-async function resolveInputs(db: Db, graph: Graph, nodeId: string): Promise<ResolvedInput[]> {
+export async function resolveInputs(db: Db, graph: Graph, nodeId: string): Promise<ResolvedInput[]> {
   const inputs: ResolvedInput[] = [];
   const node = graph.nodes.get(nodeId)!;
   for (const e of graph.edges.values()) {
@@ -375,6 +375,62 @@ export function artifactStore(env: Env, workspaceId: string) {
   return { putFile, putArtifact };
 }
 
+/**
+ * Asset rows for engine outputs: same content in this workspace reuses its row (dedupe index),
+ * so referencing an existing file (e.g. an export bundling the ad video) costs nothing.
+ */
+export async function ensureAssets(tx: Db, run: VersionOrigin, outputs: EngineOutput[]): Promise<string[]> {
+  const ids: string[] = [];
+  for (const o of outputs) {
+    const existing = await tx.query.assets.findFirst({
+      where: (t, { and, eq }) =>
+        and(
+          eq(t.workspaceId, run.workspaceId),
+          eq(t.sha256, o.sha256),
+          eq(t.kind, o.kind),
+          eq(t.status, 'ready'),
+        ),
+    });
+    const id = existing?.id ?? newId();
+    if (!existing && !o.storageKey) throw new Error('Referenced output is not an asset of this workspace');
+    if (!existing) {
+      await tx.insert(assets).values({
+        id,
+        workspaceId: run.workspaceId,
+        kind: o.kind,
+        mime: o.mime,
+        byteSize: o.byteSize,
+        sha256: o.sha256,
+        bucket: run.bucket ?? 'artifacts',
+        storageKey: o.storageKey,
+        status: 'ready',
+        width: o.width ?? null,
+        height: o.height ?? null,
+        durationMs: o.durationMs ?? null,
+        triangleCount: o.triangleCount ?? null,
+        meta: o.meta ?? {},
+        createdBy: run.userId,
+      });
+    }
+    for (const v of o.variants ?? []) {
+      await tx
+        .insert(assetVariants)
+        .values({
+          assetId: id,
+          variant: v.variant,
+          mime: v.mime,
+          byteSize: v.byteSize,
+          storageKey: v.storageKey,
+          width: v.width ?? null,
+          height: v.height ?? null,
+        })
+        .onConflictDoNothing();
+    }
+    ids.push(id);
+  }
+  return ids;
+}
+
 export async function persistVersion(
   db: Db,
   run: VersionOrigin,
@@ -386,54 +442,7 @@ export async function persistVersion(
 ) {
   return db.transaction(async (tx0) => {
     const tx = tx0 as unknown as Db;
-    const assetIds: string[] = [];
-    for (const o of outputs) {
-      // Same content in this workspace → reuse the asset row (dedupe index).
-      const existing = await tx.query.assets.findFirst({
-        where: (t, { and, eq }) =>
-          and(
-            eq(t.workspaceId, run.workspaceId),
-            eq(t.sha256, o.sha256),
-            eq(t.kind, o.kind),
-            eq(t.status, 'ready'),
-          ),
-      });
-      const id = existing?.id ?? newId();
-      if (!existing) {
-        await tx.insert(assets).values({
-          id,
-          workspaceId: run.workspaceId,
-          kind: o.kind,
-          mime: o.mime,
-          byteSize: o.byteSize,
-          sha256: o.sha256,
-          bucket: run.bucket ?? 'artifacts',
-          storageKey: o.storageKey,
-          status: 'ready',
-          width: o.width ?? null,
-          height: o.height ?? null,
-          durationMs: o.durationMs ?? null,
-          triangleCount: o.triangleCount ?? null,
-          meta: o.meta ?? {},
-          createdBy: run.userId,
-        });
-      }
-      for (const v of o.variants ?? []) {
-        await tx
-          .insert(assetVariants)
-          .values({
-            assetId: id,
-            variant: v.variant,
-            mime: v.mime,
-            byteSize: v.byteSize,
-            storageKey: v.storageKey,
-            width: v.width ?? null,
-            height: v.height ?? null,
-          })
-          .onConflictDoNothing();
-      }
-      assetIds.push(id);
-    }
+    const assetIds = await ensureAssets(tx, run, outputs);
     const max = await tx.execute<{ n: number }>(
       sql`SELECT coalesce(max(version_no), 0)::int AS n FROM node_versions WHERE node_id = ${nodeId}`,
     );
@@ -525,7 +534,7 @@ async function loadEdit(env: Env, db: Db, run: RunRow) {
   return { baseVersionId: base.id, baseHash: base.inputHash, faces, instruction: p.instruction, input };
 }
 
-async function readAsset(env: Env, db: Db, assetId: string): Promise<ArrayBuffer> {
+export async function readAsset(env: Env, db: Db, assetId: string): Promise<ArrayBuffer> {
   const a = await db.query.assets.findFirst({ where: (t, { eq }) => eq(t.id, assetId) });
   if (!a) throw new InputMissing('Input file not found');
   const obj = await bucketOf(env, a.bucket).get(a.storageKey);

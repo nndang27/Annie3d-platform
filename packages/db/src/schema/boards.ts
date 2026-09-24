@@ -1,6 +1,18 @@
 import { sql } from 'drizzle-orm';
 import {
-  type AnyPgColumn, bigint, check, doublePrecision, index, integer, jsonb, pgTable, primaryKey, smallint, text, uniqueIndex, uuid,
+  type AnyPgColumn,
+  bigint,
+  check,
+  doublePrecision,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  primaryKey,
+  smallint,
+  text,
+  uniqueIndex,
+  uuid,
 } from 'drizzle-orm/pg-core';
 import { createdAt, inList, pk, tstz, updatedAt } from './_shared';
 import { assets } from './assets';
@@ -8,7 +20,18 @@ import { users } from './auth';
 import { runs } from './runs';
 import { workspaces } from './workspaces';
 
-export const NODE_KINDS = ['photo', 'text', 'upload3d', 'audio', 'model3d', 'stage', 'packshot', 'adVideo', 'export', 'note'] as const;
+export const NODE_KINDS = [
+  'photo',
+  'text',
+  'upload3d',
+  'audio',
+  'model3d',
+  'stage',
+  'packshot',
+  'adVideo',
+  'export',
+  'note',
+] as const;
 export const VERSION_SOURCES = ['run', 'edit', 'upload', 'agent'] as const;
 export const OUTPUT_ROLES = ['primary', 'poster', 'turntable', 'packshot', 'report', 'extra'] as const;
 
@@ -16,7 +39,9 @@ export const boards = pgTable(
   'boards',
   {
     id: pk(),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
     title: text().notNull(),
     /** Monotonic sequence of applied op batches (Linear-style sync id). */
     seq: bigint({ mode: 'number' }).notNull().default(0),
@@ -29,7 +54,9 @@ export const boards = pgTable(
   (t) => [
     check('boards_title_len', sql`length(${t.title}) BETWEEN 1 AND 120`),
     check('boards_seq_chk', sql`${t.seq} >= 0`),
-    index('boards_workspace_recent_idx').on(t.workspaceId, t.updatedAt.desc()).where(sql`${t.archivedAt} IS NULL`),
+    index('boards_workspace_recent_idx')
+      .on(t.workspaceId, t.updatedAt.desc())
+      .where(sql`${t.archivedAt} IS NULL`),
     index('boards_thumbnail_idx').on(t.thumbnailAssetId),
     index('boards_created_by_idx').on(t.createdBy),
   ],
@@ -44,8 +71,12 @@ export const boardNodes = pgTable(
   'board_nodes',
   {
     id: uuid().primaryKey(),
-    boardId: uuid().notNull().references(() => boards.id, { onDelete: 'cascade' }),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+    boardId: uuid()
+      .notNull()
+      .references(() => boards.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
     kind: text().notNull(),
     x: doublePrecision().notNull(),
     y: doublePrecision().notNull(),
@@ -77,11 +108,19 @@ export const boardEdges = pgTable(
   'board_edges',
   {
     id: uuid().primaryKey(),
-    boardId: uuid().notNull().references(() => boards.id, { onDelete: 'cascade' }),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
-    sourceNodeId: uuid().notNull().references(() => boardNodes.id, { onDelete: 'cascade' }),
+    boardId: uuid()
+      .notNull()
+      .references(() => boards.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
+    sourceNodeId: uuid()
+      .notNull()
+      .references(() => boardNodes.id, { onDelete: 'cascade' }),
     sourcePort: text().notNull().default('out'),
-    targetNodeId: uuid().notNull().references(() => boardNodes.id, { onDelete: 'cascade' }),
+    targetNodeId: uuid()
+      .notNull()
+      .references(() => boardNodes.id, { onDelete: 'cascade' }),
     targetPort: text().notNull(),
     createdAt: createdAt(),
     deletedAt: tstz(),
@@ -90,7 +129,9 @@ export const boardEdges = pgTable(
     check('board_edges_source_port_chk', sql`${t.sourcePort} = 'out'`),
     check('board_edges_target_port_chk', sql`${t.targetPort} ~ '^[a-z][a-zA-Z0-9]{0,31}$'`),
     check('board_edges_no_self_loop', sql`${t.sourceNodeId} <> ${t.targetNodeId}`),
-    uniqueIndex('board_edges_live_uq').on(t.sourceNodeId, t.targetNodeId, t.targetPort).where(sql`${t.deletedAt} IS NULL`),
+    uniqueIndex('board_edges_live_uq')
+      .on(t.sourceNodeId, t.targetNodeId, t.targetPort)
+      .where(sql`${t.deletedAt} IS NULL`),
     index('board_edges_board_live_idx').on(t.boardId).where(sql`${t.deletedAt} IS NULL`),
     index('board_edges_target_idx').on(t.targetNodeId),
     index('board_edges_workspace_idx').on(t.workspaceId),
@@ -104,7 +145,9 @@ export const boardEdges = pgTable(
 export const boardOps = pgTable(
   'board_ops',
   {
-    boardId: uuid().notNull().references(() => boards.id, { onDelete: 'cascade' }),
+    boardId: uuid()
+      .notNull()
+      .references(() => boards.id, { onDelete: 'cascade' }),
     seq: bigint({ mode: 'number' }).notNull(),
     opId: uuid().notNull(),
     actorId: uuid().references(() => users.id, { onDelete: 'set null' }),
@@ -124,9 +167,15 @@ export const nodeVersions = pgTable(
   'node_versions',
   {
     id: pk(),
-    nodeId: uuid().notNull().references(() => boardNodes.id, { onDelete: 'cascade' }),
-    boardId: uuid().notNull().references(() => boards.id, { onDelete: 'cascade' }),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+    nodeId: uuid()
+      .notNull()
+      .references(() => boardNodes.id, { onDelete: 'cascade' }),
+    boardId: uuid()
+      .notNull()
+      .references(() => boards.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
     versionNo: integer().notNull(),
     source: text().notNull(),
     runId: uuid().references((): AnyPgColumn => runs.id, { onDelete: 'set null' }),
@@ -159,8 +208,12 @@ export const nodeVersions = pgTable(
 export const nodeVersionOutputs = pgTable(
   'node_version_outputs',
   {
-    versionId: uuid().notNull().references(() => nodeVersions.id, { onDelete: 'cascade' }),
-    assetId: uuid().notNull().references(() => assets.id, { onDelete: 'restrict' }),
+    versionId: uuid()
+      .notNull()
+      .references(() => nodeVersions.id, { onDelete: 'cascade' }),
+    assetId: uuid()
+      .notNull()
+      .references(() => assets.id, { onDelete: 'restrict' }),
     role: text().notNull(),
     position: smallint().notNull().default(0),
   },

@@ -5,7 +5,15 @@ import { users } from './auth';
 import { runs } from './runs';
 import { workspaces } from './workspaces';
 
-export const CREDIT_REASONS = ['grant_free', 'purchase', 'subscription', 'run_reserve', 'run_settle', 'run_refund', 'adjust'] as const;
+export const CREDIT_REASONS = [
+  'grant_free',
+  'purchase',
+  'subscription',
+  'run_reserve',
+  'run_settle',
+  'run_refund',
+  'adjust',
+] as const;
 
 /**
  * Credit balance per workspace. Changes are atomic conditional UPDATEs
@@ -15,12 +23,19 @@ export const CREDIT_REASONS = ['grant_free', 'purchase', 'subscription', 'run_re
 export const creditAccounts = pgTable(
   'credit_accounts',
   {
-    workspaceId: uuid().primaryKey().references(() => workspaces.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .primaryKey()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
     balance: bigint({ mode: 'number' }).notNull().default(0),
     reserved: bigint({ mode: 'number' }).notNull().default(0),
     updatedAt: updatedAt(),
   },
-  (t) => [check('credit_accounts_balance_chk', sql`${t.balance} >= 0 AND ${t.reserved} >= 0 AND ${t.reserved} <= ${t.balance}`)],
+  (t) => [
+    check(
+      'credit_accounts_balance_chk',
+      sql`${t.balance} >= 0 AND ${t.reserved} >= 0 AND ${t.reserved} <= ${t.balance}`,
+    ),
+  ],
 );
 
 /** Append-only ledger; UPDATE and DELETE are blocked by a trigger (migration 0001). */
@@ -28,7 +43,9 @@ export const creditEntries = pgTable(
   'credit_entries',
   {
     id: pk(),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
     amount: integer().notNull(),
     reason: text().notNull(),
     runId: uuid().references(() => runs.id, { onDelete: 'set null' }),
@@ -41,7 +58,10 @@ export const creditEntries = pgTable(
   },
   (t) => [
     check('credit_entries_reason_chk', sql`${t.reason} IN (${inList(CREDIT_REASONS)})`),
-    check('credit_entries_nonzero', sql`${t.amount} <> 0 OR ${t.reason} IN ('run_reserve', 'run_settle', 'run_refund')`),
+    check(
+      'credit_entries_nonzero',
+      sql`${t.amount} <> 0 OR ${t.reason} IN ('run_reserve', 'run_settle', 'run_refund')`,
+    ),
     uniqueIndex('credit_entries_external_ref_uq').on(t.externalRef).where(sql`${t.externalRef} IS NOT NULL`),
     index('credit_entries_workspace_recent_idx').on(t.workspaceId, t.createdAt.desc()),
     index('credit_entries_run_idx').on(t.runId),
@@ -53,7 +73,9 @@ export const subscriptions = pgTable(
   'subscriptions',
   {
     id: pk(),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
     provider: text().notNull(),
     providerCustomerId: text(),
     providerSubscriptionId: text().notNull(),
@@ -67,7 +89,10 @@ export const subscriptions = pgTable(
     uniqueIndex('subscriptions_provider_sub_uq').on(t.provider, t.providerSubscriptionId),
     check('subscriptions_provider_chk', sql`${t.provider} IN ('simulated', 'stripe', 'paddle')`),
     check('subscriptions_plan_chk', sql`${t.plan} IN ('creator', 'studio')`),
-    check('subscriptions_status_chk', sql`${t.status} IN ('trialing', 'active', 'past_due', 'canceled', 'incomplete')`),
+    check(
+      'subscriptions_status_chk',
+      sql`${t.status} IN ('trialing', 'active', 'past_due', 'canceled', 'incomplete')`,
+    ),
     index('subscriptions_workspace_idx').on(t.workspaceId),
   ],
 );
@@ -84,5 +109,8 @@ export const paymentEvents = pgTable(
     receivedAt: createdAt(),
     processedAt: tstz(),
   },
-  (t) => [uniqueIndex('payment_events_provider_event_uq').on(t.provider, t.eventId), check('payment_events_provider_chk', sql`${t.provider} IN ('simulated', 'stripe', 'paddle')`)],
+  (t) => [
+    uniqueIndex('payment_events_provider_event_uq').on(t.provider, t.eventId),
+    check('payment_events_provider_chk', sql`${t.provider} IN ('simulated', 'stripe', 'paddle')`),
+  ],
 );

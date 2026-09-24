@@ -10,8 +10,12 @@ export const shares = pgTable(
   'shares',
   {
     id: pk(),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
-    boardId: uuid().notNull().references(() => boards.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
+    boardId: uuid()
+      .notNull()
+      .references(() => boards.id, { onDelete: 'cascade' }),
     targetType: text().notNull(),
     targetId: uuid().notNull(),
     token: text().notNull().unique(),

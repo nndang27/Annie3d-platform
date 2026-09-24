@@ -33,7 +33,9 @@ export const sessions = pgTable(
     updatedAt: updatedAt(),
     ipAddress: text(),
     userAgent: text(),
-    userId: uuid().notNull().references(() => users.id, { onDelete: 'cascade' }),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
   },
   (t) => [index('sessions_user_id_idx').on(t.userId), index('sessions_expires_at_idx').on(t.expiresAt)],
 );
@@ -44,7 +46,9 @@ export const accounts = pgTable(
     id: pk(),
     accountId: text().notNull(),
     providerId: text().notNull(),
-    userId: uuid().notNull().references(() => users.id, { onDelete: 'cascade' }),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     accessToken: text(),
     refreshToken: text(),
     idToken: text(),
@@ -55,7 +59,10 @@ export const accounts = pgTable(
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
-  (t) => [uniqueIndex('accounts_provider_account_uq').on(t.providerId, t.accountId), index('accounts_user_id_idx').on(t.userId)],
+  (t) => [
+    uniqueIndex('accounts_provider_account_uq').on(t.providerId, t.accountId),
+    index('accounts_user_id_idx').on(t.userId),
+  ],
 );
 
 export const verifications = pgTable(

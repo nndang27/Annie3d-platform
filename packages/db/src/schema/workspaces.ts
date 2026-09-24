@@ -29,8 +29,12 @@ export const workspaces = pgTable(
 export const workspaceMembers = pgTable(
   'workspace_members',
   {
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
-    userId: uuid().notNull().references(() => users.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     role: text().notNull(),
     createdAt: createdAt(),
   },

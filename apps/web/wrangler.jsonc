@@ -13,13 +13,25 @@
     "run_worker_first": ["/api/*", "/s/*"]
   },
   "observability": { "enabled": true },
+  // Remote bindings in dev: the Worker runs locally but reads/writes the real buckets, so
+  // presigned browser uploads and server-side HEAD checks see the same objects.
   "r2_buckets": [
-    { "binding": "UPLOADS", "bucket_name": "annie3d-uploads" },
-    { "binding": "ARTIFACTS", "bucket_name": "annie3d-artifacts" },
-    { "binding": "PUBLIC", "bucket_name": "annie3d-public" }
+    { "binding": "UPLOADS", "bucket_name": "annie3d-uploads", "remote": true },
+    { "binding": "ARTIFACTS", "bucket_name": "annie3d-artifacts", "remote": true },
+    { "binding": "PUBLIC", "bucket_name": "annie3d-public", "remote": true }
+  ],
+  // Local dev connects straight to Neon via CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE
+  // (set by scripts/dev.mjs); the real id is filled in at deploy (P10).
+  "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "00000000000000000000000000000000" }],
+  // Workers Rate Limiting binding; period must be 10 or 60 seconds.
+  "ratelimits": [
+    { "name": "RL_WRITE", "namespace_id": "1001", "simple": { "limit": 120, "period": 60 } },
+    { "name": "RL_RUN", "namespace_id": "1002", "simple": { "limit": 20, "period": 60 } },
+    { "name": "RL_UPLOAD", "namespace_id": "1003", "simple": { "limit": 30, "period": 60 } }
   ],
   "vars": {
     "APP_ENV": "development",
+    "APP_URL": "http://localhost:5173",
     "R2_KEY_PREFIX": "dev/"
   }
 }

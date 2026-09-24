@@ -1,5 +1,19 @@
 import { sql } from 'drizzle-orm';
-import { type AnyPgColumn, boolean, check, index, integer, jsonb, pgTable, primaryKey, smallint, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import {
+  type AnyPgColumn,
+  boolean,
+  check,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  primaryKey,
+  smallint,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+} from 'drizzle-orm/pg-core';
 import { createdAt, inList, pk, tstz, updatedAt } from './_shared';
 import { assets } from './assets';
 import { users } from './auth';
@@ -15,8 +29,12 @@ export const runs = pgTable(
   'runs',
   {
     id: pk(),
-    boardId: uuid().notNull().references(() => boards.id, { onDelete: 'cascade' }),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+    boardId: uuid()
+      .notNull()
+      .references(() => boards.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
     requestedBy: uuid().references(() => users.id, { onDelete: 'set null' }),
     kind: text().notNull().default('graph'),
     scope: text().notNull(),
@@ -54,7 +72,9 @@ export const runSteps = pgTable(
   'run_steps',
   {
     id: pk(),
-    runId: uuid().notNull().references(() => runs.id, { onDelete: 'cascade' }),
+    runId: uuid()
+      .notNull()
+      .references(() => runs.id, { onDelete: 'cascade' }),
     nodeId: uuid().references(() => boardNodes.id, { onDelete: 'set null' }),
     seq: smallint().notNull(),
     status: text().notNull().default('pending'),
@@ -86,11 +106,15 @@ export const runSteps = pgTable(
 export const resultCache = pgTable(
   'result_cache',
   {
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
     inputHash: text().notNull(),
     nodeKind: text().notNull(),
     engineVersion: text().notNull(),
-    versionId: uuid().notNull().references(() => nodeVersions.id, { onDelete: 'cascade' }),
+    versionId: uuid()
+      .notNull()
+      .references(() => nodeVersions.id, { onDelete: 'cascade' }),
     hitCount: integer().notNull().default(0),
     createdAt: createdAt(),
     lastHitAt: timestamp({ withTimezone: true }),
@@ -107,7 +131,9 @@ export const engineJobs = pgTable(
   'engine_jobs',
   {
     id: pk(),
-    runStepId: uuid().notNull().references(() => runSteps.id, { onDelete: 'cascade' }),
+    runStepId: uuid()
+      .notNull()
+      .references(() => runSteps.id, { onDelete: 'cascade' }),
     engine: text().notNull(),
     status: text().notNull().default('dispatched'),
     /** SHA-256 of the per-job callback secret; the secret itself is never stored. */
@@ -119,7 +145,10 @@ export const engineJobs = pgTable(
     updatedAt: updatedAt(),
   },
   (t) => [
-    check('engine_jobs_status_chk', sql`${t.status} IN ('dispatched', 'running', 'succeeded', 'failed', 'expired')`),
+    check(
+      'engine_jobs_status_chk',
+      sql`${t.status} IN ('dispatched', 'running', 'succeeded', 'failed', 'expired')`,
+    ),
     index('engine_jobs_step_idx').on(t.runStepId),
     index('engine_jobs_open_idx').on(t.deadlineAt).where(sql`${t.status} IN ('dispatched', 'running')`),
   ],
@@ -129,8 +158,12 @@ export const reels = pgTable(
   'reels',
   {
     id: pk(),
-    runId: uuid().notNull().references(() => runs.id, { onDelete: 'cascade' }),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+    runId: uuid()
+      .notNull()
+      .references(() => runs.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
     mode: text().notNull(),
     status: text().notNull().default('queued'),
     assetId: uuid().references(() => assets.id, { onDelete: 'set null' }),
@@ -150,8 +183,12 @@ export const exports = pgTable(
   'exports',
   {
     id: pk(),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
-    boardId: uuid().notNull().references(() => boards.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
+    boardId: uuid()
+      .notNull()
+      .references(() => boards.id, { onDelete: 'cascade' }),
     nodeId: uuid().references(() => boardNodes.id, { onDelete: 'set null' }),
     versionId: uuid().references(() => nodeVersions.id, { onDelete: 'set null' }),
     idempotencyKey: uuid().notNull(),
@@ -165,7 +202,10 @@ export const exports = pgTable(
   (t) => [
     uniqueIndex('exports_idempotency_uq').on(t.workspaceId, t.idempotencyKey),
     check('exports_status_chk', sql`${t.status} IN ('queued', 'running', 'succeeded', 'failed')`),
-    check('exports_preset_chk', sql`${t.preset} IS NULL OR ${t.preset} IN ('web', 'google_merchant', 'google_swirl')`),
+    check(
+      'exports_preset_chk',
+      sql`${t.preset} IS NULL OR ${t.preset} IN ('web', 'google_merchant', 'google_swirl')`,
+    ),
     index('exports_board_idx').on(t.boardId),
     index('exports_node_idx').on(t.nodeId),
     index('exports_version_idx').on(t.versionId),
@@ -176,8 +216,12 @@ export const exports = pgTable(
 export const exportFiles = pgTable(
   'export_files',
   {
-    exportId: uuid().notNull().references(() => exports.id, { onDelete: 'cascade' }),
-    assetId: uuid().notNull().references(() => assets.id, { onDelete: 'restrict' }),
+    exportId: uuid()
+      .notNull()
+      .references(() => exports.id, { onDelete: 'cascade' }),
+    assetId: uuid()
+      .notNull()
+      .references(() => assets.id, { onDelete: 'restrict' }),
   },
   (t) => [primaryKey({ columns: [t.exportId, t.assetId] }), index('export_files_asset_idx').on(t.assetId)],
 );

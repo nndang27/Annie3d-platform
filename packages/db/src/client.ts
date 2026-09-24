@@ -9,8 +9,10 @@ export type Db = ReturnType<typeof createDb>['db'];
  * opens a cheap local connection (Cloudflare "Connect to PostgreSQL" guide). In Node scripts
  * and tests the same function is used with a direct Neon URL.
  */
-export function createDb(connectionString: string) {
-  const client = new pg.Client({ connectionString: explicitSsl(connectionString) });
+export function createDb(connectionString: string, opts: { explicitTls?: boolean } = {}) {
+  const client = new pg.Client({
+    connectionString: opts.explicitTls ? explicitSsl(connectionString) : connectionString,
+  });
   const db = drizzle({ client, schema, casing: 'snake_case' });
   return { db, client };
 }

@@ -9,21 +9,31 @@ export const agentThreads = pgTable(
   'agent_threads',
   {
     id: pk(),
-    boardId: uuid().notNull().references(() => boards.id, { onDelete: 'cascade' }),
-    workspaceId: uuid().notNull().references(() => workspaces.id, { onDelete: 'cascade' }),
+    boardId: uuid()
+      .notNull()
+      .references(() => boards.id, { onDelete: 'cascade' }),
+    workspaceId: uuid()
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
     title: text(),
     createdBy: uuid().references(() => users.id, { onDelete: 'set null' }),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
-  (t) => [index('agent_threads_board_idx').on(t.boardId, t.updatedAt.desc()), index('agent_threads_workspace_idx').on(t.workspaceId), index('agent_threads_created_by_idx').on(t.createdBy)],
+  (t) => [
+    index('agent_threads_board_idx').on(t.boardId, t.updatedAt.desc()),
+    index('agent_threads_workspace_idx').on(t.workspaceId),
+    index('agent_threads_created_by_idx').on(t.createdBy),
+  ],
 );
 
 export const agentMessages = pgTable(
   'agent_messages',
   {
     id: pk(),
-    threadId: uuid().notNull().references(() => agentThreads.id, { onDelete: 'cascade' }),
+    threadId: uuid()
+      .notNull()
+      .references(() => agentThreads.id, { onDelete: 'cascade' }),
     role: text().notNull(),
     /** Structured content: text parts, applied op batches, run ids. */
     content: jsonb().notNull(),

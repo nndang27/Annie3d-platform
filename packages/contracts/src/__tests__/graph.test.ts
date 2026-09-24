@@ -150,3 +150,21 @@ describe('reducer', () => {
     expect(nextZKey(g) > keys.at(-1)!).toBe(true);
   });
 });
+
+import { graphFrom } from '../graph';
+import { STARTERS, starterGraph } from '../starters';
+
+describe('starters', () => {
+  it('every starter is a valid graph accepted by the reducer rules', () => {
+    for (const s of STARTERS) {
+      const { nodes, edges } = starterGraph(s);
+      const g = graphFrom(nodes, []);
+      const out = applyOps(
+        g,
+        edges.map((e) => ({ type: 'edge.create', edge: e }) as GraphOp),
+      ).graph;
+      expect(out.edges.size).toBe(edges.length);
+      expect(runPlan(out, null, 'all')).toHaveLength(5);
+    }
+  });
+});

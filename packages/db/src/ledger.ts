@@ -7,18 +7,29 @@ import type { Db } from './client';
  * plus one append-only entry, in a single transaction (postgres-best-practices,
  * transaction-isolation.md: "use atomic SQL" against lost updates).
  */
-export type LedgerResult = { ok: true; balance: number; reserved: number } | { ok: false; reason: 'insufficient' | 'duplicate' | 'no_account' };
+export type LedgerResult =
+  | { ok: true; balance: number; reserved: number }
+  | { ok: false; reason: 'insufficient' | 'duplicate' | 'no_account' };
 
 export async function openAccount(db: Db, workspaceId: string, initial: number, externalRef: string | null) {
   return db.transaction(async (tx) => {
-    await tx.execute(sql`INSERT INTO credit_accounts (workspace_id, balance, reserved) VALUES (${workspaceId}, 0, 0) ON CONFLICT DO NOTHING`);
+    await tx.execute(
+      sql`INSERT INTO credit_accounts (workspace_id, balance, reserved) VALUES (${workspaceId}, 0, 0) ON CONFLICT DO NOTHING`,
+    );
     if (initial > 0) return grant(tx as unknown as Db, workspaceId, initial, 'grant_free', externalRef, null);
     return { ok: true, balance: 0, reserved: 0 } as LedgerResult;
   });
 }
 
 /** Adds credits (purchase, subscription renewal, free grant). Idempotent on `externalRef`. */
-export async function grant(db: Db, workspaceId: string, amount: number, reason: 'grant_free' | 'purchase' | 'subscription' | 'adjust', externalRef: string | null, actorId: string | null): Promise<LedgerResult> {
+export async function grant(
+  db: Db,
+  workspaceId: string,
+  amount: number,
+  reason: 'grant_free' | 'purchase' | 'subscription' | 'adjust',
+  externalRef: string | null,
+  actorId: string | null,
+): Promise<LedgerResult> {
   if (!Number.isInteger(amount) || amount <= 0) throw new Error('amount must be a positive integer');
   return db.transaction(async (tx) => {
     if (externalRef) {
@@ -39,7 +50,12 @@ export async function grant(db: Db, workspaceId: string, amount: number, reason:
 }
 
 /** Holds credits for a run before any engine starts. Fails cleanly when not enough is available. */
-export async function reserve(db: Db, workspaceId: string, runId: string, amount: number): Promise<LedgerResult> {
+export async function reserve(
+  db: Db,
+  workspaceId: string,
+  runId: string,
+  amount: number,
+): Promise<LedgerResult> {
   if (!Number.isInteger(amount) || amount < 0) throw new Error('amount must be a non-negative integer');
   return db.transaction(async (tx) => {
     const upd = await tx.execute<{ balance: string; reserved: string }>(
@@ -56,7 +72,13 @@ export async function reserve(db: Db, workspaceId: string, runId: string, amount
 }
 
 /** Releases the reservation and charges what the run actually used (≤ reserved). */
-export async function settle(db: Db, workspaceId: string, runId: string, reserved: number, charged: number): Promise<LedgerResult> {
+export async function settle(
+  db: Db,
+  workspaceId: string,
+  runId: string,
+  reserved: number,
+  charged: number,
+): Promise<LedgerResult> {
   if (charged > reserved || charged < 0) throw new Error('charged must be between 0 and reserved');
   return db.transaction(async (tx) => {
     const upd = await tx.execute<{ balance: string; reserved: string }>(

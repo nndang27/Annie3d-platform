@@ -1,16 +1,71 @@
 import { Hono } from 'hono';
+import { createAuth } from './auth';
+import type { AppEnv } from './env';
+import { closeDb, getDb } from './lib/db';
+import { HttpError } from './lib/http';
+import { loadSession } from './lib/session';
+import { assetRoutes } from './routes/assets';
+import { boardRoutes } from './routes/boards';
+import { creditRoutes } from './routes/credits';
+import { me } from './routes/me';
 
-export interface Env {
-  ASSETS: Fetcher;
-  UPLOADS: R2Bucket;
-  ARTIFACTS: R2Bucket;
-  PUBLIC: R2Bucket;
-  APP_ENV: string;
-  R2_KEY_PREFIX: string;
-}
+export type { Env } from './env';
 
-const app = new Hono<{ Bindings: Env }>();
+const app = new Hono<AppEnv>();
 
-app.get('/api/health', (c) => c.json({ ok: true, env: c.env.APP_ENV }));
+app.use('*', async (c, next) => {
+  c.set('requestId', c.req.header('cf-ray') ?? crypto.randomUUID());
+  await next();
+  // API responses: never sniffed, never framed, no referrer leakage (best-practices skill).
+  c.header('x-content-type-options', 'nosniff');
+  c.header('x-frame-options', 'DENY');
+  c.header('referrer-policy', 'strict-origin-when-cross-origin');
+  c.header('x-request-id', c.get('requestId'));
+});
+app.use('/api/*', closeDb);
+
+app.onError((err, c) => {
+  if (err instanceof HttpError)
+    return c.json({ error: { code: err.code, message: err.message, details: err.details } }, err.status);
+  console.error(
+    JSON.stringify({
+      level: 'error',
+      requestId: c.get('requestId'),
+      path: c.req.path,
+      message: String(err),
+      stack: (err as Error).stack?.split('\n').slice(0, 5),
+    }),
+  );
+  return c.json(
+    {
+      error: {
+        code: 'internal',
+        message: 'Something went wrong. Try again.',
+        details: { requestId: c.get('requestId') },
+      },
+    },
+    500,
+  );
+});
+app.notFound((c) =>
+  c.req.path.startsWith('/api/')
+    ? c.json({ error: { code: 'not_found', message: 'Unknown endpoint' } }, 404)
+    : c.env.ASSETS.fetch(c.req.raw),
+);
+
+app.get('/api/health', async (c) => {
+  const started = Date.now();
+  const r = await getDb(c).execute('select 1 as ok');
+  return c.json({ ok: r.rows.length === 1, env: c.env.APP_ENV, dbMs: Date.now() - started });
+});
+
+// Better Auth owns /api/auth/* (Google sign-in, session, sign-out).
+app.on(['GET', 'POST'], '/api/auth/*', (c) => createAuth(c.env, getDb(c)).handler(c.req.raw));
+
+app.use('/api/*', loadSession);
+app.route('/', me);
+app.route('/', boardRoutes);
+app.route('/', assetRoutes);
+app.route('/', creditRoutes);
 
 export default app;

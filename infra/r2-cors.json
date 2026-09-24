@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "allowed": {
+        "origins": [
+          "http://localhost:5173",
+          "http://localhost:4173",
+          "https://annie3d.nndang2701.workers.dev"
+        ],
+        "methods": ["PUT", "GET", "HEAD"],
+        "headers": ["content-type", "content-md5", "x-amz-checksum-sha256"]
+      },
+      "exposeHeaders": ["ETag"],
+      "maxAgeSeconds": 3600
+    }
+  ]
+}

@@ -10,9 +10,14 @@ let code = 1;
 try {
   const url = neon('connection-string', branchId, '--database-name', 'neondb').split('\n').pop();
   const env = { ...process.env, MIGRATE_URL: url, DATABASE_TEST_URL: url };
-  const mig = spawnSync('node', ['--experimental-strip-types', 'packages/db/src/scripts/migrate.ts'], { env, stdio: 'inherit' });
+  const mig = spawnSync('node', ['--experimental-strip-types', 'packages/db/src/scripts/migrate.ts'], {
+    env,
+    stdio: 'inherit',
+  });
   if (mig.status !== 0) throw new Error('migration failed');
-  code = spawnSync('npx', ['vitest', 'run', 'packages/db', ...process.argv.slice(2)], { env, stdio: 'inherit' }).status ?? 1;
+  code =
+    spawnSync('npx', ['vitest', 'run', 'packages/db', ...process.argv.slice(2)], { env, stdio: 'inherit' })
+      .status ?? 1;
 } finally {
   neon('branches', 'delete', branchId);
   console.log(`deleted test branch ${name}`);

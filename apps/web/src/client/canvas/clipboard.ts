@@ -7,6 +7,7 @@ import {
   newId,
   nextZKey,
 } from '@annie3d/contracts';
+import { timed } from '../lib/perf';
 import { dispatch, setStale, upsertVersions, useBoard } from '../store/board';
 import { toast, useUi } from '../store/ui';
 import { createNodeAt, uploadIntoNode } from './actions';
@@ -152,7 +153,9 @@ export const hasCopy = () => memory !== null;
 export function duplicateNodes(ids: string[]) {
   const p = payloadOf(ids);
   if (!p) return;
-  insert(p, { x: Math.min(...p.nodes.map((n) => n.x)) + 40, y: Math.min(...p.nodes.map((n) => n.y)) + 40 });
+  timed('clipboard.paste', () =>
+    insert(p, { x: Math.min(...p.nodes.map((n) => n.x)) + 40, y: Math.min(...p.nodes.map((n) => n.y)) + 40 }),
+  );
 }
 
 /** Where a paste lands: the last pointer position over the canvas, else the viewport centre. */
@@ -169,7 +172,7 @@ export function pasteNodes(p: Payload | null, at: FlowPoint, fromPointer: boolea
         x: Math.min(...payload.nodes.map((n) => n.x)) + cascade,
         y: Math.min(...payload.nodes.map((n) => n.y)) + cascade,
       };
-  return insert(payload, base).length > 0;
+  return timed('clipboard.paste', () => insert(payload, base)).length > 0;
 }
 
 /** Handles a native paste event on the canvas. Returns true when it consumed the event. */
@@ -211,5 +214,5 @@ export async function imageToNode(file: File, at: { x: number; y: number }) {
   }
   const id = createNodeAt('photo', at.x, at.y);
   const node = id ? useBoard.getState().graph.nodes.get(id) : undefined;
-  if (node) await uploadIntoNode(node, file);
+  if (node) await timed('image.add', () => uploadIntoNode(node, file));
 }

@@ -89,3 +89,17 @@ export function firstNode(page: Page, kind: string): Promise<string> {
     return ns.sort((a: any, b: any) => (a.zKey < b.zKey ? -1 : 1))[0].id;
   }, kind);
 }
+
+/** A point on empty canvas (the pane itself is under it), searched on a grid from the lower middle. */
+export function emptyPanePoint(page: Page): Promise<{ x: number; y: number }> {
+  return page.evaluate(() => {
+    const w = innerWidth;
+    const h = innerHeight;
+    for (let y = Math.round(h * 0.75); y > h * 0.2; y -= 40)
+      for (let x = Math.round(w * 0.3); x < w * 0.7; x += 40) {
+        const el = document.elementFromPoint(x, y);
+        if (el?.classList.contains('react-flow__pane')) return { x, y };
+      }
+    throw new Error('no empty canvas point');
+  });
+}

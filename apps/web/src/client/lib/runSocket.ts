@@ -3,6 +3,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { applyRemote, setStale, upsertVersions, useBoard } from '../store/board';
 import { setError, setProgress, useRuns } from '../store/runs';
 import { toast } from '../store/ui';
+import { perfEnd } from './perf';
 
 /**
  * Follows one run over its WebSocket. On a drop it reconnects with `?after=<last seq>` and
@@ -47,6 +48,7 @@ export function followRun(runId: string, queryClient: QueryClient) {
 function apply(e: RunEvent, queryClient: QueryClient) {
   switch (e.type) {
     case 'run.queued':
+      perfEnd('run.start');
       useRuns.setState({ plan: new Set(e.plan) });
       for (const id of e.plan) {
         setError(id, null);
@@ -88,6 +90,7 @@ function apply(e: RunEvent, queryClient: QueryClient) {
       setProgress(e.nodeId, null);
       return;
     case 'run.finished': {
+      perfEnd('run.total', e.status);
       for (const [id, p] of useRuns.getState().progress) if (p.runId === e.runId) setProgress(id, null);
       useRuns.setState({
         activeRunId: null,

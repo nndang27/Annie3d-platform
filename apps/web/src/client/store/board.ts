@@ -14,6 +14,7 @@ import {
 } from '@annie3d/contracts';
 import { create } from 'zustand';
 import { api } from '../api/client';
+import { record } from '../lib/perf';
 import { loadOutbox, type PendingBatch, saveGuest, saveOutbox } from './persist';
 
 export type SaveState = 'saved' | 'saving' | 'offline' | 'error';
@@ -124,20 +125,24 @@ export function dispatch(ops: GraphOp[], opts: { undoable?: boolean } = {}): boo
 }
 
 export function undo() {
+  const t0 = performance.now();
   const st = get();
   const inv = st.undoStack.at(-1);
   if (!inv) return;
   const res = applyOps(st.graph, inv);
   set({ graph: res.graph, undoStack: st.undoStack.slice(0, -1), redoStack: [...st.redoStack, res.inverse] });
   enqueue(inv);
+  record('undo.apply', performance.now() - t0, 'undo');
 }
 export function redo() {
+  const t0 = performance.now();
   const st = get();
   const ops = st.redoStack.at(-1);
   if (!ops) return;
   const res = applyOps(st.graph, ops);
   set({ graph: res.graph, redoStack: st.redoStack.slice(0, -1), undoStack: [...st.undoStack, res.inverse] });
   enqueue(ops);
+  record('undo.apply', performance.now() - t0, 'redo');
 }
 
 /**

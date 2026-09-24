@@ -21,7 +21,7 @@ test.describe('runs', () => {
   test('new accounts open on the example board, already run and up to date', async ({ page }) => {
     await signedInExample(page);
     const g = await graph(page);
-    expect(g.nodes).toBe(21);
+    expect(g.nodes).toBe(24);
     await expect(page.getByTestId('run-all')).toHaveText('Up to date');
     await expect(page.getByTestId('node-packshot').first().locator('img')).toHaveCount(4);
     await expect(page.getByTestId('credits')).toContainText('60');

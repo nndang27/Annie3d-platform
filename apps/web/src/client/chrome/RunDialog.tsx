@@ -2,6 +2,7 @@ import { NODE_DEFS } from '@annie3d/contracts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { ApiError, api } from '../api/client';
+import { perfStart } from '../lib/perf';
 import { followRun } from '../lib/runSocket';
 import { useBoard } from '../store/board';
 import { toast, useUi } from '../store/ui';
@@ -56,6 +57,8 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
   const start = async () => {
     setStarting(true);
     try {
+      perfStart('run.start');
+      perfStart('run.total');
       const run = await api.startRun(boardId, { idempotencyKey: key, nodeId, scope });
       attachRun(run.id, queryClient);
       close();

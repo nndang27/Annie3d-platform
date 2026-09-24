@@ -5,6 +5,7 @@ import { ArrowLeft, Brush, Camera, Columns2, Eraser, Lasso, Pause, Play, Rotate3
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ApiError, api } from '../api/client';
 import { attachRun } from '../chrome/RunDialog';
+import { perfEnd } from '../lib/perf';
 import { dispatch, useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
 import { toast, useUi } from '../store/ui';
@@ -100,7 +101,10 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
     if (!ed || !url) return;
     setLoading(true);
     ed.load(url)
-      .then((info) => setTime({ t: 0, d: info.duration, playing: false }))
+      .then((info) => {
+        perfEnd('editor.open');
+        setTime({ t: 0, d: info.duration, playing: false });
+      })
       .catch((e: Error) => toast(`Could not load the model: ${e.message}`, 'error'))
       .finally(() => setLoading(false));
     setSel({ faces: 0, regions: 0 });

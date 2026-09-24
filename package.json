@@ -27,6 +27,7 @@
     "docs:api": "npx -y tsx scripts/gen-api-doc.ts",
     "build:prod": "CLOUDFLARE_ENV=production pnpm build",
     "perf:load": "node tests/perf/load.mjs",
+    "measure": "node scripts/measure-load.mjs",
     "deploy:prod": "CLOUDFLARE_ENV=production pnpm build && pnpm --filter @annie3d/web exec wrangler deploy"
   },
   "devDependencies": {

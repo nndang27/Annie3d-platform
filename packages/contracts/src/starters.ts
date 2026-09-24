@@ -38,6 +38,12 @@ const LOOK: Record<StarterId, string> = {
   'stone-water': 'stone-water',
   'splash-hero': 'splash-pastel',
 };
+/** F13: where each Starter's product is previewed first. */
+const SIM_FOR: Record<StarterId, 'shop' | 'tiktok' | 'showroom'> = {
+  'teardown-reveal': 'showroom',
+  'stone-water': 'shop',
+  'splash-hero': 'tiktok',
+};
 const HEADLINE: Record<StarterId, string> = {
   'teardown-reveal': 'Engineered to the last screw',
   'stone-water': 'Made to be noticed',
@@ -88,6 +94,14 @@ export function starterGraph(
       label: 'Export',
       settings: { glbPreset: 'web', includeMp4: true, includePng: true },
     },
+    {
+      key: 'sim',
+      kind: 'simulation',
+      x: 1440,
+      y: 620,
+      label: 'Simulation',
+      settings: { environment: SIM_FOR[id] },
+    },
   ];
   const ids = new Map(specs.map((s) => [s.key, newId()]));
   let z: string | null = null;
@@ -120,6 +134,8 @@ export function starterGraph(
     link('headline', 'video', 'headline'),
     link('video', 'export', 'items'),
     link('model', 'export', 'items'),
+    link('model', 'sim', 'subject'),
+    link('headline', 'sim', 'headline'),
   ];
   return { nodes, edges };
 }

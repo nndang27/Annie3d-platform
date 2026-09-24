@@ -1,0 +1,2 @@
+ALTER TABLE "board_nodes" DROP CONSTRAINT "board_nodes_kind_chk";--> statement-breakpoint
+ALTER TABLE "board_nodes" ADD CONSTRAINT "board_nodes_kind_chk" CHECK ("board_nodes"."kind" IN ('photo', 'text', 'upload3d', 'audio', 'model3d', 'stage', 'packshot', 'adVideo', 'export', 'note', 'simulation'));

@@ -56,6 +56,12 @@ export function useShortcuts() {
         fallback(() => pasteNodes(null, at, pointer.onCanvas));
         return;
       }
+      // ⌥P toggles the Performance panel (e.code: Option changes e.key on macOS).
+      if (e.altKey && !mod && e.code === 'KeyP') {
+        e.preventDefault();
+        useUi.setState((s) => ({ perfOpen: !s.perfOpen }));
+        return;
+      }
       if (mod && k === 'z') {
         e.preventDefault();
         e.shiftKey ? redo() : undo();

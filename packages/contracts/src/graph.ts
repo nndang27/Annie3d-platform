@@ -369,6 +369,16 @@ export function applyOps(
             }),
           ),
           ...restoreEdges.map((e): GraphOp => ({ type: 'edge.create', edge: { ...e } })),
+          // …and point each node back at its result (versions outlive the node's tombstone).
+          ...restoreNodes
+            .filter((n) => n.currentVersionId)
+            .map(
+              (n): GraphOp => ({
+                type: 'node.update',
+                id: n.id,
+                patch: { currentVersionId: n.currentVersionId },
+              }),
+            ),
         ];
         inverse.unshift(...undo);
         break;

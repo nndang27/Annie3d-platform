@@ -388,6 +388,46 @@ describe('copy / paste keeps outputs (copy versions)', () => {
   }, 60_000);
 });
 
+describe('undo of a delete (server)', () => {
+  it('revives deleted nodes with their result pointers and wires in one batch', async () => {
+    const { applyOps, graphFrom, starterGraph } = await import('../../packages/contracts/src/index');
+    const { FIXTURE_FOR_STARTER, FIXTURE_MANIFEST, uuidFromHash } = await import('../../fixtures/index');
+    const g = starterGraph('splash-hero');
+    const photoId = uuidFromHash(
+      FIXTURE_MANIFEST.products[FIXTURE_FOR_STARTER['splash-hero']].files['photo.png']!.sha256,
+    );
+    const nodes = g.nodes.map(({ version: _v, currentVersionId: _c, ...n }) =>
+      n.kind === 'photo' ? { ...n, settings: { ...n.settings, assetId: photoId } } : n,
+    );
+    const c = await Client.signedUp('Undoer');
+    const r = await c.json('/api/boards', {
+      method: 'POST',
+      json: { title: 'Undo', starter: 'blank', fromGuest: { nodes, edges: g.edges } },
+    });
+    expect(r.status).toBe(201);
+    const boardId = r.body.board.id;
+    type N = { id: string; kind: string; currentVersionId: string | null; stale: boolean };
+    const g0 = graphFrom(
+      r.body.nodes.map((n: N) => ({ ...n, version: 1 })),
+      r.body.edges,
+    );
+    const ids = (r.body.nodes as N[])
+      .filter((n) => ['photo', 'model3d', 'stage'].includes(n.kind))
+      .map((n) => n.id);
+    const del = applyOps(g0, [{ type: 'node.delete', ids }]);
+    await ops(c, boardId, [{ type: 'node.delete', ids }]);
+    await ops(c, boardId, del.inverse);
+    const snap = (await c.json(`/api/boards/${boardId}`)).body;
+    expect(snap.edges).toHaveLength(r.body.edges.length);
+    for (const id of ids) {
+      const before = (r.body.nodes as N[]).find((n) => n.id === id)!;
+      const after = (snap.nodes as N[]).find((n) => n.id === id)!;
+      expect(after.currentVersionId).toBe(before.currentVersionId);
+      expect(after.stale).toBe(false);
+    }
+  }, 60_000);
+});
+
 describe('region edits (F8) and versions (F9)', () => {
   it('applies an instruction to selected faces as a new version, keeps the base, and can revert', async () => {
     const { starterGraph } = await import('../../packages/contracts/src/index');

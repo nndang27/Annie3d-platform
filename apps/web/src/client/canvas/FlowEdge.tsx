@@ -1,12 +1,31 @@
 import { BaseEdge, type EdgeProps, getBezierPath } from '@xyflow/react';
-import { memo, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { dispatch } from '../store/board';
 
 /**
- * Soft wire in the source port's pastel colour (ElevenLabs flow edges). Hovering or selecting it
- * shows a round delete button at its midpoint. The button is drawn inside the wire's own SVG group,
- * so moving onto it keeps the wire hovered (a separate HTML layer flickered in Firefox, which does
- * not fire pointerenter for an element that appears under a still cursor).
+ * Current along a wire: a bright head with a long tail that thins and fades toward its end
+ * (like a light streak), running from the source end to the midpoint and carrying the delete
+ * button. Gentle timing: 720 ms ease-in-out run, then the tail drains into the head in 360 ms.
+ */
+const RUN_MS = 720;
+const DRAIN_MS = 360;
+const TAIL = 220; // px of tail behind the head
+const SEGMENTS = 18; // the tail is drawn as short segments, each thinner and fainter than the last
+/** Streak layers from bottom to top: blurred glow, blue core, white-hot centre line. */
+const LAYER = ['glow', 'core', 'hot'] as const;
+const WIDTH = [
+  (f: number) => 3 + 9 * f ** 1.3,
+  (f: number) => 0.8 + 3.4 * f ** 1.5,
+  (f: number) => 1.4 * f ** 2,
+];
+const ALPHA = [(f: number) => 0.55 * f ** 1.8, (f: number) => f ** 1.2, (f: number) => (f > 0.45 ? f : 0)];
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+
+/**
+ * Soft wire in the source port's pastel colour (ElevenLabs flow edges). Everything is drawn inside
+ * the wire's own SVG group, so moving onto the button keeps the wire hovered (an HTML layer
+ * flickered in Firefox, which does not fire pointerenter for an element that appears under a
+ * still cursor).
  */
 export const FlowEdge = memo(function FlowEdge({
   id,
@@ -29,9 +48,52 @@ export const FlowEdge = memo(function FlowEdge({
     curvature: 0.35,
   });
   const [hover, setHover] = useState(false);
+  /** Head position along the path (px) and tail length (px); null when idle. */
+  const [pulse, setPulse] = useState<{ head: number; tail: number } | null>(null);
   const leave = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const track = useRef<SVGPathElement>(null);
   const type = (data as { type?: string } | undefined)?.type ?? 'file';
   const active = hover || selected;
+
+  useEffect(() => {
+    const el = track.current;
+    if (!hover || !el) {
+      setPulse(null);
+      return;
+    }
+    const half = el.getTotalLength() / 2;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPulse({ head: half, tail: 0 });
+      return;
+    }
+    const t0 = performance.now();
+    let raf = 0;
+    const step = (now: number) => {
+      const t = now - t0;
+      if (t < RUN_MS) {
+        const head = easeInOut(t / RUN_MS) * half;
+        setPulse({ head, tail: Math.min(TAIL, head) });
+      } else {
+        const d = Math.min(1, (t - RUN_MS) / DRAIN_MS);
+        setPulse({ head: half, tail: Math.min(TAIL, half) * (1 - d) ** 2 });
+        if (d >= 1) return;
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [hover]);
+
+  // The button rides the head while the current runs, and rests at the midpoint otherwise.
+  let bx = labelX;
+  let by = labelY;
+  const el = track.current;
+  if (hover && pulse && el) {
+    const p = el.getPointAtLength(pulse.head);
+    bx = p.x;
+    by = p.y;
+  }
+  const len = el?.getTotalLength() ?? 0;
   const remove = (e: React.SyntheticEvent) => {
     e.stopPropagation();
     dispatch([{ type: 'edge.delete', ids: [id] }]);
@@ -48,10 +110,37 @@ export const FlowEdge = memo(function FlowEdge({
       }}
     >
       <BaseEdge id={id} path={path} interactionWidth={24} />
+      <path ref={track} d={path} className="wire-track" />
+      {hover && pulse && pulse.tail > 0.5 && (
+        <g className="wire-current">
+          {/* Glow under the streak, then the streak itself: segment i sits i steps behind the head. */}
+          {[0, 1, 2].map((layer) =>
+            Array.from({ length: SEGMENTS }, (_, i) => {
+              const seg = pulse.tail / SEGMENTS;
+              const end = pulse.head - i * seg;
+              const f = 1 - i / SEGMENTS; // 1 at the head → 0 at the tail end
+              return (
+                <path
+                  key={`${layer}-${i}`}
+                  d={path}
+                  className={LAYER[layer]}
+                  style={{
+                    strokeDasharray: `${seg + 0.6} ${len + seg}`,
+                    strokeDashoffset: -(end - seg),
+                    strokeWidth: WIDTH[layer]!(f),
+                    opacity: ALPHA[layer]!(f),
+                  }}
+                />
+              );
+            }),
+          )}
+          <circle className="head" cx={bx} cy={by} r={4.5} />
+        </g>
+      )}
       {active && (
         <g
           className="wire-delete"
-          transform={`translate(${labelX} ${labelY})`}
+          transform={`translate(${bx} ${by})`}
           role="button"
           tabIndex={0}
           aria-label="Remove connection"
@@ -62,8 +151,8 @@ export const FlowEdge = memo(function FlowEdge({
           }}
         >
           <title>Remove connection</title>
-          <circle r={13} />
-          <path d="M -4.5 -4.5 L 4.5 4.5 M 4.5 -4.5 L -4.5 4.5" />
+          <circle r={12} />
+          <path d="M -4 -4 L 4 4 M 4 -4 L -4 4" />
         </g>
       )}
     </g>

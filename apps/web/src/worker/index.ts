@@ -12,16 +12,20 @@ import { exportRoutes } from './routes/exports';
 import { me } from './routes/me';
 import { publicRoutes } from './routes/public';
 import { reelRoutes } from './routes/reels';
+import { rumRoutes } from './routes/rum';
 import { runRoutes } from './routes/runs';
 import { shareRoutes } from './routes/shares';
+import { simRoutes } from './routes/sim';
 
 export { RunRoom } from './durable/run-room';
+export { SimRoom } from './durable/sim-room';
 export type { Env } from './env';
 
 const app = new Hono<AppEnv>();
 
 app.use('*', async (c, next) => {
   c.set('requestId', c.req.header('cf-ray') ?? crypto.randomUUID());
+  const t0 = Date.now();
   await next();
   // WebSocket upgrades carry immutable headers from the Durable Object; leave them untouched.
   if (c.res.status === 101) return;
@@ -30,6 +34,9 @@ app.use('*', async (c, next) => {
   c.header('x-frame-options', 'DENY');
   c.header('referrer-policy', 'strict-origin-when-cross-origin');
   c.header('x-request-id', c.get('requestId'));
+  // Worker time per response (Workers clocks advance across I/O, so this is DB/R2 + compute);
+  // the Performance panel reads it through Resource Timing (Server-Timing, same origin).
+  c.header('server-timing', `app;dur=${Date.now() - t0}`);
 });
 app.use('/api/*', closeDb);
 app.use('/s/*', closeDb);
@@ -84,6 +91,8 @@ app.route('/', creditRoutes);
 app.route('/', publicRoutes);
 app.route('/', runRoutes);
 app.route('/', exportRoutes);
+app.route('/', simRoutes);
+app.route('/', rumRoutes);
 app.route('/', shareRoutes);
 app.route('/', agentRoutes);
 app.route('/', reelRoutes);

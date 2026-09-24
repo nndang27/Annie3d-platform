@@ -9,6 +9,8 @@ import {
   type NodeKind,
   type NodeRecord,
   type PortType,
+  SIM_ENVIRONMENTS,
+  type SimEnvironment,
 } from '@annie3d/contracts';
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import {
@@ -21,7 +23,10 @@ import {
   Download,
   Image as ImageIcon,
   type LucideIcon,
+  Maximize2,
+  MonitorSmartphone,
   MoreHorizontal,
+  Move3d,
   Music,
   Package,
   Play,
@@ -34,6 +39,9 @@ import {
 } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { pickImage } from '../lib/media';
+import { perfStart } from '../lib/perf';
+import { SIM_ENV_META } from '../sim/inputs';
+import { SimThumb } from '../sim/SimThumb';
 import { dispatch, useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
 import { useUi } from '../store/ui';
@@ -68,6 +76,7 @@ const KIND_ICON: Record<NodeKind, LucideIcon> = {
   adVideo: Video,
   export: Package,
   note: StickyNote,
+  simulation: MonitorSmartphone,
 };
 const ACCEPT: Partial<Record<NodeKind, string>> = {
   photo: 'image/png,image/jpeg,image/webp',
@@ -75,9 +84,11 @@ const ACCEPT: Partial<Record<NodeKind, string>> = {
   upload3d: '.glb,model/gltf-binary',
 };
 
-/** Port bubbles (ElevenLabs flow nodes): first centre 36 px below the card top, one every 48 px. */
-const PORT_TOP = 36;
-const PORT_GAP = 48;
+/** Port bubbles (ElevenLabs flow nodes): first centre 30 px below the card top, one every 38 px. */
+const PORT_TOP = 30;
+const PORT_GAP = 38;
+/** Reference thumbnails shown in an empty result (the rest are counted). */
+const MAX_REFS = 5;
 
 /**
  * Incoming/outgoing wire index, rebuilt once per edges map (not once per node per render):
@@ -134,7 +145,22 @@ export const FlowNode = memo(function FlowNode({ id, selected }: NodeProps) {
         ) : (
           <>
             <Preview node={node} selected={!!selected} />
-            {!input && (
+            {node.kind === 'simulation' && (
+              <div className="node-body sim-body">
+                <span className="sim-env-label">
+                  {SIM_ENV_META[node.settings.environment as SimEnvironment]?.label}
+                </span>
+                <button
+                  type="button"
+                  className="open-sim nodrag"
+                  onClick={() => openSimulator(node.id)}
+                  data-testid="open-sim"
+                >
+                  Open
+                </button>
+              </div>
+            )}
+            {!input && node.kind !== 'simulation' && (
               <div className="node-body">
                 {PROMPT_KEY[node.kind] ? <Prompt node={node} /> : <div className="grow" />}
                 {def.runnable && <RunButton node={node} />}
@@ -171,10 +197,12 @@ function Ports({ node }: { node: NodeRecord }) {
             position={Position.Left}
             className={`port port-${type}${connected.has(p.id) ? ' on' : ''}`}
             style={{ top: PORT_TOP + i * PORT_GAP }}
-            title={`${p.label} (${p.accepts.join(' or ')})`}
+            aria-label={`${p.label} (${p.accepts.join(' or ')})`}
           >
-            <Icon size={16} strokeWidth={2} aria-hidden />
-            <span className="port-label">{p.label}</span>
+            <Icon size={12} strokeWidth={2.25} aria-hidden />
+            <span className="port-tip" role="tooltip">
+              {p.label}
+            </span>
           </Handle>
         );
       })}
@@ -188,9 +216,12 @@ function Ports({ node }: { node: NodeRecord }) {
               position={Position.Right}
               className={`port port-${def.output.type}${outFlag === 'true' ? ' on' : ''}`}
               style={{ top: PORT_TOP }}
-              title={`${def.output.label} (${def.output.type})`}
+              aria-label={`${def.output.label} (${def.output.type})`}
             >
-              <Icon size={16} strokeWidth={2} aria-hidden />
+              <Icon size={12} strokeWidth={2.25} aria-hidden />
+              <span className="port-tip" role="tooltip">
+                {def.output.label}
+              </span>
             </Handle>
           );
         })()}
@@ -235,7 +266,7 @@ function useReferenceThumbs(node: NodeRecord): string[] {
       const url = pickImage(out, 48, zoom);
       if (url) urls.push(url);
     }
-    return urls.slice(0, 4).join('\n');
+    return urls.join('\n');
   });
   return key ? key.split('\n') : [];
 }
@@ -262,6 +293,31 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
   }, [node.id]);
 
   const isInput = NODE_DEFS[kind].category === 'input';
+  if (kind === 'simulation') {
+    return (
+      <div
+        className="node-preview sim-preview"
+        onDoubleClick={() => openSimulator(node.id)}
+        data-testid="node-preview"
+      >
+        <SimThumb
+          nodeId={node.id}
+          env={node.settings.environment as SimEnvironment}
+          price={String(node.settings.price ?? '')}
+        />
+        <button
+          type="button"
+          className="open3d nodrag"
+          onClick={() => openSimulator(node.id)}
+          tabIndex={selected ? 0 : -1}
+          aria-label="Open simulator"
+          title="Open simulator (or double-click)"
+        >
+          <Maximize2 size={15} strokeWidth={2} aria-hidden />
+        </button>
+      </div>
+    );
+  }
   if (isInput && !primary) {
     return (
       <label
@@ -358,8 +414,11 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
       );
   }
   const contain = kind === 'adVideo' || kind === 'packshot';
+  const has3d = (kind === 'model3d' || kind === 'upload3d') && primary?.kind === 'model3d';
   return (
     <div
+      // One click selects the node (React Flow); a double-click on a 3D result opens the editor.
+      onDoubleClick={has3d ? () => openEditor(node.id) : undefined}
       className={`node-preview${contain ? ' contain' : ''}${isInput ? ' input-media' : ''}${primary ? ' has-output' : ''}`}
       onPointerEnter={onEnter}
       onPointerLeave={onLeave}
@@ -367,10 +426,24 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
     >
       {content}
       {!primary && refs.length > 0 && (
-        <div className="refs" aria-label="Reference images">
-          {refs.map((u) => (
-            <img key={u} src={u} alt="" decoding="async" draggable={false} />
+        // Wired-in images as a stack (back cards offset up-right); hovering fans them out in a row.
+        <div
+          className="refs"
+          aria-label={`${refs.length} reference image${refs.length > 1 ? 's' : ''}`}
+          style={{ '--n': Math.min(refs.length, MAX_REFS) } as React.CSSProperties}
+          data-testid="refs"
+        >
+          {refs.slice(0, MAX_REFS).map((u, i) => (
+            <img
+              key={u}
+              src={u}
+              alt=""
+              decoding="async"
+              draggable={false}
+              style={{ '--i': i } as React.CSSProperties}
+            />
           ))}
+          {refs.length > MAX_REFS && <span className="more">+{refs.length - MAX_REFS}</span>}
         </div>
       )}
       {progress && <span className="stage-label">{progress.stage}</span>}
@@ -384,15 +457,17 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
           <i style={{ width: `${pct}%` }} />
         </div>
       )}
-      {(kind === 'model3d' || kind === 'upload3d') && primary?.kind === 'model3d' && (
+      {has3d && (
         <button
           type="button"
-          className="overlay-btn open3d nodrag"
+          className="open3d nodrag"
           onClick={() => openEditor(node.id)}
           data-testid="open-3d"
           tabIndex={selected ? 0 : -1}
+          aria-label="Open 3D editor"
+          title="Open 3D editor (or double-click)"
         >
-          Open 3D ⤢
+          <Move3d size={16} strokeWidth={2} aria-hidden />
         </button>
       )}
       {isInput && primary && NODE_DEFS[kind].output && (
@@ -408,6 +483,11 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
       )}
     </div>
   );
+}
+
+function openSimulator(nodeId: string) {
+  perfStart('simulator.open');
+  useUi.setState({ simulatingNodeId: nodeId });
 }
 
 function runFromHere(nodeId: string) {
@@ -503,9 +583,6 @@ function RunButton({ node }: { node: NodeRecord }) {
   };
   return (
     <div className="run-split nodrag">
-      <span className="cost" title="Credits for this node">
-        {cost} cr
-      </span>
       <button
         type="button"
         className="run-main"
@@ -513,6 +590,7 @@ function RunButton({ node }: { node: NodeRecord }) {
         disabled={running}
         data-testid="run-node"
         aria-label={`Run · ${cost} credits`}
+        title={`Run · ${cost} credits`}
       >
         {running ? 'Running…' : 'Run'}
       </button>
@@ -603,6 +681,23 @@ function Toolbar({ node }: { node: NodeRecord }) {
         )}
         {sel('aspect', ASPECTS)}
         {sel('durationSec', [6, 10, 15], (v) => `${v}s`)}
+      </>
+    );
+  if (node.kind === 'simulation')
+    controls = (
+      <>
+        {sel('environment', SIM_ENVIRONMENTS, (v) => SIM_ENV_META[v as SimEnvironment].label)}
+        <input
+          className="tb-input"
+          aria-label="price"
+          defaultValue={String(s.price ?? '')}
+          maxLength={24}
+          onBlur={(e) => e.target.value !== s.price && set({ price: e.target.value })}
+          onKeyDown={(e) => {
+            e.stopPropagation();
+            if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+          }}
+        />
       </>
     );
   if (node.kind === 'export')

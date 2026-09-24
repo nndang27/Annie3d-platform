@@ -17,7 +17,7 @@ test.describe('signed-in board sync', () => {
     const imported = await graph(page);
     expect(imported.nodes).toBe(guest.nodes);
     expect(imported.edges).toBe(guest.edges);
-    await expect(page.getByText('Imported from guest')).toBeVisible();
+    await expect(page.getByTestId('prompt').filter({ hasText: 'Imported from guest' })).toBeVisible();
     await expect(page.getByTestId('credits')).toContainText('60');
 
     // Edit → batched op → "Saved"; reload proves the server has it.

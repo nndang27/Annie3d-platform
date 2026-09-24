@@ -1,13 +1,14 @@
 import { expect, test } from '@playwright/test';
-import { dragWire, firstNode, graph, handleCenter, newestNode, openCanvas } from './helpers';
+import { dragWire, emptyPanePoint, firstNode, graph, handleCenter, newestNode, openCanvas } from './helpers';
 
 test.describe('guest canvas', () => {
   test('F1: opens on the example board with rendered outputs and no console errors', async ({ page }) => {
     const errors = await openCanvas(page);
     const g = await graph(page);
     expect(g.mode).toBe('guest');
-    expect(g.nodes).toBe(21);
-    expect(g.edges).toBe(21);
+    // 3 Starter lines × 8 nodes (incl. the F13 Simulation node) and 9 wires each.
+    expect(g.nodes).toBe(24);
+    expect(g.edges).toBe(27);
     await expect(page.getByTestId('node-packshot').first().locator('img')).toHaveCount(4);
     // Every visible preview image actually decoded.
     await expect
@@ -20,7 +21,7 @@ test.describe('guest canvas', () => {
       )
       .toBe(true);
     // Viewport culling: far rows are not in the DOM.
-    expect(await page.locator('.react-flow__node').count()).toBeLessThan(21);
+    expect(await page.locator('.react-flow__node').count()).toBeLessThan(24);
     expect(errors).toEqual([]);
   });
 
@@ -56,7 +57,7 @@ test.describe('guest canvas', () => {
     await openCanvas(page);
     const model = await firstNode(page, 'model3d');
     const g0 = await graph(page);
-    await dragWire(page, model, { x: 700, y: 820 });
+    await dragWire(page, model, await emptyPanePoint(page));
     const palette = page.getByTestId('palette');
     await expect(palette).toBeVisible();
     // Only nodes with a model3d input are offered.
@@ -96,8 +97,8 @@ test.describe('guest canvas', () => {
     await page.getByTestId('starters-button').click();
     await page.getByTestId('starter-stone-water').click();
     const g1 = await graph(page);
-    expect(g1.nodes - g0.nodes).toBe(7);
-    expect(g1.edges - g0.edges).toBe(7);
+    expect(g1.nodes - g0.nodes).toBe(8);
+    expect(g1.edges - g0.edges).toBe(9);
   });
 
   test('guest edits survive a reload (IndexedDB)', async ({ page }) => {
@@ -107,7 +108,9 @@ test.describe('guest canvas', () => {
     await page.keyboard.press('ControlOrMeta+Enter');
     await page.waitForTimeout(500); // guest save is debounced 300 ms
     await page.reload();
-    await expect(page.getByText('Chrome bottle on black glass')).toBeVisible();
+    await expect(
+      page.getByTestId('prompt').filter({ hasText: 'Chrome bottle on black glass' }),
+    ).toBeVisible();
   });
 
   test('F11: Run as a guest asks to sign in and names the free run', async ({ page }) => {
@@ -317,5 +320,170 @@ test.describe('node UI, wires and clipboard', () => {
     await expect.poll(async () => (await graph(page)).kinds.photo).toBe(photos + 1);
     const photo = await newestNode(page, 'photo');
     await expect(page.locator(`.react-flow__node[data-id="${photo}"] .node-preview img`)).toBeVisible();
+  });
+});
+
+test.describe('delete/undo, ports, 3D shortcut and Run', () => {
+  const snapshot = (page: import('@playwright/test').Page) =>
+    page.evaluate(() => {
+      const s = (window as any).__annie3d.useBoard.getState();
+      return {
+        edges: s.graph.edges.size,
+        nodes: [...s.graph.nodes.values()]
+          .map((n: any) => `${n.id}:${n.currentVersionId}:${JSON.stringify(n.settings)}`)
+          .sort(),
+      };
+    });
+
+  test('deleting several nodes then one ⌘Z restores results, settings and every wire', async ({ page }) => {
+    await openCanvas(page);
+    await page.getByRole('button', { name: 'Close agent' }).click();
+    const before = await snapshot(page);
+    const [model, stage] = [await firstNode(page, 'model3d'), await firstNode(page, 'stage')];
+    await page.locator(`.react-flow__node[data-id="${model}"] .node-head`).click();
+    await page.locator(`.react-flow__node[data-id="${stage}"] .node-head`).click({ modifiers: ['Shift'] });
+    await page.keyboard.press('Backspace');
+    await expect.poll(async () => (await snapshot(page)).nodes.length).toBe(before.nodes.length - 2);
+    await page.keyboard.press('ControlOrMeta+z');
+    await expect.poll(() => snapshot(page)).toEqual(before);
+    await expect(
+      page.locator(`.react-flow__node[data-id="${model}"] .node-preview img`).first(),
+    ).toBeVisible();
+  });
+
+  test('port bubbles show their name in a tooltip; Run shows no credits', async ({ page }) => {
+    await openCanvas(page);
+    await page.getByRole('button', { name: 'Close agent' }).click();
+    const stage = await firstNode(page, 'stage');
+    const port = page.locator(
+      `.react-flow__node[data-id="${stage}"] .react-flow__handle[data-handleid="prompt"]`,
+    );
+    await port.hover();
+    await expect(port.locator('.port-tip')).toHaveText('Direction');
+    await expect(port.locator('.port-tip')).toHaveCSS('opacity', '1');
+    await expect(page.locator(`.react-flow__node[data-id="${stage}"]`).getByTestId('run-node')).toHaveText(
+      'Run',
+    );
+  });
+
+  test('a 3D result opens the editor from its corner icon or a double-click; one click only selects', async ({
+    page,
+  }) => {
+    await openCanvas(page);
+    await page.getByRole('button', { name: 'Close agent' }).click();
+    const model = await firstNode(page, 'model3d');
+    const preview = page.locator(`.react-flow__node[data-id="${model}"] .node-preview`);
+    await preview.click();
+    await expect(page.locator(`.react-flow__node[data-id="${model}"]`)).toHaveClass(/selected/);
+    await expect(page.getByTestId('editor')).toHaveCount(0);
+    await preview.dblclick();
+    await expect(page.getByTestId('editor')).toBeVisible();
+  });
+
+  test('hovering a wire runs the delete button from the source end to the middle', async ({ page }) => {
+    await openCanvas(page);
+    await page.getByRole('button', { name: 'Close agent' }).click();
+    const geo = await page.evaluate(() => {
+      const p = document.querySelectorAll('.react-flow__edge-path')[3] as SVGPathElement;
+      const at = (l: number) => {
+        const m = p.getPointAtLength(l);
+        const q = new DOMPoint(m.x, m.y).matrixTransform(p.getScreenCTM()!);
+        return { x: q.x, y: q.y };
+      };
+      return { mid: at(p.getTotalLength() / 2) };
+    });
+    await page.mouse.move(geo.mid.x, geo.mid.y);
+    const btn = page.getByTestId('edge-delete');
+    await expect(btn).toBeVisible();
+    // It settles at the midpoint.
+    await expect
+      .poll(async () => {
+        const b = (await btn.boundingBox())!;
+        return Math.hypot(b.x + b.width / 2 - geo.mid.x, b.y + b.height / 2 - geo.mid.y);
+      })
+      .toBeLessThan(3);
+  });
+});
+
+test.describe('reference stack and performance panel', () => {
+  test('wired images stack in an empty result and fan out in a row on hover', async ({ page }) => {
+    await openCanvas(page);
+    await page.getByRole('button', { name: 'Close agent' }).click();
+    const id = await page.evaluate(async () => {
+      const { useBoard } = (window as any).__annie3d;
+      const nodes = [...useBoard.getState().graph.nodes.values()] as any[];
+      const photos = nodes.filter((n) => n.kind === 'photo').slice(0, 3);
+      const mid = crypto.randomUUID();
+      const ops: unknown[] = [
+        { type: 'node.create', node: { id: mid, kind: 'model3d', x: 600, y: -700, zKey: 'zz' } },
+      ];
+      for (const s of photos)
+        ops.push({
+          type: 'edge.create',
+          edge: {
+            id: crypto.randomUUID(),
+            source: s.id,
+            sourcePort: 'out',
+            target: mid,
+            targetPort: 'images',
+          },
+        });
+      const m = await import('/src/client/store/board.ts');
+      m.dispatch(ops as never);
+      (window as any).__annie3d.useUi.setState({ selected: new Set([mid]) });
+      return mid;
+    });
+    await page.keyboard.press('Shift+2');
+    // Wait for the zoom-to-selection to settle before hovering.
+    let last = '';
+    await expect
+      .poll(
+        async () => {
+          const b = JSON.stringify(await page.locator(`.react-flow__node[data-id="${id}"]`).boundingBox());
+          const same = b === last;
+          last = b;
+          return same;
+        },
+        { intervals: [200] },
+      )
+      .toBe(true);
+    const refs = page.locator(`.react-flow__node[data-id="${id}"] [data-testid=refs]`);
+    await expect(refs.locator('img')).toHaveCount(3);
+    const xs = () =>
+      refs.locator('img').evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().x)));
+    // Stacked: cards a few px apart.
+    await expect
+      .poll(async () => {
+        const v = await xs();
+        return v[2]! - v[0]!;
+      })
+      .toBeLessThan(20);
+    await refs.hover();
+    // Fanned: one card width apart.
+    await expect
+      .poll(async () => {
+        const v = await xs();
+        return v[2]! - v[0]!;
+      })
+      .toBeGreaterThan(40);
+  });
+
+  test('the performance panel shows page-load vitals and feature timings', async ({ page }) => {
+    await openCanvas(page);
+    await page.getByRole('button', { name: 'Close agent' }).click();
+    await page.getByTestId('perf-toggle').click();
+    const panel = page.getByTestId('perf-panel');
+    await expect(panel).toBeVisible();
+    await expect(panel.getByTestId('perf-board.ready')).not.toContainText('—');
+    await expect(panel.getByTestId('perf-TTFB')).not.toContainText('—');
+    // A feature timing appears once the feature is used: undo.
+    // The panel covers part of the canvas: select through the store, then use the shortcuts.
+    const text = await firstNode(page, 'text');
+    await page.evaluate((id) => (window as any).__annie3d.useUi.setState({ selected: new Set([id]) }), text);
+    await page.keyboard.press('ControlOrMeta+d');
+    await page.keyboard.press('ControlOrMeta+z');
+    await expect(panel.getByTestId('perf-feature-undo.apply')).not.toContainText('—');
+    await page.keyboard.press('Alt+KeyP');
+    await expect(panel).toHaveCount(0);
   });
 });

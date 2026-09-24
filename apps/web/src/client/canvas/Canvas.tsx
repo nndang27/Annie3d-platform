@@ -1,4 +1,11 @@
-import { canConnect, type EdgeRecord, NODE_DEFS, type NodeRecord, newId } from '@annie3d/contracts';
+import {
+  canConnect,
+  type EdgeRecord,
+  type GraphOp,
+  NODE_DEFS,
+  type NodeRecord,
+  newId,
+} from '@annie3d/contracts';
 import {
   type Connection,
   type Edge,
@@ -12,6 +19,7 @@ import {
   type Viewport,
 } from '@xyflow/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { markBoardReady } from '../lib/perf';
 import { throttleRAF } from '../lib/throttleRaf';
 import { MAX_ZOOM, MIN_ZOOM } from '../lib/zoom';
 import { dispatch, setPositionsLocal, useBoard } from '../store/board';
@@ -112,7 +120,6 @@ export function Canvas() {
     (changes: NodeChange[]) => {
       const moves: { id: string; x: number; y: number }[] = [];
       let sel: Set<string> | null = null;
-      const removed: string[] = [];
       for (const c of changes) {
         if (c.type === 'position' && c.position) {
           const cur = useBoard.getState().graph.nodes.get(c.id);
@@ -123,11 +130,10 @@ export function Canvas() {
           sel ??= new Set(useUi.getState().selected);
           if (c.selected) sel.add(c.id);
           else sel.delete(c.id);
-        } else if (c.type === 'remove') removed.push(c.id);
+        }
       }
       if (moves.length) moveLocal(...[moves]);
       if (sel) useUi.setState({ selected: sel });
-      if (removed.length) dispatch([{ type: 'node.delete', ids: removed }]);
     },
     [moveLocal],
   );
@@ -148,9 +154,18 @@ export function Canvas() {
     dispatch([{ type: 'node.move', moves }]);
   }, [moveLocal]);
 
-  const onEdgesChange = useCallback((changes: { type: string; id: string }[]) => {
-    const ids = changes.filter((c) => c.type === 'remove').map((c) => c.id);
-    if (ids.length) dispatch([{ type: 'edge.delete', ids }]);
+  /**
+   * Delete key: nodes and wires go in ONE batch, so one ⌘Z brings everything back (React Flow
+   * reports edge and node removals separately; two batches needed two undos). Wires attached to
+   * deleted nodes are removed — and restored — by node.delete itself.
+   */
+  const onDelete = useCallback(({ nodes: ns, edges: es }: { nodes: Node[]; edges: Edge[] }) => {
+    const ids = new Set(ns.map((n) => n.id));
+    const ops: GraphOp[] = [];
+    const lone = es.filter((e) => !ids.has(e.source) && !ids.has(e.target)).map((e) => e.id);
+    if (lone.length) ops.push({ type: 'edge.delete', ids: lone });
+    if (ids.size) ops.push({ type: 'node.delete', ids: [...ids] });
+    if (ops.length) dispatch(ops);
   }, []);
 
   const isValidConnection = useCallback((c: Connection | Edge) => {
@@ -260,7 +275,14 @@ export function Canvas() {
       },
     };
   });
-  const onInit = useCallback(() => applyZoom(rf.getZoom()), [rf, applyZoom]);
+  const onInit = useCallback(() => {
+    applyZoom(rf.getZoom());
+    // "Board ready": the first frame with node previews decoded (Performance panel).
+    requestAnimationFrame(() => {
+      const imgs = [...document.querySelectorAll<HTMLImageElement>('.node-preview img')];
+      void Promise.all(imgs.map((i) => i.decode().catch(() => {}))).then(markBoardReady);
+    });
+  }, [rf, applyZoom]);
 
   const onNodeContextMenu = useCallback(
     (e: React.MouseEvent, node: Node) => {
@@ -320,7 +342,7 @@ export function Canvas() {
       edges={edges}
       nodeTypes={nodeTypes}
       onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange as never}
+      onDelete={onDelete}
       onNodeDragStop={onNodeDragStop}
       onConnect={onConnect}
       onConnectStart={onConnectStart}

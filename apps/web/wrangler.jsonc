@@ -29,9 +29,17 @@
     { "name": "RL_RUN", "namespace_id": "1002", "simple": { "limit": 20, "period": 60 } },
     { "name": "RL_UPLOAD", "namespace_id": "1003", "simple": { "limit": 30, "period": 60 } }
   ],
-  // One Durable Object per run: executes via alarms, streams events over hibernatable WebSockets.
-  "durable_objects": { "bindings": [{ "name": "RUN_ROOM", "class_name": "RunRoom" }] },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RunRoom"] }],
+  // One Durable Object per run (alarms + hibernatable WebSockets); SimRoom relays F13 remote links.
+  "durable_objects": {
+    "bindings": [
+      { "name": "RUN_ROOM", "class_name": "RunRoom" },
+      { "name": "SIM_ROOM", "class_name": "SimRoom" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["RunRoom"] },
+    { "tag": "v2", "new_sqlite_classes": ["SimRoom"] }
+  ],
   "vars": {
     "APP_ENV": "development",
     "APP_URL": "http://localhost:5173",
@@ -59,8 +67,16 @@
         { "name": "RL_RUN", "namespace_id": "2002", "simple": { "limit": 20, "period": 60 } },
         { "name": "RL_UPLOAD", "namespace_id": "2003", "simple": { "limit": 30, "period": 60 } }
       ],
-      "durable_objects": { "bindings": [{ "name": "RUN_ROOM", "class_name": "RunRoom" }] },
-      "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RunRoom"] }],
+      "durable_objects": {
+        "bindings": [
+          { "name": "RUN_ROOM", "class_name": "RunRoom" },
+          { "name": "SIM_ROOM", "class_name": "SimRoom" }
+        ]
+      },
+      "migrations": [
+        { "tag": "v1", "new_sqlite_classes": ["RunRoom"] },
+        { "tag": "v2", "new_sqlite_classes": ["SimRoom"] }
+      ],
       "vars": {
         "APP_ENV": "production",
         "APP_URL": "https://annie3d.nndang2701.workers.dev",

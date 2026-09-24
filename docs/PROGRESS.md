@@ -378,3 +378,17 @@ other apps, double-click to add a text node, and quick sharing without deploying
 Known limits of the shared link: Google sign-in needs the tunnel's callback URL in the Google
 console (a new random URL each time the tunnel restarts); signed-in uploads need the tunnel origin
 in the R2 CORS rules (guests keep files in the browser and are unaffected).
+
+## 2026-09-24 — Debug round 2: undo, ports, wires, 3D shortcut, Run, F13 Simulation
+
+| Item | Change | Verified |
+| --- | --- | --- |
+| Undo after deleting several nodes lost results and wires | Delete key now sends nodes and wires as ONE batch (`onDelete`), and the inverse of `node.delete` also restores each node's `currentVersionId`; the server accepts a revived node pointing back at its own version (nodes are tombstoned, versions survive) | unit test (reducer), API test `undo of a delete (server)`, E2E (one ⌘Z restores the exact graph) |
+| Port bubbles | 28 px with 12 px icons (≈ ElevenLabs proportion to the node); the port name appears in a dark tooltip under the pointer instead of grey labels on hover | E2E tooltip |
+| Wire delete | A white-blue spark runs from the source end to the midpoint in 280 ms (ease-out) carrying the × button, which stays at the middle (reduced motion: no run) | E2E (button settles at the midpoint) |
+| 3D result | "Open 3D" text button replaced by a corner icon (Move3D) on hover; double-click on the result opens the editor, one click only selects | E2E |
+| Run | No credit label (still in the tooltip and the run dialog); compact 26 px `Run ▾`; the prompt spans the card width | E2E |
+| F13 Simulation node | `simulation` kind (migration 0004), in every Starter (8 nodes, 9 wires). Simulator overlay: shop page, TikTok, sticker (transparent PNG), showroom; one WebGL canvas (`SimViewer`) moved between layouts. Phone remote at `/sim/<room>` over the `SimRoom` Durable Object relay (no storage, ≤ 8 sockets, 128-bit room id): tilt (DeviceOrientation, iOS permission), drag pad, recenter, spin, place, snapshot back to the phone | E2E `F13 simulation` (screen + phone page, two-way), screenshots |
+| Tooling | `apps/web` typecheck now `tsc -b --force`: the incremental build missed errors caused by changes in `packages/contracts` | caught a missing `simulation` entry |
+
+Production deploy needs migrations 0003 and 0004 first, and the `SimRoom` Durable Object migration (`v2`) ships with the Worker.

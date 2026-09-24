@@ -1,7 +1,7 @@
 import { creditsFor, NODE_DEFS, STARTER_META, STARTERS } from '@annie3d/contracts';
 import { useQuery } from '@tanstack/react-query';
 import { useReactFlow, useViewport } from '@xyflow/react';
-import { ChevronDown, Share2, Sparkles } from 'lucide-react';
+import { ChevronDown, Gauge, Share2, Sparkles } from 'lucide-react';
 import { memo, useMemo, useState } from 'react';
 import { api } from '../api/client';
 import { useMe } from '../api/me';
@@ -37,6 +37,16 @@ export function TopBar() {
       <div className="spacer" />
       <div className="pill hide-sm">
         <Zoom />
+        <span className="sep" />
+        <button
+          type="button"
+          onClick={() => useUi.setState((s) => ({ perfOpen: !s.perfOpen }))}
+          aria-label="Performance"
+          title="Performance (⌥P)"
+          data-testid="perf-toggle"
+        >
+          <Gauge size={16} aria-hidden="true" />
+        </button>
       </div>
       <Account />
     </header>

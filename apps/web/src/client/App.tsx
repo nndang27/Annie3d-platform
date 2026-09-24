@@ -19,12 +19,16 @@ import { SignInPrompt } from './chrome/SignInPrompt';
 import { Toasts } from './chrome/Toasts';
 import { Toolbar } from './chrome/Toolbar';
 import { TopBar } from './chrome/TopBar';
+import { timed } from './lib/perf';
 import { loadGuestBoard, loadSnapshot, useBoard } from './store/board';
 import { clearGuest, clearGuestFiles, loadGuest, rehydrateGuestUrls } from './store/persist';
 import { toast, useUi } from './store/ui';
 
 // The 3D editor (three.js, ~600 kB) loads only when a node is opened (bundle-dynamic-imports).
 const EditorOverlay = lazy(() => import('./editor/EditorOverlay'));
+// F13 simulator (three.js + layouts) loads only when a Simulation node is opened.
+const SimulatorOverlay = lazy(() => import('./sim/SimulatorOverlay'));
+const PerfPanel = lazy(() => import('./chrome/PerfPanel'));
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
@@ -92,7 +96,7 @@ function useBoot() {
           }
           history.replaceState(null, '', `/b/${id}${location.search}`);
         }
-        const snap = await api.board(id);
+        const snap = await timed('board.load', () => api.board(id));
         if (cancelled) return;
         loadSnapshot(snap);
         // A run still going (e.g. after a reload) keeps streaming into this tab.
@@ -140,6 +144,8 @@ function Workspace() {
   const mode = useBoard((s) => s.mode);
   const agentOpen = useUi((s) => s.agentOpen);
   const editing = useUi((s) => s.editingNodeId);
+  const simulating = useUi((s) => s.simulatingNodeId);
+  const perfOpen = useUi((s) => s.perfOpen);
   useShortcuts();
   useEditParam();
   useCheckoutReturn();
@@ -176,6 +182,18 @@ function Workspace() {
           </Suspense>
         </EditorBoundary>
       )}
+      {perfOpen && (
+        <Suspense fallback={null}>
+          <PerfPanel />
+        </Suspense>
+      )}
+      {simulating && (
+        <EditorBoundary key={simulating}>
+          <Suspense fallback={<div className="editor-loading">Opening simulator…</div>}>
+            <SimulatorOverlay nodeId={simulating} />
+          </Suspense>
+        </EditorBoundary>
+      )}
     </div>
   );
 }
@@ -187,8 +205,8 @@ class EditorBoundary extends Component<{ children: ReactNode }, { failed: boolea
     return { failed: true };
   }
   componentDidCatch(error: Error) {
-    toast(`The 3D editor could not start: ${error.message}`, 'error');
-    useUi.setState({ editingNodeId: null });
+    toast(`The 3D view could not start: ${error.message}`, 'error');
+    useUi.setState({ editingNodeId: null, simulatingNodeId: null });
     const u = new URL(location.href);
     u.searchParams.delete('edit');
     history.replaceState(null, '', u);

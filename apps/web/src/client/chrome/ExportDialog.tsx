@@ -2,6 +2,7 @@ import { GLB_PRESETS, type GlbPresetId } from '@annie3d/contracts';
 import { Check, Download, X } from 'lucide-react';
 import { useState } from 'react';
 import { api, type ExportResult } from '../api/client';
+import { timed } from '../lib/perf';
 import { useBoard } from '../store/board';
 import { toast, useUi } from '../store/ui';
 import { Modal } from './Modal';
@@ -45,13 +46,15 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
         .toString(16)
         .padStart(12, '0')}`;
       setResult(
-        await api.createExport({
-          idempotencyKey,
-          nodeId: node.id,
-          glbPreset: preset,
-          includeMp4: isBundle && includeMp4,
-          includePng: isBundle && includePng,
-        }),
+        await timed('export.bundle', () =>
+          api.createExport({
+            idempotencyKey,
+            nodeId: node.id,
+            glbPreset: preset,
+            includeMp4: isBundle && includeMp4,
+            includePng: isBundle && includePng,
+          }),
+        ),
       );
     } catch (e) {
       toast((e as Error).message, 'error');

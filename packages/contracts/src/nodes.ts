@@ -8,6 +8,10 @@ const glbIds = Object.keys(GLB_PRESETS) as [string, ...string[]];
 
 const assetRef = z.string().uuid().nullable().default(null);
 
+/** Simulated places a product can be previewed in (F13). */
+export const SIM_ENVIRONMENTS = ['shop', 'tiktok', 'sticker', 'showroom'] as const;
+export type SimEnvironment = (typeof SIM_ENVIRONMENTS)[number];
+
 /** Settings per node kind. Every schema has defaults so `parse({})` yields a valid node. */
 export const NodeSettings = {
   photo: z.object({ assetId: assetRef }),
@@ -54,6 +58,12 @@ export const NodeSettings = {
     includePng: z.boolean().default(true),
   }),
   note: z.object({ text: z.string().max(4000).default('') }),
+  /** F13: live preview of the product inside simulated places (shop page, feed, sticker, showroom). */
+  simulation: z.object({
+    environment: z.enum(SIM_ENVIRONMENTS).default('shop'),
+    price: z.string().max(24).default('$49'),
+    cta: z.string().max(24).default('Shop now'),
+  }),
 } as const;
 
 export type NodeKind = keyof typeof NodeSettings;
@@ -184,6 +194,20 @@ export const NODE_DEFS: Record<NodeKind, NodeKindDef> = {
     output: { id: 'out', label: 'Files', type: 'file' },
     runnable: true,
     engine: 'Packager',
+    toolbar: true,
+  },
+  simulation: {
+    kind: 'simulation',
+    label: 'Simulation',
+    category: 'output',
+    inputs: [
+      { id: 'subject', label: 'Model or scene', accepts: ['model3d', 'scene'], required: true },
+      { id: 'headline', label: 'Headline', accepts: ['text'] },
+      { id: 'logo', label: 'Logo', accepts: ['image'] },
+    ],
+    output: null,
+    runnable: false,
+    engine: 'Live preview',
     toolbar: true,
   },
   note: {

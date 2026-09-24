@@ -14,6 +14,7 @@ export interface Env {
   RL_RUN: RateLimiter;
   RL_UPLOAD: RateLimiter;
   RUN_ROOM: DurableObjectNamespace;
+  SIM_ROOM: DurableObjectNamespace;
   APP_ENV: string;
   APP_URL: string;
   R2_KEY_PREFIX: string;

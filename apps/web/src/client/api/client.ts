@@ -24,14 +24,23 @@ export class ApiError extends Error {
   }
 }
 
+import { record } from '../lib/perf';
+
 async function call<T>(path: string, init: RequestInit & { json?: unknown } = {}): Promise<T> {
   const headers = new Headers(init.headers);
   if (init.json !== undefined) {
     headers.set('content-type', 'application/json');
     init.body = JSON.stringify(init.json);
   }
+  const t0 = performance.now();
   const res = await fetch(path, { ...init, headers, credentials: 'same-origin' });
   const text = await res.text();
+  // Per-endpoint timing for the Performance panel (ids collapsed so endpoints group).
+  record(
+    'api',
+    performance.now() - t0,
+    `${init.method ?? 'GET'} ${path.split('?')[0]!.replace(/[0-9a-f-]{36}/g, ':id')}`,
+  );
   const body = text ? JSON.parse(text) : null;
   if (!res.ok)
     throw new ApiError(

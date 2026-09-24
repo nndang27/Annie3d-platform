@@ -13,6 +13,7 @@ import {
   starterGraph,
 } from '@annie3d/contracts';
 import { api } from '../api/client';
+import { perfStart, timed } from '../lib/perf';
 import { dispatch, upsertVersions, useBoard } from '../store/board';
 import { loadGuestFileUrl, saveGuestFile } from '../store/persist';
 import { toast, useUi } from '../store/ui';
@@ -31,7 +32,11 @@ function guessMime(f: File): string {
 }
 
 /** Presigned upload straight to R2 (single PUT or multipart), then server-side verification. */
-export async function uploadAsset(file: File, kind: AssetDto['kind']): Promise<AssetDto> {
+export function uploadAsset(file: File, kind: AssetDto['kind']): Promise<AssetDto> {
+  return timed('upload.file', () => uploadAssetInner(file, kind));
+}
+
+async function uploadAssetInner(file: File, kind: AssetDto['kind']): Promise<AssetDto> {
   const up = await api.createUpload({
     kind,
     filename: file.name,
@@ -133,6 +138,7 @@ export function onRunNode(nodeId: string) {
 }
 
 export function openEditor(nodeId: string) {
+  perfStart('editor.open');
   useUi.setState({ editingNodeId: nodeId });
   const u = new URL(location.href);
   u.searchParams.set('edit', nodeId);

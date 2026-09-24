@@ -168,3 +168,20 @@ describe('starters', () => {
     }
   });
 });
+
+describe('undo of a multi-node delete', () => {
+  it('restores the nodes, every wire and each node result pointer', () => {
+    const { g: g0, ids } = build();
+    const [vModel, vStage] = [newId(), newId()];
+    const g = applyOps(g0, [
+      { type: 'node.update', id: ids.model, patch: { currentVersionId: vModel, settings: { prompt: 'p' } } },
+      { type: 'node.update', id: ids.stage, patch: { currentVersionId: vStage } },
+    ]).graph;
+    const del = applyOps(g, [{ type: 'node.delete', ids: [ids.model, ids.stage] }]);
+    expect(del.graph.nodes.size).toBe(g.nodes.size - 2);
+    const back = applyOps(del.graph, del.inverse).graph;
+    expect(back.edges.size).toBe(g.edges.size);
+    expect(back.nodes.get(ids.model)).toMatchObject({ currentVersionId: vModel, settings: { prompt: 'p' } });
+    expect(back.nodes.get(ids.stage)?.currentVersionId).toBe(vStage);
+  });
+});

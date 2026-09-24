@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../api/client';
 import { sendAgentMessage } from '../lib/agentClient';
+import { perfEnd, perfStart } from '../lib/perf';
 import { applyRemote, useBoard } from '../store/board';
 import { toast, useUi } from '../store/ui';
 import type { AgentMessage } from './AgentDock';
@@ -64,6 +65,8 @@ export function useAgent() {
         { id: agentId, role: 'agent', text: '', applied: [] },
       ]);
       setBusy(true);
+      perfStart('agent.first');
+      perfStart('agent.reply');
       const patch = (fn: (m: AgentMessage) => AgentMessage) =>
         setMessages((ms) => ms.map((m) => (m.id === agentId ? fn(m) : m)));
       try {
@@ -72,8 +75,10 @@ export function useAgent() {
           { threadId: thread.current, content: text, budgetCredits: budget, context: { nodeIds } },
           (e) => {
             if (e.type === 'thread') thread.current = e.threadId;
-            else if (e.type === 'text') patch((m) => ({ ...m, text: m.text + e.delta }));
-            else if (e.type === 'ops' && e.applied) {
+            else if (e.type === 'text') {
+              perfEnd('agent.first');
+              patch((m) => ({ ...m, text: m.text + e.delta }));
+            } else if (e.type === 'ops' && e.applied) {
               applyRemote(e.batch.ops, e.seq, { undoable: true });
               patch((m) => ({ ...m, applied: [...(m.applied ?? []), { label: e.label ?? 'Board edited' }] }));
             } else if (e.type === 'run') attachRun(e.runId, queryClient);
@@ -83,6 +88,7 @@ export function useAgent() {
       } catch (err) {
         patch((m) => ({ ...m, text: m.text || `Sorry, that failed: ${(err as Error).message}` }));
       } finally {
+        perfEnd('agent.reply');
         setBusy(false);
       }
     },

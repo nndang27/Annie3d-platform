@@ -43,8 +43,8 @@ describe('API (live stack)', () => {
     expect(r.status).toBe(201);
     snap = r.body;
     boardId = snap.board.id;
-    expect(snap.nodes).toHaveLength(7);
-    expect(snap.edges).toHaveLength(7);
+    expect(snap.nodes).toHaveLength(8);
+    expect(snap.edges).toHaveLength(9);
     expect(snap.board.seq).toBe(1);
   });
 
@@ -139,8 +139,8 @@ describe('API (live stack)', () => {
     });
     expect(r.status).toBe(201);
     const after = await a.json(`/api/boards/${boardId}`);
-    expect(after.body.nodes).toHaveLength(7);
-    expect(after.body.edges).toHaveLength(7);
+    expect(after.body.nodes).toHaveLength(8);
+    expect(after.body.edges).toHaveLength(9);
     const since = await a.json(`/api/boards/${boardId}/ops?after=1`);
     expect(since.body.ops.map((o: any) => o.seq)).toEqual([2, 3, 4]);
   });
@@ -240,6 +240,24 @@ describe('API (live stack)', () => {
     expect(two.body.duplicate).toBe(true);
     expect(two.body.balance).toBe(360);
     expect((await b.json(path, { method: 'POST' })).status).toBe(403);
+  });
+});
+
+describe('real-user performance beacons', () => {
+  it('accepts a bounded beacon and ignores junk', async () => {
+    const ok = await fetch(`${BASE}/api/rum`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', origin: BASE },
+      body: JSON.stringify({
+        path: '/',
+        vitals: { LCP: 900, CLS: 0.01 },
+        samples: [{ name: 'api', ms: 120 }],
+      }),
+    });
+    expect(ok.status).toBe(204);
+    expect(ok.headers.get('server-timing')).toMatch(/^app;dur=\d+/);
+    const junk = await fetch(`${BASE}/api/rum`, { method: 'POST', body: 'not json' });
+    expect(junk.status).toBe(204);
   });
 });
 

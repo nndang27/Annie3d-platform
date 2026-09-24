@@ -243,6 +243,33 @@ body {
   stroke: var(--wire-on);
   stroke-width: 3;
 }
+.wire-track {
+  fill: none;
+  stroke: none;
+  pointer-events: none;
+}
+/* Current along the wire (FlowEdge): a white-hot head, a long blue tail thinning to nothing. */
+.wire-current {
+  pointer-events: none;
+}
+.wire-current path {
+  fill: none;
+  stroke-linecap: round;
+}
+.wire-current .glow {
+  stroke: #5aa2ff;
+  filter: blur(3px);
+}
+.wire-current .core {
+  stroke: #2f7cf6;
+}
+.wire-current .hot {
+  stroke: #fff;
+}
+.wire-current .head {
+  fill: #fff;
+  filter: drop-shadow(0 0 4px #7ab6ff) drop-shadow(0 0 10px #4d94ff);
+}
 .wire-delete {
   cursor: pointer;
   pointer-events: all;
@@ -271,8 +298,8 @@ body {
 .react-flow__handle.port {
   --port-bg: #ececea;
   --port-fg: #56554f;
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   min-width: 0;
   min-height: 0;
   border: 0;
@@ -292,12 +319,12 @@ body {
   pointer-events: none;
 }
 .react-flow__handle-left.port {
-  left: -10px;
+  left: -8px;
   transform: translate(-100%, -50%);
 }
 .react-flow__handle-right.port {
   left: auto;
-  right: -10px;
+  right: -8px;
   transform: translate(100%, -50%);
 }
 .react-flow__handle.port.on,
@@ -342,21 +369,33 @@ body {
   --port-bg: #e6e3dd;
   --port-fg: #5f5e5a;
 }
-.react-flow__handle.port .port-label {
+/* Port name in a dark tooltip under the pointer (ElevenLabs). */
+.react-flow__handle.port .port-tip {
   position: absolute;
-  right: calc(100% + 8px);
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 11.5px;
-  color: var(--text-muted);
+  left: 50%;
+  top: calc(50% + 10px);
+  transform: translate(-50%, 4px);
+  background: #17191d;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  padding: 7px 10px;
+  border-radius: 8px;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 120ms;
+  transition:
+    opacity 100ms,
+    transform 100ms;
+  z-index: 5;
 }
-.react-flow__node:hover .port-label,
-.react-flow__node.selected .port-label {
+.react-flow__handle.port:hover {
+  z-index: 6;
+}
+.react-flow__handle.port:hover .port-tip {
   opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 150ms;
 }
 
 /* ---------------------------------------------------------------- node */
@@ -496,20 +535,55 @@ body {
   object-fit: cover;
 }
 .node-preview .refs {
+  --size: 44px;
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 6px;
+  width: var(--size);
+  height: var(--size);
+  margin-top: calc(var(--size) / -2);
+  z-index: 2;
 }
 .node-preview .refs img {
-  width: 40px;
-  height: 40px;
+  position: absolute;
+  inset: 0;
+  width: var(--size);
+  height: var(--size);
   object-fit: cover;
-  border-radius: 9px;
+  border-radius: 10px;
   border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.12);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.14);
+  z-index: calc(10 - var(--i));
+  /* Stacked: each card behind is nudged up and right (a deck). */
+  transform: translate(calc(var(--i) * 5px), calc(var(--i) * -5px)) scale(calc(1 - var(--i) * 0.04));
+  transition: transform 340ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: calc((var(--n) - 1 - var(--i)) * 18ms);
+}
+/* Fanned: one row, like ElevenLabs, staggered from the front card. */
+.node-preview .refs:hover img {
+  transform: translate(calc(var(--i) * (var(--size) + 8px)), 0) scale(1);
+  transition-delay: calc(var(--i) * 28ms);
+}
+.node-preview .refs .more {
+  position: absolute;
+  left: calc(var(--size) - 10px);
+  top: -12px;
+  z-index: 11;
+  background: #17191d;
+  color: #fff;
+  font-size: 10.5px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 999px;
+  transition: opacity 160ms;
+}
+.node-preview .refs:hover .more {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .node-preview .refs img {
+    transition: none;
+  }
 }
 .node-preview .audio-slot {
   display: grid;
@@ -538,6 +612,36 @@ body {
 .react-flow__node.selected .overlay-btn,
 .overlay-btn:focus-visible {
   opacity: 1;
+}
+/* 3D editor shortcut: an icon in the corner while the result is hovered. */
+.node-preview .open3d {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: rgb(255 255 255 / 0.92);
+  color: #3a3a36;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.14);
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 120ms,
+    transform 120ms;
+}
+.node-preview:hover .open3d,
+.open3d:focus-visible {
+  opacity: 1;
+  transform: none;
+}
+.node-preview .open3d:hover {
+  background: #fff;
+  color: #17191d;
 }
 .node-preview .progress {
   position: absolute;
@@ -575,16 +679,30 @@ body {
   background: var(--accent-soft);
 }
 .node-body {
+  position: relative;
   padding: 12px 12px 12px 16px;
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
+}
+/* The prompt spans the card; its last line leaves room for the compact Run button. */
+.node-body:not(.text-body) > div.prompt::after {
+  content: "";
+  display: inline-block;
+  width: 76px;
+  height: 1px;
+}
+.node-body:not(.text-body) > textarea.prompt {
+  padding-bottom: 30px;
+}
+.node-body > .run-split {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 }
 .node-body .grow {
   flex: 1;
 }
 .prompt {
-  flex: 1;
+  display: block;
+  width: 100%;
   min-width: 0;
   min-height: 40px;
   max-height: 104px;
@@ -628,24 +746,17 @@ textarea.prompt {
 }
 /* Split Run button (ElevenLabs "Run ▾"). */
 .run-split {
-  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
   flex: none;
 }
-.run-split .cost {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-}
 .run-split button {
-  height: 30px;
+  height: 26px;
   border: 0;
   background: #17191d;
   color: #fff;
   font: inherit;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
 }
@@ -657,12 +768,12 @@ textarea.prompt {
   cursor: default;
 }
 .run-split .run-main {
-  border-radius: 9px 0 0 9px;
-  padding: 0 10px 0 12px;
+  border-radius: 8px 0 0 8px;
+  padding: 0 8px 0 10px;
 }
 .run-split .run-more {
-  border-radius: 0 9px 9px 0;
-  padding: 0 7px;
+  border-radius: 0 8px 8px 0;
+  padding: 0 4px;
   display: grid;
   place-items: center;
   box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.18);
@@ -1660,4 +1771,345 @@ a.btn-primary {
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+/* ---------------------------------------------------------------- F13 simulation node */
+.sim-preview {
+  background: #f1f1ee;
+}
+.sim-thumb {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  color: #3a3a36;
+}
+.sim-thumb img {
+  object-fit: contain;
+}
+.sim-thumb .ph {
+  display: block;
+  width: 40%;
+  height: 50%;
+  border-radius: 8px;
+  background: #e2e2de;
+}
+.sim-thumb-shop {
+  place-items: stretch;
+  grid-template-rows: auto 1fr;
+  margin: 14px 18px 0;
+  background: #fff;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
+  overflow: hidden;
+}
+.sim-thumb-shop .bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid #f0f0ec;
+}
+.sim-thumb-shop .bar b {
+  width: 28px;
+  height: 6px;
+  border-radius: 3px;
+  background: #17191d;
+}
+.sim-thumb-shop .bar span {
+  width: 18px;
+  height: 4px;
+  border-radius: 2px;
+  background: #deded9;
+}
+.sim-thumb-shop .page {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 8px;
+  padding: 8px;
+}
+.sim-thumb-shop .shot {
+  background: #f5f5f2;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.sim-thumb-shop .shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sim-thumb-shop .info p {
+  margin: 0 0 4px;
+}
+.sim-thumb-shop .t {
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 1.2;
+}
+.sim-thumb-shop .stars {
+  color: #f2a900;
+}
+.sim-thumb-shop .p {
+  font-weight: 600;
+}
+.sim-thumb-shop .btn {
+  display: block;
+  height: 12px;
+  border-radius: 4px;
+  background: #17191d;
+  margin-top: 6px;
+}
+.sim-thumb-tiktok .phone {
+  position: relative;
+  height: 88%;
+  aspect-ratio: 9 / 16;
+  border-radius: 12px;
+  border: 3px solid #111;
+  background: radial-gradient(circle at 50% 40%, #3b2b52, #120f18 70%);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.sim-thumb-tiktok img {
+  width: 90%;
+  height: 60%;
+  object-fit: contain;
+}
+.sim-thumb-tiktok .rail {
+  position: absolute;
+  right: 4px;
+  bottom: 22px;
+  display: grid;
+  gap: 4px;
+}
+.sim-thumb-tiktok .rail i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.8);
+}
+.sim-thumb-tiktok .cap {
+  position: absolute;
+  left: 5px;
+  right: 16px;
+  bottom: 4px;
+  margin: 0;
+  color: #fff;
+  font-size: 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sim-thumb-sticker .chat {
+  position: relative;
+  width: 70%;
+  height: 80%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
+}
+.sim-thumb-sticker .bubble {
+  position: absolute;
+  height: 12px;
+  border-radius: 6px;
+}
+.sim-thumb-sticker .bubble.l {
+  left: 8px;
+  top: 10px;
+  width: 50%;
+  background: #e9e9eb;
+}
+.sim-thumb-sticker .bubble.r {
+  right: 8px;
+  top: 28px;
+  width: 40%;
+  background: #0a84ff;
+}
+.sim-thumb-sticker .sticker {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  width: 52%;
+  height: 58%;
+}
+.sim-thumb-sticker .sticker img {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff)
+    drop-shadow(0 -1.5px 0 #fff) drop-shadow(0 2px 4px rgb(0 0 0 / 0.25));
+}
+.sim-thumb-showroom {
+  background: radial-gradient(ellipse at 50% 30%, #2f3139, #0d0e11 75%);
+}
+.sim-thumb-showroom .room {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.sim-thumb-showroom .spot {
+  width: 60%;
+  height: 70%;
+  z-index: 1;
+}
+.sim-thumb-showroom .spot img {
+  width: 100%;
+  height: 100%;
+}
+.sim-thumb-showroom .plinth {
+  position: absolute;
+  bottom: 12%;
+  width: 40%;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgb(255 255 255 / 0.3), transparent 70%);
+}
+.sim-body.node-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sim-env-label {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.open-sim {
+  height: 26px;
+  border: 0;
+  border-radius: 8px;
+  background: #17191d;
+  color: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 0 12px;
+  cursor: pointer;
+}
+.open-sim:hover {
+  background: #2c2f35;
+}
+.node-foot .tb-input {
+  width: 64px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  padding: 5px 6px;
+}
+.node-foot .tb-input:hover,
+.node-foot .tb-input:focus {
+  border-color: var(--pill-border);
+  outline: 0;
+}
+
+/* ---------------------------------------------------------------- performance panel */
+.perf-panel {
+  position: fixed;
+  left: 16px;
+  top: 72px;
+  z-index: 40;
+  width: 400px;
+  max-height: calc(100vh - 160px);
+  overflow: auto;
+  background: #fff;
+  border: 1px solid var(--pill-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+  padding: 12px 14px;
+  font-size: 12.5px;
+}
+.perf-panel header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+.perf-panel header .grow {
+  flex: 1;
+}
+.perf-panel header button {
+  border: 0;
+  background: transparent;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+.perf-panel header button:hover {
+  background: var(--bg-hover);
+}
+.perf-panel h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 12px 0 4px;
+}
+.perf-panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.perf-panel th {
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 2px 0;
+}
+.perf-panel td {
+  padding: 3px 0;
+  vertical-align: middle;
+}
+.perf-panel .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  padding-left: 8px;
+}
+.perf-panel .budget {
+  text-align: right;
+  color: var(--text-muted);
+  white-space: nowrap;
+  padding-left: 8px;
+}
+.perf-panel .mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  word-break: break-all;
+}
+.perf-panel tr.idle {
+  color: var(--text-muted);
+}
+.perf-panel .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: 0;
+  background: #d6d6d1;
+}
+.perf-panel .dot.good {
+  background: #1d9e75;
+}
+.perf-panel .dot.needs-improvement {
+  background: #f0a020;
+}
+.perf-panel .dot.poor {
+  background: #e0453a;
+}
+.perf-panel .net {
+  color: var(--text-secondary);
+  margin: 6px 0 0;
+}
+.perf-panel .foot {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin: 10px 0 0;
 }

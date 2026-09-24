@@ -1,0 +1,606 @@
+/* F13 simulator overlay and phone remote. Loaded with their lazy chunks only. */
+.sim-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: #f4f4f2;
+  animation: sim-in 160ms ease-out;
+}
+@keyframes sim-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+.sim-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #fff;
+  border-bottom: 1px solid #e6e6e2;
+}
+.sim-head .grow {
+  flex: 1;
+}
+.sim-tabs {
+  display: flex;
+  gap: 2px;
+  background: #f1f1ee;
+  border-radius: 10px;
+  padding: 3px;
+}
+.sim-tabs button {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #55554f;
+}
+.sim-tabs button[aria-pressed="true"] {
+  background: #fff;
+  color: #17191d;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+}
+.sim-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  cursor: pointer;
+  color: #3a3a36;
+}
+.sim-icon:hover {
+  background: #f1f1ee;
+}
+.sim-body {
+  position: relative;
+  overflow: auto;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.sim-slot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.sim-slot > .sim-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+.sim-slot > .sim-canvas:active {
+  cursor: grabbing;
+}
+.sim-still {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.sim-empty {
+  color: #8a8a84;
+  font-size: 13px;
+  text-align: center;
+  padding: 0 16px;
+}
+
+/* ------------------------------------------------ shop page */
+.shop {
+  width: min(1080px, 100%);
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.1);
+  overflow: hidden;
+}
+.shop .chrome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: #f3f3f1;
+  border-bottom: 1px solid #e8e8e4;
+}
+.shop .chrome i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #dcdcd7;
+}
+.shop .chrome span {
+  margin-left: 14px;
+  flex: 1;
+  background: #fff;
+  border-radius: 7px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: #6b6b66;
+}
+.shop-nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 16px 28px;
+  border-bottom: 1px solid #f0f0ec;
+  font-size: 14px;
+  color: #4a4a45;
+}
+.shop-nav .brand {
+  letter-spacing: 0.18em;
+  color: #17191d;
+}
+.shop-nav .logo {
+  height: 26px;
+}
+.shop-nav .grow {
+  flex: 1;
+}
+.shop-main {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 40px;
+  padding: 32px 28px 36px;
+}
+.shop .gallery .sim-slot {
+  aspect-ratio: 1;
+  height: auto;
+  background: radial-gradient(circle at 50% 45%, #fafaf8, #eeeeea);
+  border-radius: 14px;
+}
+.shop .thumbs {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+.shop .thumbs span {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  background: #f2f2ef;
+  overflow: hidden;
+}
+.shop .thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.shop .buy h1 {
+  font-size: 30px;
+  line-height: 1.15;
+  margin: 6px 0 10px;
+  color: #17191d;
+}
+.shop .crumb {
+  font-size: 12px;
+  color: #8a8a84;
+  margin: 0;
+}
+.shop .rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #f2a900;
+  margin: 0;
+}
+.shop .rating span {
+  color: #6b6b66;
+  font-size: 13px;
+  margin-left: 8px;
+}
+.shop .price {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 18px 0 6px;
+}
+.shop .desc {
+  color: #6b6b66;
+  font-size: 14px;
+}
+.shop .swatches {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0 22px;
+}
+.shop .swatches i {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #f4b8cf;
+  box-shadow:
+    inset 0 0 0 2px #fff,
+    0 0 0 1px #d9d9d4;
+}
+.shop .swatches i:nth-child(2) {
+  background: #17191d;
+}
+.shop .swatches i:nth-child(3) {
+  background: #d6e4f0;
+}
+.shop .add,
+.shop .buy-now {
+  display: block;
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.shop .add {
+  background: #17191d;
+  color: #fff;
+  border: 0;
+}
+.shop .buy-now {
+  background: #fff;
+  border: 1px solid #d6d6d1;
+}
+.shop ul {
+  padding-left: 18px;
+  color: #6b6b66;
+  font-size: 13px;
+}
+
+/* ------------------------------------------------ TikTok feed */
+.tiktok .phone {
+  position: relative;
+  height: min(820px, calc(100dvh - 120px));
+  max-width: 86vw;
+  aspect-ratio: 9 / 19.5;
+  border-radius: 44px;
+  border: 10px solid #111;
+  background: radial-gradient(circle at 50% 40%, #3b2b52, #120f18 70%);
+  overflow: hidden;
+  color: #fff;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.3);
+}
+.tiktok .sim-slot {
+  position: absolute;
+  inset: 12% 4% 24%;
+  width: auto;
+  height: auto;
+}
+.tiktok .feed-top {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  font-size: 15px;
+  color: rgb(255 255 255 / 0.7);
+  z-index: 2;
+}
+.tiktok .feed-top b {
+  color: #fff;
+  border-bottom: 2px solid #fff;
+  padding-bottom: 4px;
+}
+.tiktok .rail {
+  position: absolute;
+  right: 10px;
+  bottom: 150px;
+  display: grid;
+  gap: 16px;
+  z-index: 2;
+}
+.tiktok .rail span {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.tiktok .caption {
+  position: absolute;
+  left: 14px;
+  right: 64px;
+  bottom: 18px;
+  font-size: 13px;
+  z-index: 2;
+}
+.tiktok .caption p {
+  margin: 4px 0 10px;
+}
+.tiktok .caption p span {
+  color: rgb(255 255 255 / 0.75);
+}
+.tiktok .shop-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgb(255 255 255 / 0.95);
+  color: #17191d;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.tiktok .shop-card span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tiktok .shop-card em {
+  font-style: normal;
+  background: #fe2c55;
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------ chat sticker */
+.sticker-env {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+}
+.sticker-env .chat {
+  width: min(420px, 90vw);
+  background: #fff;
+  border-radius: 22px;
+  padding: 20px 16px;
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.1);
+  display: grid;
+  gap: 10px;
+}
+.sticker-env .msg {
+  margin: 0;
+  max-width: 75%;
+  padding: 9px 13px;
+  border-radius: 18px;
+  font-size: 14px;
+}
+.sticker-env .msg.in {
+  background: #e9e9eb;
+  justify-self: start;
+}
+.sticker-env .msg.out {
+  background: #0a84ff;
+  color: #fff;
+  justify-self: end;
+}
+.sticker-env .sticker-slot {
+  justify-self: end;
+  width: 220px;
+  height: 220px;
+}
+/* A die-cut sticker: white outline and soft shadow around the transparent render. */
+.sticker-env .sim-canvas,
+.sticker-env .sim-still {
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff)
+    drop-shadow(0 -2px 0 #fff) drop-shadow(0 4px 8px rgb(0 0 0 / 0.25));
+}
+.sticker-note {
+  color: #6b6b66;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* ------------------------------------------------ showroom + remote */
+.sim-showroom {
+  background: radial-gradient(ellipse at 40% 30%, #2a2c33, #0d0e11 70%);
+}
+.showroom {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+}
+.showroom .stagebox {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.showroom .stagebox .sim-slot {
+  position: absolute;
+  inset: 4% 10% 18%;
+  width: auto;
+  height: auto;
+  z-index: 1;
+}
+.showroom .plinth {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  width: 46%;
+  height: 34px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgb(255 255 255 / 0.28), transparent 70%);
+}
+.showroom .name {
+  position: absolute;
+  bottom: 4%;
+  color: #fff;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+.showroom .remote {
+  align-self: center;
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+  display: grid;
+  gap: 10px;
+  font-size: 13px;
+}
+.showroom .remote h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  margin: 0;
+}
+.showroom .remote .muted {
+  color: #6b6b66;
+  margin: 0;
+}
+.showroom .qr {
+  justify-self: center;
+  width: 180px;
+  height: 180px;
+}
+.showroom .qr svg {
+  width: 100%;
+  height: 100%;
+}
+.showroom .link {
+  font-size: 11px;
+  color: #6b6b66;
+  word-break: break-all;
+  text-align: center;
+}
+.showroom .warn {
+  background: #fff6e0;
+  color: #7a4d00;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 0;
+}
+.sim-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  border: 1px solid #d6d6d1;
+  border-radius: 9px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.sim-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.sim-status i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c9c9c4;
+}
+.sim-status[data-state="open"] i {
+  background: #1d9e75;
+  box-shadow: 0 0 0 3px rgb(29 158 117 / 0.2);
+}
+.pose {
+  font-variant-numeric: tabular-nums;
+  color: #4a4a45;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .shop-main,
+  .showroom {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------ phone remote page */
+.remote-page {
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: 18px 16px 28px;
+  background: #0f1014;
+  color: #fff;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  font-size: 15px;
+}
+.remote-page header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.remote-page header .sim-status {
+  margin-left: auto;
+  font-size: 13px;
+  color: #b9b9b4;
+}
+.remote-page h1 {
+  font-size: 22px;
+  margin: 6px 0 0;
+}
+.remote-page button {
+  font: inherit;
+  border-radius: 12px;
+  border: 1px solid #2c2e36;
+  background: #1a1c22;
+  color: #fff;
+  padding: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.remote-page .primary {
+  background: #2f7cf6;
+  border-color: #2f7cf6;
+  height: 52px;
+  font-weight: 600;
+}
+.remote-page .primary:disabled {
+  background: #1d3f73;
+  border-color: #1d3f73;
+}
+.remote-page .hint {
+  color: #f0b24b;
+  margin: 0;
+  font-size: 13px;
+}
+.remote-page .pad {
+  height: 180px;
+  border-radius: 16px;
+  border: 1.5px dashed #3a3d47;
+  display: grid;
+  place-items: center;
+  color: #8c8f99;
+  touch-action: none;
+  user-select: none;
+}
+.remote-page .row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.remote-page .envs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.remote-page .envs button[aria-pressed="true"] {
+  background: #fff;
+  color: #0f1014;
+}
+.remote-page .snap {
+  width: 100%;
+  border-radius: 14px;
+}
+/* No 3D model wired: the still is shown and the empty canvas stays out of the way. */
+.sim-slot:has(.sim-still) > .sim-canvas {
+  display: none;
+}

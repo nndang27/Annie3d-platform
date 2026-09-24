@@ -453,6 +453,11 @@ async function createUploadVersions(
       continue;
     }
     if (!node || !['photo', 'upload3d', 'audio'].includes(node.kind)) continue;
+    // Undo of a delete points the revived node back at one of its own versions.
+    const own = await tx.query.nodeVersions.findFirst({
+      where: (t, { eq }) => eq(t.id, op.patch.currentVersionId!),
+    });
+    if (own?.nodeId === node.id) continue;
     const assetId = op.patch.settings?.assetId as string | undefined;
     if (!assetId) throw httpError(400, 'bad_request', 'Upload versions need settings.assetId');
     const asset = await tx.query.assets.findFirst({
@@ -460,10 +465,7 @@ async function createUploadVersions(
         and(eq(t.id, assetId), eq(t.workspaceId, workspaceId), eq(t.status, 'ready')),
     });
     if (!asset) throw httpError(400, 'bad_request', 'Unknown asset');
-    const existing = await tx.query.nodeVersions.findFirst({
-      where: (t, { eq }) => eq(t.id, op.patch.currentVersionId!),
-    });
-    if (existing) continue; // retried batch
+    if (own) throw httpError(400, 'bad_request', 'Version belongs to another node');
     const max = await tx.execute<{ n: number }>(
       sql`SELECT coalesce(max(version_no), 0)::int AS n FROM node_versions WHERE node_id = ${node.id}`,
     );

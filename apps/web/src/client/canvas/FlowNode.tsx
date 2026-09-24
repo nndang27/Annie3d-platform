@@ -26,7 +26,6 @@ import {
   Maximize2,
   MonitorSmartphone,
   MoreHorizontal,
-  Move3d,
   Music,
   Package,
   Play,
@@ -162,8 +161,12 @@ export const FlowNode = memo(function FlowNode({ id, selected }: NodeProps) {
             )}
             {!input && node.kind !== 'simulation' && (
               <div className="node-body">
-                {PROMPT_KEY[node.kind] ? <Prompt node={node} /> : <div className="grow" />}
-                {def.runnable && <RunButton node={node} />}
+                {PROMPT_KEY[node.kind] && <Prompt node={node} />}
+                {def.runnable && (
+                  <div className="run-row">
+                    <RunButton node={node} />
+                  </div>
+                )}
               </div>
             )}
           </>
@@ -467,7 +470,7 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
           aria-label="Open 3D editor"
           title="Open 3D editor (or double-click)"
         >
-          <Move3d size={16} strokeWidth={2} aria-hidden />
+          <AxesIcon />
         </button>
       )}
       {isInput && primary && NODE_DEFS[kind].output && (
@@ -482,6 +485,27 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
         </button>
       )}
     </div>
+  );
+}
+
+/** Three arrows from one point (up, down-left, down-right): the 3D-view mark the design asks for. */
+function AxesIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 11V2.5M8.2 6.3 12 2.5l3.8 3.8" />
+      <path d="M10.3 14 2.8 18.6M3.3 14.2l-.5 4.4 4.4.7" />
+      <path d="M13.7 14l7.5 4.6M20.7 14.2l.5 4.4-4.4.7" />
+    </svg>
   );
 }
 
@@ -558,6 +582,9 @@ function Prompt({ node }: { node: NodeRecord }) {
       placeholder={isText ? 'Write something…' : 'Describe what you want…'}
       maxLength={isText ? 4000 : 2000}
       onBlur={(e) => commit(e.target.value)}
+      // Grow with the text (up to the CSS max-height) so the first lines never scroll away.
+      onInput={(e) => autosize(e.currentTarget)}
+      onFocus={(e) => autosize(e.currentTarget)}
       onKeyDown={(e) => {
         if (e.key === 'Escape') setEditing(false);
         if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) commit((e.target as HTMLTextAreaElement).value);
@@ -566,6 +593,11 @@ function Prompt({ node }: { node: NodeRecord }) {
       data-testid="prompt-editor"
     />
   );
+}
+
+function autosize(el: HTMLTextAreaElement) {
+  el.style.height = 'auto';
+  el.style.height = `${el.scrollHeight + 2}px`;
 }
 
 /** Run with a split menu (ElevenLabs "Run ▾"): this node alone, from here downstream, or with upstream. */

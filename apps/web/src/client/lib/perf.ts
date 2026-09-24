@@ -43,6 +43,8 @@ export const FEATURE_BUDGETS: Record<string, Budget> = {
   'agent.reply': { good: 5000, poor: 15000, unit: 'ms', label: 'Agent full reply' },
   'export.bundle': { good: 3000, poor: 10000, unit: 'ms', label: 'Export files' },
   'undo.apply': { good: 50, poor: 100, unit: 'ms', label: 'Undo / redo' },
+  'file.export': { good: 3000, poor: 10000, unit: 'ms', label: 'Download .annie3d' },
+  'file.import': { good: 3000, poor: 10000, unit: 'ms', label: 'Open .annie3d' },
   api: { good: 300, poor: 1000, unit: 'ms', label: 'API call' },
 };
 

@@ -211,7 +211,7 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
       data-testid="simulator"
     >
       <header className="sim-head">
-        <b>Simulation</b>
+        <b className="sim-title">Simulation</b>
         <nav className="sim-tabs" aria-label="Environment">
           {SIM_ENVIRONMENTS.map((id) => (
             <button

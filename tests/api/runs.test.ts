@@ -388,6 +388,64 @@ describe('copy / paste keeps outputs (copy versions)', () => {
   }, 60_000);
 });
 
+describe('.annie3d import (server)', () => {
+  it('stores the files and recreates nodes, wires and results; rejects foreign files', async () => {
+    const { zipSync, strToU8 } = await import('fflate');
+    const { newId: nid } = await import('../../packages/contracts/src/index');
+    const png = readFileSync('fixtures/out/serum/photo_512.webp');
+    const [photo, model] = [nid(), nid()];
+    const manifest = {
+      format: 'annie3d',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      title: 'Imported',
+      nodes: [
+        { id: photo, kind: 'photo', x: 0, y: 0, label: 'Photo', settings: { assetId: nid() } },
+        { id: model, kind: 'model3d', x: 400, y: 0, label: null, settings: { prompt: 'glass' } },
+      ],
+      edges: [{ id: nid(), source: photo, target: model, targetPort: 'images' }],
+      outputs: [
+        {
+          nodeId: photo,
+          files: [
+            { path: 'assets/p.webp', kind: 'image', mime: 'image/webp', role: 'primary', variants: [] },
+          ],
+        },
+      ],
+    };
+    const zip = zipSync({
+      'annie3d.json': strToU8(JSON.stringify(manifest)),
+      'assets/p.webp': new Uint8Array(png),
+    });
+    const c = await Client.signedUp('Importer');
+    const b = await c.json('/api/boards', { method: 'POST', json: { title: 'Target', starter: 'blank' } });
+    const boardId = b.body.board.id;
+    const r = await c.req(`/api/boards/${boardId}/import?x=100&y=200`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/vnd.annie3d+zip' },
+      body: zip,
+    });
+    expect(r.status).toBe(201);
+    const out = await r.json();
+    expect(out.nodeIds).toHaveLength(2);
+    expect(out.versions).toHaveLength(1);
+    const snap = (await c.json(`/api/boards/${boardId}`)).body;
+    expect(snap.nodes).toHaveLength(2);
+    expect(snap.edges).toHaveLength(1);
+    const p = snap.nodes.find((n: { kind: string }) => n.kind === 'photo');
+    expect(p.currentVersionId).toBe(out.versions[0].id);
+    expect(p.settings.assetId).toBe(out.versions[0].outputs[0].id);
+    expect(snap.nodes.find((n: { kind: string }) => n.kind === 'model3d').settings.prompt).toBe('glass');
+    const img = await c.req(out.versions[0].outputs[0].urls.original);
+    expect(img.status).toBe(200);
+    const bad = await c.req(`/api/boards/${boardId}/import`, {
+      method: 'POST',
+      body: new Uint8Array([1, 2, 3]),
+    });
+    expect(bad.status).toBe(400);
+  }, 60_000);
+});
+
 describe('undo of a delete (server)', () => {
   it('revives deleted nodes with their result pointers and wires in one batch', async () => {
     const { applyOps, graphFrom, starterGraph } = await import('../../packages/contracts/src/index');

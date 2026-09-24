@@ -48,6 +48,7 @@ export function Toolbar() {
           <button
             type="button"
             key={k}
+            className="quick-add"
             onClick={() => addAtCenter(k)}
             title={`Add ${NODE_DEFS[k].label}`}
             data-testid={`add-${k}`}

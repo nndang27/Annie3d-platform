@@ -19,8 +19,10 @@ import {
   type Viewport,
 } from '@xyflow/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { importBoardFile, isBoardFile, setViewCentre } from '../lib/boardFile';
 import { markBoardReady } from '../lib/perf';
 import { throttleRAF } from '../lib/throttleRaf';
+import { useMedia } from '../lib/useMedia';
 import { MAX_ZOOM, MIN_ZOOM } from '../lib/zoom';
 import { dispatch, setPositionsLocal, useBoard } from '../store/board';
 import { lodFor, useUi } from '../store/ui';
@@ -87,6 +89,7 @@ export function Canvas() {
   const graph = useBoard((s) => s.graph);
   const selected = useUi((s) => s.selected);
   const tool = useUi((s) => s.tool);
+  const touch = useMedia('(pointer: coarse)');
   const rf = useReactFlow();
   const dragStart = useRef(new Map<string, { x: number; y: number }>());
   const connectFrom = useRef<{ nodeId: string } | null>(null);
@@ -277,6 +280,7 @@ export function Canvas() {
   });
   const onInit = useCallback(() => {
     applyZoom(rf.getZoom());
+    setViewCentre(() => rf.screenToFlowPosition({ x: innerWidth / 2 - 200, y: innerHeight / 2 - 150 }));
     // "Board ready": the first frame with node previews decoded (Performance panel).
     requestAnimationFrame(() => {
       const imgs = [...document.querySelectorAll<HTMLImageElement>('.node-preview img')];
@@ -321,6 +325,12 @@ export function Canvas() {
   }, []);
   const onDrop = useCallback(
     (e: React.DragEvent) => {
+      const board = [...e.dataTransfer.files].find(isBoardFile);
+      if (board) {
+        e.preventDefault();
+        void importBoardFile(board, rf.screenToFlowPosition({ x: e.clientX, y: e.clientY }));
+        return;
+      }
       const files = [...e.dataTransfer.files].filter((f) => /^image\/(png|jpeg|webp)$/.test(f.type));
       if (!files.length) return;
       e.preventDefault();
@@ -361,8 +371,9 @@ export function Canvas() {
       onlyRenderVisibleElements
       minZoom={MIN_ZOOM}
       maxZoom={MAX_ZOOM}
-      panOnDrag={tool === 'hand' ? true : [1, 2]}
-      selectionOnDrag={tool === 'select'}
+      // Touch screens: one finger pans (a marquee would fight scrolling), two fingers pinch-zoom.
+      panOnDrag={tool === 'hand' || touch ? true : [1, 2]}
+      selectionOnDrag={tool === 'select' && !touch}
       // A marquee picks every node it touches (Figma), not only fully enclosed ones.
       selectionMode={SelectionMode.Partial}
       panOnScroll

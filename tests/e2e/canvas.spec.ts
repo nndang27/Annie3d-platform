@@ -487,3 +487,32 @@ test.describe('reference stack and performance panel', () => {
     await expect(panel).toHaveCount(0);
   });
 });
+
+test.describe('.annie3d board file', () => {
+  test('downloads the canvas and opens it again with results (guest)', async ({ page }) => {
+    await openCanvas(page);
+    await page.getByRole('button', { name: 'Close agent' }).click();
+    const n0 = (await graph(page)).nodes;
+    const e0 = (await graph(page)).edges;
+    const download = page.waitForEvent('download');
+    await page.getByTestId('file-menu').click();
+    await page.getByTestId('file-export').click();
+    const file = await download;
+    expect(file.suggestedFilename()).toMatch(/\.annie3d$/);
+    const path = await file.path();
+    const chooser = page.waitForEvent('filechooser');
+    await page.getByTestId('file-menu').click();
+    await page.getByTestId('file-import').click();
+    await (await chooser).setFiles(path);
+    await expect.poll(async () => (await graph(page)).nodes).toBe(n0 * 2);
+    expect((await graph(page)).edges).toBe(e0 * 2);
+    // Imported nodes keep their results: a packshot copy shows its four images.
+    const packs = await page.evaluate(() => {
+      const s = (window as any).__annie3d.useBoard.getState();
+      return [...s.graph.nodes.values()]
+        .filter((n: any) => n.kind === 'packshot')
+        .map((n: any) => s.versions.get(n.currentVersionId)?.outputs.length ?? 0);
+    });
+    expect(packs.filter((c: number) => c === 4)).toHaveLength(6);
+  });
+});

@@ -1,4 +1,5 @@
 export * from './api';
+export * from './boardFile';
 export * from './credits';
 export * from './engine';
 export * from './events';

@@ -4,7 +4,9 @@
   inset: 0;
   z-index: 60;
   display: grid;
-  grid-template-rows: auto 1fr;
+  /* minmax(0, 1fr): grid items may shrink below their content (tabs scroll instead of pushing Close off-screen). */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   background: #f4f4f2;
   animation: sim-in 160ms ease-out;
 }
@@ -603,4 +605,46 @@
 /* No 3D model wired: the still is shown and the empty canvas stays out of the way. */
 .sim-slot:has(.sim-still) > .sim-canvas {
   display: none;
+}
+
+@media (max-width: 640px) {
+  .sim-head {
+    gap: 6px;
+    padding: 8px max(8px, env(safe-area-inset-left));
+  }
+  .sim-head .sim-title,
+  .sim-head .grow {
+    display: none;
+  }
+  .sim-tabs {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .sim-tabs button {
+    white-space: nowrap;
+    padding: 6px 9px;
+  }
+  .sim-body {
+    padding: 12px;
+    place-items: start center;
+  }
+  .shop-main {
+    padding: 16px;
+    gap: 16px;
+  }
+  .shop .buy h1 {
+    font-size: 22px;
+  }
+  .shop-nav {
+    gap: 14px;
+    padding: 12px 16px;
+  }
+  .showroom .remote {
+    align-self: start;
+  }
+  .showroom .stagebox {
+    min-height: 60dvh;
+  }
 }

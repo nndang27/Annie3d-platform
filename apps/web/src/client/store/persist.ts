@@ -89,10 +89,16 @@ export async function rehydrateGuestUrls<
         v.outputs.map(async (o) => {
           const url = await loadGuestFileUrl(o.id);
           if (!url) return o;
-          const urls = Object.fromEntries(
-            Object.entries(o.urls).map(([k, u]) => [k, u?.startsWith('blob:') ? url : u]),
+          // Opened board files keep their own poster/thumb/turntable (`<id>:<key>`); uploads reuse the original.
+          const entries = await Promise.all(
+            Object.entries(o.urls).map(async ([k, u]) => [
+              k,
+              u?.startsWith('blob:')
+                ? (k !== 'original' && (await loadGuestFileUrl(`${o.id}:${k}`))) || url
+                : u,
+            ]),
           );
-          return { ...o, urls };
+          return { ...o, urls: Object.fromEntries(entries) };
         }),
       );
       return { ...v, outputs };

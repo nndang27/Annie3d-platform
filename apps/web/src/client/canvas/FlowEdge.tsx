@@ -4,8 +4,8 @@ import { dispatch } from '../store/board';
 
 /**
  * Current along a wire: a bright head with a long tail that thins and fades toward its end
- * (like a light streak), running from the source end to the midpoint and carrying the delete
- * button. Gentle timing: 720 ms ease-in-out run, then the tail drains into the head in 360 ms.
+ * (like a light streak), running from the source end to the midpoint, where the delete button
+ * already waits. Gentle timing: 720 ms ease-in-out run, then the tail drains in 360 ms.
  */
 const RUN_MS = 720;
 const DRAIN_MS = 360;
@@ -84,15 +84,9 @@ export const FlowEdge = memo(function FlowEdge({
     return () => cancelAnimationFrame(raf);
   }, [hover]);
 
-  // The button rides the head while the current runs, and rests at the midpoint otherwise.
-  let bx = labelX;
-  let by = labelY;
+  // The delete button sits at the midpoint from the first moment; only the light travels.
   const el = track.current;
-  if (hover && pulse && el) {
-    const p = el.getPointAtLength(pulse.head);
-    bx = p.x;
-    by = p.y;
-  }
+  const headPt = hover && pulse && el ? el.getPointAtLength(pulse.head) : null;
   const len = el?.getTotalLength() ?? 0;
   const remove = (e: React.SyntheticEvent) => {
     e.stopPropagation();
@@ -134,13 +128,13 @@ export const FlowEdge = memo(function FlowEdge({
               );
             }),
           )}
-          <circle className="head" cx={bx} cy={by} r={4.5} />
+          {headPt && <circle className="head" cx={headPt.x} cy={headPt.y} r={4} />}
         </g>
       )}
       {active && (
         <g
           className="wire-delete"
-          transform={`translate(${bx} ${by})`}
+          transform={`translate(${labelX} ${labelY})`}
           role="button"
           tabIndex={0}
           aria-label="Remove connection"

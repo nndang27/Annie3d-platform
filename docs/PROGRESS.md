@@ -392,3 +392,14 @@ in the R2 CORS rules (guests keep files in the browser and are unaffected).
 | Tooling | `apps/web` typecheck now `tsc -b --force`: the incremental build missed errors caused by changes in `packages/contracts` | caught a missing `simulation` entry |
 
 Production deploy needs migrations 0003 and 0004 first, and the `SimRoom` Durable Object migration (`v2`) ships with the Worker.
+
+## 2026-09-25 — Debug round 3: board files, responsive layout, wire and node polish
+
+| Item | Change | Verified |
+| --- | --- | --- |
+| `.annie3d` board file | ZIP with `annie3d.json` (nodes, wires, settings incl. prompts) + `assets/` (current result of every node with poster/thumb/turntable). Board menu (⋯ next to the title), ⌘S download, ⌘O open, drop a file on the canvas. Guests open it in the browser (files kept in IndexedDB, variants too); signed-in users POST it to `/api/boards/:id/import` (≤ 80 MB), which stores the files in the workspace (content-addressed), creates nodes/wires with new ids and one `upload` version per node, and records fresh input hashes | E2E export → import round trip (guest), API import test (+ rejects non-Annie files) |
+| Wire current | The × sits at the midpoint from the first moment; only the light runs from the source end | E2E midpoint test |
+| Run button | Own row under the prompt; the prompt keeps the full card width and grows while typing | screenshot |
+| 3D shortcut icon | Custom three-arrow mark (up, down-left, down-right) as in the reference | screenshot |
+| Responsive | Fluid top bar (labels drop below 640 px, save state becomes a dot), toolbar keeps tools/+/undo/agent on phones, safe-area insets, `dvh`, simulator header scrolls its tabs instead of pushing Close off-screen (`minmax(0, 1fr)`), performance panel fits the width and is in the board menu; touch screens pan with one finger, get 34–40 px targets and see hover-only controls on the selected node | E2E `responsive` on iPhone SE / iPhone 13 / iPad Pro 11 in 3 engines |
+| Desktop app | Research only: `docs/DESKTOP_APP_RESEARCH.md` (Electron shell loading the live site, update button, file association, BYOK vs subscription login policies) | — |

@@ -1,12 +1,22 @@
 import { creditsFor, NODE_DEFS, STARTER_META, STARTERS } from '@annie3d/contracts';
 import { useQuery } from '@tanstack/react-query';
 import { useReactFlow, useViewport } from '@xyflow/react';
-import { ChevronDown, Gauge, Share2, Sparkles } from 'lucide-react';
+import {
+  ChevronDown,
+  Download,
+  FolderOpen,
+  Gauge,
+  LogIn,
+  MoreHorizontal,
+  Share2,
+  Sparkles,
+} from 'lucide-react';
 import { memo, useMemo, useState } from 'react';
 import { api } from '../api/client';
 import { useMe } from '../api/me';
 import { insertStarter } from '../canvas/actions';
 import { signOut } from '../lib/auth';
+import { exportBoardFile, openBoardFilePicker } from '../lib/boardFile';
 import { MAX_ZOOM, MIN_ZOOM, zoomStep } from '../lib/zoom';
 import { useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
@@ -30,6 +40,7 @@ export function TopBar() {
         </a>
         <Title />
         <SaveState />
+        <FileMenu />
       </div>
       <Starters />
       <RunAll />
@@ -96,13 +107,84 @@ function SaveState() {
   if (mode === 'guest')
     return (
       <span className="save-state" data-state="offline" title="Guest boards are kept in this browser">
-        Not signed in
+        <span className="lbl">Not signed in</span>
       </span>
     );
   return (
     <span className="save-state" data-state={state} data-testid="save-state">
-      {SAVE_LABEL[state]}
+      <span className="lbl">{SAVE_LABEL[state]}</span>
     </span>
+  );
+}
+
+/** Board file menu: download the canvas as `.annie3d`, or open one into it (⌘S / ⌘O). */
+function FileMenu() {
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  return (
+    <>
+      <button
+        type="button"
+        aria-label="Board file"
+        aria-haspopup="menu"
+        aria-expanded={!!menu}
+        title="Board file"
+        onClick={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          setMenu(menu ? null : { x: r.left, y: r.bottom + 6 });
+        }}
+        data-testid="file-menu"
+      >
+        <MoreHorizontal size={16} aria-hidden="true" />
+      </button>
+      {menu && (
+        <Popover
+          x={menu.x}
+          y={menu.y}
+          onClose={() => setMenu(null)}
+          label="Board file"
+          testId="file-menu-popover"
+        >
+          <div role="menu">
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setMenu(null);
+                void exportBoardFile();
+              }}
+              data-testid="file-export"
+            >
+              <Download size={15} aria-hidden="true" /> Download board (.annie3d)
+              <kbd>⌘S</kbd>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setMenu(null);
+                openBoardFilePicker();
+              }}
+              data-testid="file-import"
+            >
+              <FolderOpen size={15} aria-hidden="true" /> Open board file…
+              <kbd>⌘O</kbd>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setMenu(null);
+                useUi.setState((s) => ({ perfOpen: !s.perfOpen }));
+              }}
+              data-testid="menu-perf"
+            >
+              <Gauge size={15} aria-hidden="true" /> Performance
+              <kbd>⌥P</kbd>
+            </button>
+          </div>
+        </Popover>
+      )}
+    </>
   );
 }
 
@@ -131,8 +213,10 @@ function Starters() {
           setMenu(menu ? null : { x: r.left, y: r.bottom + 6 });
         }}
         data-testid="starters-button"
+        aria-label="Starters"
       >
-        <Sparkles size={16} aria-hidden="true" /> Starters <ChevronDown size={14} aria-hidden="true" />
+        <Sparkles size={16} aria-hidden="true" /> <span className="lbl">Starters</span>{' '}
+        <ChevronDown size={14} aria-hidden="true" className="lbl" />
       </button>
       {menu && (
         <Popover x={menu.x} y={menu.y} onClose={() => setMenu(null)} label="Starters" testId="starters-menu">
@@ -218,7 +302,13 @@ function RunAll() {
         data-testid="run-all"
         title="Cached nodes are free; the exact cost is shown before you confirm"
       >
-        {upToDate ? 'Up to date' : `Run all · ${cost} cr`}
+        {upToDate ? (
+          'Up to date'
+        ) : (
+          <>
+            Run<span className="lbl"> all · {cost} cr</span>
+          </>
+        )}
       </button>
     </div>
   );
@@ -283,12 +373,14 @@ function Account() {
           type="button"
           onClick={() => useUi.setState({ signInPrompt: { reason: 'save' } })}
           data-testid="sign-in"
+          aria-label="Sign in"
         >
-          Sign in
+          <LogIn size={16} aria-hidden="true" className="icon-sm" />
+          <span className="lbl">Sign in</span>
         </button>
       )}
-      <button type="button" onClick={share} data-testid="share">
-        <Share2 size={16} aria-hidden="true" /> Share
+      <button type="button" onClick={share} data-testid="share" aria-label="Share">
+        <Share2 size={16} aria-hidden="true" /> <span className="lbl">Share</span>
       </button>
       {me.data && (
         <AccountMenu name={me.data.user.name} email={me.data.user.email} image={me.data.user.image} />

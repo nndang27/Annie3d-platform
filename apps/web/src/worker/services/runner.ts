@@ -346,7 +346,7 @@ export interface VersionOrigin {
   userId: string | null;
   /** Where output objects live: engines write to artifacts; seeded examples reference public fixtures. */
   bucket?: 'artifacts' | 'public';
-  source?: 'run' | 'edit';
+  source?: 'run' | 'edit' | 'upload';
   /** Defaults to the node's current version. */
   parentVersionId?: string;
 }
@@ -435,7 +435,7 @@ export async function persistVersion(
   db: Db,
   run: VersionOrigin,
   nodeId: string,
-  hash: string,
+  hash: string | null,
   settings: Record<string, unknown>,
   outputs: EngineOutput[],
   gates: { id: string; passed: boolean; value?: number; threshold?: number }[],

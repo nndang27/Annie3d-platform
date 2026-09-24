@@ -1,5 +1,6 @@
 import { useReactFlow } from '@xyflow/react';
 import { useEffect } from 'react';
+import { exportBoardFile, openBoardFilePicker } from '../lib/boardFile';
 import { zoomStep, zoomToLevel } from '../lib/zoom';
 import { redo, undo } from '../store/board';
 import { useUi } from '../store/ui';
@@ -60,6 +61,13 @@ export function useShortcuts() {
       if (e.altKey && !mod && e.code === 'KeyP') {
         e.preventDefault();
         useUi.setState((s) => ({ perfOpen: !s.perfOpen }));
+        return;
+      }
+      // Board file (draw.io convention): ⌘S downloads the canvas, ⌘O opens a .annie3d file.
+      if (mod && !e.shiftKey && (k === 's' || k === 'o')) {
+        e.preventDefault();
+        if (k === 's') void exportBoardFile();
+        else openBoardFilePicker();
         return;
       }
       if (mod && k === 'z') {

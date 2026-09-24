@@ -32,6 +32,9 @@ importers:
       fake-indexeddb:
         specifier: ^6.0.0
         version: 6.2.5
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
       happy-dom:
         specifier: ^20.14.5
         version: 20.14.5

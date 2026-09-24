@@ -21,7 +21,7 @@ import { createNodeAt, uploadIntoNode } from './actions';
  */
 const MARK = 'annie3d/nodes@1';
 
-interface Payload {
+export interface Payload {
   mark: typeof MARK;
   /** Guest and signed-in boards keep versions in different places; copies stay within one. */
   mode: string;
@@ -71,7 +71,7 @@ function parse(text: string): Payload | null {
 }
 
 /** Inserts a payload with its top-left at `at` (flow coordinates). Returns the new node ids. */
-function insert(p: Payload, at: { x: number; y: number }): string[] {
+export function insertPayload(p: Payload, at: { x: number; y: number }): string[] {
   const { graph, mode } = useBoard.getState();
   const minX = Math.min(...p.nodes.map((n) => n.x));
   const minY = Math.min(...p.nodes.map((n) => n.y));
@@ -154,7 +154,10 @@ export function duplicateNodes(ids: string[]) {
   const p = payloadOf(ids);
   if (!p) return;
   timed('clipboard.paste', () =>
-    insert(p, { x: Math.min(...p.nodes.map((n) => n.x)) + 40, y: Math.min(...p.nodes.map((n) => n.y)) + 40 }),
+    insertPayload(p, {
+      x: Math.min(...p.nodes.map((n) => n.x)) + 40,
+      y: Math.min(...p.nodes.map((n) => n.y)) + 40,
+    }),
   );
 }
 
@@ -172,7 +175,7 @@ export function pasteNodes(p: Payload | null, at: FlowPoint, fromPointer: boolea
         x: Math.min(...payload.nodes.map((n) => n.x)) + cascade,
         y: Math.min(...payload.nodes.map((n) => n.y)) + cascade,
       };
-  return timed('clipboard.paste', () => insert(payload, base)).length > 0;
+  return timed('clipboard.paste', () => insertPayload(payload, base)).length > 0;
 }
 
 /** Handles a native paste event on the canvas. Returns true when it consumed the event. */

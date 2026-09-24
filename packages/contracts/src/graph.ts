@@ -70,6 +70,11 @@ export const NodeUpdate = z.object({
     label: z.string().max(120).nullable().optional(),
     settings: z.record(z.string(), z.unknown()).optional(),
     currentVersionId: z.string().uuid().nullable().optional(),
+    /**
+     * Copy/paste and duplicate: the new `currentVersionId` is created on the server as a copy of
+     * this version (same outputs, params and gates), so a pasted node keeps its result.
+     */
+    copyOfVersionId: z.string().uuid().optional(),
     zKey: z.string().min(1).max(64).optional(),
   }),
   baseVersion: z.number().int().nonnegative().optional(),

@@ -16,6 +16,20 @@ pnpm run deploy:prod  # CLOUDFLARE_ENV=production build + wrangler deploy (not `
   `packages/db/src/scripts/migrate.ts` with `MIGRATE_URL` set to the direct production URL.
 - Rollback: `pnpm --filter @annie3d/web exec wrangler rollback` (code only; data is not rolled back).
 
+## Share a local build without deploying (review links)
+```bash
+pnpm share          # build + vite preview :4173 + Cloudflare quick tunnel; prints https://<random>.trycloudflare.com
+pnpm share --no-build
+pnpm share:stop
+```
+- Uses the development config and the dev Neon branch; production is untouched. Migration 0003
+  (`copy` version source) is applied on dev only until the next production deploy.
+- The tunnel URL stays the same across `pnpm share` runs while the tunnel process lives
+  (`.share/tunnel.pid`); it changes after `pnpm share:stop` or a reboot.
+- Google sign-in on the link needs `<link>/api/auth/callback/google` in the OAuth client's
+  redirect URIs and `<link>` in its JavaScript origins. Signed-in uploads need `<link>` in the
+  R2 CORS rules (`infra/r2-cors.json`). Guests work without either.
+
 ## One-time setup (done on 2026-09-24)
 | Item | Value / how |
 | --- | --- |

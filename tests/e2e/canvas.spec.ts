@@ -204,3 +204,118 @@ test.describe('guest canvas', () => {
     await expect(level).toHaveText('25%');
   });
 });
+
+test.describe('node UI, wires and clipboard', () => {
+  const store = (page: import('@playwright/test').Page) =>
+    page.evaluate(() => {
+      const s = (window as any).__annie3d.useBoard.getState();
+      return [...s.graph.nodes.values()].map((n: any) => ({
+        id: n.id,
+        kind: n.kind,
+        prompt: n.settings.prompt ?? n.settings.text ?? null,
+        outputs: n.currentVersionId ? (s.versions.get(n.currentVersionId)?.outputs.length ?? 0) : 0,
+      }));
+    });
+
+  test('ports are typed bubbles; the selected node shows its toolbar; a hovered wire can be removed', async ({
+    page,
+  }) => {
+    const errors = await openCanvas(page);
+    await page.getByRole('button', { name: 'Close agent' }).click();
+    const model = await firstNode(page, 'model3d');
+    const node = page.locator(`.react-flow__node[data-id="${model}"]`);
+    await expect(node.locator('.react-flow__handle.port.port-image')).toHaveClass(/\bon\b/);
+    await expect(node.locator('.react-flow__handle.port.port-text')).not.toHaveClass(/\bon\b/);
+    await node.locator('.node-head').click();
+    const toolbar = node.getByTestId('node-toolbar');
+    await expect(toolbar).toBeVisible();
+    await expect(toolbar.getByRole('combobox', { name: 'builder' })).toBeVisible();
+
+    const e0 = (await graph(page)).edges;
+    const mid = await page.evaluate(() => {
+      const p = document.querySelector('.react-flow__edge-path') as SVGPathElement;
+      const m = p.getPointAtLength(p.getTotalLength() / 2);
+      const q = new DOMPoint(m.x, m.y).matrixTransform(p.getScreenCTM()!);
+      return { x: q.x, y: q.y };
+    });
+    await page.mouse.move(mid.x, mid.y);
+    await page.getByTestId('edge-delete').click();
+    await expect.poll(async () => (await graph(page)).edges).toBe(e0 - 1);
+    await node.locator('.node-head').click();
+    await toolbar.getByTestId('node-delete').click();
+    await expect(node).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+
+  test('double-click on the canvas creates a Text node ready to type', async ({ page }) => {
+    await openCanvas(page);
+    await page.getByRole('button', { name: 'Close agent' }).click();
+    const n0 = (await graph(page)).kinds.text ?? 0;
+    await page.locator('.react-flow__pane').dblclick({ position: { x: 1100, y: 160 } });
+    await expect(page.getByTestId('prompt-editor')).toBeFocused();
+    await page.keyboard.type('Soft morning light');
+    await page.locator('.react-flow__pane').click({ position: { x: 1200, y: 120 } });
+    expect((await graph(page)).kinds.text).toBe(n0 + 1);
+    expect((await store(page)).some((n) => n.kind === 'text' && n.prompt === 'Soft morning light')).toBe(
+      true,
+    );
+  });
+
+  test('copy/paste and duplicate carry prompt and outputs; a pasted image becomes a Photo node', async ({
+    page,
+  }) => {
+    await openCanvas(page);
+    await page.getByRole('button', { name: 'Close agent' }).click();
+    const model = await firstNode(page, 'model3d');
+    // Give the model a prompt, then copy it with ⌘C and paste with ⌘V.
+    const node = page.locator(`.react-flow__node[data-id="${model}"]`);
+    await node.getByTestId('prompt').click();
+    await page.keyboard.type('Glossy pink glass');
+    await page.keyboard.press('ControlOrMeta+Enter');
+    await node.locator('.node-head').click();
+    const before = await store(page);
+    // Native copy then paste events with a private DataTransfer: parallel browsers in this run share
+    // the OS clipboard, so ⌘C/⌘V would race with the other projects.
+    await page.mouse.move(1100, 200);
+    await page.evaluate(() => {
+      const dt = new DataTransfer();
+      const fire = (type: string) => {
+        const ev = new Event(type, { cancelable: true });
+        Object.defineProperty(ev, 'clipboardData', { value: dt });
+        window.dispatchEvent(ev);
+      };
+      fire('copy');
+      fire('paste');
+    });
+    await expect.poll(async () => (await store(page)).length).toBe(before.length + 1);
+    const pasted = (await store(page)).find((n) => !before.some((b) => b.id === n.id))!;
+    expect(pasted).toMatchObject({ kind: 'model3d', prompt: 'Glossy pink glass', outputs: 1 });
+    await expect(
+      page
+        .locator(
+          `.react-flow__node[data-id="${pasted.id}"] .node-preview img, .react-flow__node[data-id="${pasted.id}"] .node-preview video`,
+        )
+        .first(),
+    ).toBeVisible();
+
+    // ⌘D duplicates the (now selected) pasted node.
+    await page.keyboard.press('ControlOrMeta+d');
+    await expect.poll(async () => (await store(page)).length).toBe(before.length + 2);
+
+    // An image copied from another app pastes as a Photo node holding it.
+    const photos = (await graph(page)).kinds.photo ?? 0;
+    await page.mouse.move(400, 500);
+    await page.evaluate(async () => {
+      const png = await (await fetch('/api/public/fixtures/v1/serum/photo_512.webp')).blob();
+      const dt = new DataTransfer();
+      dt.items.add(new File([png], 'pasted.webp', { type: 'image/webp' }));
+      // Firefox ignores clipboardData in the ClipboardEvent constructor; define it on the event.
+      const ev = new Event('paste', { cancelable: true });
+      Object.defineProperty(ev, 'clipboardData', { value: dt });
+      window.dispatchEvent(ev);
+    });
+    await expect.poll(async () => (await graph(page)).kinds.photo).toBe(photos + 1);
+    const photo = await newestNode(page, 'photo');
+    await expect(page.locator(`.react-flow__node[data-id="${photo}"] .node-preview img`)).toBeVisible();
+  });
+});

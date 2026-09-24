@@ -11,6 +11,8 @@
     "dev": "node scripts/dev.mjs",
     "build": "pnpm --filter @annie3d/site build && node scripts/copy-site.mjs && pnpm --filter @annie3d/web build && node scripts/strip-maps.mjs",
     "preview": "node scripts/dev.mjs --preview",
+    "share": "node scripts/share.mjs",
+    "share:stop": "node scripts/share.mjs --stop",
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",

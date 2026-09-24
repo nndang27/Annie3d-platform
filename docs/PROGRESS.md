@@ -356,3 +356,25 @@ Measured on a live Miro board with a canvas pixel probe (20–200%):
 
 Removed: the compact (text-only summary) node level. Exact Miro easing was not measurable (the
 browser pane throttles animation frames), so the 300 ms duration is our choice, not a measurement.
+
+## 2026-09-24 — Debug round 1: node UI (user request)
+
+The user asked for the ElevenLabs flow-node look (reference screenshots: generation node, input
+node, wire with a delete button), copy/paste and duplicate that keep outputs, image paste from
+other apps, double-click to add a text node, and quick sharing without deploying.
+
+| Item | Implementation | Verified |
+| --- | --- | --- |
+| Node layout | Title and engine above the card; result on top, prompt and split `Run ▾` (this node / with inputs / from here) below; settings, Replace, download, delete and `…` in a toolbar under the selected node (`canvas/FlowNode.tsx`) | E2E `node UI, wires and clipboard` (3 browsers), `docs/screens/p11-01`, `p11-02` |
+| Input node | Full-bleed image card, `Run from here` overlay, Replace in the toolbar | screenshot `p11-06` |
+| Ports | 34 px round bubbles outside the card with a type icon and pastel colour; faded until wired or hovered; label on hover | E2E (connected class) |
+| Wires | Custom edge (`canvas/FlowEdge.tsx`): pastel stroke of the source type, stronger on hover/selection, round blue × at the midpoint removes it. Drawn inside the wire's SVG group (an HTML layer flickered in Firefox) | E2E removes a wire in 3 browsers, `p11-03` |
+| Marquee | Partial selection (Figma): a marquee picks every node it touches | manual + `p11-05` |
+| Copy / cut / paste / duplicate | `canvas/clipboard.ts`: payload = nodes (settings incl. prompt), internal wires, current versions; system clipboard as text, so paste works across tabs/boards; pastes at the cursor; ⌘D offsets by 40 px. Server op field `copyOfVersionId` creates a `copy` version sharing the output assets (migration 0003). A pasted chain stays fresh; a copy wired differently shows stale | API test `copy / paste keeps outputs`, E2E (prompt and output kept) |
+| Paste / drop an image | Image files from the clipboard or dropped on the canvas become Photo nodes (≤ 25 MB); pasted plain text becomes a Text node | E2E (Photo node with preview) |
+| Double-click | Empty canvas → Text node with its editor focused (focus retried until React Flow has measured the node) | E2E (editor focused, text saved) |
+| Share without deploy | `pnpm share`: build (development config, dev Neon branch) → `vite preview` :4173 → Cloudflare quick tunnel; the link survives rebuilds; `pnpm share:stop`. The preview build is shared, not the dev server (which would expose source and `.dev.vars`). Outside production the auth base URL follows the `*.trycloudflare.com` host | `/api/health` over the tunnel; OAuth redirect_uri uses the tunnel origin; `/.dev.vars` returns the SPA shell |
+
+Known limits of the shared link: Google sign-in needs the tunnel's callback URL in the Google
+console (a new random URL each time the tunnel restarts); signed-in uploads need the tunnel origin
+in the R2 CORS rules (guests keep files in the browser and are unaffected).

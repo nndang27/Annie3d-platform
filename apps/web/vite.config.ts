@@ -7,6 +7,8 @@ import { defineConfig } from 'vite';
 // developers.cloudflare.com/workers/vite-plugin/tutorial/).
 export default defineConfig({
   plugins: [react(), cloudflare()],
+  // `pnpm share` serves the local build through a Cloudflare quick tunnel (try.cloudflare.com).
+  preview: { allowedHosts: ['.trycloudflare.com'] },
   resolve: { alias: { '@client': fileURLToPath(new URL('./src/client', import.meta.url)) } },
   build: {
     target: 'es2022',

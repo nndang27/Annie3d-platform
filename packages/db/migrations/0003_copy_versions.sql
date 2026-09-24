@@ -1,0 +1,2 @@
+ALTER TABLE "node_versions" DROP CONSTRAINT "node_versions_source_chk";--> statement-breakpoint
+ALTER TABLE "node_versions" ADD CONSTRAINT "node_versions_source_chk" CHECK ("node_versions"."source" IN ('run', 'edit', 'upload', 'agent', 'copy'));

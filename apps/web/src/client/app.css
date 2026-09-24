@@ -9,7 +9,7 @@
   --grid-line: #e2e2e2;
   --pill-bg: #ffffff;
   --pill-border: #e4e4df;
-  --node-w: 300px;
+  --node-w: 320px;
   --port-image: #378add;
   --port-text: #888780;
   --port-model3d: #7f77dd;
@@ -188,55 +188,220 @@ body {
 .react-flow__pane.draggable {
   cursor: grab;
 }
-.react-flow__edge-path {
-  stroke-width: 1.75;
-}
-.react-flow__edge.selected .react-flow__edge-path {
-  stroke-width: 3;
-}
 .react-flow__connection-path {
-  stroke: var(--text-muted);
-  stroke-width: 1.75;
-  stroke-dasharray: 5 4;
-}
-.react-flow__handle {
-  width: 11px;
-  height: 11px;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08);
-}
-.react-flow__handle.connectingfrom,
-.react-flow__handle.valid {
-  transform: scale(1.35);
+  stroke: #9fb8d8;
+  stroke-width: 2.5;
+  stroke-linecap: round;
 }
 .react-flow__node {
   font-size: 13px;
 }
-.react-flow__node.selected .node {
-  border-color: var(--accent);
+.react-flow__selection {
+  background: rgb(47 124 246 / 0.06);
+  border: 1px solid rgb(47 124 246 / 0.55);
+  border-radius: 6px;
+}
+
+/* ---------------------------------------------------------------- wires (ElevenLabs flow edges) */
+.wire {
+  --wire: #c9c9c4;
+  --wire-on: #8d8d87;
+}
+.wire-image {
+  --wire: #b3d3f6;
+  --wire-on: #5d9fe9;
+}
+.wire-text {
+  --wire: #d2d2ce;
+  --wire-on: #8d8d87;
+}
+.wire-model3d {
+  --wire: #c9c3f3;
+  --wire-on: #8a7fe6;
+}
+.wire-scene {
+  --wire: #a9dcc8;
+  --wire-on: #3cae84;
+}
+.wire-video {
+  --wire: #d3c1f7;
+  --wire-on: #9466ec;
+}
+.wire-audio {
+  --wire: #ecc0de;
+  --wire-on: #cf5fae;
+}
+.wire .react-flow__edge-path {
+  stroke: var(--wire);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition:
+    stroke 120ms,
+    stroke-width 120ms;
+}
+.wire.active .react-flow__edge-path {
+  stroke: var(--wire-on);
+  stroke-width: 3;
+}
+.wire-delete {
+  cursor: pointer;
+  pointer-events: all;
+}
+.wire-delete circle {
+  fill: #2f7cf6;
+  stroke: #fff;
+  stroke-width: 3;
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.18));
+  transition: fill 120ms;
+}
+.wire-delete:hover circle {
+  fill: #1f66db;
+}
+.wire-delete path {
+  stroke: #fff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  fill: none;
+}
+.wire-delete:focus-visible circle {
+  stroke: var(--accent);
+}
+
+/* ---------------------------------------------------------------- ports: round typed bubbles */
+.react-flow__handle.port {
+  --port-bg: #ececea;
+  --port-fg: #56554f;
+  width: 34px;
+  height: 34px;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--port-bg);
+  color: var(--port-fg);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 0 3px var(--canvas-bg);
+  opacity: 0.55;
+  transition:
+    opacity 120ms,
+    transform 120ms,
+    box-shadow 120ms;
+}
+.react-flow__handle.port svg {
+  pointer-events: none;
+}
+.react-flow__handle-left.port {
+  left: -10px;
+  transform: translate(-100%, -50%);
+}
+.react-flow__handle-right.port {
+  left: auto;
+  right: -10px;
+  transform: translate(100%, -50%);
+}
+.react-flow__handle.port.on,
+.react-flow__node:hover .react-flow__handle.port,
+.react-flow__node.selected .react-flow__handle.port,
+.react-flow__handle.port.connectingfrom,
+.react-flow__handle.port.valid {
+  opacity: 1;
+}
+.react-flow__handle.port:hover,
+.react-flow__handle.port.connectingfrom,
+.react-flow__handle.port.valid {
   box-shadow:
-    0 0 0 1px var(--accent),
-    0 6px 20px rgb(0 0 0 / 0.08);
+    0 0 0 3px var(--canvas-bg),
+    0 0 0 5px var(--port-fg);
+}
+.react-flow__handle.port-image {
+  --port-bg: #cfe2fb;
+  --port-fg: #1f5fae;
+}
+.react-flow__handle.port-text {
+  --port-bg: #e4e4e1;
+  --port-fg: #4a4a45;
+}
+.react-flow__handle.port-model3d {
+  --port-bg: #dddafa;
+  --port-fg: #4c42b8;
+}
+.react-flow__handle.port-scene {
+  --port-bg: #cdeee1;
+  --port-fg: #13775a;
+}
+.react-flow__handle.port-video {
+  --port-bg: #e5d9fb;
+  --port-fg: #6b3fd6;
+}
+.react-flow__handle.port-audio {
+  --port-bg: #f3d5ea;
+  --port-fg: #9b2f86;
+}
+.react-flow__handle.port-file {
+  --port-bg: #e6e3dd;
+  --port-fg: #5f5e5a;
+}
+.react-flow__handle.port .port-label {
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.react-flow__node:hover .port-label,
+.react-flow__node.selected .port-label {
+  opacity: 1;
 }
 
 /* ---------------------------------------------------------------- node */
 .node {
   width: var(--node-w);
-  background: #fff;
-  border: 1px solid var(--pill-border);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
+  position: relative;
 }
+.node-card {
+  background: #fff;
+  border: 1px solid #e6e6e2;
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  overflow: hidden;
+  transition:
+    border-color 120ms,
+    box-shadow 120ms;
+}
+.react-flow__node:hover .node-card {
+  border-color: #d6d6d1;
+}
+.react-flow__node.selected .node-card {
+  border-color: #2f7cf6;
+  box-shadow:
+    0 0 0 1px #2f7cf6,
+    0 8px 24px rgb(0 0 0 / 0.08);
+}
+/* Title sits above the card (ElevenLabs): it is part of the node, so dragging it moves the node. */
 .node-head {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: calc(100% + 6px);
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 10px 6px;
-  color: var(--text-secondary);
-  font-size: 12px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 18px;
+  cursor: grab;
+}
+.node-head .kind-icon {
+  flex: none;
 }
 .node-head .label {
-  color: var(--text-primary);
+  color: var(--text-secondary);
   font-weight: 500;
   flex: 1;
   min-width: 0;
@@ -244,42 +409,53 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.node-head .ver {
+.node-head .engine {
   display: inline-flex;
-  align-items: center;
-  gap: 2px;
+  gap: 6px;
+  white-space: nowrap;
+}
+.node-head .ver {
   font-variant-numeric: tabular-nums;
-}
-.node-head .ver button {
-  border: 0;
-  background: transparent;
-  padding: 0 3px;
-  cursor: pointer;
-  color: inherit;
-  border-radius: 4px;
-}
-.node-head .ver button:disabled {
-  opacity: 0.3;
-  cursor: default;
+  color: var(--text-secondary);
 }
 .badge-stale {
   background: var(--warning-soft);
   color: #7a4d00;
   border-radius: 6px;
-  padding: 1px 6px;
+  padding: 0 6px;
   font-size: 11px;
 }
 .node-preview {
-  margin: 0 10px;
-  height: 168px;
-  border-radius: 8px;
-  background: var(--bg-subtle);
+  height: 188px;
+  background: #f7f7f5;
+  border-bottom: 1px solid #efefec;
   display: grid;
   place-items: center;
   overflow: hidden;
   position: relative;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 12.5px;
+}
+.node-preview.input-media {
+  height: 236px;
+  border-bottom: 0;
+}
+.node-preview .placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  padding: 0 24px;
+}
+.node-preview .placeholder-icon {
+  width: 36px;
+  height: 36px;
+  border: 1.5px dashed #c4c4be;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: #8a8a84;
 }
 /* Absolute fill: a percentage height inside an auto-sized grid area resolves to the image's intrinsic height. */
 .node-preview > img,
@@ -295,16 +471,23 @@ body {
   object-fit: contain;
   display: block;
 }
-.node-preview.contain img,
-.node-preview.contain video {
+/* Generated stills fill the frame (their renders are centred); portrait video and packshots stay whole. */
+.node-preview.has-output > img,
+.node-preview.has-output > video {
+  object-fit: cover;
+}
+.node-preview.contain > img,
+.node-preview.contain > video {
   object-fit: contain;
+}
+.node-preview.input-media img {
+  object-fit: cover;
 }
 .node-preview .grid4 {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 2px;
-  width: 100%;
-  height: 100%;
 }
 .node-preview .grid4 img {
   width: 100%;
@@ -312,25 +495,48 @@ body {
   min-height: 0;
   object-fit: cover;
 }
-.node-preview .grid4 {
-  grid-template-rows: 1fr 1fr;
-}
-.node-preview .open3d {
+.node-preview .refs {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
-  background: rgb(23 25 29 / 0.82);
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 6px;
+}
+.node-preview .refs img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 9px;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.12);
+}
+.node-preview .audio-slot {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  width: 90%;
+}
+.node-preview .audio-slot audio {
+  width: 100%;
+}
+.overlay-btn {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background: rgb(23 25 29 / 0.86);
   color: #fff;
   border: 0;
-  border-radius: 8px;
-  padding: 4px 8px;
+  border-radius: 9px;
+  padding: 6px 10px;
   font-size: 12px;
   cursor: pointer;
   opacity: 0;
   transition: opacity 120ms;
 }
-.node:hover .open3d,
-.open3d:focus-visible {
+.react-flow__node:hover .overlay-btn,
+.react-flow__node.selected .overlay-btn,
+.overlay-btn:focus-visible {
   opacity: 1;
 }
 .node-preview .progress {
@@ -349,8 +555,8 @@ body {
 }
 .node-preview .stage-label {
   position: absolute;
-  left: 8px;
-  bottom: 8px;
+  left: 10px;
+  bottom: 10px;
   background: rgb(255 255 255 / 0.92);
   border-radius: 6px;
   padding: 2px 6px;
@@ -358,120 +564,204 @@ body {
   color: var(--text-secondary);
 }
 .drop-slot {
-  border: 1.5px dashed var(--border-control);
-  background: transparent;
+  cursor: pointer;
+  background: #fafaf8;
+  outline: 1.5px dashed #d3d3cd;
+  outline-offset: -10px;
+  border-radius: 18px;
 }
 .drop-slot.dragover {
-  border-color: var(--accent);
+  outline-color: var(--accent);
   background: var(--accent-soft);
 }
 .node-body {
-  padding: 8px 10px 10px;
+  padding: 12px 12px 12px 16px;
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: flex-end;
+}
+.node-body .grow {
+  flex: 1;
 }
 .prompt {
   flex: 1;
   min-width: 0;
-  min-height: 34px;
-  max-height: 96px;
+  min-height: 40px;
+  max-height: 104px;
   overflow: hidden;
-  color: var(--text-secondary);
-  font-size: 12.5px;
-  line-height: 1.4;
+  color: var(--text-primary);
+  font-size: 13.5px;
+  line-height: 1.45;
   border-radius: 6px;
-  padding: 4px 6px;
+  padding: 2px 0;
   cursor: text;
   white-space: pre-wrap;
-}
-.prompt:hover {
-  background: var(--bg-hover);
+  overflow-wrap: anywhere;
 }
 .prompt.empty {
   color: var(--text-muted);
 }
 textarea.prompt {
-  border: 1px solid var(--accent);
+  border: 0;
+  outline: 0;
   resize: none;
   font: inherit;
+  font-size: 13.5px;
   color: var(--text-primary);
-  background: #fff;
-  min-height: 60px;
-  max-height: 160px;
+  background: transparent;
+  min-height: 64px;
+  max-height: 180px;
   overflow: auto;
 }
-.run-btn {
-  border: 1px solid var(--border-control);
-  background: #fff;
-  border-radius: 8px;
-  padding: 5px 9px;
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
+.text-body {
+  padding: 14px 16px;
+  min-height: 72px;
+  align-items: stretch;
+}
+.text-body .prompt {
+  font-size: 14px;
+  max-height: 200px;
+}
+.node-note .node-card {
+  background: #fff8c9;
+  border-color: #f0e4a0;
+}
+/* Split Run button (ElevenLabs "Run ▾"). */
+.run-split {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+.run-split .cost {
+  font-size: 11.5px;
+  color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
-.run-btn:hover {
-  background: var(--bg-hover);
-}
-.run-btn.primary {
+.run-split button {
+  height: 30px;
+  border: 0;
   background: #17191d;
   color: #fff;
-  border-color: #17191d;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
 }
+.run-split button:hover:not(:disabled) {
+  background: #2c2f35;
+}
+.run-split button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.run-split .run-main {
+  border-radius: 9px 0 0 9px;
+  padding: 0 10px 0 12px;
+}
+.run-split .run-more {
+  border-radius: 0 9px 9px 0;
+  padding: 0 7px;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.18);
+}
+.run-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 10;
+  background: #fff;
+  border: 1px solid var(--pill-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+  padding: 4px;
+  display: grid;
+  min-width: 200px;
+}
+.run-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  height: auto;
+}
+.run-menu button:hover {
+  background: var(--bg-hover);
+}
+.run-menu kbd {
+  margin-left: auto;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 11.5px;
+}
+/* Toolbar under the selected node (ElevenLabs): settings, then download / delete / more. */
 .node-foot {
   position: absolute;
-  left: 10px;
-  top: calc(100% + 6px);
+  left: 50%;
+  top: calc(100% + 10px);
+  transform: translateX(-50%);
   white-space: nowrap;
-  opacity: 0;
-  transform: translateY(-2px);
-  transition:
-    opacity 120ms,
-    transform 120ms;
-  pointer-events: none;
+  animation: foot-in 120ms ease-out;
 }
-.react-flow__node.selected .node-foot,
-.react-flow__node:hover .node-foot {
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
+@keyframes foot-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -3px);
+  }
 }
 .node-foot .pill {
-  font-size: 12px;
-  padding: 2px;
+  font-size: 13px;
+  padding: 4px;
+  gap: 2px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.08);
 }
-.node-foot select {
+.node-foot select,
+.node-foot .tb-btn {
   border: 0;
   background: transparent;
   font: inherit;
-  padding: 4px 4px;
-  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 6px 8px;
+  border-radius: 8px;
   cursor: pointer;
 }
-.node-foot select:hover {
+.node-foot .tb-icon {
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+}
+.node-foot select:hover,
+.node-foot .tb-btn:hover,
+.node-foot .tb-icon:hover {
   background: var(--bg-hover);
+  color: var(--text-primary);
 }
-.port-label {
-  position: absolute;
-  font-size: 10.5px;
-  color: var(--text-muted);
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 120ms;
-}
-.react-flow__node:hover .port-label,
-.react-flow__node.selected .port-label {
-  opacity: 1;
+.node-foot .tb-menu {
+  left: auto;
+  right: 0;
 }
 
-/* LOD: medium hides the editor and footer; compact is a coloured card (tldraw shape LOD). */
+/* LOD: medium keeps previews and trims the prompt (tldraw shape LOD). */
 .node.lod-medium .node-body .prompt {
-  max-height: 36px;
-}
-.node.lod-medium .node-foot {
-  display: none;
+  max-height: 40px;
 }
 /* ---------------------------------------------------------------- agent dock */
 .agent {

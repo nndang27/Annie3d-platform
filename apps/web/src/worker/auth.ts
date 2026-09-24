@@ -19,16 +19,28 @@ import type { Env } from './env';
  * hono.dev/examples/better-auth-on-cloudflare). Built per request because bindings and the
  * db client are request-scoped on Workers.
  */
-export function createAuth(env: Env, db: Db) {
+/**
+ * Local builds shared through a Cloudflare quick tunnel (`pnpm share`, *.trycloudflare.com) serve
+ * the app from a random public origin: outside production, that origin becomes the auth base URL
+ * so cookies and callbacks match the page. Production only ever uses APP_URL.
+ */
+export function publicOrigin(env: Env, req: Request): string {
+  if (env.APP_ENV === 'production') return env.APP_URL;
+  // The Host the tunnel forwards (vite preview only accepts *.trycloudflare.com and localhost).
+  const host = new URL(req.url).host;
+  return /^[a-z0-9-]+\.trycloudflare\.com$/.test(host) ? `https://${host}` : env.APP_URL;
+}
+
+export function createAuth(env: Env, db: Db, origin = env.APP_URL) {
   return betterAuth({
     appName: 'Annie 3D',
-    baseURL: env.APP_URL,
+    baseURL: origin,
     basePath: '/api/auth',
     secret: env.BETTER_AUTH_SECRET,
     // Local dev and the API test server run on fixed localhost ports; production trusts APP_URL only.
     trustedOrigins:
       env.APP_ENV === 'development'
-        ? [env.APP_URL, 'http://localhost:4173', 'http://localhost:5190', 'http://localhost:5191']
+        ? [origin, env.APP_URL, 'http://localhost:4173', 'http://localhost:5190', 'http://localhost:5191']
         : [env.APP_URL],
     telemetry: { enabled: false },
     // Google One Tap (F11): verifies Google's ID token server-side; uses the Google client id above.
@@ -40,7 +52,7 @@ export function createAuth(env: Env, db: Db) {
     }),
     advanced: {
       database: { generateId: () => newId() },
-      useSecureCookies: env.APP_URL.startsWith('https://'),
+      useSecureCookies: origin.startsWith('https://'),
     },
     socialProviders: {
       google: {

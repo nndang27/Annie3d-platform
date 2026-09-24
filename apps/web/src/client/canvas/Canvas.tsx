@@ -1,11 +1,4 @@
-import {
-  canConnect,
-  type EdgeRecord,
-  NODE_DEFS,
-  type NodeRecord,
-  newId,
-  PORT_COLOR,
-} from '@annie3d/contracts';
+import { canConnect, type EdgeRecord, NODE_DEFS, type NodeRecord, newId } from '@annie3d/contracts';
 import {
   type Connection,
   type Edge,
@@ -14,6 +7,7 @@ import {
   type OnConnectEnd,
   type OnConnectStart,
   ReactFlow,
+  SelectionMode,
   useReactFlow,
   type Viewport,
 } from '@xyflow/react';
@@ -22,12 +16,16 @@ import { throttleRAF } from '../lib/throttleRaf';
 import { MAX_ZOOM, MIN_ZOOM } from '../lib/zoom';
 import { dispatch, setPositionsLocal, useBoard } from '../store/board';
 import { lodFor, useUi } from '../store/ui';
+import { createNodeAt } from './actions';
+import { imageToNode } from './clipboard';
+import { FlowEdge } from './FlowEdge';
 import { FlowNode } from './FlowNode';
 import { Grid } from './Grid';
 import { useWheelZoom } from './useWheelZoom';
 
 // Defined once at module level (React Flow custom-nodes guide: prevents re-mounting every render).
 const nodeTypes = { annie: FlowNode };
+const edgeTypes = { annie: FlowEdge };
 
 /** Stable React Flow node objects: rebuilt only when the record or selection changes. */
 const rfNodeCache = new WeakMap<NodeRecord, Node>();
@@ -39,16 +37,17 @@ function toRfNode(n: NodeRecord, selected: boolean): Node {
   return rf;
 }
 const rfEdgeCache = new WeakMap<EdgeRecord, Edge>();
-function toRfEdge(e: EdgeRecord, color: string): Edge {
+function toRfEdge(e: EdgeRecord, type: string): Edge {
   const hit = rfEdgeCache.get(e);
-  if (hit) return hit;
+  if (hit && (hit.data as { type: string }).type === type) return hit;
   const rf: Edge = {
     id: e.id,
+    type: 'annie',
     source: e.source,
     sourceHandle: 'out',
     target: e.target,
     targetHandle: e.targetPort,
-    style: { stroke: color },
+    data: { type },
   };
   rfEdgeCache.set(e, rf);
   return rf;
@@ -98,7 +97,7 @@ export function Canvas() {
       [...graph.edges.values()].map((e) => {
         const src = graph.nodes.get(e.source);
         const out = src ? NODE_DEFS[src.kind].output?.type : undefined;
-        return toRfEdge(e, out ? PORT_COLOR[out] : '#999');
+        return toRfEdge(e, out ?? 'file');
       }),
     [graph.edges, graph.nodes],
   );
@@ -283,9 +282,40 @@ export function Canvas() {
     [rf],
   );
 
+  /** Double-click on empty canvas: a Text node, ready to type (Miro/FigJam sticky on double-click). */
+  const onDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (!(e.target as Element).classList.contains('react-flow__pane')) return;
+      const p = rf.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      const id = createNodeAt('text', p.x - 150, p.y - 24);
+      if (id) useUi.setState({ editPromptId: id });
+    },
+    [rf],
+  );
+
+  /** Image files dropped from the desktop become Photo nodes where they land. */
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    if (e.dataTransfer.types.includes('Files')) e.preventDefault();
+  }, []);
+  const onDrop = useCallback(
+    (e: React.DragEvent) => {
+      const files = [...e.dataTransfer.files].filter((f) => /^image\/(png|jpeg|webp)$/.test(f.type));
+      if (!files.length) return;
+      e.preventDefault();
+      const p = rf.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      files.forEach((f, i) => void imageToNode(f, { x: p.x - 150 + i * 40, y: p.y - 100 + i * 40 }));
+    },
+    [rf],
+  );
+
   return (
     <ReactFlow
       ref={host}
+      edgeTypes={edgeTypes}
+      onDoubleClick={onDoubleClick}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      zoomOnDoubleClick={false}
       nodes={nodes}
       edges={edges}
       nodeTypes={nodeTypes}
@@ -311,6 +341,8 @@ export function Canvas() {
       maxZoom={MAX_ZOOM}
       panOnDrag={tool === 'hand' ? true : [1, 2]}
       selectionOnDrag={tool === 'select'}
+      // A marquee picks every node it touches (Figma), not only fully enclosed ones.
+      selectionMode={SelectionMode.Partial}
       panOnScroll
       zoomOnPinch
       deleteKeyCode={['Backspace', 'Delete']}

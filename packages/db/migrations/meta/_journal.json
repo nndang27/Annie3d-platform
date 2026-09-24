@@ -22,6 +22,13 @@
       "when": 1790228265732,
       "tag": "0002_shared_public_assets",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790248374660,
+      "tag": "0003_copy_versions",
+      "breakpoints": true
     }
   ]
 }

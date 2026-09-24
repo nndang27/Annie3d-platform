@@ -32,7 +32,7 @@ export const NODE_KINDS = [
   'export',
   'note',
 ] as const;
-export const VERSION_SOURCES = ['run', 'edit', 'upload', 'agent'] as const;
+export const VERSION_SOURCES = ['run', 'edit', 'upload', 'agent', 'copy'] as const;
 export const OUTPUT_ROLES = ['primary', 'poster', 'turntable', 'packshot', 'report', 'extra'] as const;
 
 export const boards = pgTable(

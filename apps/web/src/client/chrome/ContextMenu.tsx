@@ -1,6 +1,7 @@
 import { NODE_DEFS } from '@annie3d/contracts';
 import { useCallback } from 'react';
-import { deleteNodes, duplicateNodes, onRunNode, openEditor } from '../canvas/actions';
+import { deleteNodes, onRunNode, openEditor } from '../canvas/actions';
+import { copySelection, duplicateNodes, hasCopy, pasteNodes } from '../canvas/clipboard';
 import { useBoard } from '../store/board';
 import { useUi } from '../store/ui';
 import { Popover } from './Popover';
@@ -44,6 +45,15 @@ export function ContextMenu() {
                 undefined,
                 'ctx-export',
               )}
+            {item(
+              'Copy',
+              () => {
+                useUi.setState({ selected: new Set(targets) });
+                copySelection();
+              },
+              '⌘C',
+              'ctx-copy',
+            )}
             {item('Duplicate', () => duplicateNodes(targets), '⌘D', 'ctx-duplicate')}
             {item('Delete', () => deleteNodes(targets), '⌫', 'ctx-delete')}
           </>
@@ -56,6 +66,13 @@ export function ContextMenu() {
               'N',
               'ctx-add',
             )}
+            {hasCopy() &&
+              item(
+                'Paste here',
+                () => pasteNodes(null, () => ({ x: menu.flowX, y: menu.flowY }), true),
+                '⌘V',
+                'ctx-paste',
+              )}
             {targets.length > 0 &&
               item(`Duplicate ${targets.length} selected`, () => duplicateNodes(targets), '⌘D')}
             {targets.length > 0 && item(`Delete ${targets.length} selected`, () => deleteNodes(targets), '⌫')}

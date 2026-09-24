@@ -21,6 +21,8 @@ export interface UiState {
   contextMenu: null | { x: number; y: number; flowX: number; flowY: number; nodeId?: string };
   agentOpen: boolean;
   editingNodeId: string | null;
+  /** A Text node created by double-click opens its editor on mount. */
+  editPromptId: string | null;
   /** Nodes the first paint should frame (the example's first line); null frames everything. */
   initialFit: string[] | null;
   toasts: { id: number; text: string; tone: 'info' | 'error' }[];
@@ -45,6 +47,7 @@ export const useUi = create<UiState>()(() => ({
   contextMenu: null,
   agentOpen: true,
   editingNodeId: null,
+  editPromptId: null,
   initialFit: null,
   toasts: [],
   signInPrompt: null,

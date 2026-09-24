@@ -141,7 +141,13 @@ export function openEditor(nodeId: string) {
 
 // ------------------------------------------------------------------ graph helpers
 /** Adds a node at a flow position; when dragged from a wire, connects it to the first compatible port. */
-export function createNodeAt(kind: NodeKind, x: number, y: number, fromNodeId?: string): string | null {
+export function createNodeAt(
+  kind: NodeKind,
+  x: number,
+  y: number,
+  fromNodeId?: string,
+  settings?: Record<string, unknown>,
+): string | null {
   const g = useBoard.getState().graph;
   const id = newId();
   const ops: GraphOp[] = [
@@ -153,7 +159,7 @@ export function createNodeAt(kind: NodeKind, x: number, y: number, fromNodeId?: 
         x: Math.round(x),
         y: Math.round(y),
         label: null,
-        settings: defaultSettings(kind),
+        settings: { ...defaultSettings(kind), ...settings },
         zKey: nextZKey(g),
       },
     },
@@ -192,39 +198,6 @@ export function insertStarter(id: StarterId, origin: { x: number; y: number }) {
   dispatch(ops);
   useUi.setState({ selected: new Set(s.nodes.map((n) => n.id)) });
   return s.nodes.map((n) => n.id);
-}
-
-export function duplicateNodes(ids: string[]) {
-  const g = useBoard.getState().graph;
-  let z = nextZKey(g);
-  const map = new Map<string, string>();
-  const ops: GraphOp[] = [];
-  for (const id of ids) {
-    const n = g.nodes.get(id);
-    if (!n) continue;
-    const nid = newId();
-    map.set(id, nid);
-    ops.push({
-      type: 'node.create',
-      node: {
-        id: nid,
-        kind: n.kind,
-        x: n.x + 40,
-        y: n.y + 40,
-        label: n.label,
-        settings: n.settings,
-        zKey: z,
-      },
-    });
-    z = generateKeyBetween(z, null);
-  }
-  // Keep wires that are internal to the duplicated set (Figma/Miro duplicate semantics).
-  for (const e of g.edges.values()) {
-    const s = map.get(e.source);
-    const t = map.get(e.target);
-    if (s && t) ops.push({ type: 'edge.create', edge: { ...e, id: newId(), source: s, target: t } });
-  }
-  if (ops.length && dispatch(ops)) useUi.setState({ selected: new Set(map.values()) });
 }
 
 export function deleteNodes(ids: string[]) {

@@ -415,7 +415,8 @@ function uploadVersionTargets(graph: Graph, ops: GraphOp[]): Map<string, string>
   for (const op of ops) {
     if (op.type !== 'node.update' || !op.patch.currentVersionId) continue;
     const kind = graph.nodes.get(op.id)?.kind ?? created.get(op.id);
-    if (kind && ['photo', 'upload3d', 'audio'].includes(kind)) m.set(op.id, op.patch.currentVersionId);
+    if (op.patch.copyOfVersionId || (kind && ['photo', 'upload3d', 'audio'].includes(kind)))
+      m.set(op.id, op.patch.currentVersionId);
   }
   return m;
 }
@@ -428,9 +429,29 @@ async function createUploadVersions(
   graph: Graph,
   ops: GraphOp[],
 ) {
+  const copied = new Set(
+    ops.flatMap((o) => (o.type === 'node.update' && o.patch.copyOfVersionId ? [o.id] : [])),
+  );
+  let hashes: Map<string, string> | null = null;
   for (const op of ops) {
     if (op.type !== 'node.update' || !op.patch.currentVersionId) continue;
     const node = graph.nodes.get(op.id);
+    if (node && op.patch.copyOfVersionId) {
+      // A copy whose inputs are all pasted copies too mirrors the original chain, so it is as
+      // fresh as the original: store the hash of its new inputs. A copy wired to anything else
+      // keeps the original hash and shows as stale if its inputs differ.
+      const incoming = [...graph.edges.values()].filter((e) => e.target === node.id);
+      let freshHash: string | undefined;
+      if (incoming.length && incoming.every((e) => copied.has(e.source))) {
+        hashes ??= await computeInputHashes(graph);
+        freshHash = hashes.get(node.id);
+      }
+      await copyVersion(tx, boardId, workspaceId, userId, node.id, op.patch.currentVersionId, {
+        sourceId: op.patch.copyOfVersionId,
+        freshHash,
+      });
+      continue;
+    }
     if (!node || !['photo', 'upload3d', 'audio'].includes(node.kind)) continue;
     const assetId = op.patch.settings?.assetId as string | undefined;
     if (!assetId) throw httpError(400, 'bad_request', 'Upload versions need settings.assetId');
@@ -460,6 +481,48 @@ async function createUploadVersions(
       .insert(nodeVersionOutputs)
       .values({ versionId: op.patch.currentVersionId, assetId: asset.id, role: 'primary', position: 0 });
   }
+}
+
+/**
+ * Copy/paste and duplicate: a new version on the pasted node that points at the same output
+ * assets (immutable, content-addressed) and keeps params, gates and input hash. The source may be
+ * on another board of the same workspace (paste across boards).
+ */
+async function copyVersion(
+  tx: Db,
+  boardId: string,
+  workspaceId: string,
+  userId: string,
+  nodeId: string,
+  versionId: string,
+  { sourceId, freshHash }: { sourceId: string; freshHash?: string },
+) {
+  const existing = await tx.query.nodeVersions.findFirst({ where: (t, { eq }) => eq(t.id, versionId) });
+  if (existing) return; // retried batch
+  const src = await tx.query.nodeVersions.findFirst({
+    where: (t, { and, eq }) => and(eq(t.id, sourceId), eq(t.workspaceId, workspaceId)),
+  });
+  if (!src) throw httpError(400, 'bad_request', 'Unknown source version');
+  const outputs = await tx.query.nodeVersionOutputs.findMany({
+    where: (t, { eq }) => eq(t.versionId, sourceId),
+  });
+  const max = await tx.execute<{ n: number }>(
+    sql`SELECT coalesce(max(version_no), 0)::int AS n FROM node_versions WHERE node_id = ${nodeId}`,
+  );
+  await tx.insert(nodeVersions).values({
+    id: versionId,
+    nodeId,
+    boardId,
+    workspaceId,
+    versionNo: (max.rows[0]?.n ?? 0) + 1,
+    source: 'copy',
+    outputAssetId: src.outputAssetId,
+    params: src.params,
+    gates: src.gates,
+    inputHash: freshHash ?? src.inputHash,
+    createdBy: userId,
+  });
+  if (outputs.length) await tx.insert(nodeVersionOutputs).values(outputs.map((o) => ({ ...o, versionId })));
 }
 
 export { sha256Hex };

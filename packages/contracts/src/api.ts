@@ -105,7 +105,7 @@ export const NodeVersionDto = z.object({
   id: uuid,
   nodeId: uuid,
   versionNo: z.number().int().positive(),
-  source: z.enum(['run', 'edit', 'upload', 'agent']),
+  source: z.enum(['run', 'edit', 'upload', 'agent', 'copy']),
   runId: uuid.nullable(),
   parentVersionId: uuid.nullable(),
   outputAssetId: uuid.nullable(),

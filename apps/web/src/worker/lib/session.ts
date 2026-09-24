@@ -1,5 +1,5 @@
 import type { MiddlewareHandler } from 'hono';
-import { createAuth } from '../auth';
+import { createAuth, publicOrigin } from '../auth';
 import type { AppEnv } from '../env';
 import { getDb } from './db';
 import { httpError } from './http';
@@ -11,7 +11,7 @@ export const loadSession: MiddlewareHandler<AppEnv> = async (c, next) => {
   c.set('role', null);
   const cookie = c.req.header('cookie') ?? '';
   if (!cookie.includes('better-auth')) return next();
-  const auth = createAuth(c.env, getDb(c));
+  const auth = createAuth(c.env, getDb(c), publicOrigin(c.env, c.req.raw));
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
   if (session) {
     const u = session.user;

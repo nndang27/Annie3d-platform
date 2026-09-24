@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { createAuth } from './auth';
+import { createAuth, publicOrigin } from './auth';
 import type { AppEnv } from './env';
 import { closeDb, getDb } from './lib/db';
 import { HttpError } from './lib/http';
@@ -72,7 +72,9 @@ app.get('/api/health', async (c) => {
 });
 
 // Better Auth owns /api/auth/* (Google sign-in, session, sign-out).
-app.on(['GET', 'POST'], '/api/auth/*', (c) => createAuth(c.env, getDb(c)).handler(c.req.raw));
+app.on(['GET', 'POST'], '/api/auth/*', (c) =>
+  createAuth(c.env, getDb(c), publicOrigin(c.env, c.req.raw)).handler(c.req.raw),
+);
 
 app.use('/api/*', loadSession);
 app.route('/', me);

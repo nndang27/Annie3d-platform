@@ -302,6 +302,92 @@ describe('example board seeding (F1 for signed-in users)', () => {
   }, 60_000);
 });
 
+describe('copy / paste keeps outputs (copy versions)', () => {
+  it('pasted nodes share outputs; a pasted chain stays fresh; foreign versions are refused', async () => {
+    const { starterGraph } = await import('../../packages/contracts/src/index');
+    const { FIXTURE_FOR_STARTER, FIXTURE_MANIFEST, uuidFromHash } = await import('../../fixtures/index');
+    const g = starterGraph('splash-hero');
+    const photoId = uuidFromHash(
+      FIXTURE_MANIFEST.products[FIXTURE_FOR_STARTER['splash-hero']].files['photo.png']!.sha256,
+    );
+    const nodes = g.nodes.map(({ version: _v, currentVersionId: _c, ...n }) =>
+      n.kind === 'photo' ? { ...n, settings: { ...n.settings, assetId: photoId } } : n,
+    );
+    const c = await Client.signedUp('Paster');
+    const r = await c.json('/api/boards', {
+      method: 'POST',
+      json: { title: 'Paste', starter: 'blank', fromGuest: { nodes, edges: g.edges } },
+    });
+    expect(r.status).toBe(201);
+    const boardId = r.body.board.id;
+    type N = { id: string; kind: string; currentVersionId: string | null; stale: boolean; settings: object };
+    const byKind = (k: string) => (r.body.nodes as N[]).find((n) => n.kind === k)!;
+    const photo = byKind('photo');
+    const model = byKind('model3d');
+    const pack = byKind('packshot');
+    // Paste photo -> model -> packshot as a chain, plus a lone copy of the model.
+    const id = () => randomUUID();
+    const [p2, m2, k2, lone] = [id(), id(), id(), id()];
+    const [vp, vm, vk, vl] = [id(), id(), id(), id()];
+    const create = (nid: string, src: N, dx: number) => ({
+      type: 'node.create',
+      node: { id: nid, kind: src.kind, x: dx, y: 2000, settings: src.settings, zKey: `z${dx}` },
+    });
+    const copy = (nid: string, vid: string, src: N) => ({
+      type: 'node.update',
+      id: nid,
+      patch: { currentVersionId: vid, copyOfVersionId: src.currentVersionId },
+    });
+    await ops(c, boardId, [
+      create(p2, photo, 0),
+      create(m2, model, 500),
+      create(k2, pack, 1000),
+      create(lone, model, 1500),
+      {
+        type: 'edge.create',
+        edge: { id: id(), source: p2, sourcePort: 'out', target: m2, targetPort: 'images' },
+      },
+      {
+        type: 'edge.create',
+        edge: { id: id(), source: m2, sourcePort: 'out', target: k2, targetPort: 'subject' },
+      },
+      copy(p2, vp, photo),
+      copy(m2, vm, model),
+      copy(k2, vk, pack),
+      copy(lone, vl, model),
+    ]);
+    const snap = (await c.json(`/api/boards/${boardId}`)).body;
+    const node = (nid: string) => (snap.nodes as N[]).find((n) => n.id === nid)!;
+    const version = (vid: string) => snap.versions.find((v: { id: string }) => v.id === vid);
+    expect(version(vk).source).toBe('copy');
+    expect(version(vk).outputs.map((o: { id: string }) => o.id)).toEqual(
+      version(pack.currentVersionId!).outputs.map((o: { id: string }) => o.id),
+    );
+    expect(node(m2).stale).toBe(false);
+    expect(node(k2).stale).toBe(false);
+    // The lone model lost its photo input, so its copied result is stale.
+    expect(node(lone).stale).toBe(true);
+
+    const other = await Client.signedUp('Stranger');
+    const b2 = await other.json('/api/boards', {
+      method: 'POST',
+      json: { title: 'Other', starter: 'blank' },
+    });
+    const nid = id();
+    const bad = await other.json(`/api/boards/${b2.body.board.id}/ops`, {
+      method: 'POST',
+      json: {
+        opId: id(),
+        ops: [
+          create(nid, model, 0),
+          { type: 'node.update', id: nid, patch: { currentVersionId: id(), copyOfVersionId: vm } },
+        ],
+      },
+    });
+    expect(bad.status).toBe(400);
+  }, 60_000);
+});
+
 describe('region edits (F8) and versions (F9)', () => {
   it('applies an instruction to selected faces as a new version, keeps the base, and can revert', async () => {
     const { starterGraph } = await import('../../packages/contracts/src/index');

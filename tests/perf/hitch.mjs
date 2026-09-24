@@ -64,6 +64,8 @@ async function record(page, drive) {
 
 async function scenario(page) {
   await page.waitForSelector('.react-flow__node', { timeout: 30_000 });
+  // Experiment: strip effects (e.g. INJECT_CSS='*{box-shadow:none!important;filter:none!important}').
+  if (process.env.INJECT_CSS) await page.addStyleTag({ content: process.env.INJECT_CSS });
   await page.waitForTimeout(2000);
   const size = await page.evaluate(() => ({ w: innerWidth, h: innerHeight, dpr: devicePixelRatio }));
   const cx = size.w / 2;

@@ -1,8 +1,8 @@
 {
   "build": {
-    "commit": "6e52cb8",
+    "commit": "8267791",
     "node": "v25.5.0",
-    "date": "2026-09-24T17:09:15.883Z",
+    "date": "2026-09-24T17:20:24.988Z",
     "platform": "darwin arm64"
   },
   "origin": "https://annie3d.nndang2701.workers.dev",
@@ -15,87 +15,137 @@
           "dpr": 2
         },
         "zoom": {
-          "gaps": [],
-          "loaf": [],
+          "gaps": [
+            {
+              "at": 50,
+              "ms": 216.7
+            },
+            {
+              "at": 266,
+              "ms": 41.7
+            },
+            {
+              "at": 341,
+              "ms": 108.4
+            },
+            {
+              "at": 458,
+              "ms": 100.1
+            },
+            {
+              "at": 608,
+              "ms": 75
+            },
+            {
+              "at": 775,
+              "ms": 66
+            },
+            {
+              "at": 925,
+              "ms": 41.6
+            },
+            {
+              "at": 1016,
+              "ms": 41.6
+            },
+            {
+              "at": 3025,
+              "ms": 216.8
+            },
+            {
+              "at": 3283,
+              "ms": 41.7
+            }
+          ],
+          "loaf": [
+            {
+              "at": 50,
+              "ms": 224,
+              "blocking": 0,
+              "renderMs": 0,
+              "styleLayoutMs": 0,
+              "scripts": []
+            },
+            {
+              "at": 343,
+              "ms": 108,
+              "blocking": 0,
+              "renderMs": 0,
+              "styleLayoutMs": 0,
+              "scripts": []
+            },
+            {
+              "at": 459,
+              "ms": 103,
+              "blocking": 0,
+              "renderMs": 0,
+              "styleLayoutMs": 0,
+              "scripts": []
+            },
+            {
+              "at": 618,
+              "ms": 69,
+              "blocking": 0,
+              "renderMs": 0,
+              "styleLayoutMs": 0,
+              "scripts": []
+            },
+            {
+              "at": 776,
+              "ms": 66,
+              "blocking": 0,
+              "renderMs": 0,
+              "styleLayoutMs": 0,
+              "scripts": []
+            },
+            {
+              "at": 3026,
+              "ms": 221,
+              "blocking": 0,
+              "renderMs": 1,
+              "styleLayoutMs": 1,
+              "scripts": []
+            }
+          ],
           "imgs": [
             {
-              "at": 1675,
-              "ms": 7,
-              "name": "serum/packshot_three_quarter_512.webp"
-            },
-            {
-              "at": 1676,
-              "ms": 7,
-              "name": "serum/packshot_top_512.webp"
-            },
-            {
-              "at": 1676,
-              "ms": 7,
-              "name": "serum/packshot_front_512.webp"
-            },
-            {
-              "at": 1676,
-              "ms": 7,
-              "name": "serum/packshot_detail_512.webp"
-            },
-            {
-              "at": 1811,
-              "ms": 6,
-              "name": "headphones/packshot_three_quarter_512.webp"
-            },
-            {
-              "at": 1811,
-              "ms": 6,
-              "name": "headphones/packshot_front_512.webp"
-            },
-            {
-              "at": 1811,
-              "ms": 6,
-              "name": "headphones/packshot_top_512.webp"
-            },
-            {
-              "at": 1811,
-              "ms": 6,
-              "name": "headphones/packshot_detail_512.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 7,
+              "at": 2823,
+              "ms": 26,
               "name": "serum/photo_thumb_256.webp"
             },
             {
-              "at": 2263,
-              "ms": 7,
-              "name": "serum/stage_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 7,
-              "name": "headphones/photo_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 8,
+              "at": 2823,
+              "ms": 29,
               "name": "serum/model_thumb_256.webp"
             },
             {
-              "at": 2264,
-              "ms": 8,
-              "name": "headphones/model_thumb_256.webp"
+              "at": 2823,
+              "ms": 30,
+              "name": "headphones/photo_thumb_256.webp"
             },
             {
-              "at": 2264,
-              "ms": 8,
+              "at": 2823,
+              "ms": 30,
+              "name": "serum/stage_thumb_256.webp"
+            },
+            {
+              "at": 2823,
+              "ms": 31,
               "name": "headphones/stage_thumb_256.webp"
             },
             {
-              "at": 2509,
-              "ms": 5,
+              "at": 2823,
+              "ms": 38,
+              "name": "headphones/model_thumb_256.webp"
+            },
+            {
+              "at": 3276,
+              "ms": 22,
               "name": "ring/model_thumb_256.webp"
             },
             {
-              "at": 2509,
-              "ms": 5,
+              "at": 3276,
+              "ms": 39,
               "name": "ring/photo_thumb_256.webp"
             }
           ]
@@ -103,224 +153,56 @@
         "sweep": {
           "gaps": [
             {
-              "at": 2119,
-              "ms": 91.6
+              "at": 519,
+              "ms": 83.4
+            },
+            {
+              "at": 2147,
+              "ms": 112.8
+            },
+            {
+              "at": 3252,
+              "ms": 125
+            },
+            {
+              "at": 4939,
+              "ms": 216
             }
           ],
           "loaf": [
             {
-              "at": 2120,
-              "ms": 95,
+              "at": 519,
+              "ms": 85,
+              "blocking": 0,
+              "renderMs": 0,
+              "styleLayoutMs": 0,
+              "scripts": []
+            },
+            {
+              "at": 2151,
+              "ms": 117,
+              "blocking": 0,
+              "renderMs": 1,
+              "styleLayoutMs": 0,
+              "scripts": []
+            },
+            {
+              "at": 3254,
+              "ms": 127,
+              "blocking": 0,
+              "renderMs": 0,
+              "styleLayoutMs": 0,
+              "scripts": []
+            },
+            {
+              "at": 4941,
+              "ms": 216,
               "blocking": 0,
               "renderMs": 0,
               "styleLayoutMs": 0,
               "scripts": []
             }
           ],
-          "imgs": []
-        },
-        "warmMs": 0,
-        "gpu": "compositing=enabled graphite=enabled_on webgl=enabled warmup=0ms"
-      }
-    },
-    {
-      "app": {
-        "size": {
-          "w": 1440,
-          "h": 837,
-          "dpr": 2
-        },
-        "zoom": {
-          "gaps": [],
-          "loaf": [],
-          "imgs": [
-            {
-              "at": 1674,
-              "ms": 3,
-              "name": "serum/packshot_three_quarter_512.webp"
-            },
-            {
-              "at": 1674,
-              "ms": 4,
-              "name": "serum/packshot_front_512.webp"
-            },
-            {
-              "at": 1674,
-              "ms": 4,
-              "name": "serum/packshot_top_512.webp"
-            },
-            {
-              "at": 1674,
-              "ms": 4,
-              "name": "serum/packshot_detail_512.webp"
-            },
-            {
-              "at": 1809,
-              "ms": 3,
-              "name": "headphones/packshot_three_quarter_512.webp"
-            },
-            {
-              "at": 1809,
-              "ms": 3,
-              "name": "headphones/packshot_front_512.webp"
-            },
-            {
-              "at": 1809,
-              "ms": 3,
-              "name": "headphones/packshot_top_512.webp"
-            },
-            {
-              "at": 1809,
-              "ms": 4,
-              "name": "headphones/packshot_detail_512.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 4,
-              "name": "serum/photo_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 5,
-              "name": "serum/model_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 5,
-              "name": "serum/stage_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 6,
-              "name": "headphones/photo_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 6,
-              "name": "headphones/model_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 6,
-              "name": "headphones/stage_thumb_256.webp"
-            },
-            {
-              "at": 2508,
-              "ms": 2,
-              "name": "ring/photo_thumb_256.webp"
-            },
-            {
-              "at": 2508,
-              "ms": 2,
-              "name": "ring/model_thumb_256.webp"
-            }
-          ]
-        },
-        "sweep": {
-          "gaps": [],
-          "loaf": [],
-          "imgs": []
-        },
-        "warmMs": 0,
-        "gpu": "compositing=enabled graphite=enabled_on webgl=enabled warmup=0ms"
-      }
-    },
-    {
-      "app": {
-        "size": {
-          "w": 1440,
-          "h": 837,
-          "dpr": 2
-        },
-        "zoom": {
-          "gaps": [],
-          "loaf": [],
-          "imgs": [
-            {
-              "at": 1677,
-              "ms": 3,
-              "name": "serum/packshot_three_quarter_512.webp"
-            },
-            {
-              "at": 1677,
-              "ms": 4,
-              "name": "serum/packshot_front_512.webp"
-            },
-            {
-              "at": 1677,
-              "ms": 4,
-              "name": "serum/packshot_top_512.webp"
-            },
-            {
-              "at": 1677,
-              "ms": 4,
-              "name": "serum/packshot_detail_512.webp"
-            },
-            {
-              "at": 1811,
-              "ms": 2,
-              "name": "headphones/packshot_three_quarter_512.webp"
-            },
-            {
-              "at": 1811,
-              "ms": 3,
-              "name": "headphones/packshot_front_512.webp"
-            },
-            {
-              "at": 1811,
-              "ms": 3,
-              "name": "headphones/packshot_top_512.webp"
-            },
-            {
-              "at": 1811,
-              "ms": 3,
-              "name": "headphones/packshot_detail_512.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 3,
-              "name": "serum/photo_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 4,
-              "name": "serum/model_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 4,
-              "name": "serum/stage_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 5,
-              "name": "headphones/photo_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 5,
-              "name": "headphones/model_thumb_256.webp"
-            },
-            {
-              "at": 2263,
-              "ms": 5,
-              "name": "headphones/stage_thumb_256.webp"
-            },
-            {
-              "at": 2510,
-              "ms": 2,
-              "name": "ring/photo_thumb_256.webp"
-            },
-            {
-              "at": 2510,
-              "ms": 2,
-              "name": "ring/model_thumb_256.webp"
-            }
-          ]
-        },
-        "sweep": {
-          "gaps": [],
-          "loaf": [],
           "imgs": []
         },
         "warmMs": 0,

@@ -100,3 +100,17 @@ spent in the GPU process compiling Metal pipelines for Skia Graphite on first us
   broken). `--enable-skia-graphite-precompilation` changed nothing.
 - Open decision: a hidden warm-up window on first launch cuts most stalls but not all, and costs
   ~7 s of background GPU work. Not shipped.
+
+Root cause, traced (`tests/perf/gpu-trace.mjs`): the stalled time is inside
+`skgpu::graphite::CommandBuffer::addRenderPass` on the GPU main thread (`CrGpuMain`), below any
+traced event, where Dawn/Metal realise pipelines on first use. That thread also composites the
+displayed frame (Direct Rendering Display Compositor is off in Chrome and Electron alike), so a
+compile there delays the frame. A cold Chrome for Testing trace shows the same slow render passes on
+the same thread; the mechanism is Chromium's, not the app's.
+
+Ruled out:
+- Engine upgrade: Electron 45.0.0-alpha.11 (Chromium 155) stalls like Electron 44 (Chromium 152),
+  9–10 zoom stalls up to 217 ms, two cold runs each.
+- Page effects: removing every box-shadow, filter and text-shadow still left cold stalls.
+- "Cache is per app location" (above) is only partly true: a fresh copy in a new folder stalled
+  anywhere from 3 to 10 times. Single cold runs are noisy; compare several.

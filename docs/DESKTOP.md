@@ -163,3 +163,25 @@ established. Sources: Chromium Graphite blog (fewer pipelines "so they can be co
 startup"), https://blog.chromium.org/2025/07/introducing-skia-graphite-chromes.html; Electron
 shader-cache persistence fix (in 44.4.4+), https://github.com/electron/electron/pull/54113;
 crbug 40281459 "[Graphite] Cache Metal shader pipelines".
+
+## Tried and not shipped: reuse rastered pixels while zooming (2026-09-25)
+
+Idea (Excalidraw reuses cached element bitmaps while zooming and redraws sharp ~300 ms after
+it stops): in a DOM board the same thing is `will-change: transform` on `.react-flow__viewport`
+during a zoom, removed at the settle so Chromium re-rasters once at the new scale.
+
+Measured on one build (`tests/perf/cold-compare.mjs` 3 rounds, `tests/perf/zoom-raster.mjs`,
+sharpness by pixel-comparing Electron `capturePage()` crops with the plain board; Playwright
+screenshots force a repaint and cannot show blur):
+
+| Variant | Cold zoom stalls | Warm GPU raster during a zoom | Text after stopping |
+| --- | --- | --- | --- |
+| Plain (shipped) | 4–5 | 46 ms | sharp |
+| will-change toggled per gesture | 4 | 31–37 ms | identical to plain from 100 ms |
+| always a layer (`will-change: opacity`), transform hint while zooming | 3–5 | similar | identical from 100 ms |
+| will-change: transform permanently | 0 | 24–28 ms | stays soft (≈1,000 edge pixels off by >32 levels) |
+
+The sharp re-raster at the new scale is what compiles the new GPU pipelines, so reusing pixels
+during the gesture only moves the stall to the settle. Only never re-rastering removes it, and
+that leaves text blurry. Warm zooming already has no long frames, so the 30–45 % raster saving
+buys nothing visible. Not shipped; revisit if a heavy board shows raster-bound zoom frames.

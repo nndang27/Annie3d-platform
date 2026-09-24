@@ -5,7 +5,7 @@ import {
   isServiceError,
   type ProjectFilter,
   type Run,
-} from '@3dads/contracts';
+} from '@annie3d/contracts';
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSessionStore } from '@/stores/sessionStore';
 import { useServices } from './context';

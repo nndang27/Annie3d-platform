@@ -59,8 +59,8 @@ test.describe('journeys', () => {
     await page.getByRole('tab', { name: 'Studio' }).click();
     await expect(page.getByTestId('viewer-canvas')).toBeVisible();
     await expect(page.getByText('Demo fixture, not your image')).toBeVisible();
-    await page.waitForFunction(() => window.__3dads.viewers.size > 0);
-    const stats = await page.evaluate(() => [...window.__3dads.viewers][0]!.getStats());
+    await page.waitForFunction(() => window.__annie3d.viewers.size > 0);
+    const stats = await page.evaluate(() => [...window.__annie3d.viewers][0]!.getStats());
     expect(stats.framesRendered as number).toBeGreaterThan(0);
     expect(stats.triangles as number).toBeGreaterThan(1000);
     // Overview shows the real image
@@ -73,7 +73,7 @@ test.describe('journeys', () => {
     await page.getByTestId('project-card').first().locator('a').first().click();
     await page.getByRole('tab', { name: 'Studio' }).click();
     await expect(page.getByTestId('viewer-canvas')).toBeVisible();
-    await page.waitForFunction(() => window.__3dads.viewers.size > 0);
+    await page.waitForFunction(() => window.__annie3d.viewers.size > 0);
     const headline = page.getByTestId('headline-input');
     await headline.fill('Hello undo');
     await expect(page.getByTestId('ad-overlay')).toContainText('Hello undo');
@@ -93,9 +93,9 @@ test.describe('journeys', () => {
     await expect(page.getByTestId('time-readout')).toContainText('3.0');
     // idle: no frames while paused (allow the DPR-restore settle frame first)
     await page.waitForTimeout(1200);
-    const f1 = await page.evaluate(() => [...window.__3dads.viewers][0]!.getStats().framesRendered);
+    const f1 = await page.evaluate(() => [...window.__annie3d.viewers][0]!.getStats().framesRendered);
     await page.waitForTimeout(1000);
-    const f2 = await page.evaluate(() => [...window.__3dads.viewers][0]!.getStats().framesRendered);
+    const f2 = await page.evaluate(() => [...window.__annie3d.viewers][0]!.getStats().framesRendered);
     expect(f2).toBe(f1);
     // aspect
     await page.getByRole('radio', { name: '9:16' }).click();
@@ -109,7 +109,7 @@ test.describe('journeys', () => {
   });
 
   test('J4 start run → navigate away → return → status recovered, no duplicate run', async ({ page }) => {
-    await page.evaluate(() => localStorage.setItem('3dads.latencyScale', '0.6'));
+    await page.evaluate(() => localStorage.setItem('annie3d.latencyScale', '0.6'));
     await page.reload();
     await signIn(page, 'u_mai');
     await page.getByTestId('project-card').first().locator('a').first().click();
@@ -130,13 +130,13 @@ test.describe('journeys', () => {
   });
 
   test('J5 cancel → retry → prior artifacts kept, late events ignored', async ({ page }) => {
-    await page.evaluate(() => localStorage.setItem('3dads.latencyScale', '0.6'));
+    await page.evaluate(() => localStorage.setItem('annie3d.latencyScale', '0.6'));
     await page.reload();
     await signIn(page, 'u_mai');
     await page.getByTestId('project-card').first().locator('a').first().click();
     await page.getByRole('tab', { name: 'Workflow' }).click();
     const before = await page.evaluate(
-      () => (window.__3dads.backend.ws as { artifacts: unknown[] }).artifacts.length,
+      () => (window.__annie3d.backend.ws as { artifacts: unknown[] }).artifacts.length,
     );
     await page.getByTestId('run-workflow').click();
     // wait for first step to complete so an artifact exists
@@ -148,15 +148,15 @@ test.describe('journeys', () => {
       timeout: 15_000,
     });
     const afterCancel = await page.evaluate(
-      () => (window.__3dads.backend.ws as { artifacts: unknown[] }).artifacts.length,
+      () => (window.__annie3d.backend.ws as { artifacts: unknown[] }).artifacts.length,
     );
     expect(afterCancel).toBeGreaterThan(before);
     // no scheduled work remains for the cancelled run
     await page.waitForTimeout(1500);
-    const pending = await page.evaluate(() => window.__3dads.pendingTasks().length);
+    const pending = await page.evaluate(() => window.__annie3d.pendingTasks().length);
     expect(pending).toBe(0);
     const afterWait = await page.evaluate(
-      () => (window.__3dads.backend.ws as { artifacts: unknown[] }).artifacts.length,
+      () => (window.__annie3d.backend.ws as { artifacts: unknown[] }).artifacts.length,
     );
     expect(afterWait).toBe(afterCancel);
     await page.getByTestId('retry-run').click();
@@ -200,7 +200,7 @@ test.describe('journeys', () => {
     // export from studio
     await page.getByRole('tab', { name: 'Studio' }).click();
     await expect(page.getByTestId('viewer-canvas')).toBeVisible();
-    await page.waitForFunction(() => window.__3dads.viewers.size > 0);
+    await page.waitForFunction(() => window.__annie3d.viewers.size > 0);
     await page.getByTestId('open-export').click();
     await page.getByTestId('preset-png-snapshot').click();
     const dl = await captureDownload(page, () => page.getByTestId('export-run').click());
@@ -214,7 +214,7 @@ test.describe('journeys', () => {
     const dl2 = await captureDownload(page, () => page.getByTestId('export-run').click());
     expect(dl2.filename).toMatch(/\.json$/);
     const json = JSON.parse(dl2.data.toString('utf8'));
-    expect(json.format).toBe('3dads.scene+ad');
+    expect(json.format).toBe('annie3d.scene+ad');
     expect(json.scene.fixtureId).toBeTruthy();
     // MP4 via simulated queue
     await page.getByTestId('preset-mp4-render').click();
@@ -235,7 +235,7 @@ test.describe('journeys', () => {
     await page.getByTestId('project-card').first().locator('a').first().click();
     await page.getByRole('tab', { name: 'Studio' }).click();
     await expect(page.getByTestId('viewer-canvas')).toBeVisible();
-    await page.waitForFunction(() => window.__3dads.viewers.size > 0);
+    await page.waitForFunction(() => window.__annie3d.viewers.size > 0);
     await page.getByTestId('duration-select').selectOption('3');
     await page.getByTestId('open-export').click();
     await page.getByTestId('preset-webm-preview').click();
@@ -276,7 +276,7 @@ test.describe('journeys', () => {
     await page.goto(`/app/billing/checkout?plan=team&interval=monthly&returnTo=%2Fapp%2Flibrary`);
     await page.getByTestId('pay-delayed').click();
     await expect(page.getByTestId('checkout-return')).toHaveAttribute('data-status', 'pending_confirmation');
-    await page.evaluate(() => window.__3dads.clock.advance(5000));
+    await page.evaluate(() => window.__annie3d.clock.advance(5000));
     await expect(page.getByTestId('checkout-return')).toHaveAttribute('data-status', 'succeeded', {
       timeout: 10_000,
     });
@@ -317,7 +317,7 @@ test.describe('journeys', () => {
     await page.goto('/app/library');
     await waitForApp(page);
     const cache = await page.evaluate(() =>
-      window.__3dads.queryClient
+      window.__annie3d.queryClient
         .getQueryCache()
         .getAll()
         .map((q: { queryKey: unknown[] }) => JSON.stringify(q.queryKey)),
@@ -359,7 +359,7 @@ test.describe('journeys', () => {
     await page.getByTestId('project-card').first().locator('a').first().click();
     await page.getByRole('tab', { name: 'Workflow' }).click();
     // offline while a run is in flight
-    await page.evaluate(() => localStorage.setItem('3dads.latencyScale', '0.6'));
+    await page.evaluate(() => localStorage.setItem('annie3d.latencyScale', '0.6'));
     await page.getByTestId('run-workflow').click();
     await expect(page.getByTestId('active-run-badge')).toBeVisible();
     await setScenario(page, 'offline');

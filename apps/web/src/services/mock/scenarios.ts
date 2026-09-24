@@ -1,6 +1,6 @@
 /**
  * Scenario catalogue for the demo transport. Selected via /app/dev/scenarios, `?scenario=`,
- * localStorage `3dads.scenario`, or `window.__3dads.setScenario()` in tests.
+ * localStorage `annie3d.scenario`, or `window.__annie3d.setScenario()` in tests.
  * Scenarios shape transport behaviour (latency, failures) and a few engine outcomes; they never
  * change domain rules such as idempotency or state transitions.
  */

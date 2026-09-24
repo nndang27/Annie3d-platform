@@ -1,5 +1,5 @@
-import type { RunStatus } from '@3dads/contracts';
-import { Badge } from '@3dads/ui';
+import type { RunStatus } from '@annie3d/contracts';
+import { Badge } from '@annie3d/ui';
 import {
   AlertCircle,
   Check,

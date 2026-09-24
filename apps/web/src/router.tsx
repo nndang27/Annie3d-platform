@@ -1,4 +1,4 @@
-import { intentFromSearch, type NavigationIntent } from '@3dads/contracts';
+import { intentFromSearch, type NavigationIntent } from '@annie3d/contracts';
 import {
   createRootRoute,
   createRoute,

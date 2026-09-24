@@ -1,6 +1,6 @@
 /** Centralised English product copy. Keys are stable identifiers for future localisation. */
 export const en = {
-  brand: '3Dads',
+  brand: 'Annie 3D',
   demoLabel: 'Demo workspace',
   demoExplainer:
     'This workspace runs against a simulated backend. Runs, exports and payments are demonstrations; nothing is sent to a generation service or charged.',

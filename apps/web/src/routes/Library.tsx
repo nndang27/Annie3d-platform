@@ -1,4 +1,4 @@
-import { type Artifact, PRODUCT_FIXTURES, TEMPLATES } from '@3dads/contracts';
+import { type Artifact, PRODUCT_FIXTURES, TEMPLATES } from '@annie3d/contracts';
 import {
   Badge,
   Button,
@@ -9,7 +9,7 @@ import {
   Input,
   Select,
   useToast,
-} from '@3dads/ui';
+} from '@annie3d/ui';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { Download, Search } from 'lucide-react';
 import { useDeferredValue, useEffect, useState } from 'react';

@@ -5,8 +5,8 @@ import {
   newOperationId,
   type PlanId,
   safeReturnTo,
-} from '@3dads/contracts';
-import { Badge, Button } from '@3dads/ui';
+} from '@annie3d/contracts';
+import { Badge, Button } from '@annie3d/ui';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { ErrorState } from '@/components/ErrorState';

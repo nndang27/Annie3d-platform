@@ -1,5 +1,5 @@
-import { NODE_KINDS, type NodeKind, topologicalOrder } from '@3dads/contracts';
-import { Button, cx, Menu, Select, useToast } from '@3dads/ui';
+import { NODE_KINDS, type NodeKind, topologicalOrder } from '@annie3d/contracts';
+import { Button, cx, Menu, Select, useToast } from '@annie3d/ui';
 import { ArrowDown, ArrowUp, Link2, Link2Off, Play, PlusSquare, Trash2 } from 'lucide-react';
 import { useProjectContext } from '@/routes/project/context';
 import { useRunStore } from '@/stores/runStore';

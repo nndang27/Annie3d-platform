@@ -1,4 +1,4 @@
-import { cx } from '@3dads/ui';
+import { cx } from '@annie3d/ui';
 import { Link, Outlet, useRouter } from '@tanstack/react-router';
 
 const ITEMS = [

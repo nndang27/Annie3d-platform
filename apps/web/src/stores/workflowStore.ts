@@ -5,7 +5,7 @@ import {
   type WorkflowDoc,
   type WorkflowEdge,
   type WorkflowNode,
-} from '@3dads/contracts';
+} from '@annie3d/contracts';
 import { create } from 'zustand';
 import { commit, initUndoable, isDirty, markSaved, redo, replace, type Undoable, undo } from './undoable';
 

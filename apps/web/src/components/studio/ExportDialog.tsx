@@ -4,9 +4,9 @@ import {
   EXPORT_PRESETS,
   type ExportPresetId,
   newOperationId,
-} from '@3dads/contracts';
-import { Badge, Button, Dialog, formatBytes } from '@3dads/ui';
-import { compositeAd } from '@3dads/viewer-3d';
+} from '@annie3d/contracts';
+import { Badge, Button, Dialog, formatBytes } from '@annie3d/ui';
+import { compositeAd } from '@annie3d/viewer-3d';
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ErrorState } from '@/components/ErrorState';
@@ -96,7 +96,7 @@ export function ExportDialog({
           brandColor: ad.brandColor,
           layout: ad.layout,
           darkText: scene.background !== 'charcoal',
-          label: 'Rendered in browser · 3Dads demo',
+          label: 'Rendered in browser · Annie 3D demo',
         });
         const blob = await new Promise<Blob>((res, rej) =>
           canvas.toBlob((b) => (b ? res(b) : rej(new Error('PNG encoding failed'))), 'image/png'),
@@ -111,7 +111,7 @@ export function ExportDialog({
       } else if (spec.id === 'scene-json') {
         const payload = JSON.stringify(
           {
-            format: '3dads.scene+ad',
+            format: 'annie3d.scene+ad',
             version: 1,
             project: { id: project.id, name: project.name },
             scene,

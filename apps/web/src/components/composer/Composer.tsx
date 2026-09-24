@@ -1,4 +1,4 @@
-import { Button, Kbd } from '@3dads/ui';
+import { Button, Kbd } from '@annie3d/ui';
 import { CornerDownLeft, Sparkles } from 'lucide-react';
 import { type KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
 import { useComposerStore } from '@/stores/composerStore';

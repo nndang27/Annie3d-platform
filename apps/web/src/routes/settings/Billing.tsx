@@ -6,8 +6,8 @@ import {
   type PlanId,
   USAGE_UNIT,
   yearlyMonthlyEquivalent,
-} from '@3dads/contracts';
-import { Badge, Button, Dialog, formatRelative, Segmented, useToast } from '@3dads/ui';
+} from '@annie3d/contracts';
+import { Badge, Button, Dialog, formatRelative, Segmented, useToast } from '@annie3d/ui';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useState } from 'react';

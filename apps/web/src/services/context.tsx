@@ -1,4 +1,4 @@
-import type { PlatformServices } from '@3dads/contracts';
+import type { PlatformServices } from '@annie3d/contracts';
 import { createContext, type ReactNode, useContext } from 'react';
 
 const Ctx = createContext<PlatformServices | null>(null);

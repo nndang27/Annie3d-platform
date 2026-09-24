@@ -1,7 +1,7 @@
-import type { AdComposition, SceneDoc } from '@3dads/contracts';
-import { aspectToNumber } from '@3dads/contracts';
-import { Button, useReducedMotion } from '@3dads/ui';
-import { contrastOn, isWebGLAvailable, type ProductViewer, type ViewerStats } from '@3dads/viewer-3d';
+import type { AdComposition, SceneDoc } from '@annie3d/contracts';
+import { aspectToNumber } from '@annie3d/contracts';
+import { Button, useReducedMotion } from '@annie3d/ui';
+import { contrastOn, isWebGLAvailable, type ProductViewer, type ViewerStats } from '@annie3d/viewer-3d';
 import { Crosshair, Maximize, RotateCcw } from 'lucide-react';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { FixtureThumb } from '@/components/FixtureThumb';
@@ -49,10 +49,11 @@ export const ViewerPanel = forwardRef<ViewerHandle, Props>(function ViewerPanel(
     let disposed = false;
     let viewer: ProductViewer | null = null;
     performance.mark('viewer:import-start');
-    const dev = (window as unknown as { __3dads?: { viewers: Set<unknown>; viewerLog?: unknown[] } }).__3dads;
+    const dev = (window as unknown as { __annie3d?: { viewers: Set<unknown>; viewerLog?: unknown[] } })
+      .__annie3d;
     if (dev && !dev.viewerLog) dev.viewerLog = [];
     dev?.viewerLog?.push({ event: 'mount', t: performance.now() });
-    void import('@3dads/viewer-3d')
+    void import('@annie3d/viewer-3d')
       .then(({ ProductViewer }) => {
         if (disposed) {
           dev?.viewerLog?.push({ event: 'import-after-dispose', t: performance.now() });
@@ -69,7 +70,7 @@ export const ViewerPanel = forwardRef<ViewerHandle, Props>(function ViewerPanel(
           onContextRestored: () => setStatus('ready'),
         });
         viewerRef.current = viewer;
-        (window as unknown as { __3dads?: { viewers: Set<unknown> } }).__3dads?.viewers.add(viewer);
+        (window as unknown as { __annie3d?: { viewers: Set<unknown> } }).__annie3d?.viewers.add(viewer);
         viewer.setScene({ ...scene, brandColor: ad.brandColor });
         performance.mark('viewer:first-scene');
         performance.measure('viewer:import', 'viewer:import-start', 'viewer:import-end');
@@ -86,7 +87,7 @@ export const ViewerPanel = forwardRef<ViewerHandle, Props>(function ViewerPanel(
       disposed = true;
       dev?.viewerLog?.push({ event: 'cleanup', t: performance.now(), hadViewer: !!viewer });
       if (viewer) {
-        (window as unknown as { __3dads?: { viewers: Set<unknown> } }).__3dads?.viewers.delete(viewer);
+        (window as unknown as { __annie3d?: { viewers: Set<unknown> } }).__annie3d?.viewers.delete(viewer);
         viewer.dispose();
       }
       viewerRef.current = null;

@@ -122,5 +122,5 @@ const server = createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`3Dads preview: http://localhost:${PORT}/  (app at /app/)`);
+  console.log(`Annie 3D preview: http://localhost:${PORT}/  (app at /app/)`);
 });

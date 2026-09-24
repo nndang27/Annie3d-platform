@@ -1,5 +1,5 @@
-import { isTerminal, type Run, type RunEvent } from '@3dads/contracts';
-import { Badge, Button, formatRelative } from '@3dads/ui';
+import { isTerminal, type Run, type RunEvent } from '@annie3d/contracts';
+import { Badge, Button, formatRelative } from '@annie3d/ui';
 import { Pause, Play, RotateCcw, Square } from 'lucide-react';
 import { useState } from 'react';
 import { RunStatusBadge } from '@/components/RunStatusBadge';

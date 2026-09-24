@@ -1,4 +1,4 @@
-import type { ProductFixtureId } from '@3dads/contracts';
+import type { ProductFixtureId } from '@annie3d/contracts';
 
 const POSTERS: Record<ProductFixtureId, string> = {
   'serum-bottle': 'serum-bottle.webp',

@@ -1,4 +1,4 @@
-import type { Run, RunStep } from '@3dads/contracts';
+import type { Run, RunStep } from '@annie3d/contracts';
 import { create } from 'zustand';
 
 interface RunStore {

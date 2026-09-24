@@ -1,5 +1,5 @@
-import { NODE_KINDS, type WorkflowNode } from '@3dads/contracts';
-import { Button, Dialog, Field, Input, Kbd, Select, useToast } from '@3dads/ui';
+import { NODE_KINDS, type WorkflowNode } from '@annie3d/contracts';
+import { Button, Dialog, Field, Input, Kbd, Select, useToast } from '@annie3d/ui';
 import { useReactFlow } from '@xyflow/react';
 import { Download, MoreHorizontal, Trash2, Volume2, VolumeX } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -59,7 +59,7 @@ export function NodeFooter({ node }: { node: WorkflowNode }) {
       } else if (art.scene) {
         const payload = JSON.stringify(
           {
-            format: '3dads.scene+ad',
+            format: 'annie3d.scene+ad',
             version: 1,
             node: node.id,
             artifact: art.id,

@@ -1,5 +1,5 @@
 ---
-import { PLANS, USAGE_UNIT, yearlyMonthlyEquivalent } from '@3dads/contracts';
+import { PLANS, USAGE_UNIT, yearlyMonthlyEquivalent } from '@annie3d/contracts';
 import Base from '../layouts/Base.astro';
 import { appLink } from '../lib/site';
 const rows: [string, (p: (typeof PLANS)[number]) => string][] = [
@@ -12,7 +12,7 @@ const rows: [string, (p: (typeof PLANS)[number]) => string][] = [
 ];
 ---
 
-<Base title="Pricing" description="Illustrative 3Dads plans: Starter, Studio and Team, billed monthly or yearly, with render credits as the usage unit.">
+<Base title="Pricing" description="Illustrative Annie 3D plans: Starter, Studio and Team, billed monthly or yearly, with render credits as the usage unit.">
   <section class="container section-tight" style="padding-top:56px">
     <p class="eyebrow">Pricing</p>
     <h1 class="h1" style="margin-top:12px;max-width:18ch">Simple plans, one usage unit.</h1>

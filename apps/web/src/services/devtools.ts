@@ -1,10 +1,10 @@
-import type { PlatformServices } from '@3dads/contracts';
+import type { PlatformServices } from '@annie3d/contracts';
 import type { QueryClient } from '@tanstack/react-query';
 import { recentDownloads } from '@/lib/download';
 import type { MockServices } from './mock/services';
 
 /**
- * Developer/test surface exposed as window.__3dads. Documented in docs/MOCK_SCENARIOS.md.
+ * Developer/test surface exposed as window.__annie3d. Documented in docs/MOCK_SCENARIOS.md.
  * Not referenced by product screens.
  */
 export function installDevtools(services: PlatformServices, queryClient: QueryClient): void {
@@ -40,5 +40,5 @@ export function installDevtools(services: PlatformServices, queryClient: QueryCl
         .getEntriesByType('measure')
         .map((m) => ({ name: m.name, duration: m.duration, start: m.startTime })),
   };
-  (window as unknown as { __3dads: typeof api }).__3dads = api;
+  (window as unknown as { __annie3d: typeof api }).__annie3d = api;
 }

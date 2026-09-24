@@ -1,5 +1,5 @@
-import { type AdComposition, ASPECT_RATIOS, PRODUCT_FIXTURES, type SceneDoc } from '@3dads/contracts';
-import { Field, Input, Segmented, Select, Textarea } from '@3dads/ui';
+import { type AdComposition, ASPECT_RATIOS, PRODUCT_FIXTURES, type SceneDoc } from '@annie3d/contracts';
+import { Field, Input, Segmented, Select, Textarea } from '@annie3d/ui';
 import { useSceneStore } from '@/stores/sceneStore';
 
 const SWATCHES = ['#c9a27e', '#2b2f36', '#7a8290', '#2457d6', '#b45f9a', '#17623b', '#d6742e', '#f4f1ec'];

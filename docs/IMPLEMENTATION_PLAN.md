@@ -1,4 +1,4 @@
-# 3Dads website and simulated product — implementation plan
+# Annie 3D website and simulated product — implementation plan
 
 Date: 2026-09-12. Owner: Fable (design + frontend + QA). Status column is updated as work lands; see the bottom section for completion status.
 
@@ -6,7 +6,7 @@ Source of truth for scope: `PROMPT_FABLE_BUILD_3DADS_WEBSITE.md`. Design/perform
 
 ## 1. Product framing
 
-3Dads turns a product reference (image or catalog fixture) plus a creative brief into 3D advertising scenes, animations and ad variants for ecommerce teams. Journey: **reference → brief → workflow → 3D scene → animation/ad variants → review → export**.
+Annie 3D turns a product reference (image or catalog fixture) plus a creative brief into 3D advertising scenes, animations and ad variants for ecommerce teams. Journey: **reference → brief → workflow → 3D scene → animation/ad variants → review → export**.
 
 This phase ships a complete, tested frontend against a **stateful mock transport**. Nothing calls an LLM, generation provider, harness, payment or email service. Every screen calls typed service interfaces; the mock adapter is initialised explicitly and labelled "Demo workspace".
 

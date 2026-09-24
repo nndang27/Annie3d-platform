@@ -1,5 +1,5 @@
 {
-  "name": "@3dads/marketing",
+  "name": "@annie3d/marketing",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,9 +10,9 @@
     "typecheck": "astro check"
   },
   "dependencies": {
-    "@3dads/contracts": "workspace:*",
-    "@3dads/ui": "workspace:*",
-    "@3dads/viewer-3d": "workspace:*",
+    "@annie3d/contracts": "workspace:*",
+    "@annie3d/ui": "workspace:*",
+    "@annie3d/viewer-3d": "workspace:*",
     "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/inter": "^5.3.0",
     "astro": "^7.3.2",

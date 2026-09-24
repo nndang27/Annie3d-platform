@@ -1,5 +1,5 @@
-import { DEFAULT_NOTIFICATION_PREFS, type NotificationPrefs } from '@3dads/contracts';
-import { Badge, Button, formatRelative, Switch, useToast } from '@3dads/ui';
+import { DEFAULT_NOTIFICATION_PREFS, type NotificationPrefs } from '@annie3d/contracts';
+import { Badge, Button, formatRelative, Switch, useToast } from '@annie3d/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useServices } from '@/services/context';

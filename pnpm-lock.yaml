@@ -41,13 +41,13 @@ importers:
 
   apps/marketing:
     dependencies:
-      '@3dads/contracts':
+      '@annie3d/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@3dads/ui':
+      '@annie3d/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@3dads/viewer-3d':
+      '@annie3d/viewer-3d':
         specifier: workspace:*
         version: link:../../packages/viewer-3d
       '@astrojs/sitemap':
@@ -72,13 +72,13 @@ importers:
 
   apps/web:
     dependencies:
-      '@3dads/contracts':
+      '@annie3d/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@3dads/ui':
+      '@annie3d/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@3dads/viewer-3d':
+      '@annie3d/viewer-3d':
         specifier: workspace:*
         version: link:../../packages/viewer-3d
       '@tanstack/react-query':

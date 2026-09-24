@@ -1,5 +1,5 @@
 {
-  "name": "3dads-platform",
+  "name": "annie3d-platform",
   "private": true,
   "version": "0.1.0",
   "packageManager": "pnpm@10.28.2",
@@ -8,10 +8,10 @@
     "pnpm": ">=10"
   },
   "scripts": {
-    "dev": "concurrently -n site,app -c cyan,magenta \"pnpm --filter @3dads/marketing dev\" \"pnpm --filter @3dads/web dev\"",
-    "dev:site": "pnpm --filter @3dads/marketing dev",
-    "dev:app": "pnpm --filter @3dads/web dev",
-    "build": "pnpm --filter @3dads/viewer-3d build:fixtures && pnpm -r --filter './apps/*' build",
+    "dev": "concurrently -n site,app -c cyan,magenta \"pnpm --filter @annie3d/marketing dev\" \"pnpm --filter @annie3d/web dev\"",
+    "dev:site": "pnpm --filter @annie3d/marketing dev",
+    "dev:app": "pnpm --filter @annie3d/web dev",
+    "build": "pnpm --filter @annie3d/viewer-3d build:fixtures && pnpm -r --filter './apps/*' build",
     "preview": "node scripts/preview-server.mjs",
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check .",

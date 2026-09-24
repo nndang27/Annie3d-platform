@@ -28,7 +28,7 @@ What to keep: floating pill chrome, prompt-in-node with @mentions, footer pills 
 budget-capped agent composer, "Run from here". What we change: our nodes produce 3D, which is
 heavy, so the canvas never renders live 3D (section 4.1), and we add an editor overlay for 3D.
 
-## 2. Redesigned layout for 3Dads
+## 2. Redesigned layout for Annie 3D
 
 ### 2.1 Page regions
 
@@ -36,7 +36,7 @@ The canvas is a **free node graph**, exactly like the reference: any node can be
 anywhere and wired to any compatible port. Nothing is locked into a fixed pipeline.
 
 ```
-┌ ◧ 3Dads ▾ │ Serum launch ✎ │ ● Saved ─────────── [ Starters ▾ ]  [ ▶ Run all · 38 cr ] ─── 72% │ 💬 │ ⧉ │ 480 cr │ Share ▾ │ (A) ┐
+┌ ◧ Annie 3D ▾ │ Serum launch ✎ │ ● Saved ─────────── [ Starters ▾ ]  [ ▶ Run all · 38 cr ] ─── 72% │ 💬 │ ⧉ │ 480 cr │ Share ▾ │ (A) ┐
 │                                                                                                           │ Agent ● │
 │  [Photo: serum front] ●──╮                    ╭──● [Packshot: ¾ hero]                                     │         │
 │                          ╰──● [3D model v3] ●─┤                                                           │  plan / │
@@ -241,7 +241,7 @@ editor it orbits. Hover previews become tap-to-play.
    exports (Web, Google Merchant ≤ 15 MB, Google Swirl ≤ 3 MB), USDZ.
 7. **Share service.** Static-rendered share pages with Open Graph image + `og:video` so links
    preview in Facebook/Telegram/Zalo; lightweight viewer; unlisted tokens; revoke; view
-   counts; "Made with 3Dads" CTA.
+   counts; "Made with Annie 3D" CTA.
 8. **Agent service.** The agent calls the same graph-operation API the UI uses (add node,
    connect, set prompt, run), so every agent action is visible and undoable on the canvas.
    Region edits send the selection (face ids or mask) and rendered views of the selection.

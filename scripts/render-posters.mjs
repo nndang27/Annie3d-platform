@@ -18,8 +18,8 @@ await build({
   logLevel: 'error',
   resolve: {
     alias: {
-      '@3dads/viewer-3d': join(root, 'packages/viewer-3d/src/index.ts'),
-      '@3dads/contracts': join(root, 'packages/contracts/src/index.ts'),
+      '@annie3d/viewer-3d': join(root, 'packages/viewer-3d/src/index.ts'),
+      '@annie3d/contracts': join(root, 'packages/contracts/src/index.ts'),
     },
   },
   build: { outDir, emptyOutDir: true },

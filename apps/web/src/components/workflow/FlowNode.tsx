@@ -1,5 +1,5 @@
-import { NODE_KINDS, type WorkflowNode } from '@3dads/contracts';
-import { Badge, cx } from '@3dads/ui';
+import { NODE_KINDS, type WorkflowNode } from '@annie3d/contracts';
+import { Badge, cx } from '@annie3d/ui';
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import { ChevronDown, Loader2, Play, Zap } from 'lucide-react';
 import { type KeyboardEvent, memo, useEffect, useRef } from 'react';

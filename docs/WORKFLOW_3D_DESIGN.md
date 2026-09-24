@@ -1,4 +1,4 @@
-# 3Dads 3D workflow design
+# Annie 3D 3D workflow design
 
 > Superseded for the first release by `MVP_STRATEGY.md` and `MVP_VERTICAL_WORKFLOWS.md` (2026-09-24). Kept as the long-term catalogue.
 
@@ -208,7 +208,7 @@ model are the same twin at the same revision by construction.
 
 Goal: replace the static product photo on a brand or agency site with a 3D object that moves.
 
-- One `<script src=…widget.js data-3dads="…">` tag or an `<iframe>`; the widget renders the
+- One `<script src=…widget.js data-annie3d="…">` tag or an `<iframe>`; the widget renders the
   poster immediately, loads the bundle lazily when near the viewport, then plays the chosen
   `motion` (idle loop, hover orbit, scroll-driven turntable).
 - Uses the same optimised bundle as the reveal, so an agency can deliver A/B/C/D from one graph.
@@ -219,7 +219,7 @@ Goal: replace the static product photo on a brand or agency site with a 3D objec
 
 ## 7. Differentiation summary
 
-| Need | ElevenLabs Flows | Adobe digital twins | 3Dads (this design) |
+| Need | ElevenLabs Flows | Adobe digital twins | Annie 3D (this design) |
 | --- | --- | --- | --- |
 | Start from photos only | image nodes, no twin | requires a twin (CAD) | Reconstruct + Twin check gate |
 | Guarantee the same object across outputs | no | yes (within its templates) | yes, across ads, `.glb`, reveal, widget (twinId/revision on every artifact) |

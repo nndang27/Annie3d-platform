@@ -4,7 +4,7 @@ import {
   type NodeCategory,
   type NodeKind,
   type PortType,
-} from '@3dads/contracts';
+} from '@annie3d/contracts';
 import {
   AudioLines,
   Box,
@@ -73,7 +73,7 @@ export const TOOLBAR_KINDS: NodeKind[] = [
   'export',
 ];
 
-const USAGE_KEY = '3dads.nodeUsage';
+const USAGE_KEY = 'annie3d.nodeUsage';
 
 export function recordNodeUsage(kind: NodeKind): void {
   try {

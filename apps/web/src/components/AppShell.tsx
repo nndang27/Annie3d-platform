@@ -1,5 +1,5 @@
-import { isServiceError } from '@3dads/contracts';
-import { Badge, Banner, Button, cx, Menu } from '@3dads/ui';
+import { isServiceError } from '@annie3d/contracts';
+import { Badge, Banner, Button, cx, Menu } from '@annie3d/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useRouter } from '@tanstack/react-router';
 import {
@@ -83,11 +83,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             <ChevronLeft size={18} aria-hidden="true" />
           )}
         </Button>
-        <Link to="/" className="logo" aria-label="3Dads projects">
+        <Link to="/" className="logo" aria-label="Annie 3D projects">
           <span className="logo-mark" aria-hidden="true">
-            3D
+            A
           </span>
-          <span>3Dads</span>
+          <span>Annie 3D</span>
         </Link>
         <span className="demo-chip" title={en.demoExplainer} data-testid="demo-label">
           <span

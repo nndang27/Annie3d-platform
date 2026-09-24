@@ -1,4 +1,4 @@
-import { Button, formatRelative } from '@3dads/ui';
+import { Button, formatRelative } from '@annie3d/ui';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Mail } from 'lucide-react';
 import { useEffect, useRef } from 'react';

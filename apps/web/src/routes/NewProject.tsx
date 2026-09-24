@@ -8,8 +8,8 @@ import {
   PRODUCT_FIXTURES,
   type ProductFixtureId,
   TEMPLATES,
-} from '@3dads/contracts';
-import { Button, cx, Field, Input, Segmented, Select, Textarea } from '@3dads/ui';
+} from '@annie3d/contracts';
+import { Button, cx, Field, Input, Segmented, Select, Textarea } from '@annie3d/ui';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { ImagePlus, X } from 'lucide-react';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
@@ -19,7 +19,7 @@ import { fieldError } from '@/lib/errors';
 import { useServices } from '@/services/context';
 import { useInvalidate, useMe } from '@/services/queries';
 
-const DRAFT_KEY = '3dads.draft.newProject';
+const DRAFT_KEY = 'annie3d.draft.newProject';
 
 interface Draft {
   templateSlug: string;

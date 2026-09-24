@@ -31,20 +31,20 @@ function writePref(key: string, v: unknown) {
 }
 
 export const useUiStore = create<UiStore>((set, get) => ({
-  navCollapsed: readPref('3dads.ui.navCollapsed', false),
+  navCollapsed: readPref('annie3d.ui.navCollapsed', false),
   workflowView: readPref<WorkflowView>(
-    '3dads.ui.workflowView',
+    'annie3d.ui.workflowView',
     typeof window !== 'undefined' && window.innerWidth < 900 ? 'list' : 'canvas',
   ),
   inspectorOpen: false,
   selectedRunId: null,
   toggleNav: () => {
     const v = !get().navCollapsed;
-    writePref('3dads.ui.navCollapsed', v);
+    writePref('annie3d.ui.navCollapsed', v);
     set({ navCollapsed: v });
   },
   setWorkflowView: (v) => {
-    writePref('3dads.ui.workflowView', v);
+    writePref('annie3d.ui.workflowView', v);
     set({ workflowView: v });
   },
   setInspectorOpen: (inspectorOpen) => set({ inspectorOpen }),

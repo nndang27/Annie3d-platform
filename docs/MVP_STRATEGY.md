@@ -1,4 +1,4 @@
-# 3Dads MVP strategy
+# Annie 3D MVP strategy
 
 Status: consolidated decision record, 2026-09-24. Supersedes the scope parts of
 `WORKFLOW_3D_DESIGN.md` and refines `MVP_VERTICAL_WORKFLOWS.md` (which keeps the
@@ -6,10 +6,10 @@ per-line node detail). Items marked **Decision needed** are open for the founder
 
 ## 1. Strategy in one paragraph
 
-3Dads is a **3D advertising workspace**: open the site, you are on a canvas; drop one product
+Annie 3D is a **3D advertising workspace**: open the site, you are on a canvas; drop one product
 photo, pick a production line, and an agent team builds the product in 3D and delivers a
 finished ad video, an animated `.glb` and packshots, with a share link anyone can open.
-Canva gives templates you fill by hand; 3Dads gives production lines that run themselves.
+Canva gives templates you fill by hand; Annie 3D gives production lines that run themselves.
 We launch narrow (three verticals, three lines, 3D only), measure quality with fixed eval
 sets, and grow through the share links the outputs create.
 
@@ -51,7 +51,7 @@ Motion → Render → Package. Details per line: `MVP_VERTICAL_WORKFLOWS.md`.
 | F9 | **Versions** | Every run and edit is a version on its node, with before/after compare and one-click revert. |
 | F10 | **Cloud share link** | Public or unlisted link opening a viewer with the model orbiting in about a second, download button, embed code, and a "Make your own" call to action. Rich previews (image + short video) for Facebook, Telegram, X, Zalo, Messenger. |
 | F11 | **Accounts and billing** | Everything on the example project works without an account. One-tap Google sign-in at the first run on the user's own photo; one full run free; further runs need a subscription. Credit cost shown before Run. |
-| F12 | **Process reel** | Every finished run can export a vertical 9:16 MP4 (10–20 s): the final ad on the top half, the canvas below replaying the run as nodes light up in order with their output thumbnails, time-compressed, with a caption such as "1 photo → 3D ad in 4 min" and an end card carrying the share link and "Made with 3Dads". Built by replaying the run's event log, not by screen recording, so it is sharp and deterministic. Free runs keep the watermark; paid plans may remove it. We use the same reels for our own daily build-in-public series. |
+| F12 | **Process reel** | Every finished run can export a vertical 9:16 MP4 (10–20 s): the final ad on the top half, the canvas below replaying the run as nodes light up in order with their output thumbnails, time-compressed, with a caption such as "1 photo → 3D ad in 4 min" and an end card carrying the share link and "Made with Annie 3D". Built by replaying the run's event log, not by screen recording, so it is sharp and deterministic. Free runs keep the watermark; paid plans may remove it. We use the same reels for our own daily build-in-public series. |
 
 ### Toolbar (bottom of the canvas)
 
@@ -84,7 +84,7 @@ The region brush appears only when a 3D node is focused.
 | Phase | Weeks (estimate) | What happens | Exit gate |
 | --- | --- | --- | --- |
 | 0. Riskiest-assumption test | 1–2 | Run 20 real products per vertical through the lines, fixing by hand where needed (Wizard of Oz). 15 seller interviews using The Mom Test. | Sellers would pay for at least one line; we know the failure modes. |
-| 1. Private alpha | 3–6 | 20–30 hand-picked sellers and agencies, free, runs watched by us. Share links on. | Eval bar met on ≥ 2 lines; ≥ 10 alpha users post a 3Dads ad publicly. |
+| 1. Private alpha | 3–6 | 20–30 hand-picked sellers and agencies, free, runs watched by us. Share links on. | Eval bar met on ≥ 2 lines; ≥ 10 alpha users post a Annie 3D ad publicly. |
 | 2. Closed beta | 7–10 | Waitlist in waves (100 → 500 → 2 000), paid plan live, daily cap on free runs. | Free→paid conversion and week-4 retention measured; GPU cost per run below price/3. |
 | 3. Public launch | 11+ | Product Hunt, Show HN, X, TikTok and Reddit demo clips, Vietnamese seller communities, launch week with one new line per day. | Sean Ellis survey ≥ 40 % "very disappointed" among weekly users before paid growth. |
 
@@ -99,7 +99,7 @@ arrives with attention (section 9). Waves keep quality visible and the bill boun
 | Run success rate in production | Must track the eval pass rate; a gap means the eval set is unrepresentative. |
 | Share rate (runs whose link is opened by someone else) | The growth engine. |
 | Signups per 100 share-link views | Viral loop strength. |
-| Process reels exported and posted | Whether users market 3Dads for us (F12). |
+| Process reels exported and posted | Whether users market Annie 3D for us (F12). |
 | Free→paid conversion after the free run | Pricing and value check. |
 | Week-4 retention of paying users | Whether this is a habit or a one-off. |
 | Gross margin per run | GPU + LLM + render cost vs price. |
@@ -109,7 +109,7 @@ arrives with attention (section 9). Waves keep quality visible and the bill boun
 - **Now → alpha evidence**: a pre-seed is raised on team, demo and signal, not on user
   counts (ElevenLabs raised $2M before its public beta; Lovable raised $7.5M on GitHub stars
   and a waitlist before its public product launch). Our signal: the demo video of a line,
-  eval pass rates, waitlist size, alpha users posting 3Dads ads.
+  eval pass rates, waitlist size, alpha users posting Annie 3D ads.
 - **Where**: accelerators with standard terms (YC $500k; a16z speedrun up to $1M; Antler
   ~$100–250k depending on region) or pre-seed funds that back AI/creative tools
   (Credo Ventures and Concept Ventures backed ElevenLabs at pre-seed).
@@ -137,7 +137,7 @@ Patterns that apply to us:
 
 1. **The output is the marketing.** Midjourney's public channels, ElevenLabs' memes and
    Lovable's before/after clips all spread because the result was shareable. Our share
-   link, the ad and the process reel (F12) must carry "Made with 3Dads".
+   link, the ad and the process reel (F12) must carry "Made with Annie 3D".
    The process-reel format (result on top, node graph below) already performs in
    creator communities: a DaVinci Resolve Fusion "Day 13" learn-in-public reel in this
    format reached ~6.9k likes and ~395 shares (Facebook, jilmotion, viewed 2026-09-24).

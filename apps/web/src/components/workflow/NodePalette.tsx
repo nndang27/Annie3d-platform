@@ -1,5 +1,5 @@
-import { NODE_KINDS, type NodeCategory, type NodeKind } from '@3dads/contracts';
-import { Kbd } from '@3dads/ui';
+import { NODE_KINDS, type NodeCategory, type NodeKind } from '@annie3d/contracts';
+import { Kbd } from '@annie3d/ui';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { CATEGORIES, mostUsedKinds, NODE_ICON, PALETTE_KINDS } from './nodeMeta';
 

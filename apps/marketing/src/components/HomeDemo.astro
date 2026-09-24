@@ -5,7 +5,7 @@ import hero from '../assets/posters/hero.webp';
 
 <div class="demo-frame" data-home-demo>
   <div class="demo-stage">
-    <Image src={hero} alt="Over-ear headphones rendered in the 3Dads studio on a white backdrop (demonstration fixture)" width={1400} height={1050} widths={[640, 960, 1400]} sizes="(min-width: 1280px) 1200px, 100vw" loading="eager" fetchpriority="high" decoding="sync" data-demo-poster />
+    <Image src={hero} alt="Over-ear headphones rendered in the Annie 3D studio on a white backdrop (demonstration fixture)" width={1400} height={1050} widths={[640, 960, 1400]} sizes="(min-width: 1280px) 1200px, 100vw" loading="eager" fetchpriority="high" decoding="sync" data-demo-poster />
     <canvas data-demo-canvas hidden aria-label="Interactive 3D headphones. Drag to orbit, scroll to zoom." tabindex="-1"></canvas>
     <div class="demo-toolbar">
       <button type="button" class="btn btn-primary btn-sm" data-demo-start data-testid="home-demo-start">Rotate the model</button>
@@ -35,7 +35,7 @@ import hero from '../assets/posters/hero.webp';
     const status = root.querySelector<HTMLElement>('[data-demo-status]')!;
     const colors = ['#2b2f36', '#5b7cff', '#c9a27e', '#b45f9a', '#7a8290'];
     let i = 0;
-    let viewer: import('@3dads/viewer-3d').ProductViewer | null = null;
+    let viewer: import('@annie3d/viewer-3d').ProductViewer | null = null;
     const scene = () => ({
       fixtureId: 'headphones' as const,
       background: 'studio-white' as const,
@@ -52,7 +52,7 @@ import hero from '../assets/posters/hero.webp';
       start.textContent = 'Loading 3D…';
       status.textContent = 'Loading the interactive viewer';
       try {
-        const mod = await import('@3dads/viewer-3d');
+        const mod = await import('@annie3d/viewer-3d');
         if (!mod.isWebGLAvailable()) {
           start.textContent = '3D needs WebGL';
           status.textContent = 'WebGL is unavailable in this browser; the poster stays visible.';

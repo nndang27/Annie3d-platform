@@ -1,4 +1,4 @@
-import { type ConnectivityState, ServiceError } from '@3dads/contracts';
+import { type ConnectivityState, ServiceError } from '@annie3d/contracts';
 import { isScenarioId, LATENCY, type LatencyProfile, type ScenarioId } from './scenarios';
 
 export interface TransportConfig {
@@ -7,8 +7,8 @@ export interface TransportConfig {
   latencyScale: number;
 }
 
-const STORAGE_KEY = '3dads.scenario';
-const SCALE_KEY = '3dads.latencyScale';
+const STORAGE_KEY = 'annie3d.scenario';
+const SCALE_KEY = 'annie3d.latencyScale';
 
 /**
  * Simulated transport: adds representative latency and scenario failures around backend calls.

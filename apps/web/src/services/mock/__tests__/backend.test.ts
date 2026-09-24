@@ -1,4 +1,4 @@
-import { isTerminal, type RunEvent } from '@3dads/contracts';
+import { isTerminal, type RunEvent } from '@annie3d/contracts';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { MockBackend } from '../backend';
 import { VirtualClock } from '../clock';

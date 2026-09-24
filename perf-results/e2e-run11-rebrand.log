@@ -1,0 +1,142 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+npm warn Unknown project config "strict-peer-dependencies". This will stop working in the next major version of npm.
+
+Running 136 tests using 1 worker
+
+[1/136] [desktop] › tests/e2e/controls.spec.ts:9:7 › control coverage › dashboard: search, filters, create/duplicate/rename/archive/delete, empty state
+[2/136] [desktop] › tests/e2e/controls.spec.ts:91:7 › control coverage › new project validation keeps valid fields and explains upload rejection
+[3/136] [desktop] › tests/e2e/controls.spec.ts:119:7 › control coverage › workflow canvas: Flows-style node, footer settings, menu, palette, context menu, connection rules, undo/redo
+[4/136] [desktop] › tests/e2e/controls.spec.ts:196:7 › control coverage › composer performs meaningful actions and explains unsupported ones
+[5/136] [desktop] › tests/e2e/controls.spec.ts:226:7 › control coverage › studio controls visibly change the scene; typing stays responsive while a run streams
+[6/136] [desktop] › tests/e2e/controls.spec.ts:267:7 › control coverage › outputs: acceptance, download reference image, open in studio, library filters and detail
+[7/136] [desktop] › tests/e2e/controls.spec.ts:294:7 › control coverage › settings: profile, workspace, notifications, members/invitations, roles
+[8/136] [desktop] › tests/e2e/controls.spec.ts:331:7 › control coverage › notifications panel, scenario page, double-click safety on run start
+[9/136] [desktop] › tests/e2e/controls.spec.ts:352:7 › control coverage › flaky reads retry; timeout on mutation does not duplicate
+[10/136] [desktop] › tests/e2e/journeys.spec.ts:17:7 › journeys › J1 homepage → template → demo signup → project from that template
+[11/136] [desktop] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output
+[12/136] [desktop] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload
+[13/136] [desktop] › tests/e2e/journeys.spec.ts:111:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run
+[14/136] [desktop] › tests/e2e/journeys.spec.ts:132:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored
+[15/136] [desktop] › tests/e2e/journeys.spec.ts:168:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step
+[16/136] [desktop] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4
+[17/136] [desktop] › tests/e2e/journeys.spec.ts:233:7 › journeys › J6b WebM browser recording is a real recording
+[18/136] [desktop] › tests/e2e/journeys.spec.ts:249:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+[19/136] [desktop] › tests/e2e/journeys.spec.ts:297:7 › journeys › J8 sign out → sign in as another user → no leakage
+[20/136] [desktop] › tests/e2e/journeys.spec.ts:328:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector
+[21/136] [desktop] › tests/e2e/journeys.spec.ts:354:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact
+[22/136] [desktop] › tests/e2e/journeys.spec.ts:392:7 › journeys › J9c unsupported WebGL shows a usable fallback
+[23/136] [desktop] › tests/e2e/public.spec.ts:4:7 › public site › homepage ships useful HTML, working links, no app code
+[24/136] [desktop] › tests/e2e/public.spec.ts:29:7 › public site › 3D demo loads on intent and renders frames
+[25/136] [desktop] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link
+[26/136] [desktop] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links
+[27/136] [desktop] › tests/e2e/public.spec.ts:76:7 › public site › help articles, legal drafts and 404 status
+[28/136] [desktop] › tests/e2e/public.spec.ts:92:7 › public site › mobile menu opens by click and keyboard, closes on Escape
+[29/136] [desktop] › tests/e2e/screenshots.spec.ts:12:5 › screenshots across widths and states
+[30/136] [desktop] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-portrait (390×844)
+[31/136] [desktop] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-portrait (390×844)
+[32/136] [desktop] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-landscape (844×390)
+[33/136] [desktop] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-landscape (844×390)
+[34/136] [desktop] › tests/e2e/viewports.spec.ts:50:7 › public pages fit small-phone (320×568)
+[35/136] [desktop] › tests/e2e/viewports.spec.ts:64:7 › app screens fit small-phone (320×568)
+[36/136] [desktop] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-portrait (768×1024)
+[37/136] [desktop] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-portrait (768×1024)
+[38/136] [desktop] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-landscape (1024×768)
+[39/136] [desktop] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-landscape (1024×768)
+[40/136] [desktop] › tests/e2e/viewports.spec.ts:50:7 › public pages fit laptop (1280×800)
+[41/136] [desktop] › tests/e2e/viewports.spec.ts:64:7 › app screens fit laptop (1280×800)
+[42/136] [desktop] › tests/e2e/viewports.spec.ts:50:7 › public pages fit wide (1600×1000)
+[43/136] [desktop] › tests/e2e/viewports.spec.ts:64:7 › app screens fit wide (1600×1000)
+[44/136] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /
+[45/136] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /product
+[46/136] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates
+[47/136] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /templates/turntable-hero-skincare
+[48/136] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /pricing
+[49/136] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /help
+[50/136] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /help/quickstart
+[51/136] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /legal/privacy
+[52/136] [a11y] › tests/e2e/a11y.spec.ts:17:7 › axe: /nope
+[53/136] [a11y] › tests/e2e/a11y.spec.ts:28:5 › axe: app screens
+[54/136] [a11y] › tests/e2e/a11y.spec.ts:63:5 › focus is visible and dialogs trap/restore focus
+[55/136] [mobile] › tests/e2e/mobile.spec.ts:3:5 › mobile: step/list workflow, studio stacked, no horizontal scroll
+[56/136] [mobile] › tests/e2e/mobile.spec.ts:24:5 › public site: mobile menu covers the page and its CTA is legible
+[57/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-portrait (390×844)
+[58/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-portrait (390×844)
+[59/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-landscape (844×390)
+[60/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-landscape (844×390)
+[61/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit small-phone (320×568)
+[62/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit small-phone (320×568)
+[63/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-portrait (768×1024)
+[64/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-portrait (768×1024)
+[65/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-landscape (1024×768)
+[66/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-landscape (1024×768)
+[67/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit laptop (1280×800)
+[68/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit laptop (1280×800)
+[69/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:50:7 › public pages fit wide (1600×1000)
+[70/136] [viewports-chromium] › tests/e2e/viewports.spec.ts:64:7 › app screens fit wide (1600×1000)
+[71/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-portrait (390×844)
+[72/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-portrait (390×844)
+[73/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-landscape (844×390)
+[74/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-landscape (844×390)
+[75/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit small-phone (320×568)
+[76/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit small-phone (320×568)
+[77/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-portrait (768×1024)
+[78/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-portrait (768×1024)
+[79/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-landscape (1024×768)
+[80/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-landscape (1024×768)
+[81/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit laptop (1280×800)
+[82/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit laptop (1280×800)
+[83/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:50:7 › public pages fit wide (1600×1000)
+[84/136] [viewports-webkit] › tests/e2e/viewports.spec.ts:64:7 › app screens fit wide (1600×1000)
+[85/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-portrait (390×844)
+[86/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-portrait (390×844)
+[87/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit phone-landscape (844×390)
+[88/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit phone-landscape (844×390)
+[89/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit small-phone (320×568)
+[90/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit small-phone (320×568)
+[91/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-portrait (768×1024)
+[92/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-portrait (768×1024)
+[93/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit tablet-landscape (1024×768)
+[94/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit tablet-landscape (1024×768)
+[95/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit laptop (1280×800)
+[96/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit laptop (1280×800)
+[97/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:50:7 › public pages fit wide (1600×1000)
+[98/136] [viewports-firefox] › tests/e2e/viewports.spec.ts:64:7 › app screens fit wide (1600×1000)
+[99/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:17:7 › journeys › J1 homepage → template → demo signup → project from that template
+[100/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output
+[101/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload
+[102/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:111:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run
+[103/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:132:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored
+[104/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:168:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step
+[105/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4
+[106/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:233:7 › journeys › J6b WebM browser recording is a real recording
+[107/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:249:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+[108/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:297:7 › journeys › J8 sign out → sign in as another user → no leakage
+[109/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:328:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector
+[110/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:354:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact
+[111/136] [journeys-webkit] › tests/e2e/journeys.spec.ts:392:7 › journeys › J9c unsupported WebGL shows a usable fallback
+[112/136] [journeys-webkit] › tests/e2e/public.spec.ts:4:7 › public site › homepage ships useful HTML, working links, no app code
+[113/136] [journeys-webkit] › tests/e2e/public.spec.ts:29:7 › public site › 3D demo loads on intent and renders frames
+[114/136] [journeys-webkit] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link
+[115/136] [journeys-webkit] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links
+[116/136] [journeys-webkit] › tests/e2e/public.spec.ts:76:7 › public site › help articles, legal drafts and 404 status
+[117/136] [journeys-webkit] › tests/e2e/public.spec.ts:92:7 › public site › mobile menu opens by click and keyboard, closes on Escape
+[118/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:17:7 › journeys › J1 homepage → template → demo signup → project from that template
+[119/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:40:7 › journeys › J2 upload reference → brief → run → inspect 3D output
+[120/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:71:7 › journeys › J3 edit scene/ad → undo/redo → play/scrub → aspect → save/reload
+[121/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:111:7 › journeys › J4 start run → navigate away → return → status recovered, no duplicate run
+[122/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:132:7 › journeys › J5 cancel → retry → prior artifacts kept, late events ignored
+[123/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:168:7 › journeys › J5b failure scenario: failed step, retained outputs, retry only failed step
+[124/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:185:7 › journeys › J6 versions → choose → export → download and validate PNG/JSON/MP4
+[125/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:233:7 › journeys › J6b WebM browser recording is a real recording
+[126/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:249:7 › journeys › J7 pricing → sign-in → checkout outcomes → entitlement and return destination
+[127/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:297:7 › journeys › J8 sign out → sign in as another user → no leakage
+[128/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:328:7 › journeys › J9a keyboard-only: sign in, open project, list view, run, inspector
+[129/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:354:7 › journeys › J9b reduced motion, offline recovery, expired session, denied role, missing artifact
+[130/136] [journeys-firefox] › tests/e2e/journeys.spec.ts:392:7 › journeys › J9c unsupported WebGL shows a usable fallback
+[131/136] [journeys-firefox] › tests/e2e/public.spec.ts:4:7 › public site › homepage ships useful HTML, working links, no app code
+[132/136] [journeys-firefox] › tests/e2e/public.spec.ts:29:7 › public site › 3D demo loads on intent and renders frames
+[133/136] [journeys-firefox] › tests/e2e/public.spec.ts:45:7 › public site › templates gallery search/filter and detail deep link
+[134/136] [journeys-firefox] › tests/e2e/public.spec.ts:63:7 › public site › pricing interval toggle updates prices and plan links
+[135/136] [journeys-firefox] › tests/e2e/public.spec.ts:76:7 › public site › help articles, legal drafts and 404 status
+[136/136] [journeys-firefox] › tests/e2e/public.spec.ts:92:7 › public site › mobile menu opens by click and keyboard, closes on Escape
+  136 passed (4.9m)

@@ -1,5 +1,5 @@
-import { type CheckoutSession, findPlan, type Subscription, safeReturnTo } from '@3dads/contracts';
-import { Badge, Button } from '@3dads/ui';
+import { type CheckoutSession, findPlan, type Subscription, safeReturnTo } from '@annie3d/contracts';
+import { Badge, Button } from '@annie3d/ui';
 import { Link, useSearch } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { ErrorState } from '@/components/ErrorState';

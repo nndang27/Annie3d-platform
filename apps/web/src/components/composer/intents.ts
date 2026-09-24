@@ -1,4 +1,4 @@
-import type { AdComposition, AnimationPreset, ExportPresetId, NodeKind, SceneDoc } from '@3dads/contracts';
+import type { AdComposition, AnimationPreset, ExportPresetId, NodeKind, SceneDoc } from '@annie3d/contracts';
 
 export type Intent =
   | { type: 'scene'; patch: { scene?: Partial<SceneDoc>; ad?: Partial<AdComposition> }; summary: string }

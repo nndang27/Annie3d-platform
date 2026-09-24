@@ -1,4 +1,4 @@
-import { Banner, Button } from '@3dads/ui';
+import { Banner, Button } from '@annie3d/ui';
 import { Link } from '@tanstack/react-router';
 import { AlertTriangle, WifiOff } from 'lucide-react';
 import { presentError } from '@/lib/errors';

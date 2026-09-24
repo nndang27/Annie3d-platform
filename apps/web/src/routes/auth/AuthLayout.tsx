@@ -27,11 +27,11 @@ export function AuthLayout({
         className="card card-pad"
         style={{ width: '100%', maxWidth: 440, display: 'grid', gap: 18, padding: 28 }}
       >
-        <a href={`${SITE}/`} className="logo" aria-label="3Dads home">
+        <a href={`${SITE}/`} className="logo" aria-label="Annie 3D home">
           <span className="logo-mark" aria-hidden="true">
-            3D
+            A
           </span>
-          <span>3Dads</span>
+          <span>Annie 3D</span>
         </a>
         <div>
           <h1 style={{ fontSize: '1.375rem', fontWeight: 600 }}>{title}</h1>

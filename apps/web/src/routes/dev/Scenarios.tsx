@@ -1,4 +1,4 @@
-import { Badge, Button, Select, useToast } from '@3dads/ui';
+import { Badge, Button, Select, useToast } from '@annie3d/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useServices } from '@/services/context';
@@ -25,8 +25,8 @@ export function Scenarios() {
       <h1 className="page-title">Demo scenarios</h1>
       <p style={{ color: 'var(--text-secondary)', marginTop: 4 }}>
         Shapes the simulated transport and engine. Also available as <span className="mono">?scenario=</span>,
-        localStorage <span className="mono">3dads.scenario</span>, and{' '}
-        <span className="mono">window.__3dads</span> in tests. Documented in docs/MOCK_SCENARIOS.md.
+        localStorage <span className="mono">annie3d.scenario</span>, and{' '}
+        <span className="mono">window.__annie3d</span> in tests. Documented in docs/MOCK_SCENARIOS.md.
       </p>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', margin: '16px 0', flexWrap: 'wrap' }}>
         <Badge tone="accent">Active: {config?.scenario}</Badge>

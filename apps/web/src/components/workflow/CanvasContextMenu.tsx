@@ -1,4 +1,4 @@
-import { Kbd } from '@3dads/ui';
+import { Kbd } from '@annie3d/ui';
 import { useEffect, useRef } from 'react';
 import { MOD } from './nodeMeta';
 

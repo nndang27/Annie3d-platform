@@ -7,8 +7,8 @@ import {
   type Project,
   type RunEvent,
   TEMPLATES,
-} from '@3dads/contracts';
-import { Badge, Button, Dialog, Segmented, Tabs, useToast } from '@3dads/ui';
+} from '@annie3d/contracts';
+import { Badge, Button, Dialog, Segmented, Tabs, useToast } from '@annie3d/ui';
 import { Link, useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { Play, Save } from 'lucide-react';
 import { lazy, type ReactNode, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';

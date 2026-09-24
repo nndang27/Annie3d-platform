@@ -1,5 +1,5 @@
 ---
-import { NODE_KINDS } from '@3dads/contracts';
+import { NODE_KINDS } from '@annie3d/contracts';
 import Base from '../layouts/Base.astro';
 import { appLink } from '../lib/site';
 const kinds = Object.values(NODE_KINDS).filter((k) => k.kind !== 'comment');
@@ -15,11 +15,11 @@ const states = [
 ];
 ---
 
-<Base title="Product — how the workflow works" description="What a 3Dads workflow contains: steps, inputs, execution states, editing, versions and exports.">
+<Base title="Product — how the workflow works" description="What a Annie 3D workflow contains: steps, inputs, execution states, editing, versions and exports.">
   <section class="container section-tight" style="padding-top:56px">
     <p class="eyebrow">Product</p>
     <h1 class="h1" style="margin-top:12px;max-width:20ch">A workflow you can read, run and revise.</h1>
-    <p class="lead" style="margin-top:16px">A 3Dads project is a small graph of steps. Each step declares its inputs and outputs, runs with visible status, and produces a versioned output you can inspect in 3D, edit and export.</p>
+    <p class="lead" style="margin-top:16px">A Annie 3D project is a small graph of steps. Each step declares its inputs and outputs, runs with visible status, and produces a versioned output you can inspect in 3D, edit and export.</p>
   </section>
 
   <section class="container section-tight" aria-labelledby="h-steps">

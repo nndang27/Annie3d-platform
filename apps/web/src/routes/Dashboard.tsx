@@ -5,7 +5,7 @@ import {
   type ProjectFilter,
   type ProjectSummary,
   TEMPLATES,
-} from '@3dads/contracts';
+} from '@annie3d/contracts';
 import {
   Button,
   Dialog,
@@ -17,7 +17,7 @@ import {
   Segmented,
   Select,
   useToast,
-} from '@3dads/ui';
+} from '@annie3d/ui';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import {
   Archive,

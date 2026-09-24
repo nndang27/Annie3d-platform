@@ -1,5 +1,5 @@
 import './app.css';
-import { isRetryable } from '@3dads/contracts';
+import { isRetryable } from '@annie3d/contracts';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
@@ -45,7 +45,7 @@ async function boot() {
 
 void boot().catch((e: Error) => {
   const root = document.getElementById('root')!;
-  root.innerHTML = `<div style="font-family:system-ui;padding:32px;max-width:560px"><h1 style="font-size:20px">3Dads could not start</h1><p style="color:#505762">${escapeHtml(e.message)}</p><p><a href="/app/">Reload</a></p></div>`;
+  root.innerHTML = `<div style="font-family:system-ui;padding:32px;max-width:560px"><h1 style="font-size:20px">Annie 3D could not start</h1><p style="color:#505762">${escapeHtml(e.message)}</p><p><a href="/app/">Reload</a></p></div>`;
 });
 
 function escapeHtml(s: string): string {

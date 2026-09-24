@@ -1,4 +1,4 @@
-import type { Artifact, Project, Run } from '@3dads/contracts';
+import type { Artifact, Project, Run } from '@annie3d/contracts';
 import { createContext, type ReactNode, useContext } from 'react';
 
 export interface ProjectContextValue {

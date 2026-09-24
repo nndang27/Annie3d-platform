@@ -1,5 +1,5 @@
-import { NODE_KINDS } from '@3dads/contracts';
-import { Button, Field, Input, Select } from '@3dads/ui';
+import { NODE_KINDS } from '@annie3d/contracts';
+import { Button, Field, Input, Select } from '@annie3d/ui';
 import { Play, Trash2, X } from 'lucide-react';
 import { useProjectContext } from '@/routes/project/context';
 import { useRunStore } from '@/stores/runStore';

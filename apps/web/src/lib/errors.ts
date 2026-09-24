@@ -1,4 +1,4 @@
-import { isServiceError, ServiceError } from '@3dads/contracts';
+import { isServiceError, ServiceError } from '@annie3d/contracts';
 
 export interface ErrorPresentation {
   title: string;

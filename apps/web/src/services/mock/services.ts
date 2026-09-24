@@ -9,7 +9,7 @@ import type {
   SessionService,
   WorkflowsService,
   WorkspaceService,
-} from '@3dads/contracts';
+} from '@annie3d/contracts';
 import { MockBackend } from './backend';
 import { VirtualClock } from './clock';
 import type { ScenarioId } from './scenarios';

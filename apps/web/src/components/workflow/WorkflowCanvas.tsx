@@ -1,5 +1,5 @@
-import { checkConnection, NODE_KINDS, type NodeKind } from '@3dads/contracts';
-import { Button, useReducedMotion, useToast } from '@3dads/ui';
+import { checkConnection, NODE_KINDS, type NodeKind } from '@annie3d/contracts';
+import { Button, useReducedMotion, useToast } from '@annie3d/ui';
 import {
   applyNodeChanges,
   Background,

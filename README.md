@@ -1,6 +1,6 @@
-# 3Dads platform — website and simulated product
+# Annie 3D platform — website and simulated product
 
-Monorepo for the 3Dads public site (Astro) and application (Vite + React + Three.js), running against a stateful demo adapter. No LLM, generation provider, harness, payment or email service is called.
+Monorepo for the Annie 3D public site (Astro) and application (Vite + React + Three.js), running against a stateful demo adapter. No LLM, generation provider, harness, payment or email service is called.
 
 ## Requirements
 

@@ -233,12 +233,15 @@ test.describe('control coverage', () => {
     await expect(page.getByTestId('viewer-canvas')).toBeVisible();
     await page.waitForFunction(
       () =>
-        window.__3dads.viewers.size > 0 && [...window.__3dads.viewers].at(-1)!.getStats().framesRendered > 0,
+        window.__annie3d.viewers.size > 0 &&
+        [...window.__annie3d.viewers].at(-1)!.getStats().framesRendered > 0,
     );
-    const frames0 = await page.evaluate(() => [...window.__3dads.viewers].at(-1)!.getStats().framesRendered);
+    const frames0 = await page.evaluate(
+      () => [...window.__annie3d.viewers].at(-1)!.getStats().framesRendered,
+    );
     await page.getByTestId('swatch-2457d6').click();
     await page.waitForFunction(
-      (f0) => [...window.__3dads.viewers].at(-1)!.getStats().framesRendered > f0,
+      (f0) => [...window.__annie3d.viewers].at(-1)!.getStats().framesRendered > f0,
       frames0,
       { timeout: 5000 },
     );

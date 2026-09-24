@@ -1,4 +1,4 @@
-import { ToastProvider } from '@3dads/ui';
+import { ToastProvider } from '@annie3d/ui';
 import { Outlet } from '@tanstack/react-router';
 import { Component, type ReactNode, useEffect } from 'react';
 import { ErrorState } from '@/components/ErrorState';

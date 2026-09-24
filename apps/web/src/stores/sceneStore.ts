@@ -1,4 +1,4 @@
-import type { AdComposition, SceneDoc } from '@3dads/contracts';
+import type { AdComposition, SceneDoc } from '@annie3d/contracts';
 import { create } from 'zustand';
 import { commit, initUndoable, isDirty, markSaved, redo, replace, type Undoable, undo } from './undoable';
 

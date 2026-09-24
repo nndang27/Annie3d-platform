@@ -24,7 +24,7 @@ import {
   type User,
   type WorkflowDoc,
   type Workspace,
-} from '@3dads/contracts';
+} from '@annie3d/contracts';
 import type { ScheduledTask } from './scheduler';
 
 export const STATE_VERSION = 3;

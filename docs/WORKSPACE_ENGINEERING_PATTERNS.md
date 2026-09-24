@@ -1,13 +1,13 @@
 # Workspace engineering patterns (how canvas products are built)
 
 Status: research note, 2026-09-24. What Figma, Miro, tldraw, Excalidraw, draw.io and Linear
-do inside their workspaces, and what 3Dads adopts **now**, **designs for now** (so multiplayer
+do inside their workspaces, and what Annie 3D adopts **now**, **designs for now** (so multiplayer
 later is cheap) or **adds later**. Sources at the end; code references were checked against
 the public repositories.
 
 ## 1. Rendering the canvas
 
-| Pattern | Who | What it is | 3Dads |
+| Pattern | Who | What it is | Annie 3D |
 | --- | --- | --- | --- |
 | Viewport culling with a spatial index | tldraw (R-tree; off-screen shapes get `display:none`, ~50 of 10 000 shapes render), React Flow (`onlyRenderVisibleElements`) | Only what intersects the viewport renders; selected and edited items are never culled | **Now.** Enable React Flow culling; keep selected/running nodes mounted; add a margin ring and hysteresis so nodes at the edge do not flicker (tldraw has an open issue on culling hysteresis). |
 | Debounced zoom for LOD | tldraw `getEfficientZoomLevel()` (above 500 shapes, LOD decisions use a debounced zoom while the camera moves) | Level-of-detail switches only after zoom settles, so pan/zoom never triggers re-renders | **Now.** Our zoom LOD (full / preview / card) reads a debounced zoom. |
@@ -23,7 +23,7 @@ the public repositories.
 
 ## 2. Data model (design now so multiplayer is cheap later)
 
-| Pattern | Who | What it is | 3Dads |
+| Pattern | Who | What it is | Annie 3D |
 | --- | --- | --- | --- |
 | Flat record store keyed by id | Figma (object tree as `ObjectID → properties`), tldraw (typed records) | Everything is a record: node, edge, comment, version | **Design now.** Board = map of `{id, type, props, version}` records; positions and settings are properties. |
 | Client-generated ids | Figma (ids include the client id, no server round trip) | Create offline and optimistically | **Now** (the demo already mints operation ids). Use ULIDs with a client prefix for records. |
@@ -37,7 +37,7 @@ the public repositories.
 
 ## 3. Persistence, sync and offline
 
-| Pattern | Who | What it is | 3Dads |
+| Pattern | Who | What it is | Annie 3D |
 | --- | --- | --- | --- |
 | Local-first cache in IndexedDB | Linear (bootstrap then deltas; offline transactions queued in IndexedDB and resent) | Instant load, works offline | **Now** (the demo already persists to IndexedDB). Add a pending-ops queue that survives reloads. |
 | Monotonic sync id + delta packets | Linear | Total order of changes; a gap means "fetch what I missed" | **Now** for run events (the demo already uses sequence numbers and replay); **later** for board edits. |
@@ -57,13 +57,13 @@ the public repositories.
 | End-to-end encrypted rooms | Excalidraw (AES key in the URL fragment, which never reaches the server) | Optional for private share links |
 | Real-time data subscriptions | Figma LiveGraph (GraphQL subscriptions fed by the Postgres replication stream) | Lists (projects, comments, credits) update live without polling |
 
-For 3Dads specifically: run progress is already an event stream per run; in multiplayer it
+For Annie 3D specifically: run progress is already an event stream per run; in multiplayer it
 becomes a broadcast in the board's room, and artifacts arrive as record updates. Nothing
 about generation needs to change.
 
 ## 5. Keeping it fast over time
 
-| Pattern | Who | 3Dads |
+| Pattern | Who | Annie 3D |
 | --- | --- | --- |
 | Performance tests on every pull request with a noise margin | Figma (GPU VMs, headless Chromium, 20 % margin, 10-minute target) | **Now.** Run `tests/perf` in CI on each PR; fail on > 20 % regression of pan FPS, editor-open time, heap after 20 editor cycles, LCP. |
 | Real low-end hardware lab | Figma (old laptops, Chromebooks) | **Now**, cheaply: one old Windows laptop and one mid Android phone for weekly manual runs. |
@@ -101,7 +101,7 @@ from docs, blogs or third-party write-ups only.
 | **Miro** | Next.js app shell | Board content on Canvas API, LoD image caches | — | Verified header; rendering reported by Miro Engineering |
 | **Linear** | React (marketing on Next.js) | — | MobX + own sync engine | Reported (reverse-engineering write-up) |
 | **draw.io** | Plain JavaScript | mxGraph/maxGraph: SVG + HTML | — | Reported |
-| **3Dads (this repo)** | React 19 SPA on Vite 8 + Astro 7 static site | React Flow 12 DOM nodes; three.js 0.186 in the editor | Zustand 5 + TanStack Query | This repository |
+| **Annie 3D (this repo)** | React 19 SPA on Vite 8 + Astro 7 static site | React Flow 12 DOM nodes; three.js 0.186 in the editor | Zustand 5 + TanStack Query | This repository |
 
 Why teams choose what they choose:
 

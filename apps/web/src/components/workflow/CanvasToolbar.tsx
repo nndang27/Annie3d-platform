@@ -1,5 +1,5 @@
-import { NODE_KINDS, type NodeKind } from '@3dads/contracts';
-import { Button } from '@3dads/ui';
+import { NODE_KINDS, type NodeKind } from '@annie3d/contracts';
+import { Button } from '@annie3d/ui';
 import { Hand, MessageSquare, MousePointer2 } from 'lucide-react';
 import { NODE_ICON, TOOLBAR_KINDS } from './nodeMeta';
 

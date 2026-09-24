@@ -1,4 +1,4 @@
-import { type PlatformServices, ServiceError } from '@3dads/contracts';
+import { type PlatformServices, ServiceError } from '@annie3d/contracts';
 
 /**
  * Placeholder for the future harness-backed adapter (see docs/HARNESS_INTEGRATION_CONTRACT.md).

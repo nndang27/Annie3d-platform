@@ -9,7 +9,7 @@ not measurements.
 
 ## 1. Positioning
 
-Canva sells templates the user fills by hand. 3Dads sells **production lines**: the user drops
+Canva sells templates the user fills by hand. Annie 3D sells **production lines**: the user drops
 one product photo, picks a line, and receives a finished 3D ad. No manual 3D editing.
 Changes after the run go through region-select + chat (section 6).
 

@@ -1,5 +1,5 @@
-import { newOperationId, type Role } from '@3dads/contracts';
-import { Badge, Button, Dialog, Field, formatRelative, Input, Select, useToast } from '@3dads/ui';
+import { newOperationId, type Role } from '@annie3d/contracts';
+import { Badge, Button, Dialog, Field, formatRelative, Input, Select, useToast } from '@annie3d/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useSearch } from '@tanstack/react-router';
 import { type FormEvent, useState } from 'react';

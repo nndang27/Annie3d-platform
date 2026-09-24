@@ -1,8 +1,8 @@
 @import "@fontsource-variable/inter";
-@import "@3dads/ui/tokens.css";
+@import "@annie3d/ui/tokens.css";
 @import "tailwindcss";
-@import "@3dads/ui/base.css";
-@import "@3dads/ui/ui.css";
+@import "@annie3d/ui/base.css";
+@import "@annie3d/ui/ui.css";
 
 @theme {
   --color-accent: #2457d6;

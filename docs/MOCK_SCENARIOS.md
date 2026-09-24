@@ -9,7 +9,7 @@ The app runs against a **stateful demo adapter** (`apps/web/src/services/mock/`)
 | `backend.ts` | Domain rules: session, projects, workflows, runs (engine), artifacts, exports, billing, workspace, notifications. Pure of latency/failure injection. |
 | `scheduler.ts` | Persisted task scheduler. Simulated backend work is stored as tasks in workspace state; one timer wakes for the earliest task; `clock.advance()` runs due tasks synchronously; successors of a late task are scheduled relative to the task's due time so a reload catches up on work that "happened" while the tab was closed. |
 | `clock.ts` | Virtual clock (real time + offset). |
-| `store.ts` | IndexedDB (`3dads-demo`, stores `state` and `blobs`) with in-memory fallback. |
+| `store.ts` | IndexedDB (`annie3d-demo`, stores `state` and `blobs`) with in-memory fallback. |
 | `state.ts` | State shape, fixture identities, seeds and retention limits. |
 | `transport.ts` | Latency and scenario injection, connectivity state, 429/timeouts. |
 | `services.ts` | Builds the `PlatformServices` interface from backend + transport. |
@@ -41,8 +41,8 @@ Set via any of:
 
 - `/app/dev/scenarios` (account menu → "Demo scenarios (developer)")
 - `?scenario=<id>` on any app URL
-- `localStorage['3dads.scenario']`, `localStorage['3dads.latencyScale']`
-- `window.__3dads.setScenario(id)`, `window.__3dads.setLatencyScale(n)` (tests)
+- `localStorage['annie3d.scenario']`, `localStorage['annie3d.latencyScale']`
+- `window.__annie3d.setScenario(id)`, `window.__annie3d.setLatencyScale(n)` (tests)
 
 | id | Behaviour | Expected UI |
 | --- | --- | --- |
@@ -75,6 +75,6 @@ Latency scale multiplies every simulated delay (E2E uses 0.05; perf scripts use 
 - Export queue: `mp4-render` jobs tick 24 frames, then fetch `/app/fixtures/sample-render.mp4` (ffmpeg test pattern, 3 s, H.264, tagged as a placeholder) and store it as an `export` artifact labelled *Sample media — not your scene*.
 - Billing: checkout sessions are server-held; `reconcile(id)` is idempotent and grants entitlement once (`fulfilledAt`); a `success=true` query string is ignored.
 
-## Test hooks (`window.__3dads`)
+## Test hooks (`window.__annie3d`)
 
 `reset(dataset?)`, `reseed(dataset)`, `setScenario`, `setLatencyScale`, `getConfig`, `expireSession`, `clock.now/advance`, `backend` (live object), `pendingTasks()`, `viewers` (live `ProductViewer` instances), `marks()` (User Timing measures), `queryClient`.

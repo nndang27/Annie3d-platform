@@ -1,4 +1,4 @@
-import type { Session } from '@3dads/contracts';
+import type { Session } from '@annie3d/contracts';
 import { create } from 'zustand';
 
 interface SessionState {

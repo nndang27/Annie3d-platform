@@ -1,4 +1,4 @@
-import { Button, cx } from '@3dads/ui';
+import { Button, cx } from '@annie3d/ui';
 import { ListChecks, X } from 'lucide-react';
 import { type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';

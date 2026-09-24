@@ -1,6 +1,6 @@
-import { type Artifact, PRODUCT_FIXTURES } from '@3dads/contracts';
-import { Badge, Button, cx, Kbd } from '@3dads/ui';
-import type { ViewerStats } from '@3dads/viewer-3d';
+import { type Artifact, PRODUCT_FIXTURES } from '@annie3d/contracts';
+import { Badge, Button, cx, Kbd } from '@annie3d/ui';
+import type { ViewerStats } from '@annie3d/viewer-3d';
 import { Download, Redo2, Undo2 } from 'lucide-react';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FixtureThumb } from '@/components/FixtureThumb';

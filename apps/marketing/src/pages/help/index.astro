@@ -4,7 +4,7 @@ import Base from '../../layouts/Base.astro';
 const articles: CollectionEntry<'help'>[] = (await getCollection('help')).sort((a: CollectionEntry<'help'>, b: CollectionEntry<'help'>) => a.data.order - b.data.order);
 ---
 
-<Base title="Help and quickstart" description="Quickstart, concepts, export formats, demo limits and troubleshooting for 3Dads.">
+<Base title="Help and quickstart" description="Quickstart, concepts, export formats, demo limits and troubleshooting for Annie 3D.">
   <section class="container section-tight" style="padding-top:56px">
     <p class="eyebrow">Help</p>
     <h1 class="h1" style="margin-top:12px;max-width:18ch">Get to a first result, then understand what you see.</h1>
@@ -18,7 +18,7 @@ const articles: CollectionEntry<'help'>[] = (await getCollection('help')).sort((
       <details><summary>Where is my data stored?</summary><p>In your browser (IndexedDB and local storage), scoped to the workspace you are signed into. Nothing is uploaded in the demonstration.</p></details>
       <details><summary>Can two people edit the same project?</summary><p>Members and roles are simulated. The demo does not synchronise edits between browsers.</p></details>
       <details><summary>Why does the model not look like my product?</summary><p>The demo does not reconstruct images. It uses a labelled catalog fixture to show the workflow, scene controls and exports.</p></details>
-      <details><summary>How do I report a problem?</summary><p>Email hello@3dads.example with the project id and, if possible, the run id from the run panel.</p></details>
+      <details><summary>How do I report a problem?</summary><p>Email hello@annie3d.example with the project id and, if possible, the run id from the run panel.</p></details>
     </div>
   </section>
 </Base>

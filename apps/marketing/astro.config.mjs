@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 
 // Public site is fully prerendered. The app lives at /app/ on the same origin in production preview.
 export default defineConfig({
-  site: 'https://3dads.example',
+  site: 'https://annie3d.example',
   output: 'static',
   trailingSlash: 'never',
   build: { format: 'file', inlineStylesheets: 'auto' },
@@ -12,7 +12,7 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        '@3dads/viewer-3d': new URL('../../packages/viewer-3d/src/index.ts', import.meta.url).pathname,
+        '@annie3d/viewer-3d': new URL('../../packages/viewer-3d/src/index.ts', import.meta.url).pathname,
       },
     },
     build: {

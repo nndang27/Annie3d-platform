@@ -1,4 +1,4 @@
-import type { PlatformServices } from '@3dads/contracts';
+import type { PlatformServices } from '@annie3d/contracts';
 
 export type ServicesMode = 'demo' | 'live';
 

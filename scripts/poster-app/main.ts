@@ -1,5 +1,5 @@
-import { defaultScene, PRODUCT_FIXTURES, TEMPLATES } from '@3dads/contracts';
-import { ProductViewer, type ViewerSceneInput } from '@3dads/viewer-3d';
+import { defaultScene, PRODUCT_FIXTURES, TEMPLATES } from '@annie3d/contracts';
+import { ProductViewer, type ViewerSceneInput } from '@annie3d/viewer-3d';
 
 interface Job {
   key: string;

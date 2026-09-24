@@ -45,7 +45,7 @@ import {
   type User,
   type WorkflowDoc,
   type Workspace,
-} from '@3dads/contracts';
+} from '@annie3d/contracts';
 import type { VirtualClock } from './clock';
 import type { LatencyProfile, ScenarioId } from './scenarios';
 import { PersistedScheduler, type ScheduledTask } from './scheduler';

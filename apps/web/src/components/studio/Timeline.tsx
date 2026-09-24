@@ -1,5 +1,5 @@
-import type { SceneDoc } from '@3dads/contracts';
-import { Button, Select } from '@3dads/ui';
+import type { SceneDoc } from '@annie3d/contracts';
+import { Button, Select } from '@annie3d/ui';
 import { Pause, Play, SkipBack } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useSceneStore } from '@/stores/sceneStore';

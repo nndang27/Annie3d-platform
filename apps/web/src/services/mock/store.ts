@@ -1,6 +1,6 @@
 import { type IDBPDatabase, openDB } from 'idb';
 
-const DB_NAME = '3dads-demo';
+const DB_NAME = 'annie3d-demo';
 const DB_VERSION = 1;
 
 export interface DemoStore {

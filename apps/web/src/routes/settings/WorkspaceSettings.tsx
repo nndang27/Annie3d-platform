@@ -1,5 +1,5 @@
-import { ASPECT_RATIOS, type AspectRatio } from '@3dads/contracts';
-import { Button, Field, Input, Select, useToast } from '@3dads/ui';
+import { ASPECT_RATIOS, type AspectRatio } from '@annie3d/contracts';
+import { Button, Field, Input, Select, useToast } from '@annie3d/ui';
 import { type FormEvent, useEffect, useState } from 'react';
 import { ErrorState } from '@/components/ErrorState';
 import { fieldError } from '@/lib/errors';

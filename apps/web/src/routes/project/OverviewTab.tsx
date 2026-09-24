@@ -1,5 +1,5 @@
-import { findTemplate, PRODUCT_FIXTURES, type Run } from '@3dads/contracts';
-import { Badge, Button, formatBytes, formatRelative } from '@3dads/ui';
+import { findTemplate, PRODUCT_FIXTURES, type Run } from '@annie3d/contracts';
+import { Badge, Button, formatBytes, formatRelative } from '@annie3d/ui';
 import { Link } from '@tanstack/react-router';
 import { FixtureThumb } from '@/components/FixtureThumb';
 import { RunStatusBadge } from '@/components/RunStatusBadge';

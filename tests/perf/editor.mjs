@@ -28,10 +28,11 @@ const _openProject = async () => {
     await page.getByRole('tab', { name: 'Studio' }).click();
     await page.getByTestId('viewer-canvas').waitFor();
     await page.waitForFunction(
-      () => window.__3dads.viewers.size > 0 && [...window.__3dads.viewers][0].getStats().framesRendered > 0,
+      () =>
+        window.__annie3d.viewers.size > 0 && [...window.__annie3d.viewers][0].getStats().framesRendered > 0,
     );
     const wall = Date.now() - t0;
-    const marks = await page.evaluate(() => window.__3dads.marks());
+    const marks = await page.evaluate(() => window.__annie3d.marks());
     samples.push({
       wall,
       import: marks.find((m) => m.name === 'viewer:import')?.duration,
@@ -100,7 +101,7 @@ const _openProject = async () => {
 
 // --- typing while events stream (Studio composer + CTA input during a run) ---
 {
-  await page.evaluate(() => localStorage.setItem('3dads.latencyScale', '0.3'));
+  await page.evaluate(() => localStorage.setItem('annie3d.latencyScale', '0.3'));
   await page.reload();
   await page.getByTestId('workspace').waitFor();
   await page.getByTestId('run-workflow').click();
@@ -140,7 +141,7 @@ const _openProject = async () => {
     .getByTestId('bar-cancel-run')
     .click()
     .catch(() => {});
-  await page.evaluate(() => localStorage.setItem('3dads.latencyScale', '0.05'));
+  await page.evaluate(() => localStorage.setItem('annie3d.latencyScale', '0.05'));
 }
 
 // --- 3D: orbit drag, playback frame times, idle ---
@@ -149,7 +150,7 @@ const _openProject = async () => {
   await page.getByTestId('workspace').waitFor();
   await page.getByRole('tab', { name: 'Studio' }).click();
   await page.getByTestId('viewer-canvas').waitFor();
-  await page.waitForFunction(() => window.__3dads.viewers.size > 0);
+  await page.waitForFunction(() => window.__annie3d.viewers.size > 0);
   const canvas = await page.getByTestId('viewer-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 2;
@@ -175,7 +176,7 @@ const _openProject = async () => {
   const orbit = await page.evaluate(() => {
     window.__sampling = false;
     const f = window.__frames.slice(2);
-    const v = [...window.__3dads.viewers][0];
+    const v = [...window.__annie3d.viewers][0];
     return { frames: f, viewer: v.frameTimeDistribution(), stats: v.getStats() };
   });
   out.sections.orbit = {
@@ -215,7 +216,7 @@ const _openProject = async () => {
   await page.waitForTimeout(5000);
   const play = await page.evaluate(() => {
     window.__sampling = false;
-    const v = [...window.__3dads.viewers][0];
+    const v = [...window.__annie3d.viewers][0];
     return { frames: window.__frames.slice(2), viewer: v.frameTimeDistribution() };
   });
   out.sections.playback = {
@@ -233,9 +234,9 @@ const _openProject = async () => {
   await page.getByTestId('play-toggle').click();
   // idle: frames rendered must not increase
   await page.waitForTimeout(600);
-  const f1 = await page.evaluate(() => [...window.__3dads.viewers][0].getStats().framesRendered);
+  const f1 = await page.evaluate(() => [...window.__annie3d.viewers][0].getStats().framesRendered);
   await page.waitForTimeout(2000);
-  const f2 = await page.evaluate(() => [...window.__3dads.viewers][0].getStats());
+  const f2 = await page.evaluate(() => [...window.__annie3d.viewers][0].getStats());
   out.sections.idle = {
     framesBefore: f1,
     framesAfter2s: f2.framesRendered,
@@ -271,15 +272,16 @@ const _openProject = async () => {
     await page.goto(`${BASE}/app/projects/${id}?tab=studio`);
     await page.getByTestId('viewer-canvas').waitFor();
     await page.waitForFunction(
-      () => window.__3dads.viewers.size > 0 && [...window.__3dads.viewers][0].getStats().framesRendered > 0,
+      () =>
+        window.__annie3d.viewers.size > 0 && [...window.__annie3d.viewers][0].getStats().framesRendered > 0,
     );
-    const st = await page.evaluate(() => [...window.__3dads.viewers][0].getStats());
+    const st = await page.evaluate(() => [...window.__annie3d.viewers][0].getStats());
     await page.goto(`${BASE}/app/library`);
     await page.getByTestId('library-item').first().waitFor();
     await cdp.send('HeapProfiler.collectGarbage').catch(() => {});
     await page.waitForTimeout(300);
     const h = await heap();
-    const viewers = await page.evaluate(() => window.__3dads.viewers.size);
+    const viewers = await page.evaluate(() => window.__annie3d.viewers.size);
     cycles.push({
       cycle: i + 1,
       fixture: st.fixtureId,
@@ -315,7 +317,7 @@ const _openProject = async () => {
 
 // --- graph pan/drag on the stress graph ---
 {
-  await page.evaluate(() => window.__3dads.reseed('stress'));
+  await page.evaluate(() => window.__annie3d.reseed('stress'));
   await page.goto(`${BASE}/app`);
   await page.getByTestId('project-card').first().waitFor();
   const id = await page.evaluate(() =>
@@ -323,7 +325,7 @@ const _openProject = async () => {
   );
   // stress workspace: the first seeded project (oldest) has the 60-node graph; find it via backend
   const stressId = await page.evaluate(() => {
-    const ws = window.__3dads.backend.ws;
+    const ws = window.__annie3d.backend.ws;
     const w = ws?.workflows.find((x) => x.nodes.length >= 50);
     return w ? w.projectId : null;
   });
@@ -366,7 +368,7 @@ const _openProject = async () => {
     out.sections.graphPan.rafIntervalMs.p95.toFixed(1),
     'ms',
   );
-  await page.evaluate(() => window.__3dads.reseed('typical'));
+  await page.evaluate(() => window.__annie3d.reseed('typical'));
 }
 
 save('editor', out);

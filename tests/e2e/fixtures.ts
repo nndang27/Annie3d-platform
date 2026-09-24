@@ -2,7 +2,7 @@ import { test as base, expect, type Page } from '@playwright/test';
 
 declare global {
   interface Window {
-    __3dads: {
+    __annie3d: {
       reset(dataset?: 'small' | 'typical' | 'stress'): Promise<void>;
       setScenario(id: string): void;
       setLatencyScale(n: number): void;
@@ -21,7 +21,7 @@ declare global {
   }
 }
 
-export const SCENARIO_KEY = '3dads.scenario';
+export const SCENARIO_KEY = 'annie3d.scenario';
 
 /** Each test starts with a clean demo database, fast latency, normal scenario. */
 export async function resetDemo(
@@ -29,18 +29,18 @@ export async function resetDemo(
   opts: { dataset?: 'small' | 'typical' | 'stress'; latencyScale?: number } = {},
 ) {
   await page.goto('/app/signin');
-  await page.waitForFunction(() => !!window.__3dads);
+  await page.waitForFunction(() => !!window.__annie3d);
   await page.evaluate(
     async ({ dataset, scale }) => {
-      await window.__3dads.reset(dataset);
+      await window.__annie3d.reset(dataset);
       localStorage.clear();
-      localStorage.setItem('3dads.latencyScale', String(scale));
-      localStorage.setItem('3dads.scenario', 'normal');
+      localStorage.setItem('annie3d.latencyScale', String(scale));
+      localStorage.setItem('annie3d.scenario', 'normal');
     },
     { dataset: opts.dataset, scale: opts.latencyScale ?? 0.05 },
   );
   await page.reload();
-  await page.waitForFunction(() => !!window.__3dads);
+  await page.waitForFunction(() => !!window.__annie3d);
 }
 
 export async function signIn(page: Page, who: 'u_mai' | 'u_alex' | 'u_sam' = 'u_mai') {
@@ -53,7 +53,7 @@ export async function signIn(page: Page, who: 'u_mai' | 'u_alex' | 'u_sam' = 'u_
 
 /** Wait until the app has booted on the current page (devtools surface present). */
 export async function waitForApp(page: Page) {
-  await page.waitForFunction(() => !!window.__3dads);
+  await page.waitForFunction(() => !!window.__annie3d);
 }
 
 /** Press Tab until the locator is focused (WebKit skips links on Tab, so counts differ per browser). */
@@ -86,11 +86,11 @@ export async function captureDownload(
     const { readFileSync } = await import('node:fs');
     return { filename: dl.suggestedFilename(), data: readFileSync(path!) };
   }
-  const before = await page.evaluate(() => window.__3dads.downloads().length);
+  const before = await page.evaluate(() => window.__annie3d.downloads().length);
   await action();
-  await page.waitForFunction((n) => window.__3dads.downloads().length > n, before, { timeout });
+  await page.waitForFunction((n) => window.__annie3d.downloads().length > n, before, { timeout });
   const rec = await page.evaluate(async () => {
-    const d = window.__3dads.downloads().at(-1)!;
+    const d = window.__annie3d.downloads().at(-1)!;
     const bytes = new Uint8Array(await d.blob.arrayBuffer());
     let bin = '';
     for (let i = 0; i < bytes.length; i += 0x8000)
@@ -101,7 +101,7 @@ export async function captureDownload(
 }
 
 export async function setScenario(page: Page, id: string) {
-  await page.evaluate((s) => window.__3dads.setScenario(s), id);
+  await page.evaluate((s) => window.__annie3d.setScenario(s), id);
 }
 
 export const consoleErrors = (page: Page): string[] => {

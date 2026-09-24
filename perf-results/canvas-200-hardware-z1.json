@@ -1,8 +1,8 @@
 {
   "build": {
-    "commit": "31cdfe6",
+    "commit": "397a6ae",
     "node": "v25.5.0",
-    "date": "2026-09-24T05:06:25.389Z",
+    "date": "2026-09-24T17:56:43.333Z",
     "platform": "darwin arm64"
   },
   "nodes": 200,
@@ -19,33 +19,33 @@
       },
       "load": {
         "lcp": {
-          "time": 52,
-          "size": 3976,
-          "url": null,
-          "element": "P"
+          "time": 140,
+          "size": 15561,
+          "url": "http://localhost:4174/api/public/fixtures/v1/headphones/photo_512.webp",
+          "element": "IMG"
         },
-        "fcp": 52,
-        "cls": 0.0005777783722216863,
+        "fcp": 56,
+        "cls": 0.0008323500414771144,
         "longTasks": 0
       },
-      "domNodesRendered": 6,
-      "domNodesAfterZoom": 2,
-      "heapMB": 9,
+      "domNodesRendered": 3,
+      "domNodesAfterZoom": 3,
+      "heapMB": 10,
       "pan": {
-        "durationMs": 3108,
-        "fps": 116,
+        "durationMs": 3010,
+        "fps": 120,
         "frameMs": {
           "p50": 8.3,
           "p95": 9.2,
-          "max": 116.6
+          "max": 9.4
         },
-        "jankFrames": 1,
-        "frames": 358,
+        "jankFrames": 0,
+        "frames": 359,
         "longTasks": 0,
         "longTaskMaxMs": 0
       },
       "zoom": {
-        "durationMs": 2669,
+        "durationMs": 2662,
         "fps": 120,
         "frameMs": {
           "p50": 8.3,
@@ -70,20 +70,20 @@
       },
       "load": {
         "lcp": {
-          "time": 124,
-          "size": 3976,
-          "url": null,
-          "element": "P"
+          "time": 352,
+          "size": 15561,
+          "url": "http://localhost:4174/api/public/fixtures/v1/headphones/photo_512.webp",
+          "element": "IMG"
         },
         "fcp": 124,
-        "cls": 0.0005777783722216863,
-        "longTasks": 3
+        "cls": 0.0008323500414771144,
+        "longTasks": 2
       },
-      "domNodesRendered": 6,
-      "domNodesAfterZoom": 2,
-      "heapMB": 9,
+      "domNodesRendered": 7,
+      "domNodesAfterZoom": 3,
+      "heapMB": 10,
       "pan": {
-        "durationMs": 2925,
+        "durationMs": 2996,
         "fps": 120,
         "frameMs": {
           "p50": 8.3,
@@ -91,20 +91,20 @@
           "max": 9.4
         },
         "jankFrames": 0,
-        "frames": 349,
+        "frames": 358,
         "longTasks": 0,
         "longTaskMaxMs": 0
       },
       "zoom": {
-        "durationMs": 2656,
-        "fps": 113,
+        "durationMs": 2614,
+        "fps": 117,
         "frameMs": {
           "p50": 8.3,
           "p95": 9.3,
-          "max": 41.3
+          "max": 25.5
         },
         "jankFrames": 0,
-        "frames": 598,
+        "frames": 612,
         "longTasks": 0,
         "longTaskMaxMs": 0
       }

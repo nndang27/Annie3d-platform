@@ -111,6 +111,55 @@ the same thread; the mechanism is Chromium's, not the app's.
 Ruled out:
 - Engine upgrade: Electron 45.0.0-alpha.11 (Chromium 155) stalls like Electron 44 (Chromium 152),
   9–10 zoom stalls up to 217 ms, two cold runs each.
-- Page effects: removing every box-shadow, filter and text-shadow still left cold stalls.
+- ~~Page effects: removing every box-shadow, filter and text-shadow still left cold stalls.~~
+  Wrong: that single Electron run was partly warm. The deterministic Chrome rig below shows the
+  page's own effects caused most stalls.
 - "Cache is per app location" (above) is only partly true: a fresh copy in a new folder stalled
   anywhere from 3 to 10 times. Single cold runs are noisy; compare several.
+
+## Fix: board paint without blur (2026-09-25)
+
+Rig: `tests/perf/cold-compare.mjs` (Chrome for Testing, its own Metal cache moved aside; the
+count repeats exactly run to run) and `tests/perf/pipeline-trace.mjs` (lists every Graphite
+pipeline compiled during a zoom, with its label and compile time).
+
+Same cold zoom, production build (before the fix), 3 rounds each:
+
+| App | Zoom stalls |
+| --- | --- |
+| Excalidraw (one canvas) | 1 (67 ms) |
+| tldraw (DOM/SVG, like ours) | 1 (108–125 ms) |
+| Annie 3D | 6 (≤117 ms); new build 7–8 (≤258 ms) and a hover stall |
+
+Bisecting with `INJECT_CSS`: hiding images changed nothing; removing blurred `box-shadow` alone
+went 6 → 1. The pipeline trace named the rest: `$1DBlur12`/`$2DBlur28` (blurred shadows),
+`RadialGradient4` (sim thumbnails, up to 158 ms), plus generic ones every image-and-icon page hits
+(`TessellateStrokes`, `HWYUVImage`, `AnalyticClip`).
+
+Change: rules that paint on the board use borders, spread-only rings, 1–2 px hard offsets and
+flat fills; blurred shadows stay in the fixed UI. The wire spark's glow is a wide faint stroke and
+its head has flat halo circles (the old CSS `blur`/`drop-shadow` also re-filtered every frame).
+`apps/web/src/client/boardPaint.test.ts` fails if a blurred shadow, blur filter or gradient
+returns to board content; it flags all 15 rules the old CSS had.
+
+| Cold shader cache | Before | After |
+| --- | --- | --- |
+| Chrome, zoom | 7–8 stalls, ≤258 ms | 4 stalls, ≤110 ms |
+| Chrome, pointer sweep | 1 (92 ms) | 0 |
+| Desktop app, zoom (truly cold, 2 runs) | 9–11, ≤250 ms | 2–3, ≤258 ms |
+| Desktop app, pointer sweep | 4–5, ≤225 ms | 1, ≤117 ms |
+
+Warm (every later session): 200-node board pans and zooms at 116–120 fps, also with 4× CPU
+throttling (`tests/perf/canvas.mjs 200 --gpu [--zoom=1]`); hovering a wire keeps 120 fps
+(p95 9.2 ms, no long animation frames).
+
+Not adopted: `--enable-skia-graphite-precompilation` (6 → 3 before the fix, no change after);
+self-rounded preview images (moved one stall from zoom to hover).
+
+Open: Chrome 153 creates pipelines through Dawn's async path (`CreatePipelineAsyncEvent` on a
+worker); the Electron trace shows no Dawn events, and its remaining stalls sit inside
+`addRenderPass` on the GPU main thread. Which switch or build difference causes this is not
+established. Sources: Chromium Graphite blog (fewer pipelines "so they can be compiled at
+startup"), https://blog.chromium.org/2025/07/introducing-skia-graphite-chromes.html; Electron
+shader-cache persistence fix (in 44.4.4+), https://github.com/electron/electron/pull/54113;
+crbug 40281459 "[Graphite] Cache Metal shader pipelines".

@@ -11,14 +11,14 @@ const RUN_MS = 720;
 const DRAIN_MS = 360;
 const TAIL = 220; // px of tail behind the head
 const SEGMENTS = 18; // the tail is drawn as short segments, each thinner and fainter than the last
-/** Streak layers from bottom to top: blurred glow, blue core, white-hot centre line. */
+/** Streak layers from bottom to top: wide faint glow, blue core, white-hot centre line. */
 const LAYER = ['glow', 'core', 'hot'] as const;
 const WIDTH = [
   (f: number) => 3 + 9 * f ** 1.3,
   (f: number) => 0.8 + 3.4 * f ** 1.5,
   (f: number) => 1.4 * f ** 2,
 ];
-const ALPHA = [(f: number) => 0.55 * f ** 1.8, (f: number) => f ** 1.2, (f: number) => (f > 0.45 ? f : 0)];
+const ALPHA = [(f: number) => 0.3 * f ** 1.8, (f: number) => f ** 1.2, (f: number) => (f > 0.45 ? f : 0)];
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
 /**
@@ -128,7 +128,14 @@ export const FlowEdge = memo(function FlowEdge({
               );
             }),
           )}
-          {headPt && <circle className="head" cx={headPt.x} cy={headPt.y} r={4} />}
+          {/* Flat halos instead of a CSS drop-shadow, which re-filters every frame (app.css .wire-current). */}
+          {headPt && (
+            <>
+              <circle className="halo" cx={headPt.x} cy={headPt.y} r={11} opacity={0.14} />
+              <circle className="halo" cx={headPt.x} cy={headPt.y} r={7} opacity={0.3} />
+              <circle className="head" cx={headPt.x} cy={headPt.y} r={4} />
+            </>
+          )}
         </g>
       )}
       {active && (

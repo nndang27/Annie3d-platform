@@ -248,7 +248,9 @@ body {
   stroke: none;
   pointer-events: none;
 }
-/* Current along the wire (FlowEdge): a white-hot head, a long blue tail thinning to nothing. */
+/* Current along the wire (FlowEdge): a white-hot head, a long blue tail thinning to nothing.
+   No CSS blur/drop-shadow here: they re-filter every animation frame, and each new blur size
+   compiles a GPU pipeline on first use (tests/perf/hitch.mjs). The glow is a wide faint stroke. */
 .wire-current {
   pointer-events: none;
 }
@@ -258,7 +260,6 @@ body {
 }
 .wire-current .glow {
   stroke: #5aa2ff;
-  filter: blur(3px);
 }
 .wire-current .core {
   stroke: #2f7cf6;
@@ -268,7 +269,9 @@ body {
 }
 .wire-current .head {
   fill: #fff;
-  filter: drop-shadow(0 0 4px #7ab6ff) drop-shadow(0 0 10px #4d94ff);
+}
+.wire-current .halo {
+  fill: #4d94ff;
 }
 .wire-delete {
   cursor: pointer;
@@ -278,7 +281,6 @@ body {
   fill: #2f7cf6;
   stroke: #fff;
   stroke-width: 3;
-  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.18));
   transition: fill 120ms;
 }
 .wire-delete:hover circle {
@@ -399,6 +401,10 @@ body {
 }
 
 /* ---------------------------------------------------------------- node */
+/* Everything on the board is re-rastered at each zoom level, so it uses crisp borders, rings
+   (spread-only box-shadow) and flat fills; blurred shadows, filters and gradients stay in the
+   fixed UI. A blurred shadow compiles a new GPU pipeline for each blur size it reaches while
+   zooming (measured cold: 6 zoom stalls → 1; tests/perf/hitch.mjs, docs/DESKTOP.md). */
 .node {
   width: var(--node-w);
   position: relative;
@@ -407,7 +413,7 @@ body {
   background: #fff;
   border: 1px solid #e6e6e2;
   border-radius: 18px;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.04);
   overflow: hidden;
   transition:
     border-color 120ms,
@@ -420,7 +426,7 @@ body {
   border-color: #2f7cf6;
   box-shadow:
     0 0 0 1px #2f7cf6,
-    0 8px 24px rgb(0 0 0 / 0.08);
+    0 0 0 5px rgb(47 124 246 / 0.12);
 }
 /* Title sits above the card (ElevenLabs): it is part of the node, so dragging it moves the node. */
 .node-head {
@@ -552,7 +558,9 @@ body {
   object-fit: cover;
   border-radius: 10px;
   border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.14);
+  box-shadow:
+    0 1px 0 rgb(0 0 0 / 0.1),
+    0 0 0 1px rgb(0 0 0 / 0.06);
   z-index: calc(10 - var(--i));
   /* Stacked: each card behind is nudged up and right (a deck). */
   transform: translate(calc(var(--i) * 5px), calc(var(--i) * -5px)) scale(calc(1 - var(--i) * 0.04));
@@ -626,7 +634,9 @@ body {
   border-radius: 9px;
   background: rgb(255 255 255 / 0.92);
   color: #3a3a36;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.14);
+  box-shadow:
+    0 1px 0 rgb(0 0 0 / 0.1),
+    0 0 0 1px rgb(0 0 0 / 0.06);
   cursor: pointer;
   opacity: 0;
   transform: scale(0.9);
@@ -776,7 +786,8 @@ textarea.prompt {
   background: #fff;
   border: 1px solid var(--pill-border);
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+  /* Inside a node, so on the zoomed board: a hard offset instead of a blur (see .node). */
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.05);
   padding: 4px;
   display: grid;
   min-width: 200px;
@@ -825,7 +836,7 @@ textarea.prompt {
   padding: 4px;
   gap: 2px;
   border-radius: 14px;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 0.08);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.06);
 }
 .node-foot select,
 .node-foot .tb-btn {
@@ -1791,7 +1802,7 @@ a.btn-primary {
   margin: 14px 18px 0;
   background: #fff;
   border-radius: 8px 8px 0 0;
-  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.06);
   overflow: hidden;
 }
 .sim-thumb-shop .bar {
@@ -1858,7 +1869,7 @@ a.btn-primary {
   aspect-ratio: 9 / 16;
   border-radius: 12px;
   border: 3px solid #111;
-  background: radial-gradient(circle at 50% 40%, #3b2b52, #120f18 70%);
+  background: #241b33;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -1899,7 +1910,7 @@ a.btn-primary {
   height: 80%;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.06);
 }
 .sim-thumb-sticker .bubble {
   position: absolute;
@@ -1929,10 +1940,10 @@ a.btn-primary {
   width: 100%;
   height: 100%;
   filter: drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff)
-    drop-shadow(0 -1.5px 0 #fff) drop-shadow(0 2px 4px rgb(0 0 0 / 0.25));
+    drop-shadow(0 -1.5px 0 #fff) drop-shadow(0 1.5px 0 rgb(0 0 0 / 0.16));
 }
 .sim-thumb-showroom {
-  background: radial-gradient(ellipse at 50% 30%, #2f3139, #0d0e11 75%);
+  background: #1b1c21;
 }
 .sim-thumb-showroom .room {
   position: relative;
@@ -1956,7 +1967,7 @@ a.btn-primary {
   width: 40%;
   height: 14px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgb(255 255 255 / 0.3), transparent 70%);
+  background: rgb(255 255 255 / 0.14);
 }
 .sim-body.node-body {
   display: flex;

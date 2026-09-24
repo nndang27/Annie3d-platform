@@ -212,7 +212,11 @@ async function runApp(direct) {
     timerLateMs: { p50: +lag.p50.toFixed(1), p95: +lag.p95.toFixed(1), max: +lag.max.toFixed(1) },
     blockedOver16ms: main.lag.filter((x) => x > 16).length,
     requests: main.req.length,
-    byHost: Object.fromEntries(Map.groupBy(main.req, (x) => x.host).entries().map(([h, l]) => [h, l.length])),
+    byHost: Object.fromEntries(
+      Map.groupBy(main.req, (x) => x.host)
+        .entries()
+        .map(([h, l]) => [h, l.length]),
+    ),
   };
   await app.close();
   rmSync(userData, { recursive: true, force: true });

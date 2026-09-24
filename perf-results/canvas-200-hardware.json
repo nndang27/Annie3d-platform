@@ -1,8 +1,8 @@
 {
   "build": {
-    "commit": "31cdfe6",
+    "commit": "397a6ae",
     "node": "v25.5.0",
-    "date": "2026-09-24T05:06:06.115Z",
+    "date": "2026-09-24T17:56:18.826Z",
     "platform": "darwin arm64"
   },
   "nodes": 200,
@@ -19,41 +19,41 @@
       },
       "load": {
         "lcp": {
-          "time": 556,
-          "size": 3976,
-          "url": null,
-          "element": "P"
+          "time": 712,
+          "size": 15561,
+          "url": "http://localhost:4174/api/public/fixtures/v1/headphones/photo_512.webp",
+          "element": "IMG"
         },
-        "fcp": 556,
-        "cls": 0.000029518221631462187,
+        "fcp": 712,
+        "cls": 0.00003820526583531593,
         "longTasks": 0
       },
-      "domNodesRendered": 203,
-      "domNodesAfterZoom": 1,
-      "heapMB": 9,
+      "domNodesRendered": 17,
+      "domNodesAfterZoom": 3,
+      "heapMB": 20,
       "pan": {
-        "durationMs": 3002,
-        "fps": 120,
+        "durationMs": 3095,
+        "fps": 116,
         "frameMs": {
           "p50": 8.3,
-          "p95": 9.2,
-          "max": 9.4
+          "p95": 8.7,
+          "max": 108.3
         },
-        "jankFrames": 0,
+        "jankFrames": 1,
         "frames": 359,
         "longTasks": 0,
         "longTaskMaxMs": 0
       },
       "zoom": {
-        "durationMs": 2776,
-        "fps": 114,
+        "durationMs": 2676,
+        "fps": 120,
         "frameMs": {
           "p50": 8.3,
-          "p95": 8.8,
-          "max": 75.1
+          "p95": 9.1,
+          "max": 9.3
         },
-        "jankFrames": 2,
-        "frames": 632,
+        "jankFrames": 0,
+        "frames": 640,
         "longTasks": 0,
         "longTaskMaxMs": 0
       }
@@ -70,41 +70,41 @@
       },
       "load": {
         "lcp": {
-          "time": 116,
-          "size": 3976,
-          "url": null,
-          "element": "P"
+          "time": 352,
+          "size": 15561,
+          "url": "http://localhost:4174/api/public/fixtures/v1/headphones/photo_512.webp",
+          "element": "IMG"
         },
-        "fcp": 116,
-        "cls": 0.0005777783722216863,
-        "longTasks": 3
+        "fcp": 128,
+        "cls": 0.0008323500414771144,
+        "longTasks": 2
       },
-      "domNodesRendered": 203,
-      "domNodesAfterZoom": 1,
-      "heapMB": 9,
+      "domNodesRendered": 17,
+      "domNodesAfterZoom": 3,
+      "heapMB": 21,
       "pan": {
-        "durationMs": 3003,
-        "fps": 119,
+        "durationMs": 3126,
+        "fps": 120,
         "frameMs": {
           "p50": 8.3,
           "p95": 9.2,
-          "max": 17.1
+          "max": 9.4
         },
         "jankFrames": 0,
-        "frames": 356,
+        "frames": 374,
         "longTasks": 0,
         "longTaskMaxMs": 0
       },
       "zoom": {
-        "durationMs": 2549,
-        "fps": 121,
+        "durationMs": 2596,
+        "fps": 120,
         "frameMs": {
           "p50": 8.3,
           "p95": 9.2,
-          "max": 9.3
+          "max": 9.4
         },
         "jankFrames": 0,
-        "frames": 614,
+        "frames": 622,
         "longTasks": 0,
         "longTaskMaxMs": 0
       }

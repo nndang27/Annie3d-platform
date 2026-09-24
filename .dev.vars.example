@@ -1,0 +1,34 @@
+# Copy to .dev.vars (gitignored) and fill in. Never paste these values into chat.
+# Cloudflare: prefer `npx wrangler login` (OAuth) so no token is needed locally.
+CLOUDFLARE_ACCOUNT_ID=
+
+# Neon Postgres: DIRECT (unpooled) connection strings; Hyperdrive does the pooling.
+DATABASE_URL_DEV=postgresql://USER:PASSWORD@HOST/threedads?sslmode=require
+DATABASE_URL_PROD=
+
+# R2 S3-compatible API token (Object Read & Write, scoped to the 3dads buckets) for presigned uploads.
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+
+# Google OAuth (Web client) for sign-in.
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Better Auth session signing secret: `openssl rand -base64 32`
+BETTER_AUTH_SECRET=
+
+# Payments (merchant of record). Start in sandbox.
+PADDLE_API_KEY=
+PADDLE_WEBHOOK_SECRET=
+
+# Observability (public keys are fine in the client bundle).
+SENTRY_DSN=
+POSTHOG_KEY=
+
+# LLM providers (routed through Cloudflare AI Gateway).
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+
+# Optional, only if Redis is added later.
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=

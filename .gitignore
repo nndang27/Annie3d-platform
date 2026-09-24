@@ -6,3 +6,12 @@ playwright-report
 test-results
 .vite
 perf-results/poster-app
+
+# Local secrets: never commit
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.env
+.env.*
+!.env.example
+.wrangler

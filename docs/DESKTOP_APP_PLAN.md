@@ -7,7 +7,7 @@ sources listed at the end.
 
 | App | Web code in the app | Desktop-only work | Updates |
 | --- | --- | --- | --- |
-| Claude desktop | Loads claude.ai; teardowns also show a bundled copy of the SPA as fallback (unverified) | Quick Entry shortcut, local MCP servers as subprocesses, one-click extensions, native addon for shortcuts/tray | Electron autoUpdater, "Relaunch to apply"; Windows moved Squirrel → MSIX in 2026 and could not migrate old installs |
+| Claude desktop | **Verified on this Mac (v2.7032.0, 2026-09-25):** Electron 44.4.3 / Chromium 152; the local `main_window/index.html` says "this is the html for app title bar and error UI. everything else gets loaded from claude.ai" (content shown in `WebContentsView`s) | Local title bar, Quick Entry and other small windows; bundled MCP servers and skills; `heavy-work-worker` and `file-index-worker` processes; V8 compile cache (`.jsc`) for fast start | Squirrel.framework (macOS), "Relaunch to update"; Windows moved Squirrel → MSIX in 2026 and could not migrate old installs |
 | Figma | Same C++/WASM renderer as the web (WebGL, WebGPU since 2025-09 with fallback + blocklist) | Tabs as native views, bundled font helper (FigmaAgent) | Web always latest; desktop shell prompts to update |
 | Discord | Two layers: **host** (shell) and **modules** (versioned, sha256), delta packages | Voice/native modules | Host and modules update separately |
 | Slack | Hybrid: most code loaded remotely, treated as untrusted; preload is the only bridge | — | Shell updates |
@@ -30,6 +30,14 @@ things a browser tab cannot do:
 Not recommended: `ignore-gpu-blocklist` (crashes, visual bugs); copy Figma instead (runtime
 fallback + our own blocklist). V8 heap stays capped at 4 GB per process, so heavy parsing moves to
 workers/utility processes.
+
+How this was verified: `/Applications/Claude.app` — `Contents/Frameworks` holds
+`Electron Framework.framework` (44.4.3, `Chrome/152.0.7977.130`) and `Squirrel.framework`;
+`Resources/app.asar` (47 MB, 362 files) holds the shell (`.vite/build`, 21 MB), six small local
+windows (`.vite/renderer`, 5.7 MB), bundled MCP servers, and V8 compile caches; the main process
+references `https://claude.ai` with `loadURL` and `WebContentsView`. So the chat UI is the website
+itself, framed by a local title bar — the same shape proposed below, except that we serve the web
+build from disk (signed, versioned) to get the per-deploy Update button and offline start.
 
 ## 2. Architecture: two update layers, one feature registry
 

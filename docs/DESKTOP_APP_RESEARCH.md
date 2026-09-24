@@ -9,7 +9,7 @@ AI account.
 
 | App | Shell | Web content | Shell updates |
 | --- | --- | --- | --- |
-| Claude desktop | Electron | Remote: loads claude.ai in Chromium | Squirrel; "Relaunch to update" applies a staged update |
+| Claude desktop | Electron 44.4.3 (verified locally on v2.7032.0) | Remote: local title bar + claude.ai in `WebContentsView` (verified from the app's own `index.html` comment) | Squirrel.framework; "Relaunch to update" |
 | ChatGPT (Windows 2024) | Electron wrapper of the site | Remote | Store / updater |
 | ChatGPT macOS | Classic app was native (AppKit); since 2026-07 the new app is the Electron Codex app | Bundled (unverified) | unverified |
 | Codex app (2026) | Electron over the Codex CLI | Bundled (app.asar) | Sparkle (macOS) |

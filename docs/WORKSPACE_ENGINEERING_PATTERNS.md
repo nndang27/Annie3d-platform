@@ -81,6 +81,48 @@ about generation needs to change.
 5. Pending-ops queue in IndexedDB; batched autosave.
 6. Perf CI gate with a 20 % margin plus a small real-device lab.
 
+## 7. What comparable workspaces are built with (checked 2026-09-24)
+
+Method: response headers and the JavaScript each site serves to a browser were scanned for
+framework and library signatures. "Verified" means seen in served code; "reported" means
+from docs, blogs or third-party write-ups only.
+
+| Product | App framework | Canvas / rendering | State | Evidence |
+| --- | --- | --- | --- | --- |
+| **ElevenLabs Flows** | Next.js App Router, React | React Flow (`@xyflow`, `react-flow__node` classes) with DOM nodes; three.js and wavesurfer in the bundle | MobX | Verified: `x-powered-by: Next.js`, `self.__next_f`, 298 chunks scanned |
+| **Krea** (site incl. /nodes) | SvelteKit | Editor not inspectable without login | — | Verified: `/_app/<hash>/immutable/` asset paths; canvas library unknown |
+| **Figma Weave** (ex-Weavy) | Next.js for the marketing page | — | — | Page blocked automated fetch; stack write-ups found online describe clones, not Weave itself |
+| **Runway** app | React SPA | Canvas 2D, OffscreenCanvas, Web Workers | Redux + Zustand | Verified in served bundle |
+| **Meshy** | Next.js App Router, React | three.js signature present, small counts | Zustand | Verified framework; 3D library uncertain |
+| **Lovable** | Editor not inspectable (Cloudflare challenge) | — | — | Apps Lovable *generates* are React + Vite + Tailwind + shadcn/ui (reported) |
+| **Excalidraw** | React SPA on Vite | Canvas 2D (`StaticCanvas` + `InteractiveCanvas`), Rough.js | Jotai | Verified: Vite `/assets/index-*.js`, source on GitHub |
+| **tldraw** | React SPA on Vite | DOM + SVG shapes, culling, R-tree | Own signals (`@tldraw/state`) | Verified in bundle and source |
+| **Figma** | React UI around a C++ → WebAssembly engine | Own tile renderer on WebGL, now WebGPU | Own | Reported by Figma's engineering blog |
+| **Miro** | Next.js app shell | Board content on Canvas API, LoD image caches | — | Verified header; rendering reported by Miro Engineering |
+| **Linear** | React (marketing on Next.js) | — | MobX + own sync engine | Reported (reverse-engineering write-up) |
+| **draw.io** | Plain JavaScript | mxGraph/maxGraph: SVG + HTML | — | Reported |
+| **3Dads (this repo)** | React 19 SPA on Vite 8 + Astro 7 static site | React Flow 12 DOM nodes; three.js 0.186 in the editor | Zustand 5 + TanStack Query | This repository |
+
+Why teams choose what they choose:
+
+- **Next.js** (ElevenLabs, Meshy, Miro shell, Luma): one codebase for SEO pages, auth
+  middleware and a very large product surface with many teams. The canvas itself still runs
+  as a client component.
+- **Vite SPA** (Excalidraw, tldraw, Runway): the workspace is a pure client app, local-first,
+  statically hosted; no server rendering needed where the user is editing.
+- **SvelteKit** (Krea): smaller runtime and compiled reactivity; a team preference.
+- **Rendering**: DOM/React Flow when nodes carry rich media and controls (ElevenLabs, us);
+  Canvas 2D for drawn content at scale (Excalidraw, Miro); a custom GPU engine only at
+  Figma's scale.
+- **State**: fine-grained observables (MobX at ElevenLabs and Linear, signals at tldraw) or
+  small stores with selectors (Zustand/Jotai at Excalidraw, Runway, us). All avoid one big
+  store that re-renders the canvas.
+
+Decision: keep the current stack. The canvas layer matches the closest competitor
+(React + React Flow + three.js). Splitting a static Astro Home from a Vite SPA fits a
+canvas-first product with SEO only on Home. Share pages with Open Graph previews can be
+rendered by Astro or an edge function; Next.js is not required for that.
+
 ## Sources
 
 - Figma: How Figma's multiplayer technology works; Realtime editing of ordered sequences;
@@ -95,3 +137,4 @@ about generation needs to change.
 - Linear: reverse-linear-sync-engine (endorsed by Linear's CTO).
 - Liveblocks: live cursors tutorial (presence throttle).
 - draw.io: mxGraph/maxGraph documentation.
+- Stack table: served HTML/JS fingerprints (headers, asset paths, library signatures), 2026-09-24.

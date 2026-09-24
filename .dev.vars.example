@@ -29,6 +29,10 @@ POSTHOG_KEY=
 OPENAI_API_KEY=
 ANTHROPIC_API_KEY=
 
+# 3D generation APIs (generative builder).
+TRIPO_API_KEY=
+MESHY_API_KEY=
+
 # Optional, only if Redis is added later.
 UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=

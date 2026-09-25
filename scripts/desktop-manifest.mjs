@@ -5,12 +5,14 @@
 // with the public key built into the shell (apps/desktop/src/main/packKey.ts).
 // Signing key: ANNIE3D_PACK_KEY (PKCS#8 PEM, base64) from the environment or .dev.vars; without it
 // the manifest is unsigned and only a development shell (ANNIE3D_ALLOW_UNSIGNED=1) accepts it.
+
 import { createHash, createPrivateKey, sign } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { FEATURES, featureOf, VENDOR_FEATURE } from '../packages/contracts/src/features.ts';
 
-process.chdir(new URL('..', import.meta.url).pathname);
+process.chdir(fileURLToPath(new URL('..', import.meta.url)));
 const DIST = 'apps/web/dist/client';
 const MIN_SHELL = '0.1.0';
 

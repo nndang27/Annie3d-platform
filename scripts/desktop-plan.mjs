@@ -4,11 +4,13 @@
 //   pnpm desktop:plan [origin]      (default: production)
 // Prints: files to download, features changed (shared vs app-only), and whether a shell release
 // (new app build) is needed. Deploying the website publishes the web pack automatically.
+
 import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { FEATURES, featureOf } from '../packages/contracts/src/features.ts';
 
-process.chdir(new URL('..', import.meta.url).pathname);
+process.chdir(fileURLToPath(new URL('..', import.meta.url)));
 const origin = process.argv[2] ?? 'https://annie3d.nndang2701.workers.dev';
 const local = JSON.parse(
   JSON.parse(readFileSync('apps/web/dist/client/desktop/manifest.json', 'utf8')).manifest,

@@ -213,9 +213,9 @@ async function editText(page: Page, add: string) {
 
 test('a board file opened from the OS gets its own window; Save writes it back', async () => {
   const photo = {
-    bytes: new Uint8Array(readFileSync(join(__dirname, '../../fixtures/out/serum/model_poster_1024.webp'))),
-    mime: 'image/webp',
-    ext: 'webp',
+    bytes: new Uint8Array(readFileSync(join(__dirname, '../../apps/desktop/build/icon.png'))),
+    mime: 'image/png',
+    ext: 'png',
   };
   const { path, asset } = boardFile('From the file', photo, 'Desk.annie3d');
   await launch({}, true, [path]);
@@ -346,10 +346,9 @@ test('a 200 MB board file opens at once: assets stream from disk by range', asyn
 });
 
 test('Save keeps an Export ZIP as its member list, and the ZIP comes back whole', async () => {
-  const png = new Uint8Array(
-    readFileSync(join(__dirname, '../../fixtures/out/serum/model_poster_1024.webp')),
-  );
-  const glb = new Uint8Array(readFileSync(join(__dirname, '../../fixtures/out/serum/model.glb')));
+  // Files in the repository (test fixtures under fixtures/out are generated, not committed).
+  const png = new Uint8Array(readFileSync(join(__dirname, '../../apps/desktop/build/icon.png')));
+  const glb = new Uint8Array(readFileSync(join(__dirname, '../../apps/desktop/build/icon-square.png')));
   // Like a real Export node: its ZIP holds the photo and its own web GLB, which is its 2nd output.
   const inner = zipSync({ 'serum-image-1.webp': [png, { level: 0 }], 'serum-web.glb': [glb, { level: 0 }] });
   const [p, e] = [crypto.randomUUID(), crypto.randomUUID()];

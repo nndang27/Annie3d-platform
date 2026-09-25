@@ -12,10 +12,12 @@
 //   python3 -c "from PIL import Image; import os
 //   [Image.open(f'{n}.png').save(f'{n}.webp', lossless=True, method=6) or os.remove(f'{n}.png') for n in ('raised','circle','inset')]"
 //   (run inside apps/web/src/client/canvas/neu)
+
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 
-const OUT = new URL('../apps/web/src/client/canvas/neu/', import.meta.url).pathname;
+const OUT = fileURLToPath(new URL('../apps/web/src/client/canvas/neu/', import.meta.url));
 const K = 2;
 const LIGHT = 'rgba(255,255,255,0.92)';
 const DARK = 'rgba(163,177,198,0.68)';

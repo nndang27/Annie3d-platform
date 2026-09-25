@@ -7,10 +7,12 @@
 //   pnpm share:stop       stop preview and tunnel
 // The preview build, not the dev server, is shared: the dev server would also serve source and
 // local files (such as .dev.vars) to anyone with the link.
+
 import { execSync, spawn } from 'node:child_process';
 import { existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
-process.chdir(new URL('..', import.meta.url).pathname);
+process.chdir(fileURLToPath(new URL('..', import.meta.url)));
 const DIR = '.share';
 mkdirSync(DIR, { recursive: true });
 const PORT = 4173;

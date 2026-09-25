@@ -1,10 +1,11 @@
 // Bundles the shell (main process + preload) with esbuild. The web app is not built here: the
 // shell serves the website build (apps/web/dist/client) as its bundled web pack.
+import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 
 const common = {
   // esbuild resolves entry points against this directory, whoever runs the script.
-  absWorkingDir: new URL('.', import.meta.url).pathname,
+  absWorkingDir: fileURLToPath(new URL('.', import.meta.url)),
   bundle: true,
   platform: 'node',
   target: 'node22',

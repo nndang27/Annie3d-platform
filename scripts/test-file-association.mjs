@@ -4,13 +4,15 @@
 //   Windows: the NSIS installer, silently (per user); the file is opened with `start`.
 //   Linux:   the .deb (installs the MIME type and the .desktop entry); `xdg-open` under Xvfb.
 //   macOS:   the .app from the zip, registered with Launch Services; `open`.
+
 import { execFileSync, execSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { strToU8, zipSync } from 'fflate';
 
-const release = new URL('../apps/desktop/release/', import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1');
+const release = fileURLToPath(new URL('../apps/desktop/release/', import.meta.url));
 const dir = mkdtempSync(join(tmpdir(), 'annie3d-assoc-'));
 const file = join(dir, 'Association test.annie3d');
 const report = join(dir, 'report.jsonl');

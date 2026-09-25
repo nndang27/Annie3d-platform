@@ -1,11 +1,13 @@
 // Starts the Vite dev server (SPA + Worker) with local secrets from .dev.vars.
 // Hyperdrive in local dev connects directly to the Neon `dev` branch through
 // CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_<BINDING> (Hyperdrive local-development docs).
+
 import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 // Run from the repo root regardless of the caller's cwd (launch.json may start us elsewhere).
-process.chdir(new URL('..', import.meta.url).pathname);
+process.chdir(fileURLToPath(new URL('..', import.meta.url)));
 
 const vars = Object.fromEntries(
   readFileSync('.dev.vars', 'utf8')

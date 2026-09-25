@@ -4,6 +4,7 @@ import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
   compareVersions,
+  type DesktopUpdateState,
   type SignedWebPack,
   type WebPackManifest,
   type WebUpdateState,
@@ -21,13 +22,19 @@ import { PACK_KEYS } from './packKey';
  * - `check()` fetches `<origin>/desktop/manifest.json`, verifies its Ed25519 signature, downloads
  *   only files whose sha256 is not stored yet (each verified), then reports "ready" with the
  *   features whose files changed.
- * - `apply()` makes the new version current and reloads; the page must call `ready` within
- *   20 s or the previous version comes back (rollback), as Capgo does for Capacitor.
+ * - `stageForRestart()` makes the new version current for the next start, and the shell
+ *   restarts (like Chrome, VS Code or the Claude app: "Restart to update"). On that start the
+ *   page must call `ready` within 20 s or the previous version comes back (rollback), as Capgo
+ *   does for Capacitor. A start that finds an update still unconfirmed (it crashed or was quit
+ *   before confirming) rolls back at once.
  */
 interface Pointer {
   current: string | null;
   previous: string | null;
+  /** The current version has not confirmed (`ready`) yet. */
   pending: boolean;
+  /** Set by "Restart to update": the next start is that update's first start. */
+  restart?: boolean;
 }
 
 const MAX_FILE = 64 * 1024 * 1024;
@@ -45,6 +52,8 @@ export class WebPackStore {
   private confirmTimer: NodeJS.Timeout | null = null;
   state: WebUpdateState = { status: 'idle' };
   rolledBackFrom: string | null = null;
+  /** This launch is an update's first start: what it brought (cleared once the page confirms). */
+  justUpdated: DesktopUpdateState['justUpdated'] = null;
 
   constructor(
     private readonly bundledDir: string,
@@ -62,6 +71,15 @@ export class WebPackStore {
     if (ptr.current && ptr.current !== b?.version) m = await this.loadVersion(ptr.current);
     // A newer app install can bundle a newer pack than the one downloaded earlier.
     if (m && b && b.builtAt > m.builtAt) m = null;
+    if (ptr.pending && m && ptr.restart) {
+      // First start after "Restart to update": run the new version; it must confirm in time.
+      const prev = ptr.previous === b?.version ? b : ptr.previous ? await this.loadVersion(ptr.previous) : b;
+      await this.writePointer({ ...ptr, restart: false });
+      this.justUpdated = { version: m.version, changes: this.diff(prev, m).changes, notes: m.notes };
+      this.setActive(m);
+      if (prev) this.armConfirm(prev, m.version);
+      return;
+    }
     if (ptr.pending && m) {
       // The app quit before the page confirmed the new version: treat as failed.
       this.rolledBackFrom = m.version;
@@ -106,7 +124,10 @@ export class WebPackStore {
 
   async check(): Promise<WebUpdateState> {
     if (this.state.status === 'downloading' || this.state.status === 'checking') return this.state;
-    this.set({ status: 'checking' });
+    // With an update already downloaded, check quietly: the "Restart to update" pill must not
+    // blink every minute while the next manifest is fetched.
+    const quiet = this.state.status === 'ready';
+    if (!quiet) this.set({ status: 'checking' });
     try {
       const res = await net.fetch(`${ORIGIN}/desktop/manifest.json?t=${Date.now()}`, {
         bypassCustomProtocolHandlers: true,
@@ -115,7 +136,7 @@ export class WebPackStore {
       if (!res.ok) throw new Error(`manifest ${res.status}`);
       const next = this.parseSigned((await res.json()) as SignedWebPack, true);
       if (!this.active || next.version === this.active.version || next.builtAt <= this.active.builtAt)
-        return this.set({ status: 'up-to-date' });
+        return quiet ? this.state : this.set({ status: 'up-to-date' });
       if (compareVersions(app.getVersion(), next.minShell) < 0)
         return this.set({ status: 'shell-required', version: next.version, minShell: next.minShell });
       if (this.staged?.version === next.version) return this.readyState(next);
@@ -138,22 +159,27 @@ export class WebPackStore {
       this.staged = next;
       return this.readyState(next);
     } catch (e) {
-      return this.set({ status: 'error', message: (e as Error).message });
+      return quiet ? this.state : this.set({ status: 'error', message: (e as Error).message });
     }
   }
 
-  /** Switch to the staged version and reload; rolls back unless the page confirms in time. */
-  async apply() {
+  /** Makes the downloaded version current for the next start; the caller then restarts the app. */
+  async stageForRestart(): Promise<boolean> {
     const next = this.staged;
-    if (!next || !this.active) return;
-    await this.writePointer({ current: next.version, previous: this.active.version, pending: true });
-    const previous = this.active;
-    this.setActive(next);
-    this.staged = null;
-    this.set({ status: 'idle' });
-    this.reloadAll();
+    if (!next || !this.active) return false;
+    await this.writePointer({
+      current: next.version,
+      previous: this.active.version,
+      pending: true,
+      restart: true,
+    });
+    return true;
+  }
+
+  /** The page of `version` must call `ready` in time, or `previous` comes back. */
+  private armConfirm(previous: WebPackManifest, version: string) {
     if (this.confirmTimer) clearTimeout(this.confirmTimer);
-    this.confirmTimer = setTimeout(() => void this.rollback(previous, next.version), CONFIRM_MS);
+    this.confirmTimer = setTimeout(() => void this.rollback(previous, version), CONFIRM_MS);
   }
 
   /** The page started: a pending update is now final; unreferenced files are cleaned up. */
@@ -164,6 +190,7 @@ export class WebPackStore {
     const ptr = await this.pointer();
     await this.writePointer({ ...ptr, pending: false });
     this.rolledBackFrom = null;
+    this.justUpdated = null;
     this.onState();
     void this.gc(ptr);
   }
@@ -171,32 +198,42 @@ export class WebPackStore {
   private async rollback(previous: WebPackManifest, failed: string) {
     this.confirmTimer = null;
     this.rolledBackFrom = failed;
+    this.justUpdated = null;
     await this.writePointer({ current: previous.version, previous: null, pending: false });
     this.setActive(previous);
     this.set({ status: 'idle' });
     this.reloadAll();
   }
 
-  private readyState(next: WebPackManifest): WebUpdateState {
-    const have = new Set(this.active?.files.map((f) => f.sha256));
-    const changed = next.files.filter((f) => !have.has(f.sha256));
+  /** Features whose files differ between two versions (libraries left out), and their size. */
+  private diff(from: WebPackManifest | null, to: WebPackManifest) {
+    const have = new Set(from?.files.map((f) => f.sha256));
+    const changed = to.files.filter((f) => !have.has(f.sha256));
     const ids = [...new Set(changed.flatMap((f) => f.features))].filter((id) => id !== 'libraries');
-    return this.set({
-      status: 'ready',
-      version: next.version,
+    return {
       changes: ids.map((id) => ({
         id,
-        title: next.features[id]?.title ?? id,
-        surface: next.features[id]?.surface ?? 'shared',
+        title: to.features[id]?.title ?? id,
+        surface: to.features[id]?.surface ?? ('shared' as const),
       })),
       bytes: changed.reduce((a, f) => a + f.size, 0),
       files: changed.length,
+    };
+  }
+
+  private readyState(next: WebPackManifest): WebUpdateState {
+    return this.set({
+      status: 'ready',
+      version: next.version,
+      notes: next.notes,
+      ...this.diff(this.active, next),
     });
   }
 
   private set(s: WebUpdateState): WebUpdateState {
+    const same = JSON.stringify(s) === JSON.stringify(this.state);
     this.state = s;
-    this.onState();
+    if (!same) this.onState(); // a check every minute must not re-render the page when nothing changed
     return s;
   }
 

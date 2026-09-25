@@ -2,9 +2,10 @@
  * Desktop app contracts shared by the website build, the Electron shell and the web client.
  *
  * Web pack: the website's built files, as the app stores and serves them. Every deploy publishes
- * `/desktop/manifest.json` next to the site's own files; the app downloads only files whose
- * sha256 it does not have yet (Vite file names are content-hashed, so unchanged chunks are
- * reused) and swaps to the new version when the user clicks Reload.
+ * `/desktop/manifest.json` next to the site's own files. The app checks it every minute, downloads
+ * only files whose sha256 it does not have yet (Vite file names are content-hashed, so unchanged
+ * chunks are reused) in the background, and restarts into the new version when the user clicks
+ * "Restart to update".
  */
 export interface WebPackFile {
   /** Site path without the leading slash, e.g. `assets/index-5_FOD83w.js`. */
@@ -24,6 +25,8 @@ export interface WebPackManifest {
   minShell: string;
   features: Record<string, { title: string; surface: 'shared' | 'desktop' }>;
   files: WebPackFile[];
+  /** What this deploy changes, in a line (the release's commit subject); covered by the signature. */
+  notes?: string;
 }
 
 /** `/desktop/manifest.json`: the manifest text and its Ed25519 signature (base64). */
@@ -40,9 +43,10 @@ export type WebUpdateState =
       status: 'ready';
       version: string;
       /** Titles of the features whose files changed, desktop-only ones marked. */
-      changes: { id: string; title: string; surface: 'shared' | 'desktop' }[];
+      changes: FeatureChange[];
       bytes: number;
       files: number;
+      notes?: string;
     }
   | { status: 'shell-required'; version: string; minShell: string }
   | { status: 'error'; message: string };
@@ -60,6 +64,14 @@ export interface DesktopUpdateState {
   current: string;
   /** Set once after a rollback, until the next successful update. */
   rolledBackFrom: string | null;
+  /** This launch is the first start of a web-pack update: what it brought (shown once). */
+  justUpdated: { version: string; changes: FeatureChange[]; notes?: string } | null;
+}
+
+export interface FeatureChange {
+  id: string;
+  title: string;
+  surface: 'shared' | 'desktop';
 }
 
 export interface DesktopInfo {
@@ -78,7 +90,7 @@ export interface DesktopBridge {
   updates: {
     get(): Promise<DesktopUpdateState>;
     check(): Promise<DesktopUpdateState>;
-    /** `web`: switch to the downloaded web pack (reload); `shell`: relaunch into the new app. */
+    /** `web` and `shell`: restart the app into the downloaded update. */
     apply(layer: 'web' | 'shell'): Promise<void>;
     onChange(cb: (s: DesktopUpdateState) => void): () => void;
   };

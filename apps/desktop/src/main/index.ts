@@ -67,6 +67,7 @@ function updateState(): DesktopUpdateState {
     shell: shellUpdater.state,
     current: DEV_URL ? 'dev' : pack.version,
     rolledBackFrom: pack.rolledBackFrom,
+    justUpdated: pack.justUpdated,
   };
 }
 
@@ -149,7 +150,11 @@ function createWindow() {
       writeFileSync(stateFile(), JSON.stringify(win.getBounds()));
   });
   win.on('closed', () => windows.delete(win));
-  win.on('focus', () => maybeCheck());
+  win.on('focus', () => checkWeb());
+  // "Restart to update" must not stop at a "Leave site?" prompt: the board is saved locally.
+  win.webContents.on('will-prevent-unload', (e) => {
+    if (restarting) e.preventDefault();
+  });
 
   // Only our site (and Google sign-in) runs inside the app; any other link opens in the browser.
   const inside = (url: string) => {
@@ -261,14 +266,29 @@ function buildMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-// ---- update checks: at start, every 30 min, and on focus after 5 min ----
-let lastCheck = 0;
-function maybeCheck(force = false) {
+// ---- update checks ----
+// Website deploys reach the app within a minute, while it is open (like the Claude and Codex
+// apps): the web pack is checked every minute and on focus (at most every 30 s), downloaded in the
+// background, then "Restart to update" appears. App (shell) builds are checked every 30 min.
+const WEB_POLL_MS = Number(process.env.ANNIE3D_POLL_MS) || 60_000;
+let lastWebCheck = 0;
+function checkWeb(force = false) {
   if (DEV_URL) return;
-  if (!force && Date.now() - lastCheck < 5 * 60_000) return;
-  lastCheck = Date.now();
+  if (!force && Date.now() - lastWebCheck < Math.min(30_000, WEB_POLL_MS)) return;
+  lastWebCheck = Date.now();
   void pack.check();
-  void shellUpdater.check();
+}
+function checkShell() {
+  if (!DEV_URL) void shellUpdater.check();
+}
+
+/** Quit and start again into the downloaded update. */
+let restarting = false;
+function restartApp() {
+  restarting = true;
+  // Tests stop at the quit and start the app themselves (a relaunched child would be orphaned).
+  if (process.env.ANNIE3D_RELAUNCH !== '0') app.relaunch();
+  app.quit();
 }
 
 // ---- bridge ----
@@ -284,13 +304,13 @@ ipcMain.handle(
 );
 ipcMain.handle('updates:get', () => updateState());
 ipcMain.handle('updates:check', async () => {
-  lastCheck = Date.now();
+  lastWebCheck = Date.now();
   await Promise.all([pack.check(), shellUpdater.check()]);
   return updateState();
 });
 ipcMain.handle('updates:apply', async (_e, layer: 'web' | 'shell') => {
-  if (layer === 'web') await pack.apply();
-  else shellUpdater.apply();
+  if (layer === 'shell') return shellUpdater.apply(); // electron-updater quits, installs, relaunches
+  if (await pack.stageForRestart()) restartApp();
 });
 ipcMain.on('app:ready', () => void pack.confirm());
 ipcMain.on('files:subscribe', (e) => {
@@ -316,8 +336,12 @@ app.whenReady().then(async () => {
   }
   shellUpdater.init();
   createWindow();
-  setInterval(() => maybeCheck(true), 30 * 60_000);
-  setTimeout(() => maybeCheck(true), 5_000);
+  setInterval(() => checkWeb(true), WEB_POLL_MS);
+  setInterval(checkShell, 30 * 60_000);
+  setTimeout(() => {
+    checkWeb(true);
+    checkShell();
+  }, 5_000);
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });

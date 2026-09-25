@@ -14,13 +14,27 @@ let userData: string;
 let app: ElectronApplication;
 let win: Page;
 
-async function launch(env: Record<string, string> = {}) {
+async function launch(env: Record<string, string> = {}, waitForBoard = true) {
   app = await electron.launch({
     args: [APP_DIR],
-    env: { ...process.env, ANNIE3D_ORIGIN: site.origin, ANNIE3D_USER_DATA: userData, ...env },
+    // ANNIE3D_RELAUNCH=0: "Restart to update" only quits; each test starts the app again itself.
+    env: {
+      ...process.env,
+      ANNIE3D_ORIGIN: site.origin,
+      ANNIE3D_USER_DATA: userData,
+      ANNIE3D_RELAUNCH: '0',
+      ...env,
+    },
   });
   win = await app.firstWindow();
-  await win.waitForSelector('.react-flow__node', { timeout: 30_000 });
+  if (waitForBoard) await win.waitForSelector('.react-flow__node', { timeout: 30_000 });
+}
+
+/** Clicks "Restart to update" and waits until the app has quit. */
+async function restartToUpdate() {
+  const closed = app.waitForEvent('close');
+  await win.getByTestId('update-apply').click();
+  await closed;
 }
 
 /** A next web pack where exactly one file (the performance panel chunk) changed. */
@@ -51,31 +65,38 @@ test('starts from the bundled web pack on the site origin, even offline', async 
   await launch();
   expect(new URL(win.url()).origin).toBe(site.origin);
   const info = await win.evaluate(() => (window as any).annieDesktop.info());
-  expect(info).toMatchObject({ mode: 'pack', shellVersion: '0.1.0', webVersion: builtManifest().version });
+  const { version: shellVersion } = JSON.parse(readFileSync(join(APP_DIR, 'package.json'), 'utf8'));
+  expect(info).toMatchObject({ mode: 'pack', shellVersion, webVersion: builtManifest().version });
   expect(await win.locator('.react-flow__node').count()).toBeGreaterThan(5);
 });
 
-test('a deploy that changes one file downloads only that file and shows the update pill', async () => {
+test('a deploy shows up while the app is open, and Restart to update starts the new version', async () => {
+  await launch({ ANNIE3D_POLL_MS: '1000' });
+  // The deploy lands while the app is running; nobody asks the app to check.
   const { m, file } = nextPack('v2');
+  m.notes = 'Neumorphic nodes';
   site.manifest = signed(m);
-  await launch();
-  const state = await win.evaluate(() => (window as any).annieDesktop.updates.check());
-  expect(state.web).toMatchObject({ status: 'ready', version: m.version, files: 1 });
-  expect(state.web.changes.map((c: { id: string }) => c.id)).toEqual(['performance']);
+  const pill = win.getByTestId('update-pill');
+  await expect(pill).toContainText('Update available', { timeout: 15_000 });
+  await expect(pill).toContainText('Neumorphic nodes');
   // Only the changed file came over the network (plus the manifest).
   expect(site.requests.filter((r) => r.startsWith('/assets/'))).toEqual([`/${file}`]);
-  const pill = win.getByTestId('update-pill');
-  await expect(pill).toContainText('Update ready');
-  await expect(pill).toContainText('Performance meter');
   await win.screenshot({ path: 'test-results/desktop/update-pill.png' });
-  await pill.getByTestId('update-apply').click();
-  await win.waitForSelector('.react-flow__node', { timeout: 30_000 });
-  await expect
-    .poll(() => win.evaluate(async () => (await (window as any).annieDesktop.info()).webVersion))
-    .toBe(m.version);
+  await restartToUpdate();
+
+  await launch();
+  expect((await win.evaluate(() => (window as any).annieDesktop.info())).webVersion).toBe(m.version);
   const served = await win.evaluate((p) => fetch(`/${p}`).then((r) => r.text()), file);
   expect(served).toContain('/*v2*/');
+  await expect(win.getByTestId('update-done')).toContainText('Neumorphic nodes');
+  await win.screenshot({ path: 'test-results/desktop/update-done.png' });
   await expect(win.getByTestId('update-pill')).toHaveCount(0);
+
+  // The page confirmed, so the next start keeps the new version and says nothing more.
+  await app.close();
+  await launch();
+  expect((await win.evaluate(() => (window as any).annieDesktop.info())).webVersion).toBe(m.version);
+  await expect(win.getByTestId('update-done')).toHaveCount(0);
 });
 
 test('a manifest with a bad signature is refused', async () => {
@@ -97,11 +118,12 @@ test('an update whose page never starts rolls back to the previous version', asy
   m.version = `${m.version}-broken`;
   m.builtAt += 2000;
   site.manifest = signed(m);
-  await launch({ ANNIE3D_CONFIRM_MS: '3000' });
+  await launch();
   const before = (await win.evaluate(() => (window as any).annieDesktop.info())).webVersion;
   await win.evaluate(() => (window as any).annieDesktop.updates.check());
-  await win.evaluate(() => (window as any).annieDesktop.updates.apply('web'));
-  // The broken page shows briefly, then the shell restores the previous version.
+  await restartToUpdate();
+  // The broken page starts and never confirms; the shell restores the previous version.
+  await launch({ ANNIE3D_CONFIRM_MS: '3000' }, false);
   await win.waitForSelector('.react-flow__node', { timeout: 30_000 });
   const after = await win.evaluate(() => (window as any).annieDesktop.updates.get());
   expect(after).toMatchObject({ current: before, rolledBackFrom: m.version });

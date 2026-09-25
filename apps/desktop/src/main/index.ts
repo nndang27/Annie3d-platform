@@ -72,8 +72,10 @@ function updateState(): DesktopUpdateState {
 }
 
 // ---- files and links from the OS (may arrive before `ready`) ----
+docs.report({ start: process.argv });
 app.on('open-file', (e, path) => {
   e.preventDefault();
+  docs.report({ openFile: path });
   openPath(path);
 });
 app.on('open-url', (e, url) => {

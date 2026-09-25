@@ -53,6 +53,9 @@ if (process.platform === 'win32') {
   sh('cmd /c assoc .annie3d');
   sh(`cmd /c start "" "${file}"`);
 } else if (process.platform === 'linux') {
+  // Desktop Ubuntu has desktop-file-utils, which records which app opens which type when a
+  // package adds a .desktop entry; the CI image does not.
+  sh('sudo apt-get install -y desktop-file-utils');
   sh(`sudo apt-get install -y "${join(release, find(/\.deb$/))}"`);
   // Desktops (GNOME, KDE) type files with the shared MIME database, by name first; without a
   // desktop, xdg-mime falls back to `file`, which only sees a ZIP. Ask the database, as GNOME does.
@@ -61,7 +64,10 @@ if (process.platform === 'win32') {
   const app = sh('gio mime application/vnd.annie3d+zip');
   if (type !== 'application/vnd.annie3d+zip') throw new Error(`the OS sees the file as ${type}`);
   if (!/annie3d/i.test(app)) throw new Error(`no app for ${type}: ${app}`);
-  execSync(`XDG_CURRENT_DESKTOP=GNOME nohup xdg-open "${file}" >/dev/null 2>&1 &`, { env, shell: '/bin/bash' });
+  execSync(`XDG_CURRENT_DESKTOP=GNOME nohup xdg-open "${file}" >/dev/null 2>&1 &`, {
+    env,
+    shell: '/bin/bash',
+  });
 } else {
   sh(`ditto -x -k "${join(release, find(/-mac-universal\.zip$|-mac-.*\.zip$/))}" /Applications`);
   sh(
@@ -69,7 +75,9 @@ if (process.platform === 'win32') {
   );
   sh('codesign --verify --deep --strict --verbose=2 "/Applications/Annie 3D.app"');
   sh('codesign -dv "/Applications/Annie 3D.app" 2>&1 | head -5');
-  sh('lsregister_out=$(/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -dump | grep -i -m5 annie3d); echo "$lsregister_out"');
+  sh(
+    'lsregister_out=$(/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -dump | grep -i -m5 annie3d); echo "$lsregister_out"',
+  );
   const vars = ['ANNIE3D_REPORT_FILE', 'ANNIE3D_USER_DATA'].map((k) => `--env ${k}="${env[k]}"`).join(' ');
   sh(`open ${vars} "${file}"; echo "open exit $?"`);
   execFileSync(process.execPath, ['-e', 'setTimeout(() => {}, 8000)']);
@@ -80,7 +88,8 @@ if (process.platform === 'win32') {
 const until = Date.now() + 90_000;
 while (Date.now() < until) {
   const lines = existsSync(report) ? readFileSync(report, 'utf8').trim().split('\n').filter(Boolean) : [];
-  const opened = lines.map((l) => JSON.parse(l).opened);
+  const events = lines.map((l) => JSON.parse(l));
+  const opened = events.map((e) => e.opened).filter(Boolean);
   if (opened.some((p) => p.toLowerCase() === file.toLowerCase())) {
     console.log(`OK: the OS opened ${file} in Annie 3D`);
     process.exit(0);
@@ -88,4 +97,5 @@ while (Date.now() < until) {
   execFileSync(process.execPath, ['-e', 'setTimeout(() => {}, 1000)']);
 }
 console.error('FAILED: Annie 3D did not report the file within 90 s');
+if (existsSync(report)) console.error(`what the app saw:\n${readFileSync(report, 'utf8')}`);
 process.exit(1);

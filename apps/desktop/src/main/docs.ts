@@ -60,6 +60,12 @@ interface Doc {
 
 const docs = new Map<string, Doc>();
 
+/** Installer tests (scripts/test-file-association.mjs): what the OS handed the app. */
+export function report(event: Record<string, unknown>) {
+  if (process.env.ANNIE3D_REPORT_FILE)
+    appendFileSync(process.env.ANNIE3D_REPORT_FILE, `${JSON.stringify({ at: Date.now(), ...event })}\n`);
+}
+
 /**
  * Quitting (including "Restart to update"): which files were open, so they can open again
  * after a restart. A dirty document asks first: Cancel stops the quit, Save saves then lets the
@@ -153,6 +159,7 @@ export async function openDocument(
     try {
       Object.assign(d, await index(path));
     } catch (e) {
+      report({ failed: path, error: String(e) });
       dialog.showErrorBox(
         `“${basename(path)}” could not be opened`,
         e instanceof ZipError || e instanceof SyntaxError ? e.message : String(e),
@@ -160,9 +167,7 @@ export async function openDocument(
       return false;
     }
     app.addRecentDocument(path);
-    // Installer tests (scripts/test-file-association.mjs): which file the OS asked us to open.
-    if (process.env.ANNIE3D_REPORT_FILE)
-      appendFileSync(process.env.ANNIE3D_REPORT_FILE, `${JSON.stringify({ opened: path })}\n`);
+    report({ opened: path });
   }
   docs.set(d.id, d);
   const win = makeWindow(`/?doc=${d.id}`);

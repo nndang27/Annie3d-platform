@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { createReadStream, createWriteStream, type WriteStream } from 'node:fs';
+import { appendFileSync, createReadStream, createWriteStream, type WriteStream } from 'node:fs';
 import { mkdir, open, rename, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
@@ -59,6 +59,24 @@ interface Doc {
 }
 
 const docs = new Map<string, Doc>();
+
+/**
+ * Quitting (including "Restart to update"): which files were open, so they can open again
+ * after a restart. A dirty document asks first: Cancel stops the quit, Save saves then lets the
+ * quit carry on.
+ */
+const quitting = { active: false, paths: [] as string[], onCancel: () => {} };
+export const quitActive = () => quitting.active;
+export function beginQuit(onCancel: () => void) {
+  if (quitting.active) return;
+  Object.assign(quitting, { active: true, paths: [], onCancel });
+}
+/** Files open when the quit began (closed since, or still open). */
+export function quitPaths() {
+  const open = [...docs.values()].flatMap((d) => (d.path ? [d.path] : []));
+  return [...new Set([...quitting.paths, ...open])];
+}
+export const isDocWindow = (w: BrowserWindow) => [...docs.values()].some((d) => d.win === w);
 const crc = (b: Uint8Array) => (typeof zcrc32 === 'function' ? zcrc32(b) >>> 0 : jscrc32(b));
 const inflate = (d: Uint8Array, size: number) => new Uint8Array(inflateRawSync(d, { maxOutputLength: size }));
 const fileRange =
@@ -142,6 +160,9 @@ export async function openDocument(
       return false;
     }
     app.addRecentDocument(path);
+    // Installer tests (scripts/test-file-association.mjs): which file the OS asked us to open.
+    if (process.env.ANNIE3D_REPORT_FILE)
+      appendFileSync(process.env.ANNIE3D_REPORT_FILE, `${JSON.stringify({ opened: path })}\n`);
   }
   docs.set(d.id, d);
   const win = makeWindow(`/?doc=${d.id}`);
@@ -164,9 +185,14 @@ export async function openDocument(
     else if (choice === 1) {
       d.closing = true;
       win.close();
+    } else if (quitting.active) {
+      // Cancel: the app stays open.
+      quitting.active = false;
+      quitting.onCancel();
     }
   });
   win.on('closed', () => {
+    if (quitting.active && d.path) quitting.paths.push(d.path);
     docs.delete(d.id);
     if (d.pack) void rm(d.pack.file, { force: true });
   });
@@ -221,6 +247,8 @@ export function close(id: string, sender: Electron.WebContents) {
   const d = docOf(id, sender);
   d.closing = true;
   d.win?.close();
+  // Saved on the way out of a quit: carry on quitting (the close had stopped it).
+  if (quitting.active) setImmediate(() => app.quit());
 }
 
 // ------------------------------------------------------------------ serving assets from disk

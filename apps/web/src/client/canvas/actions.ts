@@ -134,10 +134,8 @@ async function attachGuestFile(node: NodeRecord, file: File, kind: AssetDto['kin
 
 export function onRunNode(nodeId: string) {
   // Runs this node and whatever upstream is stale or missing (cached nodes are free).
-  withCloud(
-    'run',
-    (id) => useUi.setState({ dialog: { type: 'run', nodeId: id!, scope: 'with_upstream' } }),
-    nodeId,
+  withCloud('run', { kind: 'run', nodeId, scope: 'with_upstream' }, (id) =>
+    useUi.setState({ dialog: { type: 'run', nodeId: id!, scope: 'with_upstream' } }),
   );
 }
 

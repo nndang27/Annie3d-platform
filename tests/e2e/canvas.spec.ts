@@ -493,21 +493,46 @@ test.describe('reference stack and performance panel', () => {
 });
 
 test.describe('.annie3d board file', () => {
-  test('downloads the canvas and opens it again with results (guest)', async ({ page }) => {
+  test('saves the canvas as a file and opens it again with results (guest)', async ({
+    page,
+    browserName,
+  }) => {
+    // Chrome/Edge save through the system's save dialog (a real browser file handle here, as a
+    // test cannot click the dialog); Safari and Firefox download the file.
+    const picker = browserName === 'chromium';
+    if (picker)
+      await page.addInitScript(() => {
+        Object.assign(window, {
+          showSaveFilePicker: async () =>
+            (await navigator.storage.getDirectory()).getFileHandle('Saved.annie3d', { create: true }),
+        });
+      });
     await openCanvas(page);
     await page.getByRole('button', { name: 'Close agent' }).click();
     const n0 = (await graph(page)).nodes;
     const e0 = (await graph(page)).edges;
-    const download = page.waitForEvent('download');
+    const download = picker ? null : page.waitForEvent('download');
     await page.getByTestId('file-menu').click();
     await page.getByTestId('file-export').click();
-    const file = await download;
-    expect(file.suggestedFilename()).toMatch(/\.annie3d$/);
-    const path = await file.path();
+    let file: string | { name: string; mimeType: string; buffer: Buffer };
+    if (download) {
+      const d = await download;
+      expect(d.suggestedFilename()).toMatch(/\.annie3d$/);
+      file = await d.path();
+    } else {
+      await expect(page.getByText(/^Saved Saved\.annie3d$/)).toBeVisible({ timeout: 30_000 });
+      const bytes = await page.evaluate(async () => {
+        const f = await (
+          await (await navigator.storage.getDirectory()).getFileHandle('Saved.annie3d')
+        ).getFile();
+        return Array.from(new Uint8Array(await f.arrayBuffer()));
+      });
+      file = { name: 'Saved.annie3d', mimeType: 'application/vnd.annie3d+zip', buffer: Buffer.from(bytes) };
+    }
     const chooser = page.waitForEvent('filechooser');
     await page.getByTestId('file-menu').click();
     await page.getByTestId('file-import').click();
-    await (await chooser).setFiles(path);
+    await (await chooser).setFiles(file);
     await expect.poll(async () => (await graph(page)).nodes).toBe(n0 * 2);
     expect((await graph(page)).edges).toBe(e0 * 2);
     // Imported nodes keep their results: a packshot copy shows its four images.

@@ -31,6 +31,9 @@ jobs:
       - name: Package
         working-directory: apps/desktop
         run: pnpm exec electron-builder --publish never
+      # Install the package and double-click a .annie3d file (the OS picks the app).
+      - name: File association
+        run: ${{ runner.os == 'Linux' && 'xvfb-run -a ' || '' }}node scripts/test-file-association.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: annie3d-${{ runner.os }}

@@ -193,7 +193,10 @@ export function parseManifest(text: string): BoardFileManifest {
 }
 
 /** A stored ZIP made of `members` (Blobs, not read): headers + members + central directory. */
-function zipBlob(members: { name: string; blob: Blob; crc32: number }[], type = 'application/zip'): Blob {
+export function zipBlob(
+  members: { name: string; blob: Blob; crc32: number }[],
+  type = 'application/zip',
+): Blob {
   const parts: BlobPart[] = [];
   const written: WrittenEntry[] = [];
   let offset = 0;
@@ -308,8 +311,9 @@ export async function uploadBoardFile(
   boardId: string,
   src: UploadSource,
   at: { x: number; y: number },
+  into: 'new' | 'existing' = 'new',
 ): Promise<ImportResult> {
-  const q = `x=${Math.round(at.x)}&y=${Math.round(at.y)}`;
+  const q = `x=${Math.round(at.x)}&y=${Math.round(at.y)}${into === 'existing' ? '&into=existing' : ''}`;
   const json = async (r: Response) => {
     const body = await r.json().catch(() => null);
     if (!r.ok)
@@ -368,11 +372,19 @@ export async function uploadBoardFile(
  * (a desktop document), assets the document already holds are named, not read: the shell
  * copies them from disk. Everything else is fetched here.
  */
-export async function buildPayload(doc?: { id: string; assets: Set<string> }): Promise<DocPayload> {
+export async function buildPayload(
+  doc?: { prefix: string | null; assets: Set<string> },
+  /**
+   * Part of the board (desktop working copies): `results` limits which nodes' results are
+   * included, `nodes` which nodes are listed at all. The whole board by default.
+   */
+  part: { results?: Set<string>; nodes?: Set<string> } = {},
+): Promise<DocPayload> {
   const { graph, versions, title, stale } = useBoard.getState();
+  const listed = [...graph.nodes.values()].filter((n) => !part.nodes || part.nodes.has(n.id));
   const files = new Map<string, Uint8Array | undefined>();
   const pathBySha = new Map<string, string>();
-  const docPrefix = doc ? `/__doc/${doc.id}/` : null;
+  const docPrefix = doc?.prefix ?? null;
   const keep = (path: string, bytes?: Uint8Array) => {
     if (!files.has(path)) files.set(path, bytes);
     const sha = shaOfPath(path);
@@ -384,7 +396,7 @@ export async function buildPayload(doc?: { id: string; assets: Set<string> }): P
     if (doc) {
       const p =
         docPaths.get(url) ??
-        (url.startsWith(docPrefix!) ? decodeURIComponent(url.slice(docPrefix!.length)) : null);
+        (docPrefix && url.startsWith(docPrefix) ? decodeURIComponent(url.slice(docPrefix.length)) : null);
       if (p && doc.assets.has(p)) return keep(p);
       // A server copy of a file the document holds (same content, same name).
       if (sha && doc.assets.has(name(sha))) return keep(name(sha));
@@ -403,7 +415,8 @@ export async function buildPayload(doc?: { id: string; assets: Set<string> }): P
     o: AssetDto;
     meta: Omit<BoardFileOutput, 'path' | 'variants'>;
   }[] = [];
-  for (const n of graph.nodes.values()) {
+  for (const n of listed) {
+    if (part.results && !part.results.has(n.id)) continue;
     const v = n.currentVersionId ? versions.get(n.currentVersionId) : undefined;
     if (!v?.outputs.length) continue;
     const out: BoardFileOutput[] = [];
@@ -455,7 +468,7 @@ export async function buildPayload(doc?: { id: string; assets: Set<string> }): P
     version: 2,
     exportedAt: new Date().toISOString(),
     title,
-    nodes: [...graph.nodes.values()].map(({ id, kind, x, y, label, settings }) => ({
+    nodes: listed.map(({ id, kind, x, y, label, settings }) => ({
       id,
       kind,
       x,
@@ -464,12 +477,14 @@ export async function buildPayload(doc?: { id: string; assets: Set<string> }): P
       settings,
       ...(stale.has(id) ? { stale: true } : {}),
     })),
-    edges: [...graph.edges.values()].map(({ id, source, target, targetPort }) => ({
-      id,
-      source,
-      target,
-      targetPort,
-    })),
+    edges: [...graph.edges.values()]
+      .filter((e) => !part.nodes || (part.nodes.has(e.source) && part.nodes.has(e.target)))
+      .map(({ id, source, target, targetPort }) => ({
+        id,
+        source,
+        target,
+        targetPort,
+      })),
     outputs,
   };
   return {
@@ -505,23 +520,34 @@ async function asBundle(
   }
 }
 
-/** A payload (every asset with bytes) as a board file Blob: stored assets, deflated manifest. */
-export function payloadBlob(p: DocPayload): Blob {
+/**
+ * A payload as a board file Blob: stored assets, deflated manifest. Assets without bytes come
+ * from `source` (slices of the open file, with their CRC-32 from its index: nothing is read).
+ */
+export function payloadBlob(
+  p: DocPayload,
+  source?: (path: string) => { blob: Blob; crc32: number } | null,
+): Blob {
   const parts: BlobPart[] = [];
   const written: WrittenEntry[] = [];
   let offset = 0;
-  const add = (name: string, method: 0 | 8, data: Uint8Array, raw: Uint8Array) => {
-    const e = { name, method, crc32: crc32(raw), compressedSize: data.length, size: raw.length };
+  const add = (name: string, method: 0 | 8, data: Blob | Uint8Array, crc: number, size: number) => {
+    const len = data instanceof Blob ? data.size : data.length;
+    const e = { name, method, crc32: crc, compressedSize: len, size };
     const h = localHeader(e);
     written.push({ ...e, headerOffset: offset });
-    parts.push(h as Uint8Array<ArrayBuffer>, data as Uint8Array<ArrayBuffer>);
-    offset += h.length + data.length;
+    parts.push(h as Uint8Array<ArrayBuffer>, data as Blob | Uint8Array<ArrayBuffer>);
+    offset += h.length + len;
   };
   const raw = new TextEncoder().encode(p.manifest);
-  add(BOARD_FILE_MANIFEST, 8, deflateSync(raw), raw);
+  add(BOARD_FILE_MANIFEST, 8, deflateSync(raw), crc32(raw), raw.length);
   for (const f of p.files) {
-    if (!f.bytes) throw new Error(`Missing ${f.path}`);
-    add(f.path, 0, f.bytes, f.bytes);
+    if (f.bytes) add(f.path, 0, f.bytes, crc32(f.bytes), f.bytes.length);
+    else {
+      const s = source?.(f.path);
+      if (!s) throw new Error(`Missing ${f.path}`);
+      add(f.path, 0, s.blob, s.crc32, s.blob.size);
+    }
   }
   parts.push(centralDirectory(written, offset) as Uint8Array<ArrayBuffer>);
   return new Blob(parts, { type: BOARD_FILE_MIME });

@@ -63,7 +63,7 @@ export const FEATURES: Feature[] = [
     title: 'Board files (.annie3d)',
     surface: 'shared',
     layer: 'web',
-    paths: [`${C}/lib/boardFile.ts`, `${C}/lib/doc.ts`],
+    paths: [`${C}/lib/boardFile.ts`, `${C}/lib/doc.ts`, `${C}/lib/webDoc.ts`],
   },
   {
     id: 'runs',

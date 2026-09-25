@@ -55,6 +55,18 @@ export const useBoard = create<BoardState>()(() => initial);
 const set = useBoard.setState;
 const get = useBoard.getState;
 
+// ------------------------------------------------------------------ hooks
+/**
+ * A desktop board file on its working copy keeps some results only in the file (lib/doc.ts):
+ * they are put back after every snapshot, and outgoing ops never point the server at them.
+ */
+let afterSnapshot: () => void = () => {};
+let outgoing: (ops: GraphOp[]) => GraphOp[] = (ops) => ops;
+export function setBoardHooks(h: { afterSnapshot: () => void; outgoing: (ops: GraphOp[]) => GraphOp[] }) {
+  afterSnapshot = h.afterSnapshot;
+  outgoing = h.outgoing;
+}
+
 // ------------------------------------------------------------------ loading
 export function loadSnapshot(s: BoardSnapshot) {
   // The in-memory queue belongs to one board. Unsent batches of the previous board stay in
@@ -80,6 +92,7 @@ export function loadSnapshot(s: BoardSnapshot) {
     versions,
     stale: new Set(s.nodes.filter((n) => n.stale).map((n) => n.id)),
   });
+  afterSnapshot();
   void resumeOutbox(s.board.id);
 }
 
@@ -253,6 +266,8 @@ function enqueue(ops: GraphOp[]) {
     return;
   }
   if (st.mode !== 'remote' || !st.boardId) return;
+  ops = outgoing(ops);
+  if (!ops.length) return;
   queue.push({ opId: newId(), ops });
   set({ saveState: 'saving' });
   void saveOutbox(st.boardId, queue);

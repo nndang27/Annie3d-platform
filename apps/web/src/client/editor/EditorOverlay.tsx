@@ -6,7 +6,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { ApiError, api } from '../api/client';
 import { attachRun } from '../chrome/RunDialog';
 import { afterNextPaint } from '../lib/afterNextPaint';
-import { withCloud } from '../lib/doc';
+import { hasFileResult, isDoc, withCloud } from '../lib/doc';
 import { perfEnd } from '../lib/perf';
 import { dispatch, upsertVersions, useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
@@ -219,12 +219,11 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
     const ed = editorRef.current;
     if (!ed || !instruction.trim()) return;
     if (mode === 'guest') return useUi.setState({ signInPrompt: { reason: 'run', nodeId } });
-    // A board file first gets its copy on the server (new ids): then Apply works as usual.
-    if (mode === 'file')
-      return withCloud(
-        'run',
-        () => toast('Ready: select the region again and press Apply'),
-        nodeId ?? undefined,
+    // A board file first gets its copy on the server (new ids), or this model sent to it:
+    // then Apply works as usual.
+    if (mode === 'file' || (isDoc() && hasFileResult(nodeId)))
+      return withCloud('run', { kind: 'edit', nodeId: nodeId ?? undefined }, () =>
+        toast('Ready: select the region again and press Apply'),
       );
     const faces = ed.selection();
     if (!faces.length) return toast('Select a region first (brush or lasso)', 'error');

@@ -424,3 +424,48 @@ test('Save keeps an Export ZIP as its member list, and the ZIP comes back whole'
   expect(shaHex(rebuilt['serum-web.glb']!)).toBe(shaHex(glb));
   expect(shaHex(rebuilt['serum-image-1.webp']!)).toBe(shaHex(png));
 });
+
+test('Restart to update opens the same board files again (Save first when there are edits)', async () => {
+  const { path } = boardFile('From the file', undefined, 'Kept open.annie3d');
+  await launch({ ANNIE3D_POLL_MS: '1000' });
+  const next = app.waitForEvent('window');
+  await app.evaluate(({ app: a }, p) => a.emit('open-file', { preventDefault() {} }, p), path);
+  const doc = await next;
+  await doc.waitForSelector('.react-flow__node');
+  win = doc;
+  await editText(doc, ' before the update');
+  await expect(doc.getByTestId('doc-state')).toHaveText('Edited');
+  // An update lands; the save prompt answers "Save", then the app quits into it.
+  await answer('showMessageBoxSync', [0]);
+  const { m } = nextPack('v2');
+  site.manifest = signed(m);
+  const board = (await app.windows()).find((w) => !w.url().includes('?doc='))!;
+  await expect(board.getByTestId('update-pill')).toContainText('Restart to update', { timeout: 15_000 });
+  const closed = app.waitForEvent('close');
+  await board.getByTestId('update-apply').click();
+  await closed;
+  expect(strFromU8(unzipSync(new Uint8Array(readFileSync(path)))['annie3d.json']!)).toContain(
+    'before the update',
+  );
+
+  // Started again: the usual board and the file, as before.
+  app = await electron.launch({
+    args: [APP_DIR],
+    env: { ...process.env, ANNIE3D_ORIGIN: site.origin, ANNIE3D_USER_DATA: userData, ANNIE3D_RELAUNCH: '0' },
+  });
+  await expect
+    .poll(async () => (await docWindow()).map((w) => w.title).sort(), { timeout: 20_000 })
+    .toEqual(['Annie 3D', 'Kept open.annie3d'].sort());
+  let reopened: Page | undefined;
+  await expect
+    .poll(async () => {
+      reopened = app.windows().find((w) => w.url().includes('?doc='));
+      return !!reopened;
+    })
+    .toBe(true);
+  if (!reopened) return;
+  await expect(reopened.getByText('From the file before the update')).toBeVisible({ timeout: 20_000 });
+  expect(
+    await reopened.evaluate(() => (window as any).annieDesktop.info().then((i: any) => i.webVersion)),
+  ).toBe(m.version);
+});

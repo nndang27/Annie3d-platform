@@ -1,7 +1,6 @@
 import { useReactFlow } from '@xyflow/react';
 import { useEffect } from 'react';
-import { openBoardFilePicker } from '../lib/boardFile';
-import { docs, saveDocument } from '../lib/doc';
+import { docs, openBoardFile, saveDocument } from '../lib/doc';
 import { zoomStep, zoomToLevel } from '../lib/zoom';
 import { redo, undo } from '../store/board';
 import { useUi } from '../store/ui';
@@ -70,8 +69,7 @@ export function useShortcuts() {
         e.preventDefault();
         if (k === 's') void saveDocument(e.shiftKey);
         else if (k === 'n') docs?.create();
-        else if (docs) docs.open();
-        else openBoardFilePicker();
+        else openBoardFile();
         return;
       }
       if (mod && k === 'z') {

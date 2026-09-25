@@ -2265,3 +2265,18 @@ a.btn-primary {
     min-height: 40px;
   }
 }
+
+/* Board file tab after a reload (Chrome/Edge): one click lets the browser read the file again. */
+.doc-access {
+  font: inherit;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--neu-accent);
+  color: #fff;
+  cursor: pointer;
+}
+.doc-access:focus-visible {
+  outline: 2px solid var(--neu-accent);
+  outline-offset: 3px;
+}

@@ -20,7 +20,7 @@ import { SignInPrompt } from './chrome/SignInPrompt';
 import { Toasts } from './chrome/Toasts';
 import { Toolbar } from './chrome/Toolbar';
 import { TopBar } from './chrome/TopBar';
-import { docId, loadDocument } from './lib/doc';
+import { grantAndLoad, loadDocument, startsAsDoc, useDoc } from './lib/doc';
 import { timed } from './lib/perf';
 import { editorOverlay, simulatorOverlay } from './lib/preload';
 import { loadGuestBoard, loadSnapshot, useBoard } from './store/board';
@@ -58,10 +58,10 @@ function useBoot() {
   const [error, setError] = useState<string | null>(null);
   // Desktop board file (`?doc=`): the file is the board, whoever is signed in.
   useEffect(() => {
-    if (docId) loadDocument().catch((e) => setError((e as Error).message));
+    if (startsAsDoc) loadDocument().catch((e) => setError((e as Error).message));
   }, []);
   useEffect(() => {
-    if (docId || me.isLoading) return;
+    if (startsAsDoc || me.isLoading) return;
     let cancelled = false;
     (async () => {
       try {
@@ -149,6 +149,20 @@ function useEditParam() {
   }, []);
 }
 
+/**
+ * The loading splash. A board file tab reloaded in Chrome/Edge may need the user's click before
+ * the browser lets it read the file again.
+ */
+function DocAccess() {
+  const name = useDoc((s) => s.needsPermission);
+  if (!name) return <>Loading board…</>;
+  return (
+    <button type="button" className="doc-access" onClick={() => void grantAndLoad()} data-testid="doc-access">
+      Open {name}
+    </button>
+  );
+}
+
 function Workspace() {
   const error = useBoot();
   const mode = useBoard((s) => s.mode);
@@ -167,7 +181,7 @@ function Workspace() {
       <main className="canvas-wrap" aria-label="Board canvas" aria-busy={mode === 'loading'}>
         {mode === 'loading' ? (
           <div className="splash" data-testid="loading">
-            Loading board…
+            <DocAccess />
           </div>
         ) : (
           <Canvas />

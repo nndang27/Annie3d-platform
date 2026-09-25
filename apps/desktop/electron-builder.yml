@@ -38,6 +38,16 @@ mac:
   hardenedRuntime: true
   # Signing identity is picked up from the keychain when one exists; none yet.
   identity: null
+  # A declared type (not a dynamic dyn.* one): Finder, Quick Look, AirDrop and file pickers treat
+  # .annie3d as a board file that is also a ZIP.
+  extendInfo:
+    UTExportedTypeDeclarations:
+      - UTTypeIdentifier: app.annie3d.board
+        UTTypeDescription: Annie 3D board
+        UTTypeConformsTo: [public.zip-archive, public.data]
+        UTTypeTagSpecification:
+          public.filename-extension: [annie3d]
+          public.mime-type: [application/vnd.annie3d+zip]
 win:
   icon: build/icon-square.png
   target:

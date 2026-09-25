@@ -524,10 +524,8 @@ function openSimulator(nodeId: string) {
 }
 
 function runFromHere(nodeId: string) {
-  withCloud(
-    'run',
-    (id) => useUi.setState({ dialog: { type: 'run', nodeId: id!, scope: 'from_here' } }),
-    nodeId,
+  withCloud('run', { kind: 'run', nodeId, scope: 'from_here' }, (id) =>
+    useUi.setState({ dialog: { type: 'run', nodeId: id!, scope: 'from_here' } }),
   );
 }
 
@@ -614,9 +612,11 @@ function RunButton({ node }: { node: NodeRecord }) {
   const running = useRuns((s) => s.progress.has(node.id));
   const cost = creditsFor(node.kind, node.settings);
   const [menu, setMenu] = useState(false);
-  const scoped = (scope: string) => {
+  const scoped = (scope: 'node' | 'from_here' | 'with_upstream') => {
     setMenu(false);
-    withCloud('run', (id) => useUi.setState({ dialog: { type: 'run', nodeId: id!, scope } }), node.id);
+    withCloud('run', { kind: 'run', nodeId: node.id, scope }, (id) =>
+      useUi.setState({ dialog: { type: 'run', nodeId: id!, scope } }),
+    );
   };
   return (
     <div className="run-split nodrag">

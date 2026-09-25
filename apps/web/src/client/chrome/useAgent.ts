@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../api/client';
 import { sendAgentMessage } from '../lib/agentClient';
-import { withCloud } from '../lib/doc';
+import { isDoc, withCloud } from '../lib/doc';
 import { perfEnd, perfStart } from '../lib/perf';
 import { applyRemote, useBoard } from '../store/board';
 import { toast, useUi } from '../store/ui';
@@ -54,11 +54,16 @@ export function useAgent() {
   }, [boardId, mode]);
 
   const send = useCallback(
-    async function send(text: string, budget: number, nodeIds: string[]): Promise<void> {
-      // Read at call time: a board file switches to its cloud copy (new id) before sending.
+    async function send(text: string, budget: number, nodeIds: string[], ready = false): Promise<void> {
+      // A board file first gets its working copy, with every result (the agent may read any).
+      if (isDoc() && !ready)
+        return withCloud(
+          'save',
+          { kind: 'agent' },
+          () => void send(text, budget, [...useUi.getState().selected], true),
+        );
+      // Read at call time: a board file has just switched to its cloud copy (new id).
       const { mode, boardId } = useBoard.getState();
-      if (mode === 'file')
-        return withCloud('save', () => void send(text, budget, [...useUi.getState().selected]));
       if (mode === 'guest' || !boardId) {
         useUi.setState({ signInPrompt: { reason: 'save' } });
         return;

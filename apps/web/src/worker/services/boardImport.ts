@@ -195,6 +195,12 @@ export async function importBoardFile(
   boardId: string,
   src: FileSource,
   at: { x: number; y: number },
+  /**
+   * `existing`: the file's nodes are already on this board (same ids) and only their results are
+   * added. A desktop working copy is created with the results a run needs; the others follow
+   * this way when a later action needs them.
+   */
+  into: 'new' | 'existing' = 'new',
 ) {
   const { workspaceId, userId } = who;
   let entries: Map<string, ZipEntry>;
@@ -218,27 +224,34 @@ export async function importBoardFile(
   // 1. Nodes and wires with fresh ids, placed with their top-left at (x, y).
   const minX = Math.min(...m.nodes.map((n) => n.x));
   const minY = Math.min(...m.nodes.map((n) => n.y));
-  const ids = new Map(m.nodes.map((n) => [n.id, newId()]));
+  const existing = into === 'existing' ? (await loadGraph(db, boardId)).graph : null;
+  if (existing)
+    for (const n of m.nodes)
+      if (existing.nodes.get(n.id)?.kind !== n.kind)
+        throw httpError(400, 'bad_request', 'The results are for nodes this board does not have');
+  const ids = new Map(m.nodes.map((n) => [n.id, existing ? n.id : newId()]));
   let z = nextZKey((await loadGraph(db, boardId)).graph);
-  const create: GraphOp[] = m.nodes.map((n) => {
-    const settings = { ...n.settings };
-    for (const k of FILE_REF_SETTINGS) if (k in settings) settings[k] = null;
-    const zKey = z;
-    z = generateKeyBetween(z, null);
-    return {
-      type: 'node.create',
-      node: {
-        id: ids.get(n.id)!,
-        kind: n.kind,
-        x: Math.round(at.x + n.x - minX),
-        y: Math.round(at.y + n.y - minY),
-        label: n.label,
-        settings,
-        zKey,
-      },
-    };
-  });
-  for (const e of m.edges) {
+  const create: GraphOp[] = existing
+    ? []
+    : m.nodes.map((n) => {
+        const settings = { ...n.settings };
+        for (const k of FILE_REF_SETTINGS) if (k in settings) settings[k] = null;
+        const zKey = z;
+        z = generateKeyBetween(z, null);
+        return {
+          type: 'node.create',
+          node: {
+            id: ids.get(n.id)!,
+            kind: n.kind,
+            x: Math.round(at.x + n.x - minX),
+            y: Math.round(at.y + n.y - minY),
+            label: n.label,
+            settings,
+            zKey,
+          },
+        };
+      });
+  for (const e of existing ? [] : m.edges) {
     const s = ids.get(e.source);
     const t = ids.get(e.target);
     if (s && t)
@@ -247,7 +260,7 @@ export async function importBoardFile(
         edge: { id: newId(), source: s, sourcePort: 'out', target: t, targetPort: e.targetPort },
       });
   }
-  await applyBatch(db, workspaceId, userId, boardId, newId(), create);
+  if (create.length) await applyBatch(db, workspaceId, userId, boardId, newId(), create);
 
   // 2. Results: store the files (streamed, deduplicated by content), one version per node.
   const prefix = `${env.R2_KEY_PREFIX}ws/${workspaceId}/cas/`;

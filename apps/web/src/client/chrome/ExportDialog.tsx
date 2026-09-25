@@ -2,7 +2,7 @@ import { GLB_PRESETS, type GlbPresetId } from '@annie3d/contracts';
 import { Check, Download, X } from 'lucide-react';
 import { useState } from 'react';
 import { api, type ExportResult } from '../api/client';
-import { withCloud } from '../lib/doc';
+import { isDoc, withCloud } from '../lib/doc';
 import { timed } from '../lib/perf';
 import { useBoard } from '../store/board';
 import { toast, useUi } from '../store/ui';
@@ -38,11 +38,14 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
   const [key] = useState(() => crypto.randomUUID());
   if (!node) return <p className="muted">Select a 3D model or Export node to export.</p>;
   const isBundle = node.kind === 'export';
-  const run = async () => {
+  const run = async (ready = false) => {
     if (mode === 'guest') return useUi.setState({ dialog: null, signInPrompt: { reason: 'save' } });
-    // A board file first needs its copy on the server; the dialog is opened again after it.
-    if (mode === 'file')
-      return withCloud('save', (id) => useUi.setState({ dialog: { type: 'export', nodeId: id } }), nodeId);
+    // A board file first needs its copy on the server (with this node's inputs): a new copy
+    // renames the node, so the dialog opens again on it; otherwise the export goes ahead.
+    if (isDoc() && !ready)
+      return withCloud('save', { kind: 'export', nodeId }, (id) =>
+        mode === 'file' ? useUi.setState({ dialog: { type: 'export', nodeId: id } }) : void run(true),
+      );
     setBusy(true);
     try {
       // One key per dialog + preset: a double click or retry returns the same export.

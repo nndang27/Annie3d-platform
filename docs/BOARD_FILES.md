@@ -82,38 +82,97 @@ Tests:
     fsyncs it and renames it over the old one.
   - **Save As** is ⇧⌘S.
   - Closing with unsaved changes asks: Save, Don't Save or Cancel.
-- **Running.** A run (and the agent, 3D edits and exports) needs the board on the server. The
-  first one uploads the current state as a **working copy**: a hidden board (`boards.expires_at`,
-  migration 0006) that is not in any board list. The window then switches to it and runs work
-  as usual. The next Save brings the results into the file; files the document already holds
-  are copied from disk, not downloaded again.
+- **Running: only what the action reads is sent.** A run (and the agent, 3D edits, exports)
+  needs the board on the server. The first one creates a **working copy**: a hidden board
+  (`boards.expires_at`, migration 0006, in no board list) holding every node and wire (small
+  JSON) but only the results that action reads:
+  - a run reads its nodes (`runPlan`, the same function the server plans with) and their
+    inputs;
+  - an export reads the node and everything upstream;
+  - a 3D edit reads the node;
+  - the agent reads everything.
+
+  The window then switches to the working copy. The other results stay on the canvas, shown
+  from the file. When a later action reads one of them, it is sent first, added to the existing
+  node (`/import?into=existing`). Sending results the file already holds is not an edit (the
+  file stays **Saved**). The next Save brings new results into the file; files the document
+  already holds are copied from disk, not downloaded again.
 - **Working copies expire.** Each run moves the expiry to 7 days later
   (`WORKING_COPY_TTL_DAYS`). A daily cron (`17 3 * * *`) deletes expired working copies and the
   files only they used, in the database and in R2. Files that another board also uses are kept,
   since the same bytes are stored once per workspace.
+- **Restart to update** opens the same windows again: each board file by its path, and the
+  usual board if it was open. A file with unsaved changes asks first: Save saves it and the
+  restart carries on; Cancel stops the restart.
 - **Sharing:** a board file is shared as the file.
 - **Sign-in from a file window:** unsaved edits are kept in the shell across the page reload.
 - **Older shells** (0.2.0) have no `docs` bridge: the page falls back to importing opened files
   into the current board.
 
+## Website: Chrome and Edge write the file back
+
+Where the File System Access API exists (Chrome, Edge; `lib/webDoc.ts`), the website works
+like the desktop app:
+- **Open (⌘O)** picks a file and shows it in the tab without reloading. The URL becomes
+  `/?file=<key>`, and Back returns to the board, which is already saved.
+- **Save (⌘S)** writes the same file. The browser writes to a temporary file and swaps it in
+  when the write closes. Unchanged assets are slices of the old file: nothing is read into
+  memory.
+- **Save As** is ⇧⌘S.
+- **Unsaved changes:** the tab title starts with •, and leaving asks first.
+- **Reloading:** the file handle is kept in IndexedDB, so a reload keeps the file. If the
+  browser asks again, one click ("Open <name>") lets it read the file.
+- **Runs** work as on the desktop, through a working copy.
+
+It is not a new tab because the file picker uses up the click that would allow one.
+
+Safari and Firefox do not implement the API: there ⌘S downloads a copy, and Open imports into
+the board.
+
+Measured: in Chrome driven by automation (Playwright/CDP), reading a file handle back from
+IndexedDB closes the tab, even with a visible window. In a normal Chrome (no automation) the
+same page read the handle after a reload, with permission kept (2026-09-26). The tests
+therefore open files without a reload, and the reload path was checked in normal Chrome.
+
+## Windows and Linux
+
+The Desktop workflow (Actions → Desktop, on GitHub's macOS, Windows and Ubuntu machines)
+installs the package the way a user would and asks the OS to open a `.annie3d` file
+(`scripts/test-file-association.mjs`). The app reports the file it was handed:
+- Windows: the NSIS installer (silent, per user), then `start`.
+- Linux: the .deb, which installs the MIME type and the .desktop entry; `xdg-mime` must see
+  `application/vnd.annie3d+zip` and pick `annie3d.desktop`, then `xdg-open`.
+- macOS: the .app from the zip, registered with Launch Services, then `open`. macOS also gets
+  a declared type (`app.annie3d.board`, a ZIP) instead of a dynamic one.
+
+AppImage does not register file types (a limit of the format).
+
 Tests:
-- `tests/desktop`: own window, Save writes back with byte-identical assets, the close prompt, a
-  new file with Save As, a zip bomb, a 200 MB file by range.
+- `tests/desktop`:
+  - own window, and Save writes back with byte-identical assets;
+  - the close prompt;
+  - a new file with Save As;
+  - a zip bomb;
+  - a 200 MB file read by range;
+  - Export bundles;
+  - Restart to update reopens the files.
 - `tests/desktop-cloud` (real stack):
   1. The file opens in `file` mode.
-  2. Run creates the working copy, which is not listed.
+  2. Running one model creates the working copy (not listed) without the other branch's photo:
+     it is on the canvas, not on the server.
   3. The run finishes.
-  4. Save puts the GLB into the file, and the photo is copied byte for byte.
+  4. Save puts the GLB into the file, and the photos are copied byte for byte.
+  5. Run all sends the other photo, and the file stays Saved.
 
   Run it with `node scripts/test-stack.mjs 5191 npx playwright test -c playwright.desktop-cloud.config.ts`.
+- `tests/e2e/board-files.spec.ts` (Chromium): open in the tab, Edited and the title dot, Save
+  writes the same file (a real browser file handle), the photo still shows after the file is
+  replaced, Save As, and Back returns to the board.
 - `tests/api/working-copies.test.ts`: hidden from lists; after expiry the working copy and its
   own file are deleted, and a file shared with another board stays.
 
 ## Not done yet
 
-- **A run uploads the whole file, not only what it needs.** Duplicates are free on the server
-  (content-addressed) but still travel over the network.
 - **Classic ZIP only (no ZIP64).** The 2 GB limit comes from that.
-- **The website still downloads a copy on ⌘S.** Writing back to the same file needs the File
-  System Access API, which only Chrome and Edge have.
-- **Windows and Linux file association** is configured but not yet tried on real machines.
+- **The installer tests run on GitHub's virtual machines**, not on a physical Windows PC or
+  Linux desktop.

@@ -105,3 +105,20 @@ export async function rehydrateGuestUrls<
     }),
   );
 }
+
+/** Plain values in the `kv` store (file handles of open board files, their unsaved edits). */
+export async function kvGet<T>(key: string): Promise<T | undefined> {
+  try {
+    return (await (await db()).get('kv', key)) as T | undefined;
+  } catch {
+    return undefined;
+  }
+}
+export async function kvPut(key: string, value: unknown) {
+  await (await db()).put('kv', value, key);
+}
+export async function kvDelete(key: string) {
+  try {
+    await (await db()).delete('kv', key);
+  } catch {}
+}

@@ -19,7 +19,7 @@ import { useMe } from '../api/me';
 import { insertStarter } from '../canvas/actions';
 import { signOut } from '../lib/auth';
 import { openBoardFilePicker } from '../lib/boardFile';
-import { docId, docs, saveDocument, useDoc, withCloud } from '../lib/doc';
+import { docs, isDoc, openBoardFile, saveDocument, useDoc, webFiles, withCloud } from '../lib/doc';
 import { MAX_ZOOM, MIN_ZOOM, zoomStep } from '../lib/zoom';
 import { useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
@@ -139,6 +139,7 @@ function SaveState() {
  */
 function FileMenu() {
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const inDoc = useDoc((s) => !!s.doc);
   const item = (label: string, icon: ReactNode, kbd: string | null, run: () => void, testId?: string) => (
     <button
       type="button"
@@ -178,16 +179,16 @@ function FileMenu() {
           testId="file-menu-popover"
         >
           <div role="menu">
-            {docs ? (
+            {docs || webFiles ? (
               <>
                 {item(
-                  docId ? 'Save' : 'Save as file…',
+                  inDoc ? 'Save' : 'Save as file…',
                   <Save size={15} aria-hidden="true" />,
                   '⌘S',
                   () => void saveDocument(),
                   'file-export',
                 )}
-                {docId &&
+                {inDoc &&
                   item(
                     'Save as…',
                     <Save size={15} aria-hidden="true" />,
@@ -195,20 +196,15 @@ function FileMenu() {
                     () => void saveDocument(true),
                     'file-save-as',
                   )}
-                {item(
-                  'Open…',
-                  <FolderOpen size={15} aria-hidden="true" />,
-                  '⌘O',
-                  () => docs?.open(),
-                  'file-open',
-                )}
-                {item(
-                  'New board file',
-                  <FilePlus size={15} aria-hidden="true" />,
-                  '⌘N',
-                  () => docs?.create(),
-                  'file-new',
-                )}
+                {item('Open…', <FolderOpen size={15} aria-hidden="true" />, '⌘O', openBoardFile, 'file-open')}
+                {docs &&
+                  item(
+                    'New board file',
+                    <FilePlus size={15} aria-hidden="true" />,
+                    '⌘N',
+                    () => docs?.create(),
+                    'file-new',
+                  )}
                 {item(
                   'Import into this board…',
                   <Download size={15} aria-hidden="true" />,
@@ -333,7 +329,9 @@ function RunAll() {
   });
   const cost = mode === 'remote' && est.data ? est.data.totalCredits : naive;
   const onClick = () => {
-    withCloud('run', () => useUi.setState({ dialog: { type: 'run', nodeId: null, scope: 'all' } }));
+    withCloud('run', { kind: 'run', nodeId: null, scope: 'all' }, () =>
+      useUi.setState({ dialog: { type: 'run', nodeId: null, scope: 'all' } }),
+    );
   };
   const cancel = async () => {
     const id = useRuns.getState().activeRunId;
@@ -418,7 +416,7 @@ function Account() {
   const me = useMe();
   const mode = useBoard((s) => s.mode);
   const share = () =>
-    docId
+    isDoc()
       ? toast('A board file is shared as the file: send the .annie3d file itself.')
       : mode === 'guest'
         ? useUi.setState({ signInPrompt: { reason: 'share' } })

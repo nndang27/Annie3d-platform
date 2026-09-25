@@ -20,7 +20,16 @@ test('a board file runs through a hidden working copy; Save brings the result in
   const dir = mkdtempSync(join(tmpdir(), 'annie3d-lf-'));
   const photo = new Uint8Array(readFileSync(join(__dirname, '../../fixtures/out/serum/photo_512.webp')));
   const photoPath = `assets/${sha(photo)}.webp`;
-  const [p, m3d] = [crypto.randomUUID(), crypto.randomUUID()];
+  // A second photo feeding a second 3D model: running the first model does not read it, so it
+  // must stay in the file; Run all reads it, so then it goes up.
+  const other = new Uint8Array(readFileSync(join(__dirname, '../../fixtures/out/serum/packshot_detail.png')));
+  const otherPath = `assets/${sha(other)}.png`;
+  const [p, m3d, o, m2] = [
+    crypto.randomUUID(),
+    crypto.randomUUID(),
+    crypto.randomUUID(),
+    crypto.randomUUID(),
+  ];
   const file = join(dir, 'Serum.annie3d');
   writeFileSync(
     file,
@@ -33,6 +42,8 @@ test('a board file runs through a hidden working copy; Save brings the result in
           title: 'Serum',
           nodes: [
             { id: p, kind: 'photo', x: 0, y: 0, label: 'Photo', settings: {} },
+            { id: o, kind: 'photo', x: 0, y: 500, label: 'Other photo', settings: {} },
+            { id: m2, kind: 'model3d', x: 420, y: 500, label: 'Other model', settings: { detail: 'draft' } },
             {
               id: m3d,
               kind: 'model3d',
@@ -42,16 +53,24 @@ test('a board file runs through a hidden working copy; Save brings the result in
               settings: { prompt: 'glass bottle', detail: 'draft' },
             },
           ],
-          edges: [{ id: crypto.randomUUID(), source: p, target: m3d, targetPort: 'images' }],
+          edges: [
+            { id: crypto.randomUUID(), source: p, target: m3d, targetPort: 'images' },
+            { id: crypto.randomUUID(), source: o, target: m2, targetPort: 'images' },
+          ],
           outputs: [
             {
               nodeId: p,
               files: [{ path: photoPath, kind: 'image', mime: 'image/webp', role: 'primary', variants: [] }],
             },
+            {
+              nodeId: o,
+              files: [{ path: otherPath, kind: 'image', mime: 'image/png', role: 'primary', variants: [] }],
+            },
           ],
         }),
       ),
       [photoPath]: [photo, { level: 0 }],
+      [otherPath]: [other, { level: 0 }],
     }),
   );
   const app = await electron.launch({
@@ -96,10 +115,23 @@ test('a board file runs through a hidden working copy; Save brings the result in
     const node = doc
       .locator('.react-flow__node')
       .filter({ has: doc.getByTestId('run-node') })
+      .filter({ hasNotText: 'Other model' })
       .first();
     await node.getByTestId('run-node').click();
     await expect(doc.getByTestId('run-dialog')).toBeVisible({ timeout: 60_000 });
     expect(await doc.evaluate(() => (window as any).__annie3d.useBoard.getState().mode)).toBe('remote');
+    // Only what the run reads went up: the other photo is on the canvas but not on the server.
+    const onServer = () =>
+      doc.evaluate(async () => {
+        const s = (window as any).__annie3d.useBoard.getState();
+        const snap = await (await fetch(`/api/boards/${s.boardId}`)).json();
+        const other = (n: { label: string | null }) => n.label === 'Other photo';
+        return {
+          server: !!snap.nodes.find(other)?.currentVersionId,
+          canvas: !![...s.graph.nodes.values()].find(other)?.currentVersionId,
+        };
+      });
+    expect(await onServer()).toEqual({ server: false, canvas: true });
     await doc.getByTestId('run-confirm').click();
     await expect(doc.getByText(/Run finished/)).toBeVisible({ timeout: 90_000 });
     // The working copy is not one of the user's boards.
@@ -116,8 +148,16 @@ test('a board file runs through a hidden working copy; Save brings the result in
     expect(model).toBeTruthy();
     const glb = saved[model.files[0].path]!;
     expect(strFromU8(glb.subarray(0, 4))).toBe('glTF');
-    // The photo is still the same bytes (copied from the old file, not downloaded again).
+    // The photos are still the same bytes (copied from the old file, not downloaded again).
     expect(sha(saved[photoPath]!)).toBe(sha(photo));
+    expect(sha(saved[otherPath]!)).toBe(sha(other));
+
+    // Run all reads every node: now the other photo goes up, just before the run dialog opens.
+    await doc.getByTestId('run-all').click();
+    await expect(doc.getByTestId('run-dialog')).toBeVisible({ timeout: 60_000 });
+    expect(await onServer()).toEqual({ server: true, canvas: true });
+    // Sending results the file already has is not an edit.
+    await expect(doc.getByTestId('doc-state')).toHaveText('Saved');
   } finally {
     await app.close().catch(() => {});
     rmSync(dir, { recursive: true, force: true });

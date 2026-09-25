@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { DesktopInfo, DesktopUpdateState, DocPayload } from '@annie3d/contracts/desktop';
 import {
@@ -301,13 +301,47 @@ function checkShell() {
   if (!DEV_URL) void shellUpdater.check();
 }
 
-/** Quit and start again into the downloaded update. */
+/** Quit and start again into the downloaded update, with the same windows open again. */
 let restarting = false;
 function restartApp() {
   restarting = true;
   // Tests stop at the quit and start the app themselves (a relaunched child would be orphaned).
   if (process.env.ANNIE3D_RELAUNCH !== '0') app.relaunch();
   app.quit();
+}
+
+// Windows to open again after a restart: board files by path, and whether the usual board was open.
+const restoreFile = () => join(app.getPath('userData'), 'restore.json');
+let hadBoardWindow = true;
+app.on('before-quit', () => {
+  // Once per quit: a save on the way out quits again, after some windows have closed.
+  if (docs.quitActive()) return;
+  hadBoardWindow = [...windows].some((w) => !w.isDestroyed() && !docs.isDocWindow(w));
+  docs.beginQuit(() => {
+    // A "Cancel" in a save prompt stopped the quit (and the restart with it).
+    restarting = false;
+  });
+});
+app.on('will-quit', () => {
+  if (!restarting) return;
+  writeFileSync(
+    restoreFile(),
+    JSON.stringify({ at: Date.now(), board: hadBoardWindow, files: docs.quitPaths() }),
+  );
+});
+/** What to open after a restart (read once; stale records are ignored). */
+function takeRestore(): { board: boolean; files: string[] } | null {
+  try {
+    const r = JSON.parse(readFileSync(restoreFile(), 'utf8')) as {
+      at: number;
+      board: boolean;
+      files: string[];
+    };
+    rmSync(restoreFile(), { force: true });
+    return Date.now() - r.at < 10 * 60_000 ? r : null;
+  } catch {
+    return null;
+  }
 }
 
 // ---- bridge ----
@@ -328,7 +362,10 @@ ipcMain.handle('updates:check', async () => {
   return updateState();
 });
 ipcMain.handle('updates:apply', async (_e, layer: 'web' | 'shell') => {
-  if (layer === 'shell') return shellUpdater.apply(); // electron-updater quits, installs, relaunches
+  if (layer === 'shell') {
+    restarting = true; // electron-updater quits, installs and relaunches: reopen the same windows
+    return shellUpdater.apply();
+  }
   if (await pack.stageForRestart()) restartApp();
 });
 ipcMain.on('app:ready', () => void pack.confirm());
@@ -381,7 +418,11 @@ app.whenReady().then(async () => {
   const opened = (ok: boolean) => {
     if (!ok && windows.size === 0) createWindow();
   };
-  if (!setOpener((p) => void openDocument(p).then(opened))) createWindow();
+  // After "Restart to update": the same board files (and the usual board if it was open).
+  const restore = takeRestore();
+  for (const f of restore?.files ?? []) void openDocument(f).then(opened);
+  const hadFiles = setOpener((p) => void openDocument(p).then(opened));
+  if (restore ? restore.board || !restore.files.length : !hadFiles) createWindow();
   setInterval(() => checkWeb(true), WEB_POLL_MS);
   setInterval(checkShell, 30 * 60_000);
   setTimeout(() => {

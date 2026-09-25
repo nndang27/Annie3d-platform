@@ -135,3 +135,26 @@ canvas.spec.ts:271 failed 1–3 in 8 under parallel load; also on the previous c
 (`Canvas.tsx`): keep the sizes from 'dimensions' changes and pass them back as `measured` (React
 Flow docs, controlled flows). After: no visibility change on select; the unchanged test passed
 32/32 under the same load.
+
+## Soft UI (neumorphic) nodes without the cost of soft shadows (2026-09-25)
+
+Style: namethatui.com/styles/neumorphism — one matte surface (#e3e7ee) for board and nodes,
+a light/dark shadow pair for raised controls, inset shadows for wells (preview, prompt), no
+borders, large radii, one accent (#5c6995) for the primary action, WCAG AA text contrast and
+an accent selection ring (shadows alone fail non-text contrast).
+
+The style is made of blurred shadows, which the board cannot afford: board content re-rasters
+at each zoom level and each blur size compiles a GPU pipeline (the reason `boardPaint.test.ts`
+bans them). `scripts/bake-neu-sprites.mjs` bakes the shadows once into three sprites (raised,
+circle, inset; lossless WebP, 38 KB together, shadow only, the shape transparent) drawn with
+`border-image` (+ `border-image-outset`), scaled per control by width and outset.
+
+Same look, measured on the example board (Chrome for Testing):
+
+| | Baked sprites (shipped) | CSS box-shadow (the style's usual recipe) |
+| --- | --- | --- |
+| Cold zoom stalls | 3–4 (≤ 101 ms), as before the restyle | 4–8 |
+| Cold pointer-sweep stalls | 0–1 (first video playback) | 0–3 |
+| Warm GPU raster during a zoom | 210–262 ms (before the restyle 213–260) | 659–1,491 ms |
+| Warm long frames during a zoom | 0–1 | 6–7 |
+| 200-node pan / zoom | 116–120 / 117–120 fps | — |

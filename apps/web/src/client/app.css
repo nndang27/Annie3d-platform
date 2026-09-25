@@ -4,9 +4,17 @@
 @import "@xyflow/react/dist/base.css";
 
 :root {
-  --canvas-bg: #f2f2f2;
-  --dot: #d6d6d0;
-  --grid-line: #e2e2e2;
+  /* Soft UI (neumorphism, namethatui.com/styles/neumorphism): board and nodes are one matte
+     surface; shape comes from baked light/dark shadow sprites (canvas/neu, see .node-card). */
+  --neu-base: #e3e7ee;
+  --neu-well: #dde2ea;
+  --neu-ink: #3d4354;
+  /* WCAG AA on the base: muted 4.8:1, ink 8:1, white on accent 5.4:1, accent ring 4.3:1. */
+  --neu-muted: #5d6477;
+  --neu-accent: #5c6995;
+  --canvas-bg: var(--neu-base);
+  --dot: #cfd5de;
+  --grid-line: #d8dde6;
   --pill-bg: #ffffff;
   --pill-border: #e4e4df;
   --node-w: 320px;
@@ -306,11 +314,12 @@ body {
   min-height: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--port-bg);
+  /* Raised bubble in the board's material; the icon colour still names the data type. */
+  background: var(--neu-base);
+  border-image: url("canvas/neu/circle.webp") 50% / 50% / 18px;
   color: var(--port-fg);
   display: grid;
   place-items: center;
-  box-shadow: 0 0 0 3px var(--canvas-bg);
   opacity: 0.55;
   transition:
     opacity 120ms,
@@ -401,33 +410,30 @@ body {
 }
 
 /* ---------------------------------------------------------------- node */
-/* Everything on the board is re-rastered at each zoom level, so it uses crisp borders, rings
-   (spread-only box-shadow) and flat fills; blurred shadows, filters and gradients stay in the
-   fixed UI. A blurred shadow compiles a new GPU pipeline for each blur size it reaches while
-   zooming (measured cold: 6 zoom stalls → 1; tests/perf/hitch.mjs, docs/DESKTOP.md). */
+/* Everything on the board is re-rastered at each zoom level, so it uses no blurred box-shadow,
+   filter or gradient: a blurred shadow compiles a new GPU pipeline for each blur size it reaches
+   while zooming (measured cold: 6 zoom stalls → 1; tests/perf/hitch.mjs, docs/DESKTOP.md).
+   Soft UI depth comes from shadow sprites baked once (scripts/bake-neu-sprites.mjs) and drawn
+   with border-image: an ordinary image draw at any zoom. A sprite holds only the shadow, so it is
+   scaled to a control by its border-image width and outset (radius 22 → 62 / 40 px).
+   raised.webp: 124 / 62px / 40px for radius 22 · circle.webp: 50% / 50% / 20px for radius 16
+   · inset.webp: 60 / 30px for radius 16. */
 .node {
   width: var(--node-w);
   position: relative;
 }
 .node-card {
-  background: #fff;
-  border: 1px solid #e6e6e2;
-  border-radius: 18px;
-  box-shadow: 0 1px 0 rgb(0 0 0 / 0.04);
+  background: var(--neu-base);
+  border: 0;
+  border-radius: 22px;
+  border-image: url("canvas/neu/raised.webp") 124 / 62px / 40px stretch;
   /* No overflow clip: a rounded clip over images and icons compiled extra GPU pipelines when
-     zooming (tests/perf/pipeline-trace.mjs). The preview rounds its own top corners instead. */
-  transition:
-    border-color 120ms,
-    box-shadow 120ms;
+     zooming (tests/perf/pipeline-trace.mjs). The preview is its own rounded well instead. */
 }
-.react-flow__node:hover .node-card {
-  border-color: #d6d6d1;
-}
+/* Selection needs a cue beyond shadows (Soft UI fails non-text contrast on shadows alone). */
 .react-flow__node.selected .node-card {
-  border-color: #2f7cf6;
-  box-shadow:
-    0 0 0 1px #2f7cf6,
-    0 0 0 5px rgb(47 124 246 / 0.12);
+  outline: 2px solid var(--neu-accent);
+  outline-offset: 3px;
 }
 /* Title sits above the card (ElevenLabs): it is part of the node, so dragging it moves the node. */
 .node-head {
@@ -447,8 +453,8 @@ body {
   flex: none;
 }
 .node-head .label {
-  color: var(--text-secondary);
-  font-weight: 500;
+  color: var(--neu-ink);
+  font-weight: 600;
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -459,6 +465,12 @@ body {
   display: inline-flex;
   gap: 6px;
   white-space: nowrap;
+  /* A small raised chip ("lo-fi" in the Soft UI reference): raised.webp scaled to radius 10. */
+  padding: 0 9px;
+  border-radius: 10px;
+  background: var(--neu-base);
+  border-image: url("canvas/neu/raised.webp") 124 / 28px / 18px;
+  color: var(--neu-muted);
 }
 .node-head .ver {
   font-variant-numeric: tabular-nums;
@@ -473,21 +485,29 @@ body {
 }
 .node-preview {
   height: 188px;
-  background: #f7f7f5;
-  border-bottom: 1px solid #efefec;
+  margin: 10px 10px 0;
+  background: var(--neu-well);
   display: grid;
   place-items: center;
   position: relative;
   color: var(--text-muted);
   font-size: 12.5px;
-  /* Inside the card's 1px border: 18px - 1px. Children round themselves (below) rather than
-     being clipped, so images draw as plain rounded rects. */
-  border-radius: 17px 17px 0 0;
+  /* A well pressed into the card. Children round themselves (below) rather than being
+     clipped, so images draw as plain rounded rects. */
+  border-radius: 16px;
+}
+/* The pressed shadow sits over the content too, so images look set into the surface. */
+.node-preview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-image: url("canvas/neu/inset.webp") 60 / 30px;
 }
 .node-preview.input-media {
   height: 236px;
-  border-bottom: 0;
-  border-radius: 17px;
+  margin: 10px;
 }
 .node-preview > img,
 .node-preview > video,
@@ -495,10 +515,16 @@ body {
   border-radius: inherit;
 }
 .node-preview .grid4 > :nth-child(1) {
-  border-top-left-radius: 17px;
+  border-top-left-radius: 16px;
 }
 .node-preview .grid4 > :nth-child(2) {
-  border-top-right-radius: 17px;
+  border-top-right-radius: 16px;
+}
+.node-preview .grid4 > :nth-child(3) {
+  border-bottom-left-radius: 16px;
+}
+.node-preview .grid4 > :nth-child(4) {
+  border-bottom-right-radius: 16px;
 }
 .node-preview .placeholder {
   display: flex;
@@ -646,12 +672,10 @@ body {
   display: grid;
   place-items: center;
   border: 0;
-  border-radius: 9px;
-  background: rgb(255 255 255 / 0.92);
-  color: #3a3a36;
-  box-shadow:
-    0 1px 0 rgb(0 0 0 / 0.1),
-    0 0 0 1px rgb(0 0 0 / 0.06);
+  border-radius: 50%;
+  background: var(--neu-base);
+  border-image: url("canvas/neu/circle.webp") 50% / 50% / 20px;
+  color: var(--neu-accent);
   cursor: pointer;
   opacity: 0;
   transform: scale(0.9);
@@ -665,8 +689,7 @@ body {
   transform: none;
 }
 .node-preview .open3d:hover {
-  background: #fff;
-  color: #17191d;
+  color: var(--neu-ink);
 }
 .node-preview .progress {
   position: absolute;
@@ -704,7 +727,7 @@ body {
   background: var(--accent-soft);
 }
 .node-body {
-  padding: 12px 12px 10px 16px;
+  padding: 12px 12px 12px;
 }
 /* The prompt keeps the whole card width; Run has its own row below it (right-aligned). */
 .run-row {
@@ -722,17 +745,20 @@ body {
   min-height: 40px;
   max-height: 104px;
   overflow: hidden;
-  color: var(--text-primary);
+  color: var(--neu-ink);
   font-size: 13.5px;
   line-height: 1.45;
-  border-radius: 6px;
-  padding: 2px 0;
+  /* Pressed well (inset.webp scaled to radius 14). */
+  background: var(--neu-base);
+  border-radius: 14px;
+  border-image: url("canvas/neu/inset.webp") 60 / 26px;
+  padding: 10px 12px;
   cursor: text;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 .prompt.empty {
-  color: var(--text-muted);
+  color: var(--neu-muted);
 }
 textarea.prompt {
   border: 0;
@@ -740,8 +766,8 @@ textarea.prompt {
   resize: none;
   font: inherit;
   font-size: 13.5px;
-  color: var(--text-primary);
-  background: transparent;
+  color: var(--neu-ink);
+  background: var(--neu-base);
   min-height: 64px;
   max-height: 180px;
   overflow: auto;
@@ -756,19 +782,25 @@ textarea.prompt {
   max-height: 200px;
 }
 .node-note .node-card {
-  background: #fff8c9;
-  border-color: #f0e4a0;
+  background: #fbf1c4;
+}
+.node-note .prompt {
+  background: transparent;
+  border-image: none;
 }
 /* Split Run button (ElevenLabs "Run ▾"). */
 .run-split {
   display: flex;
   align-items: center;
   flex: none;
+  /* The one saturated accent on the surface, raised (raised.webp scaled to radius 10). */
+  border-radius: 10px;
+  border-image: url("canvas/neu/raised.webp") 124 / 28px / 18px;
 }
 .run-split button {
-  height: 26px;
+  height: 28px;
   border: 0;
-  background: #17191d;
+  background: var(--neu-accent);
   color: #fff;
   font: inherit;
   font-size: 12.5px;
@@ -776,18 +808,18 @@ textarea.prompt {
   cursor: pointer;
 }
 .run-split button:hover:not(:disabled) {
-  background: #2c2f35;
+  background: #4d5983;
 }
 .run-split button:disabled {
   opacity: 0.6;
   cursor: default;
 }
 .run-split .run-main {
-  border-radius: 8px 0 0 8px;
-  padding: 0 8px 0 10px;
+  border-radius: 10px 0 0 10px;
+  padding: 0 10px 0 12px;
 }
 .run-split .run-more {
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 10px 10px 0;
   padding: 0 4px;
   display: grid;
   place-items: center;
@@ -850,8 +882,11 @@ textarea.prompt {
   font-size: 13px;
   padding: 4px;
   gap: 2px;
+  border: 0;
   border-radius: 14px;
-  box-shadow: 0 1px 0 rgb(0 0 0 / 0.06);
+  background: var(--neu-base);
+  box-shadow: none;
+  border-image: url("canvas/neu/raised.webp") 124 / 40px / 25px;
 }
 .node-foot select,
 .node-foot .tb-btn {

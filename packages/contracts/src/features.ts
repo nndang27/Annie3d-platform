@@ -48,6 +48,7 @@ export const FEATURES: Feature[] = [
     paths: [
       `${C}/canvas/{Canvas,FlowNode,FlowEdge,Grid,useWheelZoom,useShortcuts,actions,example}.{ts,tsx}`,
       `${C}/chrome/{TopBar,Toolbar,ContextMenu,Palette,Popover,Toasts,Modal}.tsx`,
+      `${C}/canvas/neu/**`,
     ],
   },
   {

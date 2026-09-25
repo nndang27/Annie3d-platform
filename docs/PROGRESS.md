@@ -431,8 +431,10 @@ Measured before and after each change; details in docs/PERFORMANCE_STANDARDS.md 
   target, and the dialog ignores stale responses. API test: 6 concurrent requests → 1 link, and
   every token 404s after turning it off (fails on the old code). **Production needs migration
   0005 before this deploy.**
-- Desktop: macOS menu read "Quit @annie3d/desktop"; `productName` is now "Annie 3D" and the old
-  `<appData>/@annie3d/desktop` folder moves to `<appData>/Annie 3D` on first start.
+- Desktop: macOS menu read "Quit @annie3d/desktop"; `productName` is now "Annie 3D". Existing
+  installs keep their data folder `<appData>/@annie3d/desktop` (set as userData when present);
+  new installs use `<appData>/Annie 3D`. A first version moved the folder on start, but the new
+  folder already existed when the check ran and nothing moved; verified on the real app.
 - Tried and rejected with numbers: disabling Skia Graphite (software fallback), Graphite
   precompilation, Electron 45, `compileAsync`, pixel reuse while zooming (moves stalls to the
   settle, or leaves text soft), env map at 128 (softer jewellery reflections).

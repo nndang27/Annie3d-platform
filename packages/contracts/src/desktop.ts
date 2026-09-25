@@ -25,8 +25,6 @@ export interface WebPackManifest {
   minShell: string;
   features: Record<string, { title: string; surface: 'shared' | 'desktop' }>;
   files: WebPackFile[];
-  /** What this deploy changes, in a line (the release's commit subject); covered by the signature. */
-  notes?: string;
 }
 
 /** `/desktop/manifest.json`: the manifest text and its Ed25519 signature (base64). */
@@ -46,7 +44,6 @@ export type WebUpdateState =
       changes: FeatureChange[];
       bytes: number;
       files: number;
-      notes?: string;
     }
   | { status: 'shell-required'; version: string; minShell: string }
   | { status: 'error'; message: string };
@@ -64,8 +61,6 @@ export interface DesktopUpdateState {
   current: string;
   /** Set once after a rollback, until the next successful update. */
   rolledBackFrom: string | null;
-  /** This launch is the first start of a web-pack update: what it brought (shown once). */
-  justUpdated: { version: string; changes: FeatureChange[]; notes?: string } | null;
 }
 
 export interface FeatureChange {

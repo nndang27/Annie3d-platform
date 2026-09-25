@@ -56,7 +56,7 @@ console.log(`\nShell (app build) since ${tag || 'the first commit'}:`);
 if (!shellFiles.length) console.log('  No shell changes: no new app build needed.');
 else {
   const ids = new Set(shellFiles.map((f) => featureOf(f).id));
-  console.log(`  ${shellFiles.length} files changed → new app build needed (Relaunch to update):`);
+  console.log(`  ${shellFiles.length} files changed → new app build needed (Restart to update):`);
   for (const id of ids) console.log(`   - ${FEATURES.find((f) => f.id === id)?.title ?? id}`);
 }
 console.log('');

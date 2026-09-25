@@ -74,11 +74,9 @@ test('a deploy shows up while the app is open, and Restart to update starts the 
   await launch({ ANNIE3D_POLL_MS: '1000' });
   // The deploy lands while the app is running; nobody asks the app to check.
   const { m, file } = nextPack('v2');
-  m.notes = 'Neumorphic nodes';
   site.manifest = signed(m);
   const pill = win.getByTestId('update-pill');
-  await expect(pill).toContainText('Update available', { timeout: 15_000 });
-  await expect(pill).toContainText('Neumorphic nodes');
+  await expect(pill).toHaveText('Update availableRestart to update', { timeout: 15_000 });
   // Only the changed file came over the network (plus the manifest).
   expect(site.requests.filter((r) => r.startsWith('/assets/'))).toEqual([`/${file}`]);
   await win.screenshot({ path: 'test-results/desktop/update-pill.png' });
@@ -88,15 +86,14 @@ test('a deploy shows up while the app is open, and Restart to update starts the 
   expect((await win.evaluate(() => (window as any).annieDesktop.info())).webVersion).toBe(m.version);
   const served = await win.evaluate((p) => fetch(`/${p}`).then((r) => r.text()), file);
   expect(served).toContain('/*v2*/');
-  await expect(win.getByTestId('update-done')).toContainText('Neumorphic nodes');
-  await win.screenshot({ path: 'test-results/desktop/update-done.png' });
+  // After the restart the app just runs the new version: no pill, no "what's new".
   await expect(win.getByTestId('update-pill')).toHaveCount(0);
 
-  // The page confirmed, so the next start keeps the new version and says nothing more.
+  // The page confirmed, so the next start keeps the new version.
   await app.close();
   await launch();
   expect((await win.evaluate(() => (window as any).annieDesktop.info())).webVersion).toBe(m.version);
-  await expect(win.getByTestId('update-done')).toHaveCount(0);
+  await expect(win.getByTestId('update-pill')).toHaveCount(0);
 });
 
 test('a manifest with a bad signature is refused', async () => {

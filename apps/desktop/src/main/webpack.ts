@@ -4,7 +4,6 @@ import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
   compareVersions,
-  type DesktopUpdateState,
   type SignedWebPack,
   type WebPackManifest,
   type WebUpdateState,
@@ -52,8 +51,6 @@ export class WebPackStore {
   private confirmTimer: NodeJS.Timeout | null = null;
   state: WebUpdateState = { status: 'idle' };
   rolledBackFrom: string | null = null;
-  /** This launch is an update's first start: what it brought (cleared once the page confirms). */
-  justUpdated: DesktopUpdateState['justUpdated'] = null;
 
   constructor(
     private readonly bundledDir: string,
@@ -75,7 +72,6 @@ export class WebPackStore {
       // First start after "Restart to update": run the new version; it must confirm in time.
       const prev = ptr.previous === b?.version ? b : ptr.previous ? await this.loadVersion(ptr.previous) : b;
       await this.writePointer({ ...ptr, restart: false });
-      this.justUpdated = { version: m.version, changes: this.diff(prev, m).changes, notes: m.notes };
       this.setActive(m);
       if (prev) this.armConfirm(prev, m.version);
       return;
@@ -190,7 +186,6 @@ export class WebPackStore {
     const ptr = await this.pointer();
     await this.writePointer({ ...ptr, pending: false });
     this.rolledBackFrom = null;
-    this.justUpdated = null;
     this.onState();
     void this.gc(ptr);
   }
@@ -198,7 +193,6 @@ export class WebPackStore {
   private async rollback(previous: WebPackManifest, failed: string) {
     this.confirmTimer = null;
     this.rolledBackFrom = failed;
-    this.justUpdated = null;
     await this.writePointer({ current: previous.version, previous: null, pending: false });
     this.setActive(previous);
     this.set({ status: 'idle' });
@@ -225,7 +219,6 @@ export class WebPackStore {
     return this.set({
       status: 'ready',
       version: next.version,
-      notes: next.notes,
       ...this.diff(this.active, next),
     });
   }

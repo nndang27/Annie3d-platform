@@ -67,7 +67,6 @@ function updateState(): DesktopUpdateState {
     shell: shellUpdater.state,
     current: DEV_URL ? 'dev' : pack.version,
     rolledBackFrom: pack.rolledBackFrom,
-    justUpdated: pack.justUpdated,
   };
 }
 

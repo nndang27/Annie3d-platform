@@ -46,12 +46,9 @@ for (const path of files.filter((f) => !skip(f)).sort()) {
 }
 
 let git = 'local';
-// Release notes shown in the app's update pill: ANNIE3D_RELEASE_NOTES, else the commit subject.
-let notes = process.env.ANNIE3D_RELEASE_NOTES?.trim() || undefined;
 try {
   const { execSync } = await import('node:child_process');
   git = execSync('git rev-parse --short HEAD').toString().trim();
-  notes ??= execSync('git log -1 --pretty=%s').toString().trim() || undefined;
 } catch {}
 const builtAt = Date.now();
 const d = new Date(builtAt);
@@ -65,7 +62,6 @@ const manifest = {
     [...FEATURES, VENDOR_FEATURE].map((f) => [f.id, { title: f.title, surface: f.surface }]),
   ),
   files: out,
-  notes: notes?.slice(0, 200),
 };
 const text = JSON.stringify(manifest);
 

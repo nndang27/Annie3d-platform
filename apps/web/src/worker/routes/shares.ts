@@ -60,11 +60,15 @@ shareRoutes.post('/api/shares', requireEditor, async (c) => {
     if (!v) throw httpError(404, 'not_found', 'Version not found');
     boardId = v.boardId;
   }
-  // One live link per target: sharing again returns the existing link (no link sprawl).
-  const existing = await db.query.shares.findFirst({
-    where: (t, { and, eq, isNull }) =>
-      and(eq(t.workspaceId, ws), eq(t.targetId, req.targetId), isNull(t.revokedAt)),
-  });
+  // One live link per target: sharing again returns the existing link (no link sprawl). The
+  // partial unique index shares_live_target_uq makes this atomic: a check-then-insert let two
+  // concurrent requests create two live links, and turning one off left the other public.
+  const live = () =>
+    db.query.shares.findFirst({
+      where: (t, { and, eq, isNull }) =>
+        and(eq(t.workspaceId, ws), eq(t.targetId, req.targetId), isNull(t.revokedAt)),
+    });
+  const existing = await live();
   if (existing) return c.json(shareDto(c, existing));
   const [row] = await db
     .insert(shares)
@@ -77,8 +81,16 @@ shareRoutes.post('/api/shares', requireEditor, async (c) => {
       visibility: req.visibility,
       createdBy: c.get('user')!.id,
     })
+    .onConflictDoNothing({
+      target: [shares.workspaceId, shares.targetId],
+      where: sql`${shares.revokedAt} IS NULL`,
+    })
     .returning();
-  return c.json(shareDto(c, row!), 201);
+  if (row) return c.json(shareDto(c, row), 201);
+  // Another request created it a moment ago.
+  const winner = await live();
+  if (!winner) throw httpError(409, 'conflict', 'Share changed, try again');
+  return c.json(shareDto(c, winner));
 });
 
 shareRoutes.get('/api/shares', requireUser, async (c) => {
@@ -99,12 +111,18 @@ shareRoutes.get('/api/shares', requireUser, async (c) => {
 
 shareRoutes.delete('/api/shares/:shareId', requireEditor, async (c) => {
   const id = uuidParam(c, 'shareId');
-  const res = await getDb(c)
+  const db = getDb(c);
+  const ws = c.get('workspaceId')!;
+  const share = await db.query.shares.findFirst({
+    where: (t, { and, eq, isNull }) => and(eq(t.id, id), eq(t.workspaceId, ws), isNull(t.revokedAt)),
+  });
+  if (!share) throw httpError(404, 'not_found', 'Share not found');
+  // "Turn off link" turns off the target's link, including any duplicate made before the unique
+  // index existed.
+  await db
     .update(shares)
     .set({ revokedAt: new Date() })
-    .where(and(eq(shares.id, id), eq(shares.workspaceId, c.get('workspaceId')!), isNull(shares.revokedAt)))
-    .returning({ id: shares.id });
-  if (!res.length) throw httpError(404, 'not_found', 'Share not found');
+    .where(and(eq(shares.workspaceId, ws), eq(shares.targetId, share.targetId), isNull(shares.revokedAt)));
   return c.json({ ok: true });
 });
 

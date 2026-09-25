@@ -233,6 +233,19 @@ describe('shares (F10)', () => {
     expect((await new Client().json(`/api/public/shares/${share.token}`)).status).toBe(404);
     expect((await new Client().req(`/s/${share.token}`)).status).toBe(404);
   });
+  it('concurrent share requests yield one live link, and turning it off leaves none', async () => {
+    // Opening the Share dialog twice at once (two tabs, or React StrictMode) sent two requests;
+    // check-then-insert created two live links and "Turn off link" left the other public.
+    const b = await exampleBoard(c);
+    const make = () =>
+      c.json('/api/shares', { method: 'POST', json: { targetType: 'board', targetId: b.board.id } });
+    const made = await Promise.all(Array.from({ length: 6 }, make));
+    expect(made.every((r) => r.status === 200 || r.status === 201)).toBe(true);
+    const tokens = new Set(made.map((r) => r.body.token));
+    expect(tokens.size).toBe(1);
+    expect((await c.json(`/api/shares/${made[0]!.body.id}`, { method: 'DELETE' })).status).toBe(200);
+    for (const t of tokens) expect((await new Client().req(`/s/${t}`)).status).toBe(404);
+  }, 60_000);
 });
 
 describe('hosted checkout (simulated provider)', () => {

@@ -55,7 +55,14 @@ const get = useBoard.getState;
 export function loadSnapshot(s: BoardSnapshot) {
   // The in-memory queue belongs to one board. Unsent batches of the previous board stay in
   // IndexedDB under its id and resume when it is reopened; they must never go to this board.
-  if (get().boardId !== s.board.id) resetQueue();
+  const sameBoard = get().boardId === s.board.id;
+  if (!sameBoard) resetQueue();
+  // A snapshot carries only each node's current version. On a resync of the same board (after a
+  // rejected batch) keep the versions already known: they are immutable, and dropping them lost
+  // the history, so reverting to v1 in the editor left the node pointing at a version the canvas
+  // no longer had (E2E editor.spec.ts:67 under load, 2026-09-25).
+  const versions = new Map(sameBoard ? get().versions : []);
+  for (const v of s.versions) versions.set(v.id, v);
   set({
     ...initial,
     mode: 'remote',
@@ -66,7 +73,7 @@ export function loadSnapshot(s: BoardSnapshot) {
       s.nodes.map(({ stale: _s, ...n }) => n),
       s.edges as EdgeRecord[],
     ),
-    versions: new Map(s.versions.map((v) => [v.id, v])),
+    versions,
     stale: new Set(s.nodes.filter((n) => n.stale).map((n) => n.id)),
   });
   void resumeOutbox(s.board.id);

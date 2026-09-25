@@ -121,4 +121,21 @@ describe('board store', () => {
     expect(board).toHaveBeenCalledTimes(1);
     expect(useBoard.getState().graph.nodes.get(model.id)!.label).toBe('3D model');
   });
+
+  it('keeps known versions when the same board resyncs, not across boards', () => {
+    const { snap, model } = snapshot();
+    const version = (id: string, versionNo: number) =>
+      ({ id, nodeId: model.id, versionNo, outputs: [] }) as unknown as (typeof snap.versions)[number];
+    // v1 is known; the resync snapshot carries only the current v2 (as the server sends it).
+    loadSnapshot({ ...snap, versions: [version('v1', 1)] });
+    loadSnapshot({ ...snap, versions: [version('v2', 2)] });
+    expect([...useBoard.getState().versions.keys()].sort()).toEqual(['v1', 'v2']);
+    // Another board starts clean.
+    loadSnapshot({
+      ...snap,
+      board: { ...snap.board, id: crypto.randomUUID() },
+      versions: [version('v3', 1)],
+    });
+    expect([...useBoard.getState().versions.keys()]).toEqual(['v3']);
+  });
 });

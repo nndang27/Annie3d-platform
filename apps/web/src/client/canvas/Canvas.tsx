@@ -38,12 +38,28 @@ import { useWheelZoom } from './useWheelZoom';
 const nodeTypes = { annie: FlowNode };
 const edgeTypes = { annie: FlowEdge };
 
+/**
+ * Measured node sizes, as React Flow reports them ('dimensions' changes). A controlled flow must
+ * hand them back on every new node object (React Flow docs, "Controlled flow"): an object without
+ * `measured` counts as unmeasured, so React Flow hid the node (visibility: hidden) until it had
+ * measured it again. That happened on every selection and every record update, blinked the node
+ * for a frame and blurred a prompt being typed in, saving it empty (E2E, 2026-09-25).
+ */
+const measuredSizes = new Map<string, { width: number; height: number }>();
+
 /** Stable React Flow node objects: rebuilt only when the record or selection changes. */
 const rfNodeCache = new WeakMap<NodeRecord, Node>();
 function toRfNode(n: NodeRecord, selected: boolean): Node {
   const hit = rfNodeCache.get(n);
   if (hit && hit.selected === selected) return hit;
-  const rf: Node = { id: n.id, type: 'annie', position: { x: n.x, y: n.y }, data: {}, selected };
+  const rf: Node = {
+    id: n.id,
+    type: 'annie',
+    position: { x: n.x, y: n.y },
+    data: {},
+    selected,
+    measured: measuredSizes.get(n.id),
+  };
   rfNodeCache.set(n, rf);
   return rf;
 }
@@ -134,6 +150,10 @@ export function Canvas() {
           sel ??= new Set(useUi.getState().selected);
           if (c.selected) sel.add(c.id);
           else sel.delete(c.id);
+        } else if (c.type === 'dimensions' && c.dimensions) {
+          measuredSizes.set(c.id, c.dimensions);
+        } else if (c.type === 'remove') {
+          measuredSizes.delete(c.id);
         }
       }
       if (moves.length) moveLocal(...[moves]);

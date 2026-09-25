@@ -23,9 +23,15 @@ function ShareBody({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     if (!boardId) return;
-    api
-      .createShare({ targetType: 'board', targetId: boardId })
-      .then(setShare, (e: Error) => setError(e.message));
+    // Ignore a response that arrives after this effect was cleaned up (StrictMode runs it twice).
+    let live = true;
+    api.createShare({ targetType: 'board', targetId: boardId }).then(
+      (s) => live && setShare(s),
+      (e: Error) => live && setError(e.message),
+    );
+    return () => {
+      live = false;
+    };
   }, [boardId]);
   const copy = async () => {
     if (!share) return;

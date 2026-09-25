@@ -7,7 +7,7 @@ import { ApiError, api } from '../api/client';
 import { attachRun } from '../chrome/RunDialog';
 import { afterNextPaint } from '../lib/afterNextPaint';
 import { perfEnd } from '../lib/perf';
-import { dispatch, useBoard } from '../store/board';
+import { dispatch, upsertVersions, useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
 import { toast, useUi } from '../store/ui';
 
@@ -164,6 +164,9 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
 
   const makeCurrent = () => {
     if (!shownId || shownId === currentId) return;
+    // The board store may not hold older versions (a snapshot carries only current ones): add the
+    // shown one so the canvas can draw the node it becomes current on.
+    if (shown) upsertVersions([shown]);
     // Revert is an ordinary, undoable op (F9).
     dispatch([{ type: 'node.update', id: nodeId, patch: { currentVersionId: shownId } }]);
     setViewing(null);

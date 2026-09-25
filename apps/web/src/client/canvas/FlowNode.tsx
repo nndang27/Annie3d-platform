@@ -39,7 +39,7 @@ import {
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { pickImage } from '../lib/media';
 import { perfStart } from '../lib/perf';
-import { editorOverlay, prefetchAsset, simulatorOverlay } from '../lib/preload';
+import { editorOverlay, ignore, prefetchAsset, simulatorOverlay } from '../lib/preload';
 import { SIM_ENV_META } from '../sim/inputs';
 import { SimThumb } from '../sim/SimThumb';
 import { dispatch, useBoard } from '../store/board';
@@ -153,7 +153,7 @@ export const FlowNode = memo(function FlowNode({ id, selected }: NodeProps) {
                 <button
                   type="button"
                   className="open-sim nodrag"
-                  onPointerEnter={() => void simulatorOverlay.load()}
+                  onPointerEnter={() => simulatorOverlay.load().catch(ignore)}
                   onClick={() => openSimulator(node.id)}
                   data-testid="open-sim"
                 >
@@ -294,7 +294,7 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
     if (primary?.urls.turntable || primary?.kind === 'video') useUi.setState({ playingNodeId: node.id });
     // A 3D result opens the editor on click: start loading its code and model now (lib/preload.ts).
     if (primary?.kind === 'model3d') {
-      void editorOverlay.load();
+      editorOverlay.load().catch(ignore);
       prefetchAsset(primary.urls.original);
     }
   }, [primary, node.id]);
@@ -308,7 +308,7 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
       <div
         className="node-preview sim-preview"
         onDoubleClick={() => openSimulator(node.id)}
-        onPointerEnter={() => void simulatorOverlay.load()}
+        onPointerEnter={() => simulatorOverlay.load().catch(ignore)}
         data-testid="node-preview"
       >
         <SimThumb

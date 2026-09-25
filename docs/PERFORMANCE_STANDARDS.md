@@ -122,3 +122,16 @@ Cold GPU cache (first use on a machine) still costs one-off compiles when the ed
 simulator first draws (editor ~210 ms first frame; simulator ~250 ms, its canvas has an alpha
 channel and so needs its own pipelines): Metal pipeline compiles inside Chromium, the same class
 as the board's first-zoom stalls (docs/DESKTOP.md).
+
+## Nodes blinked on every selection (fixed 2026-09-25)
+
+React Flow runs controlled here (nodes come from the board store). `onNodesChange` applied only
+position and selection changes, so node objects never carried `measured`; every new object (each
+selection, each record update such as a run writing outputs) counted as unmeasured and React Flow
+set `visibility: hidden` on it until it had measured it again (~10 ms, one frame). A
+MutationObserver on the node saw `hidden → visible` on each click. Side effects: a one-frame blink,
+a re-measure per update, and a prompt being typed lost focus and saved empty (the flaky E2E
+canvas.spec.ts:271 failed 1–3 in 8 under parallel load; also on the previous commit). Fix
+(`Canvas.tsx`): keep the sizes from 'dimensions' changes and pass them back as `measured` (React
+Flow docs, controlled flows). After: no visibility change on select; the unchanged test passed
+32/32 under the same load.

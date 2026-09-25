@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { bigint, check, index, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { bigint, check, index, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { createdAt, pk, tstz } from './_shared';
 import { users } from './auth';
 import { boards } from './boards';
@@ -32,5 +32,9 @@ export const shares = pgTable(
     index('shares_board_idx').on(t.boardId),
     index('shares_workspace_idx').on(t.workspaceId),
     index('shares_created_by_idx').on(t.createdBy),
+    // One live link per shared target. The API's check-then-insert let two concurrent opens of
+    // the Share dialog create two live links; "Turn off link" revoked one and the other stayed
+    // public (E2E share-export.spec.ts, 2026-09-25).
+    uniqueIndex('shares_live_target_uq').on(t.workspaceId, t.targetId).where(sql`${t.revokedAt} IS NULL`),
   ],
 );

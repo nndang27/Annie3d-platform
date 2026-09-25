@@ -35,6 +35,9 @@ function preloadable<P extends object>(importer: () => Promise<{ default: Compon
   return { load, Component };
 }
 
+/** A failed prefetch is harmless: the click loads the chunk again (and reports a real failure). */
+export const ignore = () => {};
+
 export const editorOverlay = preloadable(() => import('../editor/EditorOverlay'));
 export const simulatorOverlay = preloadable(() => import('../sim/SimulatorOverlay'));
 
@@ -57,7 +60,7 @@ export function prefetchAsset(url: string | null | undefined) {
 export function preloadEditorWhenIdle(hasModel: () => boolean) {
   if ((navigator as { connection?: { saveData?: boolean } }).connection?.saveData) return;
   const run = () => {
-    if (hasModel()) void editorOverlay.load();
+    if (hasModel()) editorOverlay.load().catch(ignore);
   };
   if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 5000 });
   else setTimeout(run, 2000);

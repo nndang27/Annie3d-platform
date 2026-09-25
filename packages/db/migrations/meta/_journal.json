@@ -36,6 +36,13 @@
       "when": 1790251378513,
       "tag": "0004_simulation_node",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790327915815,
+      "tag": "0005_one_live_share",
+      "breakpoints": true
     }
   ]
 }

@@ -403,3 +403,36 @@ Production deploy needs migrations 0003 and 0004 first, and the `SimRoom` Durabl
 | 3D shortcut icon | Custom three-arrow mark (up, down-left, down-right) as in the reference | screenshot |
 | Responsive | Fluid top bar (labels drop below 640 px, save state becomes a dot), toolbar keeps tools/+/undo/agent on phones, safe-area insets, `dvh`, simulator header scrolls its tabs instead of pushing Close off-screen (`minmax(0, 1fr)`), performance panel fits the width and is in the board menu; touch screens pan with one finger, get 34–40 px targets and see hover-only controls on the selected node | E2E `responsive` on iPhone SE / iPhone 13 / iPad Pro 11 in 3 engines |
 | Desktop app | Research only: `docs/DESKTOP_APP_RESEARCH.md` (Electron shell loading the live site, update button, file association, BYOK vs subscription login policies) | — |
+
+## 2026-09-25 — Smoothness and reliability pass (user request: fix everything short of patching Chromium)
+
+Measured before and after each change; details in docs/PERFORMANCE_STANDARDS.md and docs/DESKTOP.md.
+
+- Board paint without blur, gradients or rounded clips on board content: cold first-zoom stalls
+  7–8 (≤258 ms) → 3 (≤92 ms) in Chrome; desktop app 9–11 → 2. Guarded by `boardPaint.test.ts`.
+- Editor and simulator open 4–5× faster on first use (React.lazy Suspense throttle, intent and
+  idle prefetch, WebGL built after the first paint); INP 136–152 → 56–64 ms.
+- Baked room lighting (RGB9E5, 650 KB) instead of a runtime PMREM bake: removes a ~350 ms freeze
+  on a machine's first editor open; warm opens 35–47 ms.
+- **Nodes blinked on every selection.** Controlled React Flow nodes lacked `measured`, so each new
+  node object was hidden until re-measured; a prompt being typed lost focus and saved empty. Fixed
+  in Canvas.tsx; the flaky canvas.spec.ts:271 passes 32/32 under parallel load, test unchanged.
+- **Reverting to v1 could leave a node without its version.** A board snapshot carries only
+  current versions and `loadSnapshot` replaced the whole map, so a resync (after a rejected
+  batch) dropped the history; reverting then pointed the node at a version the canvas no longer
+  had. `loadSnapshot` now keeps known versions for the same board, and the editor adds the shown
+  version before making it current. Unit test in board.test.ts (fails on the old code);
+  editor.spec.ts:67 under parallel load 1/16 → 16/16.
+- **"Turn off link" could leave a board public.** Creating a share was check-then-insert, so two
+  concurrent requests (the Share dialog opened twice, two tabs, or StrictMode) made two live
+  links; turning off the one shown left the other working. On the old code 6 concurrent requests
+  made 6 live links. Now: partial unique index `shares_live_target_uq` (migration 0005 revokes
+  older duplicates first), `INSERT … ON CONFLICT DO NOTHING` then return the live link, revoke by
+  target, and the dialog ignores stale responses. API test: 6 concurrent requests → 1 link, and
+  every token 404s after turning it off (fails on the old code). **Production needs migration
+  0005 before this deploy.**
+- Desktop: macOS menu read "Quit @annie3d/desktop"; `productName` is now "Annie 3D" and the old
+  `<appData>/@annie3d/desktop` folder moves to `<appData>/Annie 3D` on first start.
+- Tried and rejected with numbers: disabling Skia Graphite (software fallback), Graphite
+  precompilation, Electron 45, `compileAsync`, pixel reuse while zooming (moves stalls to the
+  settle, or leaves text soft), env map at 128 (softer jewellery reflections).

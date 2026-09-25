@@ -28,7 +28,14 @@ async function client() {
   return cached;
 }
 
+/** Runs before sign-in leaves the page (a desktop board file keeps its unsaved edits). */
+let beforeLeave: () => Promise<void> = async () => {};
+export function setBeforeSignIn(fn: () => Promise<void>) {
+  beforeLeave = fn;
+}
+
 export async function signInWithGoogle(callbackURL = location.pathname + location.search) {
+  await beforeLeave();
   return (await client()).client.signIn.social({ provider: 'google', callbackURL });
 }
 
@@ -43,7 +50,7 @@ export async function showOneTap() {
     if (!googleClientId || typeof c.oneTap !== 'function') return;
     await c.oneTap({
       callbackURL: location.pathname + location.search,
-      fetchOptions: { onSuccess: () => location.reload() },
+      fetchOptions: { onSuccess: () => void beforeLeave().then(() => location.reload()) },
       onPromptNotification: () => {},
     });
   } catch {

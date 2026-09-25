@@ -13,6 +13,7 @@ import { getDb } from '../lib/db';
 import { body, httpError, query, uuidParam } from '../lib/http';
 import { requireEditor, requireUser } from '../lib/session';
 import { applyBatch, createBoard, loadBoard, snapshot, versionDtos } from '../services/boards';
+import { workingCopyExpiry } from '../services/cleanup';
 import { seedExample } from '../services/fixtures';
 
 export const boardRoutes = new Hono<AppEnv>();
@@ -23,6 +24,7 @@ boardRoutes.get('/api/boards', requireUser, async (c) => {
   const where = and(
     eq(boards.workspaceId, c.get('workspaceId')!),
     isNull(boards.archivedAt),
+    isNull(boards.expiresAt), // desktop working copies are not boards the user keeps
     cursor ? lt(boards.updatedAt, new Date(cursor)) : undefined,
   );
   const rows = await db
@@ -53,6 +55,7 @@ boardRoutes.post('/api/boards', requireEditor, async (c) => {
     req.title,
     req.starter,
     req.fromGuest,
+    req.workingCopy ? workingCopyExpiry() : null,
   );
   // Guest boards built on the example keep its rendered outputs (seeded, not copied).
   if (req.fromGuest) await seedExample(db, c.get('workspaceId')!, c.get('user')!.id, b.id);

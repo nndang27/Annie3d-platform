@@ -2,6 +2,7 @@ import { GLB_PRESETS, type GlbPresetId } from '@annie3d/contracts';
 import { Check, Download, X } from 'lucide-react';
 import { useState } from 'react';
 import { api, type ExportResult } from '../api/client';
+import { withCloud } from '../lib/doc';
 import { timed } from '../lib/perf';
 import { useBoard } from '../store/board';
 import { toast, useUi } from '../store/ui';
@@ -39,6 +40,9 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
   const isBundle = node.kind === 'export';
   const run = async () => {
     if (mode === 'guest') return useUi.setState({ dialog: null, signInPrompt: { reason: 'save' } });
+    // A board file first needs its copy on the server; the dialog is opened again after it.
+    if (mode === 'file')
+      return withCloud('save', (id) => useUi.setState({ dialog: { type: 'export', nodeId: id } }), nodeId);
     setBusy(true);
     try {
       // One key per dialog + preset: a double click or retry returns the same export.

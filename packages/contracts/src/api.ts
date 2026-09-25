@@ -178,7 +178,15 @@ export const CreateBoardRequest = z.object({
       edges: z.array(EdgeDto),
     })
     .optional(),
+  /**
+   * The desktop app's working copy of a board file: a run needs the graph and its files on the
+   * server, but the file on disk stays the document. Hidden from board lists and deleted
+   * WORKING_COPY_TTL_DAYS after its last run.
+   */
+  workingCopy: z.boolean().optional(),
 });
+/** How long a working copy (and the files only it uses) stays on the server after its last run. */
+export const WORKING_COPY_TTL_DAYS = 7;
 export const UpdateBoardRequest = z.object({ title: z.string().min(1).max(120) });
 export const ApplyOpsRequest = OpBatch.extend({ baseSeq: z.number().int().nonnegative().optional() });
 export const ApplyOpsResponse = z.object({ seq: z.number().int(), duplicate: z.boolean() });

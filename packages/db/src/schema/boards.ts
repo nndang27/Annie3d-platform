@@ -51,6 +51,12 @@ export const boards = pgTable(
     createdAt: createdAt(),
     updatedAt: updatedAt(),
     archivedAt: tstz(),
+    /**
+     * Set on a desktop file's working copy (the board a run needs on the server). The file on
+     * the user's disk is the real document; the working copy and the files only it uses are
+     * deleted after this time (services/cleanup.ts). Null for ordinary cloud boards.
+     */
+    expiresAt: tstz(),
   },
   (t) => [
     check('boards_title_len', sql`length(${t.title}) BETWEEN 1 AND 120`),
@@ -60,6 +66,7 @@ export const boards = pgTable(
       .where(sql`${t.archivedAt} IS NULL`),
     index('boards_thumbnail_idx').on(t.thumbnailAssetId),
     index('boards_created_by_idx').on(t.createdBy),
+    index('boards_expires_idx').on(t.expiresAt).where(sql`${t.expiresAt} IS NOT NULL`),
   ],
 );
 

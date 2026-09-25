@@ -37,6 +37,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { withCloud } from '../lib/doc';
 import { pickImage } from '../lib/media';
 import { perfStart } from '../lib/perf';
 import { editorOverlay, ignore, prefetchAsset, simulatorOverlay } from '../lib/preload';
@@ -523,11 +524,11 @@ function openSimulator(nodeId: string) {
 }
 
 function runFromHere(nodeId: string) {
-  if (useBoard.getState().mode === 'guest') {
-    useUi.setState({ signInPrompt: { reason: 'run', nodeId } });
-    return;
-  }
-  useUi.setState({ dialog: { type: 'run', nodeId, scope: 'from_here' } });
+  withCloud(
+    'run',
+    (id) => useUi.setState({ dialog: { type: 'run', nodeId: id!, scope: 'from_here' } }),
+    nodeId,
+  );
 }
 
 /**
@@ -615,11 +616,7 @@ function RunButton({ node }: { node: NodeRecord }) {
   const [menu, setMenu] = useState(false);
   const scoped = (scope: string) => {
     setMenu(false);
-    if (useBoard.getState().mode === 'guest') {
-      useUi.setState({ signInPrompt: { reason: 'run', nodeId: node.id } });
-      return;
-    }
-    useUi.setState({ dialog: { type: 'run', nodeId: node.id, scope } });
+    withCloud('run', (id) => useUi.setState({ dialog: { type: 'run', nodeId: id!, scope } }), node.id);
   };
   return (
     <div className="run-split nodrag">

@@ -43,6 +43,13 @@
       "when": 1790327915815,
       "tag": "0005_one_live_share",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790342777659,
+      "tag": "0006_working_copies",
+      "breakpoints": true
     }
   ]
 }

@@ -91,8 +91,75 @@ export interface DesktopBridge {
   };
   /** The page is up (board rendered): confirms a fresh web-pack update (else it rolls back). */
   ready(): void;
-  /** Files the OS asked the app to open (double-click on `.annie3d`, drag on the dock icon). */
+  /**
+   * Files the OS asked the app to open. Shells with `docs` open each file in its own window
+   * instead; older shells deliver them here to import into the current board.
+   */
   onOpenFile(cb: (file: { name: string; bytes: Uint8Array }) => void): () => void;
+  /** Board files as documents (shell 0.3.0+). Absent on older shells. */
+  docs?: DocsBridge;
+}
+
+/**
+ * A `.annie3d` file open in its own window (`?doc=<id>`). The page gets only the manifest; each
+ * asset is served from the file on disk at `/__doc/<id>/<path>` (range requests, so video can
+ * seek), so a large file never has to fit in the page's memory.
+ */
+export interface DocFile {
+  id: string;
+  name: string;
+  /** Null until a new document is first saved. */
+  path: string | null;
+  /** The manifest (annie3d.json) text; null for a new, empty document. */
+  manifest: string | null;
+  /** Assets the window can load from `/__doc/<id>/<path>`. */
+  assets: { path: string; size: number }[];
+  /** The manifest and some assets are unsaved edits kept across a reload (sign-in). */
+  draft: boolean;
+}
+
+/**
+ * What to write: the manifest, and per asset either new bytes or nothing (copy the asset of
+ * that path from the open document, straight from disk).
+ */
+export interface DocPayload {
+  manifest: string;
+  files: { path: string; bytes?: Uint8Array }[];
+}
+
+export type DocCommand = 'save' | 'saveAs' | 'saveAndClose' | 'import';
+
+export interface DocsBridge {
+  /** The document this window shows. */
+  read(id: string): Promise<DocFile | null>;
+  /**
+   * Writes the document (to a temporary file, then renamed over the target). Asks where first
+   * when it has no path yet or `as` is set. Resolves to its name and path, or null if cancelled.
+   */
+  save(
+    id: string,
+    payload: DocPayload,
+    opts: { as: boolean; suggestedName: string },
+  ): Promise<{
+    name: string;
+    path: string;
+  } | null>;
+  /** Save a board that is not a file (cloud or guest) as a new file; every asset has bytes. */
+  saveCopy(payload: DocPayload, suggestedName: string): Promise<{ name: string; path: string } | null>;
+  /** Keep unsaved edits in the app across a reload of this window. */
+  stash(id: string, payload: DocPayload): Promise<void>;
+  /** The current state as a temporary board file, served at `url` (range requests) for upload. */
+  pack(id: string, payload: DocPayload): Promise<{ url: string; size: number }>;
+  /** Unsaved changes: the window shows it and asks before closing. */
+  setDirty(id: string, dirty: boolean): void;
+  /** File > Open: pick files, each opens in its own window. */
+  open(): void;
+  /** File > New: an empty document in a new window. */
+  create(): void;
+  /** Close this document's window without asking (after the save the close asked for). */
+  close(id: string): void;
+  /** Commands from the app menu and the close dialog. */
+  onCommand(cb: (c: DocCommand) => void): () => void;
 }
 
 /** Compares dotted numeric versions (`1.2.10` > `1.2.9`). */

@@ -4,16 +4,18 @@ import { VARIANTS } from './engine';
 import { NodeKindSchema } from './nodes';
 
 /**
- * `.annie3d` board file (like draw.io's `.drawio`): a ZIP holding `annie3d.json` (this manifest)
- * and `assets/…` (the current result of every node, with its poster/thumbnail/turntable
- * variants). It opens only in Annie 3D: the manifest format and version are checked on import,
- * node ids are replaced, and files are re-stored in the importing workspace.
+ * `.annie3d` board file: a ZIP (like `.sketch`, `.docx`, `.3mf`) holding `annie3d.json` (this
+ * manifest, deflated) and `assets/<sha256>.<ext>` (the current result of every node with its
+ * poster/thumbnail/turntable variants, stored as they are: media are already compressed, and
+ * stored entries can be read by range, see zip.ts). Each file is stored once, by content.
+ *
+ * Version 2 adds `stale`, `sha256` and `bundle`: an Export node's ZIP holds copies of files the
+ * board already has, so the file keeps only its member list and the ZIP is rebuilt when needed.
+ * Readers accept versions 1 and 2.
  */
 export const BOARD_FILE_EXT = '.annie3d';
 export const BOARD_FILE_MIME = 'application/vnd.annie3d+zip';
 export const BOARD_FILE_MANIFEST = 'annie3d.json';
-/** Import limit (request body, and what the browser unzips). */
-export const BOARD_FILE_MAX_BYTES = 80 * 1024 * 1024;
 
 const id = z.string().uuid();
 const coord = z.number().finite().min(-1e7).max(1e7);
@@ -24,7 +26,19 @@ const dims = {
 };
 
 export const BoardFileOutput = z.object({
+  /** Where the bytes are; for a `bundle`, the name it had (the bytes are rebuilt, not stored). */
   path,
+  /** SHA-256 of the original bytes (version 2). */
+  sha256: z
+    .string()
+    .regex(/^[0-9a-f]{64}$/)
+    .optional(),
+  /** A stored ZIP made only of other files in this board file: its members, in order. */
+  bundle: z
+    .array(z.object({ name: z.string().min(1).max(200), path }))
+    .min(1)
+    .max(64)
+    .optional(),
   kind: AssetKind,
   mime: z.string().max(100),
   role: z.enum(['primary', 'poster', 'turntable', 'packshot', 'report', 'extra']),
@@ -37,7 +51,7 @@ export type BoardFileOutput = z.infer<typeof BoardFileOutput>;
 
 export const BoardFileManifest = z.object({
   format: z.literal('annie3d'),
-  version: z.literal(1),
+  version: z.union([z.literal(1), z.literal(2)]),
   exportedAt: z.string().max(40),
   title: z.string().max(200),
   nodes: z
@@ -49,9 +63,10 @@ export const BoardFileManifest = z.object({
         y: coord,
         label: z.string().max(120).nullable(),
         settings: z.record(z.string(), z.unknown()),
+        /** Changed since its result was made: the result is kept but out of date. */
+        stale: z.boolean().optional(),
       }),
     )
-    .min(1)
     .max(500),
   edges: z.array(z.object({ id, source: id, target: id, targetPort: z.string().min(1).max(32) })).max(2000),
   outputs: z.array(z.object({ nodeId: id, files: z.array(BoardFileOutput).min(1).max(16) })).max(500),

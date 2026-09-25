@@ -69,7 +69,7 @@ export const api = {
     call<{ boards: { id: string; title: string; updatedAt: string }[]; nextCursor: string | null }>(
       '/api/boards',
     ),
-  createBoard: (json: { title: string; starter: string; fromGuest?: unknown }) =>
+  createBoard: (json: { title: string; starter: string; fromGuest?: unknown; workingCopy?: boolean }) =>
     call<BoardSnapshot>('/api/boards', { method: 'POST', json }),
   board: (id: string) => call<BoardSnapshot>(`/api/boards/${id}`),
   renameBoard: (id: string, title: string) =>

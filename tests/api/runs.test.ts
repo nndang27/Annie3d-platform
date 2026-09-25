@@ -415,7 +415,8 @@ describe('.annie3d import (server)', () => {
     };
     const zip = zipSync({
       'annie3d.json': strToU8(JSON.stringify(manifest)),
-      'assets/p.webp': new Uint8Array(png),
+      // Board files store media as they are (a deflated asset is refused as a possible zip bomb).
+      'assets/p.webp': [new Uint8Array(png), { level: 0 }],
     });
     const c = await Client.signedUp('Importer');
     const b = await c.json('/api/boards', { method: 'POST', json: { title: 'Target', starter: 'blank' } });

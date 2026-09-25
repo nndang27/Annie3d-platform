@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../api/client';
 import { sendAgentMessage } from '../lib/agentClient';
+import { withCloud } from '../lib/doc';
 import { perfEnd, perfStart } from '../lib/perf';
 import { applyRemote, useBoard } from '../store/board';
 import { toast, useUi } from '../store/ui';
@@ -53,7 +54,11 @@ export function useAgent() {
   }, [boardId, mode]);
 
   const send = useCallback(
-    async (text: string, budget: number, nodeIds: string[]) => {
+    async function send(text: string, budget: number, nodeIds: string[]): Promise<void> {
+      // Read at call time: a board file switches to its cloud copy (new id) before sending.
+      const { mode, boardId } = useBoard.getState();
+      if (mode === 'file')
+        return withCloud('save', () => void send(text, budget, [...useUi.getState().selected]));
       if (mode === 'guest' || !boardId) {
         useUi.setState({ signInPrompt: { reason: 'save' } });
         return;
@@ -92,7 +97,7 @@ export function useAgent() {
         setBusy(false);
       }
     },
-    [boardId, mode, queryClient],
+    [queryClient],
   );
   return { messages, busy, send };
 }

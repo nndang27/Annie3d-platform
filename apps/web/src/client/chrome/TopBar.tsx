@@ -4,19 +4,22 @@ import { useReactFlow, useViewport } from '@xyflow/react';
 import {
   ChevronDown,
   Download,
+  FilePlus,
   FolderOpen,
   Gauge,
   LogIn,
   MoreHorizontal,
+  Save,
   Share2,
   Sparkles,
 } from 'lucide-react';
-import { memo, useMemo, useState } from 'react';
+import { memo, type ReactNode, useMemo, useState } from 'react';
 import { api } from '../api/client';
 import { useMe } from '../api/me';
 import { insertStarter } from '../canvas/actions';
 import { signOut } from '../lib/auth';
-import { exportBoardFile, openBoardFilePicker } from '../lib/boardFile';
+import { openBoardFilePicker } from '../lib/boardFile';
+import { docId, docs, saveDocument, useDoc, withCloud } from '../lib/doc';
 import { MAX_ZOOM, MIN_ZOOM, zoomStep } from '../lib/zoom';
 import { useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
@@ -104,6 +107,19 @@ function Title() {
 function SaveState() {
   const mode = useBoard((s) => s.mode);
   const state = useBoard((s) => s.saveState);
+  const doc = useDoc((s) => s.doc);
+  // A board file: saved means written to the file, whatever its cloud copy is doing.
+  if (doc)
+    return (
+      <span
+        className="save-state"
+        data-state={doc.busy ? 'saving' : doc.dirty ? 'offline' : 'saved'}
+        title={doc.path ?? 'Not saved to a file yet'}
+        data-testid="doc-state"
+      >
+        <span className="lbl">{doc.busy ?? (doc.dirty ? 'Edited' : doc.path ? 'Saved' : 'Not saved')}</span>
+      </span>
+    );
   if (mode === 'guest')
     return (
       <span className="save-state" data-state="offline" title="Guest boards are kept in this browser">
@@ -117,9 +133,26 @@ function SaveState() {
   );
 }
 
-/** Board file menu: download the canvas as `.annie3d`, or open one into it (⌘S / ⌘O). */
+/**
+ * Board file menu. Desktop: save to a file (the document's own file in a file window), open files
+ * in their own windows, new file. Website: download the board, open a file into it.
+ */
 function FileMenu() {
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const item = (label: string, icon: ReactNode, kbd: string | null, run: () => void, testId?: string) => (
+    <button
+      type="button"
+      role="menuitem"
+      onClick={() => {
+        setMenu(null);
+        run();
+      }}
+      data-testid={testId}
+    >
+      {icon} {label}
+      {kbd && <kbd>{kbd}</kbd>}
+    </button>
+  );
   return (
     <>
       <button
@@ -145,30 +178,63 @@ function FileMenu() {
           testId="file-menu-popover"
         >
           <div role="menu">
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                setMenu(null);
-                void exportBoardFile();
-              }}
-              data-testid="file-export"
-            >
-              <Download size={15} aria-hidden="true" /> Download board (.annie3d)
-              <kbd>⌘S</kbd>
-            </button>
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                setMenu(null);
-                openBoardFilePicker();
-              }}
-              data-testid="file-import"
-            >
-              <FolderOpen size={15} aria-hidden="true" /> Open board file…
-              <kbd>⌘O</kbd>
-            </button>
+            {docs ? (
+              <>
+                {item(
+                  docId ? 'Save' : 'Save as file…',
+                  <Save size={15} aria-hidden="true" />,
+                  '⌘S',
+                  () => void saveDocument(),
+                  'file-export',
+                )}
+                {docId &&
+                  item(
+                    'Save as…',
+                    <Save size={15} aria-hidden="true" />,
+                    '⇧⌘S',
+                    () => void saveDocument(true),
+                    'file-save-as',
+                  )}
+                {item(
+                  'Open…',
+                  <FolderOpen size={15} aria-hidden="true" />,
+                  '⌘O',
+                  () => docs?.open(),
+                  'file-open',
+                )}
+                {item(
+                  'New board file',
+                  <FilePlus size={15} aria-hidden="true" />,
+                  '⌘N',
+                  () => docs?.create(),
+                  'file-new',
+                )}
+                {item(
+                  'Import into this board…',
+                  <Download size={15} aria-hidden="true" />,
+                  null,
+                  openBoardFilePicker,
+                  'file-import',
+                )}
+              </>
+            ) : (
+              <>
+                {item(
+                  'Download board (.annie3d)',
+                  <Download size={15} aria-hidden="true" />,
+                  '⌘S',
+                  () => void saveDocument(),
+                  'file-export',
+                )}
+                {item(
+                  'Open board file…',
+                  <FolderOpen size={15} aria-hidden="true" />,
+                  '⌘O',
+                  openBoardFilePicker,
+                  'file-import',
+                )}
+              </>
+            )}
             <button
               type="button"
               role="menuitem"
@@ -267,8 +333,7 @@ function RunAll() {
   });
   const cost = mode === 'remote' && est.data ? est.data.totalCredits : naive;
   const onClick = () => {
-    if (mode === 'guest') return useUi.setState({ signInPrompt: { reason: 'run' } });
-    useUi.setState({ dialog: { type: 'run', nodeId: null, scope: 'all' } });
+    withCloud('run', () => useUi.setState({ dialog: { type: 'run', nodeId: null, scope: 'all' } }));
   };
   const cancel = async () => {
     const id = useRuns.getState().activeRunId;
@@ -353,9 +418,11 @@ function Account() {
   const me = useMe();
   const mode = useBoard((s) => s.mode);
   const share = () =>
-    mode === 'guest'
-      ? useUi.setState({ signInPrompt: { reason: 'share' } })
-      : useUi.setState({ dialog: { type: 'share' } });
+    docId
+      ? toast('A board file is shared as the file: send the .annie3d file itself.')
+      : mode === 'guest'
+        ? useUi.setState({ signInPrompt: { reason: 'share' } })
+        : useUi.setState({ dialog: { type: 'share' } });
   return (
     <div className="pill">
       {me.data ? (

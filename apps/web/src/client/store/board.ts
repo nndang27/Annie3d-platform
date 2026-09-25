@@ -20,7 +20,11 @@ import { loadOutbox, type PendingBatch, saveGuest, saveOutbox } from './persist'
 export type SaveState = 'saved' | 'saving' | 'offline' | 'error';
 
 export interface BoardState {
-  mode: 'loading' | 'guest' | 'remote';
+  /**
+   * guest: kept in this browser; remote: a cloud board synced to the server; file: a desktop
+   * board file, edited in memory and written by Save (lib/doc.ts).
+   */
+  mode: 'loading' | 'guest' | 'remote' | 'file';
   boardId: string | null;
   title: string;
   graph: Graph;
@@ -79,20 +83,29 @@ export function loadSnapshot(s: BoardSnapshot) {
   void resumeOutbox(s.board.id);
 }
 
-export function loadGuestBoard(g: {
+export interface LocalBoard {
   title: string;
   nodes: NodeRecord[];
   edges: EdgeRecord[];
   versions: NodeVersionDto[];
-}) {
+  stale?: string[];
+}
+
+export function loadGuestBoard(g: LocalBoard) {
+  loadLocalBoard(g, 'guest');
+}
+
+/** A board that lives on this device: in the browser (guest) or in a desktop board file. */
+export function loadLocalBoard(g: LocalBoard, mode: 'guest' | 'file') {
   resetQueue();
   set({
     ...initial,
-    mode: 'guest',
+    mode,
     boardId: null,
     title: g.title,
     graph: graphFrom(g.nodes, g.edges),
     versions: new Map(g.versions.map((v) => [v.id, v])),
+    stale: new Set(g.stale ?? []),
   });
 }
 
@@ -224,6 +237,8 @@ function resetQueue() {
 
 function enqueue(ops: GraphOp[]) {
   const st = get();
+  // A board file is written by Save; lib/doc.ts tracks unsaved changes.
+  if (st.mode === 'file') return;
   if (st.mode === 'guest') {
     if (guestTimer) clearTimeout(guestTimer);
     guestTimer = setTimeout(() => {

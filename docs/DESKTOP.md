@@ -31,6 +31,9 @@ Plan and research: `docs/DESKTOP_APP_PLAN.md`, `docs/DESKTOP_APP_RESEARCH.md`.
   - Shell updates (new Electron / native code) use electron-updater from
     `<origin>/desktop/shell/<os>/` and show the same **Update available · Restart to update**; active only for packaged
     apps (macOS also needs signing).
+- **Board files are documents** (shell 0.3.0): each `.annie3d` file opens in its own window,
+  streams its assets from disk, and Save writes it back; a run uploads a hidden working copy that
+  expires 7 days after its last run. Format, limits and the zip-bomb guard: `docs/BOARD_FILES.md`.
 - **Two lists**: `packages/contracts/src/features.ts` — `surface: shared | desktop`,
   `layer: web | shell`, with source globs. A unit test fails if a client or shell file belongs to
   no feature (or to two). `pnpm desktop:plan [origin]` shows what the next deploy changes for app

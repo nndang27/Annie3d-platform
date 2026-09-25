@@ -1,5 +1,5 @@
 import { EDIT_CREDITS, EditRequest, NODE_DEFS, type RunDto, StartRunRequest } from '@annie3d/contracts';
-import { reserve, runSteps, runs, workspaces } from '@annie3d/db';
+import { boards, reserve, runSteps, runs, workspaces } from '@annie3d/db';
 import { and, asc, desc, eq, isNull, sql } from 'drizzle-orm';
 import { type Context, Hono } from 'hono';
 import type { AppEnv, Env } from '../env';
@@ -7,6 +7,7 @@ import { getDb } from '../lib/db';
 import { body, httpError, uuidParam } from '../lib/http';
 import { requireEditor, requireUser } from '../lib/session';
 import { loadBoard, loadGraph } from '../services/boards';
+import { workingCopyExpiry } from '../services/cleanup';
 import { planRun } from '../services/plan';
 
 export const runRoutes = new Hono<AppEnv>();
@@ -114,6 +115,11 @@ async function createRun(
       .set({ freeRunUsedAt: new Date() })
       .where(and(eq(workspaces.id, ws), isNull(workspaces.freeRunUsedAt)))
       .returning({ id: workspaces.id });
+    // A desktop working copy stays while it is being used: each run restarts its time.
+    await tx
+      .update(boards)
+      .set({ expiresAt: workingCopyExpiry() })
+      .where(and(eq(boards.id, r.boardId), sql`${boards.expiresAt} IS NOT NULL`));
     await tx.insert(runs).values({
       id: runId,
       boardId: r.boardId,

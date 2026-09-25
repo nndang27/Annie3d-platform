@@ -1,4 +1,4 @@
-import type { DesktopBridge, DesktopUpdateState } from '@annie3d/contracts/desktop';
+import type { DesktopBridge, DesktopUpdateState, DocCommand } from '@annie3d/contracts/desktop';
 import { contextBridge, ipcRenderer } from 'electron';
 
 /**
@@ -24,6 +24,22 @@ const bridge: DesktopBridge = {
     ipcRenderer.on('files:open', h);
     ipcRenderer.send('files:subscribe');
     return () => ipcRenderer.off('files:open', h);
+  },
+  docs: {
+    read: (id) => ipcRenderer.invoke('docs:read', id),
+    save: (id, payload, opts) => ipcRenderer.invoke('docs:save', id, payload, opts),
+    saveCopy: (payload, name) => ipcRenderer.invoke('docs:saveCopy', payload, name),
+    stash: (id, payload) => ipcRenderer.invoke('docs:stash', id, payload),
+    pack: (id, payload) => ipcRenderer.invoke('docs:pack', id, payload),
+    setDirty: (id, dirty) => ipcRenderer.send('docs:setDirty', id, dirty),
+    open: () => ipcRenderer.send('docs:open'),
+    create: () => ipcRenderer.send('docs:create'),
+    close: (id) => ipcRenderer.send('docs:close', id),
+    onCommand(cb) {
+      const h = (_: unknown, c: DocCommand) => cb(c);
+      ipcRenderer.on('docs:command', h);
+      return () => ipcRenderer.off('docs:command', h);
+    },
   },
 };
 

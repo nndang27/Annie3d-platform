@@ -1,6 +1,7 @@
+import { createDb } from '@annie3d/db';
 import { Hono } from 'hono';
 import { createAuth, publicOrigin } from './auth';
-import type { AppEnv } from './env';
+import type { AppEnv, Env } from './env';
 import { closeDb, getDb } from './lib/db';
 import { HttpError } from './lib/http';
 import { loadSession } from './lib/session';
@@ -17,6 +18,7 @@ import { rumRoutes } from './routes/rum';
 import { runRoutes } from './routes/runs';
 import { shareRoutes } from './routes/shares';
 import { simRoutes } from './routes/sim';
+import { purgeWorkingCopies } from './services/cleanup';
 
 export { RunRoom } from './durable/run-room';
 export { SimRoom } from './durable/sim-room';
@@ -84,6 +86,14 @@ app.on(['GET', 'POST'], '/api/auth/*', (c) =>
   createAuth(c.env, getDb(c), publicOrigin(c.env, c.req.raw)).handler(c.req.raw),
 );
 
+// Test-only (local, test auth on): run the working-copy cleanup as of a given time.
+app.post('/api/test/purge-working-copies', async (c) => {
+  if (c.env.APP_ENV !== 'development' || c.env.ANNIE3D_TEST_AUTH !== '1')
+    return c.json({ error: { code: 'not_found', message: 'Unknown endpoint' } }, 404);
+  const { now } = (await c.req.json().catch(() => ({}))) as { now?: string };
+  return c.json(await purgeWorkingCopies(c.env, getDb(c), now ? new Date(now) : new Date()));
+});
+
 app.use('/api/*', loadSession);
 app.route('/', me);
 app.route('/', boardRoutes);
@@ -99,4 +109,21 @@ app.route('/', shareRoutes);
 app.route('/', agentRoutes);
 app.route('/', reelRoutes);
 
-export default app;
+export default {
+  fetch: app.fetch,
+  /** Daily cron (wrangler.jsonc triggers): delete expired desktop working copies. */
+  async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext) {
+    const { db, client } = createDb(env.HYPERDRIVE.connectionString);
+    ctx.waitUntil(
+      (async () => {
+        await client.connect();
+        try {
+          const r = await purgeWorkingCopies(env, db);
+          console.log(JSON.stringify({ level: 'info', event: 'working_copies.purged', ...r }));
+        } finally {
+          await client.end().catch(() => {});
+        }
+      })(),
+    );
+  },
+} satisfies ExportedHandler<Env>;

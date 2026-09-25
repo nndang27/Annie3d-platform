@@ -193,6 +193,7 @@ export async function createBoard(
   title: string,
   starter: 'blank' | StarterId,
   guest?: { nodes: Omit<NodeRecord, 'version' | 'currentVersionId'>[]; edges: EdgeRecord[] },
+  expiresAt: Date | null = null,
 ) {
   const g = guest
     ? { nodes: guest.nodes.map((n) => ({ ...n, version: 1, currentVersionId: null })), edges: guest.edges }
@@ -213,7 +214,7 @@ export async function createBoard(
   return db.transaction(async (tx) => {
     const [b] = await tx
       .insert(boards)
-      .values({ workspaceId, title, createdBy: userId, seq: ops.length ? 1 : 0 })
+      .values({ workspaceId, title, createdBy: userId, seq: ops.length ? 1 : 0, expiresAt })
       .returning();
     if (!b) throw new Error('insert board failed');
     if (applied) {

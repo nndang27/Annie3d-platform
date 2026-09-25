@@ -20,6 +20,7 @@ import { SignInPrompt } from './chrome/SignInPrompt';
 import { Toasts } from './chrome/Toasts';
 import { Toolbar } from './chrome/Toolbar';
 import { TopBar } from './chrome/TopBar';
+import { docId, loadDocument } from './lib/doc';
 import { timed } from './lib/perf';
 import { editorOverlay, simulatorOverlay } from './lib/preload';
 import { loadGuestBoard, loadSnapshot, useBoard } from './store/board';
@@ -55,8 +56,12 @@ function boardIdFromPath(): string | null {
 function useBoot() {
   const me = useMe();
   const [error, setError] = useState<string | null>(null);
+  // Desktop board file (`?doc=`): the file is the board, whoever is signed in.
   useEffect(() => {
-    if (me.isLoading) return;
+    if (docId) loadDocument().catch((e) => setError((e as Error).message));
+  }, []);
+  useEffect(() => {
+    if (docId || me.isLoading) return;
     let cancelled = false;
     (async () => {
       try {

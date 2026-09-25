@@ -1,6 +1,7 @@
 import { useReactFlow } from '@xyflow/react';
 import { useEffect } from 'react';
-import { exportBoardFile, openBoardFilePicker } from '../lib/boardFile';
+import { openBoardFilePicker } from '../lib/boardFile';
+import { docs, saveDocument } from '../lib/doc';
 import { zoomStep, zoomToLevel } from '../lib/zoom';
 import { redo, undo } from '../store/board';
 import { useUi } from '../store/ui';
@@ -63,10 +64,13 @@ export function useShortcuts() {
         useUi.setState((s) => ({ perfOpen: !s.perfOpen }));
         return;
       }
-      // Board file (draw.io convention): ⌘S downloads the canvas, ⌘O opens a .annie3d file.
-      if (mod && !e.shiftKey && (k === 's' || k === 'o')) {
+      // Board files: ⌘S saves (desktop: the file; website: a download), ⇧⌘S saves as, ⌘O opens
+      // a file (desktop: in its own window; website: into this board), ⌘N a new file (desktop).
+      if (mod && (k === 's' || (!e.shiftKey && (k === 'o' || (k === 'n' && docs))))) {
         e.preventDefault();
-        if (k === 's') void exportBoardFile();
+        if (k === 's') void saveDocument(e.shiftKey);
+        else if (k === 'n') docs?.create();
+        else if (docs) docs.open();
         else openBoardFilePicker();
         return;
       }

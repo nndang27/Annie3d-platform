@@ -2,6 +2,7 @@ import type { DesktopBridge, DesktopUpdateState } from '@annie3d/contracts';
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { currentViewCentre, importBoardFile } from '../lib/boardFile';
+import { onDocCommand } from '../lib/doc';
 import { useBoard } from '../store/board';
 import { toast } from '../store/ui';
 import './desktop.css';
@@ -31,10 +32,12 @@ export default function DesktopIntegration({ bridge }: { bridge: DesktopBridge }
     if (loaded) bridge.ready();
   }, [bridge, loaded]);
 
-  // Subscribe only once the saved board is on the canvas: a file that started the app would
-  // otherwise land first and be wiped out when the board loads. The shell queues it until then.
+  // Shells with documents open each file in its own window and send menu commands here.
+  useEffect(() => bridge.docs?.onCommand(onDocCommand), [bridge]);
+  // Older shells hand opened files to the page: subscribe only once the saved board is on the
+  // canvas (a file that started the app would otherwise be wiped out when the board loads).
   useEffect(() => {
-    if (!loaded) return;
+    if (!loaded || bridge.docs) return;
     return bridge.onOpenFile(({ name, bytes }) => {
       void importBoardFile(new File([bytes as BlobPart], name), currentViewCentre());
     });

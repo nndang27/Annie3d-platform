@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { DesktopInfo, DesktopUpdateState } from '@annie3d/contracts/desktop';
+import type { DesktopInfo, DesktopUpdateState, DocPayload } from '@annie3d/contracts/desktop';
 import {
   app,
   BrowserWindow,
@@ -12,7 +12,8 @@ import {
   shell,
 } from 'electron';
 import { DEV_URL, INLINE_HOSTS, ORIGIN } from './config';
-import { isBoardFile, openPath, setDeliver } from './files';
+import * as docs from './docs';
+import { isBoardFile, openPath, setOpener } from './files';
 import { parseHeaders } from './headers';
 import { interceptOrigin } from './protocol';
 import { ShellUpdater } from './shellUpdate';
@@ -120,10 +121,14 @@ function loadBounds() {
   }
 }
 
-function createWindow() {
+function createWindow(page = '/') {
   const b = loadBounds();
+  // Document windows cascade from the last one, like any document app.
+  const last = BrowserWindow.getFocusedWindow() ?? [...windows].at(-1);
+  const at = last && page !== '/' ? last.getBounds() : null;
   const win = new BrowserWindow({
     ...b,
+    ...(at ? { x: at.x + 24, y: at.y + 24 } : {}),
     minWidth: 360,
     minHeight: 480,
     show: false,
@@ -174,7 +179,7 @@ function createWindow() {
     if (/^https?:/.test(url)) void shell.openExternal(url);
     return { action: 'deny' };
   });
-  void win.loadURL(`${DEV_URL ?? ORIGIN}/`);
+  void win.loadURL(`${DEV_URL ?? ORIGIN}${page}`);
   return win;
 }
 
@@ -203,17 +208,32 @@ function buildMenu() {
     {
       label: 'File',
       submenu: [
+        { label: 'New Board File', accelerator: 'CmdOrCtrl+N', click: () => newDocument() },
         {
-          label: 'Open Board File…',
+          label: 'Open…',
           accelerator: 'CmdOrCtrl+O',
-          // The page handles ⌘O itself (same picker as the website); the menu item is for mice.
+          // The page handles ⌘O/⌘S itself (so text fields and the canvas agree); the items are for mice.
           registerAccelerator: false,
-          click: async () => {
-            const r = await dialog.showOpenDialog({
-              filters: [{ name: 'Annie 3D board', extensions: ['annie3d'] }],
-            });
-            for (const p of r.filePaths) openPath(p);
-          },
+          click: () => void pickFiles(),
+        },
+        { role: 'recentDocuments', submenu: [{ role: 'clearRecentDocuments' }] },
+        { type: 'separator' },
+        {
+          label: 'Save',
+          accelerator: 'CmdOrCtrl+S',
+          registerAccelerator: false,
+          click: () => docs.commandFocused(BrowserWindow.getFocusedWindow(), 'save'),
+        },
+        {
+          label: 'Save As…',
+          accelerator: 'Shift+CmdOrCtrl+S',
+          registerAccelerator: false,
+          click: () => docs.commandFocused(BrowserWindow.getFocusedWindow(), 'saveAs'),
+        },
+        { type: 'separator' },
+        {
+          label: 'Import into This Board…',
+          click: () => docs.commandFocused(BrowserWindow.getFocusedWindow(), 'import'),
         },
         { type: 'separator' },
         mac ? { role: 'close' } : { role: 'quit' },
@@ -312,29 +332,56 @@ ipcMain.handle('updates:apply', async (_e, layer: 'web' | 'shell') => {
   if (await pack.stageForRestart()) restartApp();
 });
 ipcMain.on('app:ready', () => void pack.confirm());
-ipcMain.on('files:subscribe', (e) => {
-  const wc = e.sender;
-  setDeliver((f) => {
-    if (!wc.isDestroyed()) wc.send('files:open', f);
-  });
-});
+
+// ---- board files as documents (docs.ts) ----
+const openDocument = (path: string | null) => docs.openDocument(path, (page) => createWindow(page));
+const newDocument = () => void openDocument(null);
+async function pickFiles() {
+  const w = BrowserWindow.getFocusedWindow();
+  const opts = {
+    properties: ['openFile', 'multiSelections'] as ('openFile' | 'multiSelections')[],
+    filters: [{ name: 'Annie 3D board', extensions: ['annie3d'] }],
+  };
+  const r = w ? await dialog.showOpenDialog(w, opts) : await dialog.showOpenDialog(opts);
+  for (const p of r.filePaths) void openDocument(p);
+}
+const winOf = (e: Electron.IpcMainInvokeEvent) => BrowserWindow.fromWebContents(e.sender);
+ipcMain.handle('docs:read', (e, id: string) => docs.read(id, e.sender));
+ipcMain.handle('docs:save', (e, id: string, p: DocPayload, o: { as: boolean; suggestedName: string }) =>
+  docs.save(id, p, o, e.sender),
+);
+ipcMain.handle('docs:saveCopy', (e, p: DocPayload, name: string) => docs.saveCopy(p, name, winOf(e)));
+ipcMain.handle('docs:stash', (e, id: string, p: DocPayload) => docs.stash(id, p, e.sender));
+ipcMain.handle('docs:pack', (e, id: string, p: DocPayload) => docs.pack(id, p, e.sender));
+ipcMain.on('docs:setDirty', (e, id: string, dirty: boolean) => docs.setDirty(id, !!dirty, e.sender));
+ipcMain.on('docs:close', (e, id: string) => docs.close(id, e.sender));
+ipcMain.on('docs:open', () => void pickFiles());
+ipcMain.on('docs:create', () => newDocument());
 
 app.whenReady().then(async () => {
   buildMenu();
+  let headers: ReturnType<typeof parseHeaders> | null = null;
   if (!DEV_URL) {
     await pack.init();
-    let headers = parseHeaders(await pack.readText('_headers'));
-    interceptOrigin(session.defaultSession, async (p) => {
-      if (p === '/_headers') return null;
-      return pack.serve(p, headers);
-    });
+    headers = parseHeaders(await pack.readText('_headers'));
     // New web pack → new headers too.
     app.on('browser-window-focus', async () => {
       headers = parseHeaders(await pack.readText('_headers'));
     });
   }
+  // Open documents' assets come from disk; everything else from the web pack (not in dev mode).
+  interceptOrigin(session.defaultSession, new URL(DEV_URL ?? ORIGIN).origin, async (p, req) => {
+    const doc = await docs.serve(p, req);
+    if (doc || !headers || p === '/_headers') return doc;
+    return pack.serve(p, headers);
+  });
   shellUpdater.init();
-  createWindow();
+  // Opened by double-clicking a file: its window is the only one; otherwise the usual board.
+  // A file that cannot be opened leaves the usual board, never an app without windows.
+  const opened = (ok: boolean) => {
+    if (!ok && windows.size === 0) createWindow();
+  };
+  if (!setOpener((p) => void openDocument(p).then(opened))) createWindow();
   setInterval(() => checkWeb(true), WEB_POLL_MS);
   setInterval(checkShell, 30 * 60_000);
   setTimeout(() => {

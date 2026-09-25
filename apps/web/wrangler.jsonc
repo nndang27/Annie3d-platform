@@ -13,6 +13,8 @@
     "run_worker_first": ["/api/*", "/s/*", "/billing/*"]
   },
   "observability": { "enabled": true },
+  // Daily: delete expired desktop working copies (services/cleanup.ts).
+  "triggers": { "crons": ["17 3 * * *"] },
   // Remote bindings in dev: the Worker runs locally but reads/writes the real buckets, so
   // presigned browser uploads and server-side HEAD checks see the same objects.
   "r2_buckets": [
@@ -55,6 +57,7 @@
     "production": {
       "name": "annie3d",
       "workers_dev": true,
+      "triggers": { "crons": ["17 3 * * *"] },
       "r2_buckets": [
         { "binding": "UPLOADS", "bucket_name": "annie3d-uploads" },
         { "binding": "ARTIFACTS", "bucket_name": "annie3d-artifacts" },

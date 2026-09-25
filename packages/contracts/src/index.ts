@@ -11,3 +11,4 @@ export * from './nodes';
 export * from './ports';
 export * from './presets';
 export * from './starters';
+export * from './zip';

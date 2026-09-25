@@ -13,6 +13,7 @@ import {
   starterGraph,
 } from '@annie3d/contracts';
 import { api } from '../api/client';
+import { withCloud } from '../lib/doc';
 import { perfStart, timed } from '../lib/perf';
 import { dispatch, upsertVersions, useBoard } from '../store/board';
 import { loadGuestFileUrl, saveGuestFile } from '../store/persist';
@@ -65,7 +66,8 @@ export async function uploadIntoNode(node: NodeRecord, file: File) {
   const kind = KIND_BY_NODE[node.kind as keyof typeof KIND_BY_NODE];
   if (!kind) return;
   const { mode } = useBoard.getState();
-  if (mode === 'guest') return attachGuestFile(node, file, kind);
+  // Guests and desktop board files keep the file on this device.
+  if (mode === 'guest' || mode === 'file') return attachGuestFile(node, file, kind, mode === 'guest');
   try {
     attachAsset(node, await uploadAsset(file, kind));
   } catch (e) {
@@ -100,11 +102,14 @@ function attachAsset(node: NodeRecord, asset: AssetDto) {
   ]);
 }
 
-/** Guests keep files in the browser until they sign in; the board is imported with them later. */
-async function attachGuestFile(node: NodeRecord, file: File, kind: AssetDto['kind']) {
+/**
+ * Guests keep files in the browser until they sign in (the board is imported with them later);
+ * a desktop board file keeps them in memory until Save writes them into the file.
+ */
+async function attachGuestFile(node: NodeRecord, file: File, kind: AssetDto['kind'], persist: boolean) {
   const url = URL.createObjectURL(file);
   const id = newId();
-  await saveGuestFile(id, file);
+  if (persist) await saveGuestFile(id, file);
   const asset: AssetDto = {
     id,
     kind,
@@ -128,13 +133,12 @@ async function attachGuestFile(node: NodeRecord, file: File, kind: AssetDto['kin
 }
 
 export function onRunNode(nodeId: string) {
-  const { mode } = useBoard.getState();
-  if (mode === 'guest') {
-    useUi.setState({ signInPrompt: { reason: 'run', nodeId } });
-    return;
-  }
   // Runs this node and whatever upstream is stale or missing (cached nodes are free).
-  useUi.setState({ dialog: { type: 'run', nodeId, scope: 'with_upstream' } });
+  withCloud(
+    'run',
+    (id) => useUi.setState({ dialog: { type: 'run', nodeId: id!, scope: 'with_upstream' } }),
+    nodeId,
+  );
 }
 
 export function openEditor(nodeId: string) {

@@ -1,0 +1,105 @@
+# Production deploy on every push to main (docs/CICD_SETUP.md):
+# checks → production migrations → production build with a signed desktop web pack → deploy →
+# verify. The desktop app picks the new signed manifest up by itself and shows "Update ready".
+# Until the secrets exist the deploy job is skipped with a warning (it never deploys unsigned).
+name: Deploy
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'perf-results/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false # never cut a deploy (or a migration) in half
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+
+  deploy:
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: https://annie3d.nndang2701.workers.dev
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      ANNIE3D_PACK_KEY: ${{ secrets.ANNIE3D_PACK_KEY }}
+      ANNIE3D_PACK_KEY_ID: ${{ vars.ANNIE3D_PACK_KEY_ID || 'k1' }}
+      MIGRATE_URL: ${{ secrets.DATABASE_URL_PROD }}
+      SITE: https://annie3d.nndang2701.workers.dev
+    steps:
+      - name: Secrets present?
+        id: ready
+        run: |
+          missing=""
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID(variable)"
+          [ -n "$ANNIE3D_PACK_KEY" ] || missing="$missing ANNIE3D_PACK_KEY"
+          [ -n "$MIGRATE_URL" ] || missing="$missing DATABASE_URL_PROD"
+          if [ -n "$missing" ]; then
+            echo "::warning::Deploy skipped, missing:$missing (docs/CICD_SETUP.md, step 2)"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.ready.outputs.ok == 'true'
+      - uses: pnpm/action-setup@v4
+        if: steps.ready.outputs.ok == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.ready.outputs.ok == 'true'
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        if: steps.ready.outputs.ok == 'true'
+      # Migrations run before the new code goes live and must stay compatible with the code
+      # still running (expand, deploy, then contract). Already-applied migrations are skipped.
+      - name: Migrate the production database
+        if: steps.ready.outputs.ok == 'true'
+        working-directory: packages/db
+        run: node --experimental-strip-types src/scripts/migrate.ts
+      - name: Build (production config, signed desktop web pack)
+        if: steps.ready.outputs.ok == 'true'
+        run: pnpm run build:prod
+      - name: Refuse an unsigned desktop manifest
+        if: steps.ready.outputs.ok == 'true'
+        run: |
+          node -e "
+            const j = require('./apps/web/dist/client/desktop/manifest.json');
+            if (!j.signature) { console.error('desktop manifest is UNSIGNED: the app would refuse this update'); process.exit(1); }
+            console.log('signed with', j.keyId, 'version', JSON.parse(j.manifest).version);
+          "
+      - name: Deploy the Worker
+        if: steps.ready.outputs.ok == 'true'
+        run: pnpm --filter @annie3d/web exec wrangler deploy
+      - name: Verify production serves this build
+        if: steps.ready.outputs.ok == 'true'
+        run: |
+          want=$(node -p "JSON.parse(require('./apps/web/dist/client/desktop/manifest.json').manifest).version")
+          for i in 1 2 3 4 5 6; do
+            got=$(curl -fsS "$SITE/desktop/manifest.json" | node -p "JSON.parse(JSON.parse(require('fs').readFileSync(0,'utf8')).manifest).version" || true)
+            [ "$got" = "$want" ] && echo "live: $got" && exit 0
+            echo "waiting for $want (got $got)"; sleep 10
+          done
+          echo "::error::production still serves $got, expected $want"; exit 1

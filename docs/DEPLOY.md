@@ -46,4 +46,4 @@ pnpm share:stop
 - Real payment provider (Stripe/Paddle) replacing `/billing/checkout` + `/api/billing/simulated/*`.
 - Optional custom domain: add it in Cloudflare, then update `APP_URL`, the R2 CORS origins and
   the Google OAuth URIs.
-- CI/CD: `docs/CICD_SETUP.md` and `ci/templates/ci.yml` (not active yet).
+- CI/CD: GitHub Actions deploys `main` (`.github/workflows/deploy.yml`, docs/CICD_SETUP.md).

@@ -1,7 +1,45 @@
-# CI/CD setup (do this after the canvas website is coded)
+# CI/CD setup
 
-Status: guide, 2026-09-24. Nothing here is active yet. The workflow template lives in
-`ci/templates/ci.yml` and is copied into `.github/workflows/` at step 4.
+Status 2026-09-25: **production deploys from GitHub Actions** (`.github/workflows/deploy.yml`).
+Every push to `main` runs lint, typecheck and unit tests, then migrates the production database,
+builds with the production config and a **signed desktop web pack**, deploys the Worker and checks
+that production serves the new build. The desktop app sees the new signed manifest and shows
+"Update ready" (it checks at start, every 30 min, and on focus after 5 min). Until the secrets
+below exist, the deploy job is skipped with a warning; an unsigned manifest is never deployed.
+
+## Deploy with GitHub Actions (active)
+
+Secrets and variables (repo → Settings → Secrets and variables → Actions):
+
+| Name | Kind | Value |
+| --- | --- | --- |
+| `CLOUDFLARE_API_TOKEN` | secret | Cloudflare → My Profile → API Tokens → Create → template **Edit Cloudflare Workers**, account = Annie 3D only; add **Hyperdrive: Edit** and **Workers R2 Storage: Edit** |
+| `CLOUDFLARE_ACCOUNT_ID` | variable | `e8d27f99b43abe6c81feb5bf0b1ea714` |
+| `DATABASE_URL_PROD` | secret | Neon production **direct** (not `-pooler`) URL, the same as in `.dev.vars` |
+| `ANNIE3D_PACK_KEY` | secret | desktop web-pack signing key, the same as in `.dev.vars` |
+| `ANNIE3D_PACK_KEY_ID` | variable | `k1` (optional, default) |
+
+From the repo root, without printing any value:
+```bash
+gh variable set CLOUDFLARE_ACCOUNT_ID --body e8d27f99b43abe6c81feb5bf0b1ea714
+gh variable set ANNIE3D_PACK_KEY_ID --body k1
+sed -n 's/^DATABASE_URL_PROD=//p' .dev.vars | gh secret set DATABASE_URL_PROD
+sed -n 's/^ANNIE3D_PACK_KEY=//p' .dev.vars | gh secret set ANNIE3D_PACK_KEY
+gh secret set CLOUDFLARE_API_TOKEN   # paste the new token at the hidden prompt
+```
+Then Actions → Deploy → Run workflow (or push to `main`). Optional: Settings → Environments →
+`production` → Required reviewers, to approve each deploy by hand.
+
+Rules the workflow keeps: one deploy at a time (never cancelled mid-migration); migrations must
+stay compatible with the code still running (expand → deploy → contract); docs-only pushes do
+not deploy. Rollback: `wrangler rollback` (code only) and the Neon backup/point-in-time restore
+for data.
+
+## Longer-term plan (not active)
+
+The sections below describe the fuller setup (Workers Builds previews per pull request, a Neon
+branch per pull request, the E2E matrix as a required check). The workflow template for the
+checks lives in `ci/templates/ci.yml`.
 
 Split of responsibilities:
 

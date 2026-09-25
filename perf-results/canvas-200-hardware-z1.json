@@ -1,8 +1,8 @@
 {
   "build": {
-    "commit": "397a6ae",
+    "commit": "033d523",
     "node": "v25.5.0",
-    "date": "2026-09-24T17:56:43.333Z",
+    "date": "2026-09-25T12:25:08.096Z",
     "platform": "darwin arm64"
   },
   "nodes": 200,
@@ -19,33 +19,33 @@
       },
       "load": {
         "lcp": {
-          "time": 140,
-          "size": 15561,
+          "time": 144,
+          "size": 14680,
           "url": "http://localhost:4174/api/public/fixtures/v1/headphones/photo_512.webp",
           "element": "IMG"
         },
-        "fcp": 56,
+        "fcp": 68,
         "cls": 0.0008323500414771144,
         "longTasks": 0
       },
-      "domNodesRendered": 3,
+      "domNodesRendered": 7,
       "domNodesAfterZoom": 3,
-      "heapMB": 10,
+      "heapMB": 15,
       "pan": {
-        "durationMs": 3010,
+        "durationMs": 2992,
         "fps": 120,
         "frameMs": {
           "p50": 8.3,
-          "p95": 9.2,
-          "max": 9.4
+          "p95": 9.1,
+          "max": 9.3
         },
         "jankFrames": 0,
-        "frames": 359,
+        "frames": 357,
         "longTasks": 0,
         "longTaskMaxMs": 0
       },
       "zoom": {
-        "durationMs": 2662,
+        "durationMs": 2673,
         "fps": 120,
         "frameMs": {
           "p50": 8.3,
@@ -53,7 +53,7 @@
           "max": 9.3
         },
         "jankFrames": 0,
-        "frames": 318,
+        "frames": 640,
         "longTasks": 0,
         "longTaskMaxMs": 0
       }
@@ -70,8 +70,8 @@
       },
       "load": {
         "lcp": {
-          "time": 352,
-          "size": 15561,
+          "time": 348,
+          "size": 14680,
           "url": "http://localhost:4174/api/public/fixtures/v1/headphones/photo_512.webp",
           "element": "IMG"
         },
@@ -81,30 +81,30 @@
       },
       "domNodesRendered": 7,
       "domNodesAfterZoom": 3,
-      "heapMB": 10,
+      "heapMB": 14,
       "pan": {
-        "durationMs": 2996,
+        "durationMs": 2931,
         "fps": 120,
         "frameMs": {
           "p50": 8.3,
           "p95": 9.2,
-          "max": 9.4
+          "max": 9.3
         },
         "jankFrames": 0,
-        "frames": 358,
+        "frames": 350,
         "longTasks": 0,
         "longTaskMaxMs": 0
       },
       "zoom": {
-        "durationMs": 2614,
+        "durationMs": 2631,
         "fps": 117,
         "frameMs": {
           "p50": 8.3,
-          "p95": 9.3,
-          "max": 25.5
+          "p95": 9.2,
+          "max": 25.8
         },
         "jankFrames": 0,
-        "frames": 612,
+        "frames": 614,
         "longTasks": 0,
         "longTaskMaxMs": 0
       }

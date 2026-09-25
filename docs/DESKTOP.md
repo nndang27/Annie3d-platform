@@ -16,10 +16,19 @@ Plan and research: `docs/DESKTOP_APP_PLAN.md`, `docs/DESKTOP_APP_RESEARCH.md`.
   - Every `pnpm build` writes `dist/client/desktop/manifest.json` (all files with sha256, size
     and features, Ed25519-signed with `ANNIE3D_PACK_KEY` from `.dev.vars`). Deploying the
     website publishes it at `/desktop/manifest.json`.
-  - The app checks at start, every 30 min and on focus after 5 min; downloads only files whose
-    sha256 it lacks (verified), shows **Update ready · <features> · N files, KB · Reload**; on
-    Reload it switches versions and reloads. If the page does not confirm within 20 s, it rolls
-    back. Unsigned or tampered manifests are refused.
+  - The app checks at start, every 60 s (`ANNIE3D_POLL_MS`) and on focus (at most every 30 s),
+    downloads only files whose sha256 it lacks (verified) in the background, then shows
+    **Update available · <release notes> · N files, KB · Restart to update**. Release notes come
+    from `ANNIE3D_RELEASE_NOTES` or the deploy commit's subject.
+  - **Restart to update** (as the Claude and Codex apps do): the new version is staged, the app
+    quits and starts again into it, then shows **Updated · <notes>** once. If the new version does
+    not confirm within 20 s (`ANNIE3D_CONFIRM_MS`), the next start rolls back. Unsigned or
+    tampered manifests are refused. `ANNIE3D_RELAUNCH=0` quits without relaunching (tests).
+  - Live test on the installed app (2026-09-25, 0.2.0, pack 033d523 → 6bfb30b): CI finished
+    12:37:20Z, the pill appeared at 12:37:32 without any user action; after the click the old
+    process was gone in 0.3 s, the new one was up in 0.3 s and the board was on screen at 0.8 s
+    with web version `2026.9.25-123658+6bfb30b`, the "Updated · Soft UI nodes…" pill and the
+    neumorphic nodes.
   - Shell updates (new Electron / native code) use electron-updater from
     `<origin>/desktop/shell/<os>/` and show **Relaunch to update**; active only for packaged
     apps (macOS also needs signing).

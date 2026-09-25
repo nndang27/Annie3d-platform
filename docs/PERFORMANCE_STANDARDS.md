@@ -92,7 +92,33 @@ render pipeline state is still created at the first draw, so the cold first-rend
 fell 202 → 130 ms for the editor, did not change for the simulator, and every warm open got
 15–20 ms slower (three.js polls completion every 10 ms).
 
+### Baked room lighting (2026-09-25)
+
+Both viewers built their image-based lighting on every open with
+`PMREMGenerator.fromScene(new RoomEnvironment(), 0.04)`: render the room to a cube map, blur it in
+several passes, each with its own shader. `scripts/bake-room-env.mjs` now runs that same call once
+with the project's three.js and stores the 768×1024 CubeUV result as RGB9E5 texels (WebGL2
+RGB9_E5, sampled directly, no decoding) gzip-compressed: `packages/viewer-3d/assets/room-env.bin`,
+650 KB, fetched with the editor chunk (hover or idle) and unpacked once per page with the
+browser's DecompressionStream. If the file cannot load, the viewer bakes at runtime as before.
+
+Choices, measured on real models (serum bottle, headphones, gold ring with a diamond):
+
+| Encoding | Size | Render vs runtime bake |
+| --- | --- | --- |
+| half float RGB, size 256, gzip | 899 KB | exact |
+| half float, byte planes, gzip | 1091 KB | exact (worse compression) |
+| half float RGB, size 128, gzip | 266 KB | ring max 61 levels: softer jewellery reflections, rejected |
+| **RGB9E5, size 256, gzip** | **650 KB** | **mean 0.002, max 2 levels** |
+
+In the editor: mean difference 0.015 levels, 28 of 3.3 M pixels above 4 levels.
+
+| | Before | After |
+| --- | --- | --- |
+| Cold first editor open: environment bake | ~350 ms frozen | none |
+| Warm open, editor / simulator | 58–66 / 63–78 ms | 35–47 / 41–65 ms |
+
 Cold GPU cache (first use on a machine) still costs one-off compiles when the editor or the
-simulator first draws (editor ~350 ms environment map + ~130 ms first frame; simulator ~260 ms):
-these are Metal pipeline compiles inside Chromium, the same class as the board's first-zoom
-stalls (docs/DESKTOP.md).
+simulator first draws (editor ~210 ms first frame; simulator ~250 ms, its canvas has an alpha
+channel and so needs its own pipelines): Metal pipeline compiles inside Chromium, the same class
+as the board's first-zoom stalls (docs/DESKTOP.md).

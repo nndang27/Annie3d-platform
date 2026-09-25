@@ -83,7 +83,11 @@ export const FEATURES: Feature[] = [
     title: '3D editor',
     surface: 'shared',
     layer: 'web',
-    paths: [`${C}/editor/**`, 'packages/viewer-3d/src/{editor,fixtures,presets,viewer,composite,index}.ts'],
+    paths: [
+      `${C}/editor/**`,
+      'packages/viewer-3d/src/{editor,environment,fixtures,presets,viewer,composite,index}.ts',
+      'packages/viewer-3d/assets/**',
+    ],
   },
   {
     id: 'simulation',

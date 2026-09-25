@@ -1,5 +1,5 @@
 import { SIM_ENVIRONMENTS, type SimEnvironment } from '@annie3d/contracts';
-import { type DevicePose, SimViewer } from '@annie3d/viewer-3d';
+import { type DevicePose, prefetchRoomEnvironment, SimViewer } from '@annie3d/viewer-3d';
 import {
   Bookmark,
   Download,
@@ -23,6 +23,9 @@ import { toast, useUi } from '../store/ui';
 import { SIM_ENV_META, simInputs, useSimKey } from './inputs';
 import { controllerUrl, type LinkState, newRoomId, openLink, type SimMessage } from './link';
 import './sim.css';
+
+// This chunk loads on hover or at idle (lib/preload.ts): fetch the baked room lighting now too.
+prefetchRoomEnvironment().catch(() => {});
 
 /** A small JPEG of the view for the phone (two-way link): white background, 360 px wide. */
 async function phoneSnapshot(viewer: SimViewer): Promise<string> {

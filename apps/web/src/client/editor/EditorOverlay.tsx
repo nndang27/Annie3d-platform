@@ -1,5 +1,5 @@
 import { EDIT_CREDITS, NODE_DEFS, type NodeVersionDto, newId, nextZKey } from '@annie3d/contracts';
-import { type EditorTool, ModelEditor } from '@annie3d/viewer-3d';
+import { type EditorTool, ModelEditor, prefetchRoomEnvironment } from '@annie3d/viewer-3d';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Brush, Camera, Columns2, Eraser, Lasso, Pause, Play, Rotate3d, Sun } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -10,6 +10,9 @@ import { perfEnd } from '../lib/perf';
 import { dispatch, useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
 import { toast, useUi } from '../store/ui';
+
+// This chunk loads on hover or at idle (lib/preload.ts): fetch the baked room lighting now too.
+prefetchRoomEnvironment().catch(() => {});
 
 type Tool = EditorTool | 'camera' | 'light';
 

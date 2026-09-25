@@ -8,7 +8,6 @@ import {
   type Mesh,
   type Object3D,
   PerspectiveCamera,
-  PMREMGenerator,
   Quaternion,
   Scene,
   Sphere,
@@ -17,8 +16,8 @@ import {
   WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { roomEnvironment } from './environment';
 
 export interface SimViewerOptions {
   dprCap?: number;
@@ -50,7 +49,9 @@ export class SimViewer {
   private readonly controls: OrbitControls;
   private readonly pivot = new Group();
   private readonly ro: ResizeObserver;
-  private readonly pmrem: PMREMGenerator;
+  /** Room lighting (environment.ts); `load` waits for it so no frame shows the model unlit. */
+  private readonly envReady: Promise<void>;
+  private disposeEnv: (() => void) | null = null;
   private root: Object3D | null = null;
   private frame: number | null = null;
   private disposed = false;
@@ -69,10 +70,12 @@ export class SimViewer {
     this.renderer.outputColorSpace = SRGBColorSpace;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, opts.dprCap ?? 2));
     this.renderer.setClearColor(0x000000, 0);
-    this.pmrem = new PMREMGenerator(this.renderer);
-    const room = new RoomEnvironment();
-    this.scene.environment = this.pmrem.fromScene(room, 0.04).texture;
-    room.dispose();
+    this.envReady = roomEnvironment(this.renderer).then(({ texture, dispose }) => {
+      if (this.disposed) return dispose();
+      this.disposeEnv = dispose;
+      this.scene.environment = texture;
+      this.invalidate();
+    });
     this.scene.add(new HemisphereLight('#ffffff', '#cfd3da', 0.7));
     const key = new DirectionalLight('#ffffff', 1.4);
     key.position.set(3, 5, 4);
@@ -103,6 +106,8 @@ export class SimViewer {
     this.camera.far = d * 10;
     this.camera.updateProjectionMatrix();
     this.controls.update();
+    await this.envReady;
+    if (this.disposed) return;
     this.invalidate();
   }
 
@@ -201,8 +206,7 @@ export class SimViewer {
     this.ro.disconnect();
     this.controls.dispose();
     this.clear();
-    this.scene.environment?.dispose();
-    this.pmrem.dispose();
+    this.disposeEnv?.();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
   }

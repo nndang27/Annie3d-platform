@@ -12,7 +12,6 @@ import {
   MeshBasicMaterial,
   type Object3D,
   PerspectiveCamera,
-  PMREMGenerator,
   Raycaster,
   Scene,
   Sphere,
@@ -22,9 +21,9 @@ import {
   WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { type GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { acceleratedRaycast, CONTAINED, INTERSECTED, MeshBVH, NOT_INTERSECTED } from 'three-mesh-bvh';
+import { roomEnvironment } from './environment';
 
 export type EditorTool = 'orbit' | 'brush' | 'lasso';
 
@@ -67,7 +66,9 @@ export class ModelEditor {
   private renderer: WebGLRenderer;
   private camera = new PerspectiveCamera(35, 1, 0.01, 100);
   private controls: OrbitControls;
-  private pmrem: PMREMGenerator;
+  /** Room lighting (lib: environment.ts); `load` waits for it so no frame shows the model unlit. */
+  private readonly envReady: Promise<void>;
+  private disposeEnv: (() => void) | null = null;
   private key = new DirectionalLight('#ffffff', 1.6);
   private slots: [Slot, Slot] = [this.emptySlot(), this.emptySlot()];
   private comparing = false;
@@ -97,14 +98,13 @@ export class ModelEditor {
     this.renderer.outputColorSpace = SRGBColorSpace;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, opts.dprCap ?? 2));
     this.renderer.setClearColor('#f4f4f1');
-    this.pmrem = new PMREMGenerator(this.renderer);
-    const room = new RoomEnvironment();
-    const env = this.pmrem.fromScene(room, 0.04).texture;
-    room.dispose(); // its geometry/materials are only needed to bake the environment map
-    for (const s of this.slots) {
-      s.scene.environment = env;
-      s.scene.add(new HemisphereLight('#ffffff', '#d0d4da', 0.6));
-    }
+    for (const s of this.slots) s.scene.add(new HemisphereLight('#ffffff', '#d0d4da', 0.6));
+    this.envReady = roomEnvironment(this.renderer).then(({ texture, dispose }) => {
+      if (this.disposed) return dispose();
+      this.disposeEnv = dispose;
+      for (const s of this.slots) s.scene.environment = texture;
+      this.invalidate();
+    });
     this.slots[0].scene.add(this.key);
     this.key.position.set(3, 5, 4);
     this.controls = new OrbitControls(this.camera, canvas);
@@ -139,6 +139,8 @@ export class ModelEditor {
       s.mixer.setTime(0);
     }
     if (slot === 0) this.frameModel(gltf.scene);
+    await this.envReady;
+    if (this.disposed) return { triangles: 0, parts: 0, duration: 0 };
     this.invalidate();
     return {
       triangles: s.parts.reduce((a, p) => a + p.triangles, 0),
@@ -544,7 +546,7 @@ export class ModelEditor {
     if (c._interceptControlDown)
       doc.removeEventListener('keydown', c._interceptControlDown, { capture: true });
     if (c._interceptControlUp) doc.removeEventListener('keyup', c._interceptControlUp, { capture: true });
-    this.pmrem.dispose();
+    this.disposeEnv?.();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
     (dfgLut as { dispose(): void } | null)?.dispose();

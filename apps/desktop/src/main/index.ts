@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync, renameSync, rmdirSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import type { DesktopInfo, DesktopUpdateState } from '@annie3d/contracts/desktop';
 import {
   app,
@@ -26,6 +26,24 @@ import { WebPackStore } from './webpack';
  */
 // Tests (and side-by-side installs) can isolate the app's data folder; must run before any store reads it.
 if (process.env.ANNIE3D_USER_DATA) app.setPath('userData', process.env.ANNIE3D_USER_DATA);
+else moveLegacyUserData();
+
+/**
+ * Builds before productName was set ran as "@annie3d/desktop" (the macOS menu read "Quit
+ * @annie3d/desktop") and kept their data in <appData>/@annie3d/desktop. Move it to the new
+ * <appData>/Annie 3D once, before anything opens it, so boards and window state survive.
+ */
+function moveLegacyUserData() {
+  const current = app.getPath('userData');
+  const legacy = join(app.getPath('appData'), '@annie3d', 'desktop');
+  if (current === legacy || existsSync(current) || !existsSync(legacy)) return;
+  try {
+    renameSync(legacy, current);
+    rmdirSync(dirname(legacy)); // the now-empty "@annie3d" folder; fails harmlessly if not empty
+  } catch {
+    /* keep the old folder; the app starts with fresh data */
+  }
+}
 
 const PROTOCOL = 'annie3d';
 const bundledDir = app.isPackaged

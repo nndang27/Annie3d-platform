@@ -1,5 +1,6 @@
 {
   "name": "@annie3d/desktop",
+  "productName": "Annie 3D",
   "private": true,
   "version": "0.1.0",
   "description": "Annie 3D desktop app (Electron shell around the web app)",

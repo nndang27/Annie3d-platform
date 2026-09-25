@@ -6,7 +6,7 @@
 //   macOS:   the .app from the zip, registered with Launch Services; `open`.
 
 import { execFileSync, execSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -90,7 +90,9 @@ while (Date.now() < until) {
   const lines = existsSync(report) ? readFileSync(report, 'utf8').trim().split('\n').filter(Boolean) : [];
   const events = lines.map((l) => JSON.parse(l));
   const opened = events.map((e) => e.opened).filter(Boolean);
-  if (opened.some((p) => p.toLowerCase() === file.toLowerCase())) {
+  // Compare real paths: macOS hands over /private/var/… for /var/… (a symlink).
+  const same = (p) => existsSync(p) && realpathSync(p).toLowerCase() === realpathSync(file).toLowerCase();
+  if (opened.some(same)) {
     console.log(`OK: the OS opened ${file} in Annie 3D`);
     process.exit(0);
   }

@@ -344,3 +344,83 @@ test('a 200 MB board file opens at once: assets stream from disk by range', asyn
   expect(openMs).toBeLessThan(15_000);
   expect(mb).toBeLessThan(200);
 });
+
+test('Save keeps an Export ZIP as its member list, and the ZIP comes back whole', async () => {
+  const png = new Uint8Array(
+    readFileSync(join(__dirname, '../../fixtures/out/serum/model_poster_1024.webp')),
+  );
+  const glb = new Uint8Array(readFileSync(join(__dirname, '../../fixtures/out/serum/model.glb')));
+  // Like a real Export node: its ZIP holds the photo and its own web GLB, which is its 2nd output.
+  const inner = zipSync({ 'serum-image-1.webp': [png, { level: 0 }], 'serum-web.glb': [glb, { level: 0 }] });
+  const [p, e] = [crypto.randomUUID(), crypto.randomUUID()];
+  const paths = {
+    png: `assets/${shaHex(png)}.webp`,
+    glb: `assets/${shaHex(glb)}.glb`,
+    zip: `assets/${shaHex(inner)}.zip`,
+  };
+  const file = join(userData, 'Export.annie3d');
+  const out = (path: string, kind: string, mime: string) => ({
+    path,
+    kind,
+    mime,
+    role: 'primary',
+    variants: [],
+  });
+  writeFileSync(
+    file,
+    zipSync({
+      'annie3d.json': strToU8(
+        JSON.stringify({
+          format: 'annie3d',
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          title: 'Export',
+          nodes: [
+            { id: p, kind: 'photo', x: 0, y: 0, label: null, settings: {} },
+            { id: e, kind: 'export', x: 400, y: 0, label: null, settings: {} },
+          ],
+          edges: [],
+          outputs: [
+            { nodeId: p, files: [out(paths.png, 'image', 'image/webp')] },
+            {
+              nodeId: e,
+              files: [
+                out(paths.zip, 'file', 'application/zip'),
+                { ...out(paths.glb, 'model3d', 'model/gltf-binary'), role: 'extra' },
+              ],
+            },
+          ],
+        }),
+      ),
+      [paths.png]: [png, { level: 0 }],
+      [paths.zip]: [inner, { level: 0 }],
+      [paths.glb]: [glb, { level: 0 }],
+    } as Parameters<typeof zipSync>[0]),
+  );
+  const before = readFileSync(file).length;
+  await launch({}, true, [file]);
+  await win.getByTestId('add-text').click();
+  await win.keyboard.press(`${MOD}+s`);
+  await expect(win.getByTestId('doc-state')).toHaveText('Saved');
+  const saved = unzipSync(new Uint8Array(readFileSync(file)));
+  const m = JSON.parse(strFromU8(saved['annie3d.json']!));
+  const zipOut = m.outputs
+    .flatMap((g: { files: unknown[] }) => g.files)
+    .find((f: { mime: string }) => f.mime === 'application/zip');
+  expect(zipOut.bundle.map((b: { name: string }) => b.name)).toEqual(['serum-image-1.webp', 'serum-web.glb']);
+  expect(saved[paths.zip]).toBeUndefined();
+  expect(readFileSync(file).length).toBeLessThan(before - inner.length + 2000);
+  // Opened again, the ZIP is served whole, rebuilt from the members on disk.
+  const next = app.waitForEvent('window');
+  await win.evaluate(() => (window as any).annieDesktop.docs.create());
+  await (await next).close();
+  await app.close();
+  await launch({}, true, [file]);
+  const back = await win.evaluate(async (zp) => {
+    const id = new URLSearchParams(location.search).get('doc');
+    return Array.from(new Uint8Array(await (await fetch(`/__doc/${id}/${zp}`)).arrayBuffer()));
+  }, zipOut.path);
+  const rebuilt = unzipSync(new Uint8Array(back));
+  expect(shaHex(rebuilt['serum-web.glb']!)).toBe(shaHex(glb));
+  expect(shaHex(rebuilt['serum-image-1.webp']!)).toBe(shaHex(png));
+});

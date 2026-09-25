@@ -395,11 +395,15 @@ export async function buildPayload(doc?: { id: string; assets: Set<string> }): P
     return keep(name(sha || (await sha256(bytes))), bytes);
   };
   const outputs: BoardFileManifest['outputs'] = [];
-  // Export nodes last: their ZIPs are recognised as bundles of files already added.
-  const nodes = [...graph.nodes.values()].sort(
-    (a, b) => Number(a.kind === 'export') - Number(b.kind === 'export'),
-  );
-  for (const n of nodes) {
+  // ZIPs are looked at last, once every other file is known: an Export node's ZIP holds copies
+  // of files that come later (its own web GLB is its second output).
+  const zips: {
+    out: BoardFileOutput[];
+    at: number;
+    o: AssetDto;
+    meta: Omit<BoardFileOutput, 'path' | 'variants'>;
+  }[] = [];
+  for (const n of graph.nodes.values()) {
     const v = n.currentVersionId ? versions.get(n.currentVersionId) : undefined;
     if (!v?.outputs.length) continue;
     const out: BoardFileOutput[] = [];
@@ -416,12 +420,9 @@ export async function buildPayload(doc?: { id: string; assets: Set<string> }): P
         durationMs: o.durationMs,
         triangleCount: o.triangleCount,
       } as const;
-      const recipe =
-        bundles.get(o.id) ??
-        (o.mime === 'application/zip' ? await asBundle(o.urls.original, pathBySha) : null);
-      if (recipe) {
-        for (const m of recipe) keep(m.path);
-        out.push({ ...meta, path: `assets/${o.sha256 || o.id}.zip`, bundle: recipe, variants: [] });
+      if (o.mime === 'application/zip') {
+        zips.push({ out, at: out.length, o, meta });
+        out.push({ ...meta, path: 'assets/pending.zip', variants: [] }); // filled in below
         continue;
       }
       const main = await add(o.urls.original, (sha) => `assets/${sha}.${ext}`, o.sha256 || null);
@@ -437,6 +438,17 @@ export async function buildPayload(doc?: { id: string; assets: Set<string> }): P
       out.push({ ...meta, path: main, ...(sha ? { sha256: sha } : {}), variants });
     }
     if (out.length) outputs.push({ nodeId: n.id, files: out });
+  }
+  for (const { out, at, o, meta } of zips) {
+    const recipe = bundles.get(o.id) ?? (await asBundle(o.urls.original!, pathBySha));
+    if (recipe) {
+      for (const m of recipe) keep(m.path);
+      out[at] = { ...meta, path: `assets/${o.sha256 || o.id}.zip`, bundle: recipe, variants: [] };
+    } else {
+      const main = await add(o.urls.original!, (sha) => `assets/${sha}.zip`, o.sha256 || null);
+      const sha = shaOfPath(main);
+      out[at] = { ...meta, path: main, ...(sha ? { sha256: sha } : {}), variants: [] };
+    }
   }
   const manifest: BoardFileManifest = {
     format: 'annie3d',

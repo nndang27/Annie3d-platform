@@ -14,9 +14,9 @@ let userData: string;
 let app: ElectronApplication;
 let win: Page;
 
-async function launch(env: Record<string, string> = {}, waitForBoard = true) {
+async function launch(env: Record<string, string> = {}, waitForBoard = true, files: string[] = []) {
   app = await electron.launch({
-    args: [APP_DIR],
+    args: [APP_DIR, ...files],
     // ANNIE3D_RELAUNCH=0: "Restart to update" only quits; each test starts the app again itself.
     env: {
       ...process.env,
@@ -126,25 +126,39 @@ test('an update whose page never starts rolls back to the previous version', asy
   expect(after).toMatchObject({ current: before, rolledBackFrom: m.version });
 });
 
-test('a .annie3d file opened by the OS lands on the canvas', async () => {
-  await launch();
-  const n0 = await win.evaluate(() => (window as any).__annie3d?.useBoard.getState().graph.nodes.size ?? 0);
-  const id = crypto.randomUUID();
+/** A one-node board file (a text node saying `text`) in the test's data folder. */
+function boardFile(text: string) {
   const manifest = {
     format: 'annie3d',
     version: 1,
     exportedAt: new Date().toISOString(),
     title: 'From Finder',
-    nodes: [{ id, kind: 'text', x: 0, y: 0, label: 'Opened', settings: { text: 'Opened from the OS' } }],
+    nodes: [{ id: crypto.randomUUID(), kind: 'text', x: 0, y: 0, label: 'Opened', settings: { text } }],
     edges: [],
     outputs: [],
   };
-  const path = join(userData, 'opened.annie3d');
+  const path = join(userData, `${text.replace(/\W+/g, '-')}.annie3d`);
   writeFileSync(path, zipSync({ 'annie3d.json': strToU8(JSON.stringify(manifest)) }));
+  return path;
+}
+
+test('a .annie3d file opened by the OS lands on the canvas', async () => {
+  await launch();
+  const n0 = await win.evaluate(() => (window as any).__annie3d?.useBoard.getState().graph.nodes.size ?? 0);
+  const path = boardFile('Opened from the OS');
   await app.evaluate(({ app: a }, p) => a.emit('open-file', { preventDefault() {} }, p), path);
   await expect(win.getByText('Opened from the OS')).toBeVisible();
   if (n0) {
     const n1 = await win.evaluate(() => (window as any).__annie3d.useBoard.getState().graph.nodes.size);
     expect(n1).toBe(n0 + 1);
   }
+});
+
+// Double-clicking a file while the app is closed: the file arrives before the saved board has
+// loaded, and must not be wiped out when it does.
+test('a .annie3d file that starts the app stays on the canvas', async () => {
+  await launch({}, true, [boardFile('Opened at launch')]);
+  await expect(win.getByText('Opened at launch')).toBeVisible();
+  await win.waitForTimeout(1500);
+  await expect(win.getByText('Opened at launch')).toBeVisible();
 });

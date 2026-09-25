@@ -26,17 +26,19 @@ export default function DesktopIntegration({ bridge }: { bridge: DesktopBridge }
     return bridge.updates.onChange(setState);
   }, [bridge]);
 
+  const loaded = mode !== 'loading';
   useEffect(() => {
-    if (mode !== 'loading') bridge.ready();
-  }, [bridge, mode]);
+    if (loaded) bridge.ready();
+  }, [bridge, loaded]);
 
-  useEffect(
-    () =>
-      bridge.onOpenFile(({ name, bytes }) => {
-        void importBoardFile(new File([bytes as BlobPart], name), currentViewCentre());
-      }),
-    [bridge],
-  );
+  // Subscribe only once the saved board is on the canvas: a file that started the app would
+  // otherwise land first and be wiped out when the board loads. The shell queues it until then.
+  useEffect(() => {
+    if (!loaded) return;
+    return bridge.onOpenFile(({ name, bytes }) => {
+      void importBoardFile(new File([bytes as BlobPart], name), currentViewCentre());
+    });
+  }, [bridge, loaded]);
 
   useEffect(() => {
     if (state?.rolledBackFrom)

@@ -54,19 +54,26 @@ if (process.platform === 'win32') {
   sh(`cmd /c start "" "${file}"`);
 } else if (process.platform === 'linux') {
   sh(`sudo apt-get install -y "${join(release, find(/\.deb$/))}"`);
-  const type = sh(`xdg-mime query filetype "${file}"`);
-  const app = sh(`xdg-mime query default ${type}`);
+  // Desktops (GNOME, KDE) type files with the shared MIME database, by name first; without a
+  // desktop, xdg-mime falls back to `file`, which only sees a ZIP. Ask the database, as GNOME does.
+  sh('grep -h annie3d /usr/share/mime/globs2 /usr/share/applications/*.desktop');
+  const type = sh(`gio info -a standard::content-type "${file}" | sed -n 's/.*content-type: //p'`);
+  const app = sh('gio mime application/vnd.annie3d+zip');
   if (type !== 'application/vnd.annie3d+zip') throw new Error(`the OS sees the file as ${type}`);
-  if (!/annie3d/.test(app)) throw new Error(`no app for ${type}: ${app}`);
-  execSync(`nohup xdg-open "${file}" >/dev/null 2>&1 &`, { env, shell: '/bin/bash' });
+  if (!/annie3d/i.test(app)) throw new Error(`no app for ${type}: ${app}`);
+  execSync(`XDG_CURRENT_DESKTOP=GNOME nohup xdg-open "${file}" >/dev/null 2>&1 &`, { env, shell: '/bin/bash' });
 } else {
   sh(`ditto -x -k "${join(release, find(/-mac-universal\.zip$|-mac-.*\.zip$/))}" /Applications`);
   sh(
     '/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "/Applications/Annie 3D.app"',
   );
-  sh(`mdls -name kMDItemContentType "${file}"`);
+  sh('codesign --verify --deep --strict --verbose=2 "/Applications/Annie 3D.app"');
+  sh('codesign -dv "/Applications/Annie 3D.app" 2>&1 | head -5');
+  sh('lsregister_out=$(/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -dump | grep -i -m5 annie3d); echo "$lsregister_out"');
   const vars = ['ANNIE3D_REPORT_FILE', 'ANNIE3D_USER_DATA'].map((k) => `--env ${k}="${env[k]}"`).join(' ');
-  sh(`open ${vars} "${file}"`);
+  sh(`open ${vars} "${file}"; echo "open exit $?"`);
+  execFileSync(process.execPath, ['-e', 'setTimeout(() => {}, 8000)']);
+  sh('pgrep -fl "Annie 3D" | head -3');
 }
 
 // The app reports each file the OS hands it (docs.ts, ANNIE3D_REPORT_FILE).

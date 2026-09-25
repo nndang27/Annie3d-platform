@@ -258,11 +258,14 @@ test('closing with unsaved changes asks: Cancel keeps the window, Don’t Save c
   const close = () => app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0]?.close());
   await close();
   await win.waitForTimeout(300);
+  // Asked once, answered Cancel: the window stays.
+  expect((await calls('showMessageBoxSync')) as unknown[]).toHaveLength(1);
   expect(await docWindow()).toHaveLength(1);
+  // Asked again, answered Don't Save: it closes (without the answer a dirty window would stay).
+  // On Windows and Linux closing the last window quits the app, so nothing is asked after this.
   const closed = win.waitForEvent('close');
-  await close();
+  await close().catch(() => {});
   await closed;
-  expect((await calls('showMessageBoxSync')) as unknown[]).toHaveLength(2);
   expect(readFileSync(path).equals(before)).toBe(true);
 });
 

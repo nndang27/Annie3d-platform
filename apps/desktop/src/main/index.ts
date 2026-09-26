@@ -150,6 +150,7 @@ function createWindow(page = '/') {
     },
   });
   windows.add(win);
+  pack.windowOpened();
   win.once('ready-to-show', () => win.show());
   win.on('close', () => {
     if (!win.isMaximized() && !win.isFullScreen())
@@ -438,6 +439,9 @@ app.whenReady().then(async () => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
+  // macOS keeps the app running: the next window (a board file, the Dock icon) starts the
+  // downloaded update instead of the old version with a "Restart to update" pill.
+  else if (!restarting) void pack.startStaged();
 });
 
 // Keep the bundled web pack path visible in logs for support.

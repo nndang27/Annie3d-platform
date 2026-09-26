@@ -96,6 +96,48 @@ test('a deploy shows up while the app is open, and Restart to update starts the 
   await expect(win.getByTestId('update-pill')).toHaveCount(0);
 });
 
+test('a downloaded update starts with the next launch, without Restart to update', async () => {
+  await launch({ ANNIE3D_POLL_MS: '1000' });
+  const { m } = nextPack('v3');
+  site.manifest = signed(m);
+  await expect(win.getByTestId('update-pill')).toContainText('Restart to update', { timeout: 15_000 });
+  // The user quits normally (or the OS opens a board file later): the next start is the new version.
+  await app.close();
+  site.stop(); // it starts from disk, before (and without) any check
+  await launch();
+  expect((await win.evaluate(() => (window as any).annieDesktop.info())).webVersion).toBe(m.version);
+  await expect(win.getByTestId('update-pill')).toHaveCount(0);
+  await app.close();
+  await launch();
+  expect((await win.evaluate(() => (window as any).annieDesktop.info())).webVersion).toBe(m.version);
+});
+
+test('macOS: with every window closed, the next window starts the downloaded update', async () => {
+  test.skip(process.platform !== 'darwin', 'other systems quit when the last window closes');
+  await launch({ ANNIE3D_POLL_MS: '1000' });
+  const { m } = nextPack('v4');
+  site.manifest = signed(m);
+  await expect(win.getByTestId('update-pill')).toContainText('Restart to update', { timeout: 15_000 });
+  await app.evaluate(({ BrowserWindow }) => {
+    for (const w of BrowserWindow.getAllWindows()) w.close();
+  });
+  await expect.poll(() => app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().length)).toBe(0);
+  // A click on the Dock icon (or a board file from Finder) opens a window.
+  const opened = app.waitForEvent('window');
+  await app.evaluate(({ app: a }) => a.emit('activate'));
+  win = await opened;
+  await win.waitForSelector('.react-flow__node', { timeout: 30_000 });
+  expect((await win.evaluate(() => (window as any).annieDesktop.info())).webVersion).toBe(m.version);
+  await expect(win.getByTestId('update-pill')).toHaveCount(0);
+  // Its page confirmed: the next launch keeps it.
+  await expect
+    .poll(() => JSON.parse(readFileSync(join(userData, 'webpack/current.json'), 'utf8')).pending)
+    .toBe(false);
+  await app.close();
+  await launch();
+  expect((await win.evaluate(() => (window as any).annieDesktop.info())).webVersion).toBe(m.version);
+});
+
 test('a manifest with a bad signature is refused', async () => {
   const { m } = nextPack('evil');
   site.manifest = signed(m, true);
@@ -124,6 +166,10 @@ test('an update whose page never starts rolls back to the previous version', asy
   await win.waitForSelector('.react-flow__node', { timeout: 30_000 });
   const after = await win.evaluate(() => (window as any).annieDesktop.updates.get());
   expect(after).toMatchObject({ current: before, rolledBackFrom: m.version });
+  // A version that rolled back is not started again on its own at the next launch.
+  await app.close();
+  await launch();
+  expect((await win.evaluate(() => (window as any).annieDesktop.info())).webVersion).toBe(before);
 });
 
 // ---- board files as documents (apps/desktop/src/main/docs.ts, apps/web/src/client/lib/doc.ts) ----

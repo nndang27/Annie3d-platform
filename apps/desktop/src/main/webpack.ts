@@ -26,6 +26,10 @@ import { PACK_KEYS } from './packKey';
  *   page must call `ready` within 20 s or the previous version comes back (rollback), as Capgo
  *   does for Capacitor. A start that finds an update still unconfirmed (it crashed or was quit
  *   before confirming) rolls back at once.
+ * - Without that click, a downloaded update still starts with the next launch (as Chrome and
+ *   VS Code do) or, on macOS, with the next window once every window was closed: opening the app
+ *   or a board file never shows the old version and then asks for a restart. It must confirm in
+ *   the same way; a version that rolled back is not started again on its own.
  */
 interface Pointer {
   current: string | null;
@@ -34,6 +38,10 @@ interface Pointer {
   pending: boolean;
   /** Set by "Restart to update": the next start is that update's first start. */
   restart?: boolean;
+  /** Downloaded and verified, not started yet: the next launch starts it. */
+  downloaded?: string | null;
+  /** Rolled back once: only "Restart to update" starts it again. */
+  failed?: string | null;
 }
 
 const MAX_FILE = 64 * 1024 * 1024;
@@ -49,6 +57,8 @@ export class WebPackStore {
   private bundledBySha = new Map<string, string>();
   private staged: WebPackManifest | null = null;
   private confirmTimer: NodeJS.Timeout | null = null;
+  /** Set by `startStaged`: the next window is the new version's first start. */
+  private firstStartFrom: WebPackManifest | null = null;
   state: WebUpdateState = { status: 'idle' };
   rolledBackFrom: string | null = null;
 
@@ -63,11 +73,18 @@ export class WebPackStore {
     await mkdir(this.versionsDir, { recursive: true });
     const b = await this.readManifestFile(join(this.bundledDir, 'desktop/manifest.json'), false);
     for (const f of b?.files ?? []) this.bundledBySha.set(f.sha256, f.path);
-    const ptr = await this.pointer();
+    let ptr = await this.pointer();
     let m: WebPackManifest | null = null;
     if (ptr.current && ptr.current !== b?.version) m = await this.loadVersion(ptr.current);
     // A newer app install can bundle a newer pack than the one downloaded earlier.
     if (m && b && b.builtAt > m.builtAt) m = null;
+    const from = m ?? b;
+    const next = ptr.pending || !from ? null : await this.startable(ptr.downloaded, from, ptr.failed);
+    if (next && from) {
+      // A downloaded update starts now, exactly as if "Restart to update" had been clicked.
+      ptr = { ...ptr, current: next.version, previous: from.version, pending: true, restart: true };
+      m = next;
+    }
     if (ptr.pending && m && ptr.restart) {
       // First start after "Restart to update": run the new version; it must confirm in time.
       const prev = ptr.previous === b?.version ? b : ptr.previous ? await this.loadVersion(ptr.previous) : b;
@@ -79,8 +96,9 @@ export class WebPackStore {
     if (ptr.pending && m) {
       // The app quit before the page confirmed the new version: treat as failed.
       this.rolledBackFrom = m.version;
+      const failed = m.version;
       m = ptr.previous ? await this.loadVersion(ptr.previous) : null;
-      await this.writePointer({ current: m?.version ?? null, previous: null, pending: false });
+      await this.writePointer({ current: m?.version ?? null, previous: null, pending: false, failed });
     }
     this.setActive(m ?? b);
   }
@@ -153,6 +171,7 @@ export class WebPackStore {
       }
       await writeFile(join(this.versionsDir, `${safe(next.version)}.json`), JSON.stringify(next));
       this.staged = next;
+      await this.writePointer({ ...(await this.pointer()), downloaded: next.version });
       return this.readyState(next);
     } catch (e) {
       return quiet ? this.state : this.set({ status: 'error', message: (e as Error).message });
@@ -163,13 +182,45 @@ export class WebPackStore {
   async stageForRestart(): Promise<boolean> {
     const next = this.staged;
     if (!next || !this.active) return false;
+    this.staged = null;
     await this.writePointer({
+      ...(await this.pointer()),
       current: next.version,
       previous: this.active.version,
       pending: true,
       restart: true,
     });
     return true;
+  }
+
+  /**
+   * No window is open (macOS keeps the app running): the downloaded version becomes current
+   * now, with no restart, and the next window is its first start.
+   */
+  async startStaged() {
+    const next = this.staged;
+    const from = this.active;
+    if (!next || !from || this.state.status !== 'ready') return;
+    // Switch before anything awaits: a window opened right now must already get the new files.
+    this.staged = null;
+    this.setActive(next);
+    this.firstStartFrom = from;
+    this.set({ status: 'idle' });
+    await this.writePointer({
+      ...(await this.pointer()),
+      current: next.version,
+      previous: from.version,
+      pending: true,
+      restart: true,
+    });
+  }
+
+  /** A window opens: after `startStaged` its page must confirm the new version in time. */
+  windowOpened() {
+    const from = this.firstStartFrom;
+    if (!from || !this.active) return;
+    this.firstStartFrom = null;
+    this.armConfirm(from, this.active.version);
   }
 
   /** The page of `version` must call `ready` in time, or `previous` comes back. */
@@ -184,7 +235,9 @@ export class WebPackStore {
     clearTimeout(this.confirmTimer);
     this.confirmTimer = null;
     const ptr = await this.pointer();
-    await this.writePointer({ ...ptr, pending: false });
+    const downloaded = ptr.downloaded === ptr.current ? null : ptr.downloaded;
+    const failed = ptr.failed === ptr.current ? null : ptr.failed;
+    await this.writePointer({ ...ptr, pending: false, restart: false, downloaded, failed });
     this.rolledBackFrom = null;
     this.onState();
     void this.gc(ptr);
@@ -193,7 +246,7 @@ export class WebPackStore {
   private async rollback(previous: WebPackManifest, failed: string) {
     this.confirmTimer = null;
     this.rolledBackFrom = failed;
-    await this.writePointer({ current: previous.version, previous: null, pending: false });
+    await this.writePointer({ current: previous.version, previous: null, pending: false, failed });
     this.setActive(previous);
     this.set({ status: 'idle' });
     this.reloadAll();
@@ -279,6 +332,14 @@ export class WebPackStore {
     }
   }
 
+  /** The downloaded version `v`, if it can start now: complete, newer, and not rolled back. */
+  private async startable(v: string | null | undefined, from: WebPackManifest, failed?: string | null) {
+    if (!v || v === failed || v === from.version) return null;
+    const m = await this.loadVersion(v);
+    if (!m || m.builtAt <= from.builtAt || compareVersions(app.getVersion(), m.minShell) < 0) return null;
+    return m;
+  }
+
   private async loadVersion(v: string): Promise<WebPackManifest | null> {
     try {
       const m = JSON.parse(
@@ -305,10 +366,10 @@ export class WebPackStore {
     await rename(tmp, this.pointerFile);
   }
 
-  /** Keep the files of the current and previous versions; drop everything else. */
+  /** Keep the files of the current, previous and downloaded versions; drop everything else. */
   private async gc(ptr: Pointer) {
     const keep = new Set<string>();
-    for (const v of [ptr.current, ptr.previous]) {
+    for (const v of [ptr.current, ptr.previous, ptr.downloaded]) {
       const m = v ? await this.loadVersion(v) : null;
       for (const f of m?.files ?? []) keep.add(f.sha256);
     }
@@ -317,7 +378,7 @@ export class WebPackStore {
       if (!keep.has(name)) await rm(join(this.cas, name), { force: true });
     for (const name of await readdir(this.versionsDir)) {
       const v = name.replace(/\.json$/, '');
-      if (v !== safe(ptr.current ?? '') && v !== safe(ptr.previous ?? ''))
+      if (![ptr.current, ptr.previous, ptr.downloaded].some((k) => k && safe(k) === v))
         await rm(join(this.versionsDir, name), { force: true });
     }
   }

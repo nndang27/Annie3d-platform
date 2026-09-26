@@ -23,6 +23,14 @@ Plan and research: `docs/DESKTOP_APP_PLAN.md`, `docs/DESKTOP_APP_RESEARCH.md`.
     quits and starts again into it, with no "what's new" message. If the new version does not
     confirm within 20 s (`ANNIE3D_CONFIRM_MS`), the next start rolls back. Unsigned or
     tampered manifests are refused. `ANNIE3D_RELAUNCH=0` quits without relaunching (tests).
+  - Without the click, a downloaded update starts with the next launch (shell 0.3.2, as Chrome
+    and VS Code do). On macOS, where the app keeps running with no window, it also starts with
+    the next window once every window was closed. Opening the app or a board file therefore never
+    shows the old version followed by the pill. Before 0.3.2 only the click switched versions:
+    every launch, including a double-clicked `.annie3d`, started the last version that had been
+    restarted into. The installed app ran pack 383dd7f while d652a66 and six older packs sat
+    downloaded. The same 20 s confirmation applies. A version that rolled back is not started
+    again on its own (`failed` in `current.json`).
   - Live test on the installed app (2026-09-25, 0.2.0, pack 033d523 → 6bfb30b): CI finished
     12:37:20Z, the pill appeared at 12:37:32 without any user action; after the click the old
     process was gone in 0.3 s, the new one was up in 0.3 s and the board was on screen at 0.8 s

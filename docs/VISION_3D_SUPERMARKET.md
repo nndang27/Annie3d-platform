@@ -1,6 +1,6 @@
 # Annie 3D vision: the 3D supermarket
 
-Status: founder decision record, 2026-09-26. **Supersedes the positioning in
+Status: founder decision record, 2026-09-26 (updated same day: 3D in video at P2; ChatGPT ads, robot sim twins and VR at P3). **Supersedes the positioning in
 `MVP_STRATEGY.md` §1–2** ("3D advertising workspace"). 3D ads are now one aisle of a larger
 store. `MVP_VERTICAL_WORKFLOWS.md` still holds the node detail for the 3D ads aisle.
 
@@ -46,8 +46,9 @@ Slogans in use (English, keep the wording):
 | Real-world scale | True size in metres from four photos: structure-from-motion camera poses, then gradient descent fits the metric scale | Own | P0 | Working code held by the founder; not yet a service. Get the code and its provenance from the founder before wiring |
 | Prompt editing | Point, paint or lasso a region, then describe the change; only the selection changes; each edit is a new version | Own | P1 | Region-select UI live in the 3D editor; edit engine not wired |
 | Image→CAD + 2D drawings | Editable parametric CAD of man-made objects from photos, plus dimensioned 2D sketches | Own | P1 | In research (main repo image-to-CAD pipeline) |
-| Multi-view assembly | Places parts and objects where they belong (a phone's parts inside its frame, props where a prompt asks), using spatial perception from many cameras | Own | P2 | Not started; highest-risk research |
+| Multi-part assembly | Places parts and objects where they belong (a phone's parts inside its frame, props where a prompt asks), using spatial perception from many cameras | Own | P2 | Not started; highest-risk research |
 | Material physics | Crumple, crush, stretch until it tears; toughness and gloss per material | Own | P2 | Not started; built first for packaging |
+| Camera match | Tracks the camera in real footage, estimates depth, light and shadow so a 3D render sits in the shot | Own | P2 | Not started; built for 3D in video (depth/normal research in the main repo may help) |
 
 Image→Mesh vs Image→CAD: use Mesh for organic, textured things (a dog, a plush toy, food, a
 statue). Use CAD for man-made objects that must measure right (a bottle, a bracket, a phone
@@ -65,7 +66,9 @@ Image→Mesh and Image→CAD are both an engine and an aisle of their own.
 | 04 3D ads | E-commerce brands: home goods, then tech, then jewelry | P1 | Sub-branch of Mesh/CAD |
 | 05 Image→CAD | Engineers, makers, small factories | P1 | Aisle + engine |
 | 06 Packaging | Packaging plants and brand teams | P2 | Separate aisle |
-| 07 Concept explainers | Teachers, trainers, technical sales | P3 | Separate aisle, low priority |
+| 07 3D in video | Brands and agencies making social ads | P2 | Separate aisle, same priority as packaging |
+| 08 Concept explainers | Teachers, trainers, technical sales | P3 | Separate aisle, low priority |
+| Later: ChatGPT ads, robot sim twins, VR and smart glasses | — | P3 | Low priority, scoped after P0–P2 ship |
 | Architecture | — | Future | Out of version 1 scope |
 
 ### 01 Image→Mesh (P0)
@@ -82,7 +85,7 @@ until supplier engines are wired. Earliest business revenue.
 ### 03 Previz (P0)
 Block out a scene with rough shapes (a person is a cylinder), move them across the floor,
 draw the camera path, and export a **handoff pack** any AI video tool or LLM can use. We do
-not generate video. Needs: Image→Mesh for quick props; multi-view assembly later for
+not generate video. Needs: Image→Mesh for quick props; multi-part assembly later for
 layouts from a prompt. Status: not started; handoff formats researched (section 8).
 Competitor: Higgsfield 3D Jutsu does blocking-to-video but pushes to Higgsfield's own
 video; our angle is a neutral pack for every platform.
@@ -107,11 +110,28 @@ Phase 2: flexible pouches (a snack bag must crumple, crush, stretch until it tea
 toughness and gloss per material). Key link: **Image→CAD's 2D drawing is the die-line**
 that packaging plants need. Tearing and crumpling are offline simulation, not real-time web.
 
-### 07 Concept explainers (P3)
+### 07 3D in video (P2)
+Drop a 3D product into real footage so it looks like it was really there (the "fake
+out-of-home" format: a giant product over a city crossing). Version 1: upload a clip, place
+the product; we track the camera, match light and shadow, and render the product into the
+shot. Boundary: we render and composite our 3D into the customer's footage; we never
+generate the footage. Needs: Mesh or CAD, real-world scale, camera match. Agencies report
+weeks per spot because tracking and compositing are slow. Status: not started.
+
+### 08 Concept explainers (P3)
 Step-by-step 3D scenes people rotate, label and share by link (for example the four strokes
 of an engine). Same technology as previz, different market, so a separate aisle. Needs: the
-previz engine, multi-view assembly, Image→Mesh. Note: Gemini, ChatGPT and Claude already
+previz engine, multi-part assembly, Image→Mesh. Note: Gemini, ChatGPT and Claude already
 make free, one-off interactive 3D answers; our angle is scenes people build, edit and share.
+
+### Later aisles (P3)
+- **ChatGPT ads**: ChatGPT shows shopping ads (US pilot 2026-02-09, self-serve 2026-05-05,
+  product carousels from 2026-08). No 3D format yet; we supply product visuals made from
+  the same 3D model as the ads aisle. Builds on: 3D ads, Mesh or CAD.
+- **Robot sim twins**: rooms and objects at true scale, exported as USD for robot
+  simulators such as NVIDIA Isaac Sim. Builds on: scale, CAD, multi-part assembly.
+- **VR and smart glasses**: products and scenes for Meta Quest and similar headsets.
+  Builds on: Mesh or CAD, scale, Showroom.
 
 ## 5. Dependency graph
 
@@ -124,8 +144,9 @@ flowchart TD
   scale[Real-world scale · P0]
   edit[Prompt editing · P1]
   cad[Image→CAD + 2D drawings · P1]
-  asm[Multi-view assembly · P2]
+  asm[Multi-part assembly · P2]
   phys[Material physics · P2]
+  cam[Camera match · P2]
   base --> mesh
   base --> scale
   mesh --> edit
@@ -137,6 +158,9 @@ flowchart TD
   mesh --> phys
   cad --> phys
   scale --> phys
+  mesh --> cam
+  cad --> cam
+  scale --> cam
 
   aMesh[Aisle 01 Image→Mesh · P0]
   aShow[Aisle 02 Showroom · P0]
@@ -144,7 +168,8 @@ flowchart TD
   aAds[Aisle 04 3D ads · P1]
   aCad[Aisle 05 Image→CAD · P1]
   aPack[Aisle 06 Packaging · P2]
-  aEdu[Aisle 07 Explainers · P3]
+  aVid[Aisle 07 3D in video · P2]
+  aEdu[Aisle 08 Explainers · P3]
   mesh --> aMesh
   mesh --> aShow
   scale --> aShow
@@ -159,6 +184,10 @@ flowchart TD
   cad --> aPack
   scale --> aPack
   phys --> aPack
+  cam --> aVid
+  scale --> aVid
+  mesh --> aVid
+  cad --> aVid
   aPrev --> aEdu
   asm --> aEdu
   mesh --> aEdu
@@ -167,18 +196,19 @@ flowchart TD
 What each aisle needs (Needs = required at launch; Either = Mesh or CAD, whichever fits the
 product; Later = an upgrade after launch):
 
-| Aisle | When | Mesh | Scale | CAD | Prompt edit | Assembly | Physics |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Image→Mesh | P0 | Needs | — | — | Later | — | — |
-| Showroom | P0 | Needs | Needs | Later | — | — | — |
-| Previz | P0 | Needs | — | — | Later | Later | — |
-| 3D ads | P1 | Either | Needs | Either | Needs | Later (exploded views) | — |
-| Image→CAD | P1 | — | Needs | Needs | Needs | — | — |
-| Packaging | P2 | Later | Needs | Needs | — | — | Needs |
-| Concept explainers | P3 | Needs | — | — | — | Needs | — |
+| Aisle | When | Mesh | Scale | CAD | Prompt edit | Assembly | Physics | Camera match |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Image→Mesh | P0 | Needs | — | — | Later | — | — | — |
+| Showroom | P0 | Needs | Needs | Later | — | — | — | — |
+| Previz | P0 | Needs | — | — | Later | Later | — | — |
+| 3D ads | P1 | Either | Needs | Either | Needs | Later (exploded views) | — | — |
+| Image→CAD | P1 | — | Needs | Needs | Needs | — | — | — |
+| Packaging | P2 | Later | Needs | Needs | — | — | Needs | — |
+| 3D in video | P2 | Either | Needs | Either | Later | — | — | Needs |
+| Concept explainers | P3 | Needs | — | — | — | Needs | — | — |
 
-Explainers also reuse the previz engine. Critical path: Image→CAD and multi-view assembly
-gate five of the seven aisles' full versions. Scale and CAD are the most reused engines.
+Explainers also reuse the previz engine; the later aisles are mapped once scoped. Critical path: Image→CAD and multi-part assembly
+gate the full versions of five of the eight aisles. Scale and CAD are the most reused engines.
 
 ## 6. Build order
 
@@ -186,8 +216,8 @@ gate five of the seven aisles' full versions. Scale and CAD are the most reused 
 | --- | --- | --- |
 | P0 now | Image→Mesh (supplier APIs), real-world scale | Image→Mesh, Showroom, Previz (Seedance pack first) |
 | P1 next | Prompt editing, Image→CAD | 3D ads (home → tech → jewelry), Image→CAD |
-| P2 later | Multi-view assembly, material physics | Packaging (rigid, then flexible), exploded tech ads |
-| P3 after | — | Concept explainers; architecture is future scope |
+| P2 later | Multi-part assembly, material physics, camera match | Packaging (rigid, then flexible), 3D in video, exploded tech ads |
+| P3 after | — | Concept explainers, ChatGPT ads, robot sim twins, VR; architecture is future scope |
 
 Do not do: generate video, images or voice; train our own 3D generation model; integrate
 dozens of suppliers before a few work end to end.
@@ -205,7 +235,7 @@ dozens of suppliers before a few work end to end.
 | Image→CAD + 2D drawings | In research |
 | Previz handoff pack | Designed, not built |
 | User-made nodes, 3D harness | Next |
-| Multi-view assembly, material physics | Not started |
+| Multi-part assembly, material physics, camera match | Not started |
 
 ## 8. Previz handoff pack (research, September 2026)
 
@@ -243,7 +273,7 @@ Re-check these limits before building; the platforms change fast.
 
 - Prompt editing should be **prompt-first, not prompt-only**: keep a minimal move / rotate /
   scale gizmo and camera orbit; precise moves are faster by hand.
-- Multi-view assembly is the riskiest engine. Previz must ship with manual placement.
+- Multi-part assembly is the riskiest engine. Previz must ship with manual placement.
 - Pricing (credits, creator plan, business plans) is not set; decide after 5–10 design
   partners.
 - The market size we can reach must be computed bottom-up; do not invent it.
@@ -256,5 +286,5 @@ Re-check these limits before building; the platforms change fast.
   `apps/web/src/worker/agents/registry.ts`.
 - Showroom: `apps/web/src/client/sim/SimulatorOverlay.tsx` and the `SimRoom` Durable Object.
 - Image→CAD research and harness work: main repo `3Dads_Agent_OS` (outside this repo).
-- Presentation of this vision (26 slides):
+- Presentation of this vision (28 slides):
   https://claude.ai/artifact/6pT2mfJFjS1nYp17zuWA8y (private to the founder unless shared).

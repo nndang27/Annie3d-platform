@@ -153,6 +153,15 @@ export class WebPackStore {
         return quiet ? this.state : this.set({ status: 'up-to-date' });
       if (compareVersions(app.getVersion(), next.minShell) < 0)
         return this.set({ status: 'shell-required', version: next.version, minShell: next.minShell });
+      if (sameFiles(this.active, next)) {
+        // One commit built twice (the app's own bundle and the deploy): a newer stamp, the same
+        // files. Nothing to update, so no pill; the newer stamp is kept for later checks.
+        await writeFile(join(this.versionsDir, `${safe(next.version)}.json`), JSON.stringify(next));
+        await this.writePointer({ ...(await this.pointer()), current: next.version, downloaded: null });
+        this.staged = null;
+        this.setActive(next);
+        return this.set({ status: 'up-to-date' });
+      }
       if (this.staged?.version === next.version) return this.readyState(next);
       const missing = [];
       for (const f of next.files) if (!(await this.locate(f.sha256))) missing.push(f);
@@ -383,6 +392,11 @@ export class WebPackStore {
     }
   }
 }
+
+const sameFiles = (a: WebPackManifest, b: WebPackManifest) => {
+  const have = new Map(a.files.map((f) => [f.path, f.sha256]));
+  return a.files.length === b.files.length && b.files.every((f) => have.get(f.path) === f.sha256);
+};
 
 const safe = (v: string) => v.replace(/[^A-Za-z0-9._-]/g, '_');
 

@@ -138,6 +138,19 @@ test('macOS: with every window closed, the next window starts the downloaded upd
   expect((await win.evaluate(() => (window as any).annieDesktop.info())).webVersion).toBe(m.version);
 });
 
+test('the same files built again (a newer stamp) are not an update: no pill', async () => {
+  await launch({ ANNIE3D_POLL_MS: '1000' });
+  const m = builtManifest();
+  m.version = `${m.version}-rebuilt`;
+  m.builtAt += 1000;
+  site.manifest = signed(m);
+  await expect
+    .poll(() => win.evaluate(() => (window as any).annieDesktop.updates.get()), { timeout: 15_000 })
+    .toMatchObject({ current: m.version, web: { status: 'up-to-date' } });
+  await expect(win.getByTestId('update-pill')).toHaveCount(0);
+  expect(site.requests.filter((r) => r.startsWith('/assets/'))).toEqual([]);
+});
+
 test('a manifest with a bad signature is refused', async () => {
   const { m } = nextPack('evil');
   site.manifest = signed(m, true);

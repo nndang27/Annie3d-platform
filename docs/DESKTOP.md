@@ -31,6 +31,10 @@ Plan and research: `docs/DESKTOP_APP_PLAN.md`, `docs/DESKTOP_APP_RESEARCH.md`.
     restarted into. The installed app ran pack 383dd7f while d652a66 and six older packs sat
     downloaded. The same 20 s confirmation applies. A version that rolled back is not started
     again on its own (`failed` in `current.json`).
+  - A manifest with a newer stamp but the same files is not an update: the app's own bundle and
+    the deploy build the same commit twice (0 of 46 files differ). The app adopts the newer
+    stamp without a download or a pill. Before, a freshly installed app showed "Update
+    available" for nothing.
   - Live test on the installed app (2026-09-25, 0.2.0, pack 033d523 → 6bfb30b): CI finished
     12:37:20Z, the pill appeared at 12:37:32 without any user action; after the click the old
     process was gone in 0.3 s, the new one was up in 0.3 s and the board was on screen at 0.8 s

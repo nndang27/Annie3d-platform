@@ -18,7 +18,7 @@ import { memo, type ReactNode, useMemo, useRef, useState } from 'react';
 import { api } from '../api/client';
 import { useMe } from '../api/me';
 import { insertStarter } from '../canvas/actions';
-import { useT } from '../i18n';
+import { boardTitle, useT } from '../i18n';
 import { signOut } from '../lib/auth';
 import { openBoardFilePicker } from '../lib/boardFile';
 import { docs, isDoc, openBoardFile, saveDocument, useDoc, webFiles, withCloud } from '../lib/doc';
@@ -88,9 +88,9 @@ function Title() {
     <input
       className="title-input"
       aria-label={t('topbar.title')}
-      value={draft ?? title}
+      value={draft ?? boardTitle(t, title)}
       maxLength={120}
-      onFocus={() => setDraft(title)}
+      onFocus={() => setDraft(boardTitle(t, title))}
       onChange={(e) => setDraft(e.target.value)}
       onBlur={() => void commit()}
       onKeyDown={(e) => {

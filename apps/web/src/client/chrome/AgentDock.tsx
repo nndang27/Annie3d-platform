@@ -1,6 +1,6 @@
 import { ArrowUp, Check, X } from 'lucide-react';
 import { useState } from 'react';
-import { useT } from '../i18n';
+import { nodeName, useT } from '../i18n';
 import { useBoard } from '../store/board';
 import { useUi } from '../store/ui';
 import { useAgent } from './useAgent';
@@ -106,7 +106,7 @@ export function AgentDockView({
           <div className="chips">
             {chips.slice(0, 6).map((n) => (
               <span key={n.id} className="chip">
-                {n.label ?? t(`node.${n.kind}`)}
+                {nodeName(t, n)}
               </span>
             ))}
             {chips.length > 6 && <span className="chip">+{chips.length - 6}</span>}

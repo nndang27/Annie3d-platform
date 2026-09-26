@@ -134,8 +134,9 @@ test.describe('every text is translated (pseudo-locale)', () => {
     await expect(overlay).toHaveCount(0);
 
     expect(all).toEqual([]);
-    // Google's sign-in script logs an abort when the sign-in prompt closes (third-party, not ours).
-    expect(errors.filter((e) => !/GSI_LOGGER|request has been aborted/.test(e))).toEqual([]);
+    // Google's sign-in script logs an abort when the sign-in prompt closes, and WebKit a benign
+    // ResizeObserver notice (both not ours; helpers.ts ignores the latter too).
+    expect(errors.filter((e) => !/GSI_LOGGER|request has been aborted|ResizeObserver/.test(e))).toEqual([]);
   });
 
   test('signed in: account, credits, run and export dialogs, and server messages', async ({ page }) => {
@@ -219,4 +220,30 @@ test.describe('every language fits', () => {
       expect(problems).toEqual([]);
     });
   }
+});
+
+test('picking a language switches the page at once and is remembered', async ({ page }) => {
+  await openCanvas(page);
+  await expect(page.getByTestId('run-all')).toContainText('Run all');
+  await page.getByTestId('language-button').click();
+  await expect(page.getByTestId('language-menu').getByRole('menuitemradio')).toHaveText([
+    'English',
+    'Tiếng Việt',
+    'Français',
+    'Português',
+    'Español',
+    'Italiano',
+    'Русский',
+    '한국어',
+    '日本語',
+    '简体中文',
+  ]);
+  await page.getByTestId('language-vi').click();
+  await expect(page.getByTestId('run-all')).toContainText('Chạy tất cả');
+  expect(await page.evaluate(() => document.documentElement.lang)).toBe('vi');
+  await page.reload();
+  await expect(page.getByTestId('run-all')).toContainText('Chạy tất cả');
+  await page.getByTestId('language-button').click();
+  await page.getByTestId('language-en').click();
+  await expect(page.getByTestId('run-all')).toContainText('Run all');
 });

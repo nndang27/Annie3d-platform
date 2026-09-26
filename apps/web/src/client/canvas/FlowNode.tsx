@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Popover } from '../chrome/Popover';
-import { useT } from '../i18n';
+import { nodeName, useT } from '../i18n';
 import { withCloud } from '../lib/doc';
 import { pickImage } from '../lib/media';
 import { perfStart } from '../lib/perf';
@@ -66,7 +66,6 @@ const PORT_GAP = 38;
 const MAX_REFS = 5;
 
 /** A node's name: the one the person gave it, else its kind's name in the current language. */
-const nodeName = (t: Translator, n: Pick<NodeRecord, 'kind' | 'label'>) => n.label ?? t(`node.${n.kind}`);
 
 /** Screen-reader name of a port: its name and the data types it takes ("Model or scene (3D model or Scene)"). */
 function portName(t: Translator, port: string, types: readonly PortType[]) {

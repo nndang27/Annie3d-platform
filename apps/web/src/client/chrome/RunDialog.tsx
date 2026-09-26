@@ -2,7 +2,7 @@ import { NODE_DEFS } from '@annie3d/contracts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { ApiError, api } from '../api/client';
-import { t as tr, useT } from '../i18n';
+import { nodeName, t as tr, useT } from '../i18n';
 import { perfStart } from '../lib/perf';
 import { followRun } from '../lib/runSocket';
 import { useBoard } from '../store/board';
@@ -167,5 +167,5 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
 }
 
 function label(l: string | null | undefined, kind: keyof typeof NODE_DEFS) {
-  return l ?? tr(`node.${kind}`);
+  return nodeName(tr, { kind, label: l });
 }

@@ -5,7 +5,7 @@ import { ArrowLeft, Brush, Camera, Columns2, Eraser, Lasso, Pause, Play, Rotate3
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ApiError, api } from '../api/client';
 import { attachRun } from '../chrome/RunDialog';
-import { rich, t as tNow, useT } from '../i18n';
+import { nodeName, rich, t as tNow, useT } from '../i18n';
 import { afterNextPaint } from '../lib/afterNextPaint';
 import { hasFileResult, isDoc, withCloud } from '../lib/doc';
 import { perfEnd } from '../lib/perf';
@@ -177,7 +177,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
   }, [mode, node]);
 
   if (!node) return null;
-  const label = node.label ?? t(`node.${node.kind}`);
+  const label = nodeName(t, node);
   const shownNo = shown?.versionNo ?? 1;
 
   const makeCurrent = () => {

@@ -1,5 +1,5 @@
 import { type AssetDto, NODE_DEFS, SIM_ENVIRONMENTS, type SimEnvironment } from '@annie3d/contracts';
-import { t } from '../i18n';
+import { nodeName, t } from '../i18n';
 import { useBoard } from '../store/board';
 
 /** Name and tooltip of each place, in the current language (read when rendered). */
@@ -50,7 +50,8 @@ export function simInputs(nodeId: string): SimInputs {
       (subjectNode?.label && subjectNode.label !== NODE_DEFS[subjectNode.kind].label
         ? subjectNode.label
         : '') ||
-      node?.label ||
+      // A name the person typed; a product-written default ("Simulation") is not a product name.
+      (node?.label && nodeName(t, node) === node.label ? node.label : '') ||
       t('sim.product.default'),
     glb: subject?.kind === 'model3d' ? subject.urls.original : null,
     poster: subject ? (subject.urls.poster ?? subject.urls.thumb ?? subject.urls.original) : null,

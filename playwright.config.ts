@@ -38,13 +38,13 @@ export default defineConfig({
     {
       name: 'webkit',
       testMatch:
-        /(canvas|runs|editor|share-export|billing|agent-reel|uploads|simulation|responsive)\.spec\.ts/,
+        /(canvas|runs|editor|share-export|billing|agent-reel|uploads|simulation|responsive|i18n)\.spec\.ts/,
       use: { ...devices['Desktop Safari'], viewport: { width: 1440, height: 900 } },
     },
     {
       name: 'firefox',
       testMatch:
-        /(canvas|runs|editor|share-export|billing|agent-reel|uploads|simulation|responsive)\.spec\.ts/,
+        /(canvas|runs|editor|share-export|billing|agent-reel|uploads|simulation|responsive|i18n)\.spec\.ts/,
       use: { ...devices['Desktop Firefox'], viewport: { width: 1440, height: 900 } },
     },
   ],

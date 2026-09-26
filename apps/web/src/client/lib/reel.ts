@@ -7,7 +7,7 @@ import {
   PORT_COLOR,
   type RunEvent,
 } from '@annie3d/contracts';
-import { t } from '../i18n';
+import { nodeName, t } from '../i18n';
 
 /**
  * F12 process reel, recorded in the browser: 540×960 (9:16), the finished ad on top and a
@@ -293,7 +293,7 @@ export async function recordReel(
       }
       ctx.fillStyle = '#c8cbd0';
       ctx.font = '600 9px system-ui, sans-serif';
-      ctx.fillText((n.label ?? words.kind[n.kind]).slice(0, 18), b.x + 5, b.y + 10);
+      ctx.fillText(nodeName(t, n).slice(0, 18), b.x + 5, b.y + 10);
       if (running && s) {
         const last = [...s.progress].reverse().find((p) => p.t <= runT);
         const p = last?.p ?? 0.05;

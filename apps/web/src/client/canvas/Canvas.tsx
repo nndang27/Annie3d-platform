@@ -21,7 +21,7 @@ import {
   type Viewport,
 } from '@xyflow/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useT } from '../i18n';
+import { nodeName, useT } from '../i18n';
 import { importBoardFile, isBoardFile, setViewCentre } from '../lib/boardFile';
 import { markBoardReady } from '../lib/perf';
 import { preloadEditorWhenIdle } from '../lib/preload';
@@ -157,7 +157,7 @@ export function Canvas() {
         const dst = graph.nodes.get(e.target);
         const out = src ? NODE_DEFS[src.kind].output?.type : undefined;
         // Screen readers hear node names, not React Flow's default "Edge from <id> to <id>".
-        const name = (n: typeof src) => (n ? (n.label ?? t(`node.${n.kind}`)) : '');
+        const name = (n: typeof src) => (n ? nodeName(t, n) : '');
         return {
           ...toRfEdge(e, out ?? 'file'),
           ariaLabel: t('canvas.edge.label', { from: name(src), to: name(dst) }),

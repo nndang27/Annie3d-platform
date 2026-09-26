@@ -22,6 +22,7 @@ import { and, asc, eq, sql } from 'drizzle-orm';
 import { editEngineFor, engineFor } from '../engines/registry';
 import { GateFailure } from '../engines/simulator';
 import type { Env } from '../env';
+import { asLocale, errorText, LocalizedError, type Translator, tDynamic, translator } from '../lib/i18n';
 import { bucketOf } from './assets';
 import { applyBatch, computeInputHashes, loadGraph, versionDtos } from './boards';
 
@@ -59,6 +60,8 @@ export async function executeRun(env: Env, db: Db, runId: string, out: Emitter, 
     await out.emit({ type: 'run.started' });
   }
   const steps = await db.select().from(runSteps).where(eq(runSteps.runId, runId)).orderBy(asc(runSteps.seq));
+  // Messages go to the person who started the run, in the language of that request.
+  const t = translator(asLocale((run.params as { locale?: unknown }).locale));
   const failed = new Set<string>();
   for (const s of steps)
     if (s.nodeId && (s.status === 'failed' || s.status === 'skipped')) failed.add(s.nodeId);
@@ -78,13 +81,13 @@ export async function executeRun(env: Env, db: Db, runId: string, out: Emitter, 
       continue;
     }
     try {
-      await runStep(env, db, run, step, graph, out, signal);
+      await runStep(env, db, run, step, graph, out, signal, t);
     } catch (e) {
       if (signal.aborted || (e as Error).name === 'AbortError') break;
       failed.add(step.nodeId);
       const gate = e instanceof GateFailure ? e.gate : null;
       const code = e instanceof InputMissing ? 'input_missing' : gate ? 'gate_failed' : 'engine_error';
-      const message = (e as Error).message.slice(0, 500);
+      const message = errorText(e, t).slice(0, 500);
       await finishStep(db, step, 'failed', { errorCode: code, errorMessage: message, gate });
       await out.emit({
         type: 'step.failed',
@@ -100,7 +103,8 @@ export async function executeRun(env: Env, db: Db, runId: string, out: Emitter, 
   await finalize(db, run, out, signal.aborted);
 }
 
-class InputMissing extends Error {}
+/** A missing input: its text is a key, shown in the run's language. */
+class InputMissing extends LocalizedError {}
 
 async function finishStep(db: Db, step: StepRow, status: StepRow['status'], f: Partial<StepRow> = {}) {
   await db
@@ -117,6 +121,7 @@ async function runStep(
   graph: Graph,
   out: Emitter,
   signal: AbortSignal,
+  t: Translator,
 ) {
   const nodeId = step.nodeId!;
   const node = graph.nodes.get(nodeId)!;
@@ -160,13 +165,17 @@ async function runStep(
     .where(eq(runSteps.id, step.id));
   await out.emit({ type: 'step.started', nodeId });
   const simSpeed = (run.params as { simSpeed?: number }).simSpeed;
-  const engine = edit ? editEngineFor(env, node.kind, { simSpeed }) : engineFor(env, node.kind, { simSpeed });
-  if (!engine) throw new Error(`No engine for ${node.kind}`);
+  const engine = edit
+    ? editEngineFor(env, node.kind, { simSpeed, t })
+    : engineFor(env, node.kind, { simSpeed, t });
+  if (!engine) throw new LocalizedError('api.run.noEngine', { kind: t(`node.${node.kind}`) });
   const inputs = edit ? [edit.input] : await resolveInputs(db, graph, nodeId);
   if (!edit) {
     for (const port of NODE_DEFS[node.kind].inputs) {
       if (port.required && !inputs.some((i) => i.port === port.id))
-        throw new InputMissing(`Connect "${port.label}" first`);
+        throw new InputMissing('api.run.connectFirst', {
+          port: tDynamic(t, `port.${node.kind}.${port.id}`, port.label),
+        });
     }
   }
 
@@ -516,11 +525,11 @@ async function finalize(db: Db, run: RunRow, out: Emitter, cancelled: boolean) {
 async function loadEdit(env: Env, db: Db, run: RunRow) {
   const p = run.params as { baseVersionId: string; facesKey: string; instruction: string };
   const base = await db.query.nodeVersions.findFirst({ where: (t, { eq }) => eq(t.id, p.baseVersionId) });
-  if (!base?.outputAssetId) throw new InputMissing('The base version has no model');
+  if (!base?.outputAssetId) throw new InputMissing('api.run.baseHasNoModel');
   const a = await db.query.assets.findFirst({ where: (t, { eq }) => eq(t.id, base.outputAssetId!) });
-  if (!a) throw new InputMissing('The base model file is missing');
+  if (!a) throw new InputMissing('api.run.baseModelMissing');
   const obj = await env.ARTIFACTS.get(p.facesKey);
-  if (!obj) throw new InputMissing('The selection expired; select the region again');
+  if (!obj) throw new InputMissing('api.run.selectionExpired');
   const faces = [...new Uint32Array(await obj.arrayBuffer())];
   const input: ResolvedInput = {
     port: 'base',
@@ -536,9 +545,9 @@ async function loadEdit(env: Env, db: Db, run: RunRow) {
 
 export async function readAsset(env: Env, db: Db, assetId: string): Promise<ArrayBuffer> {
   const a = await db.query.assets.findFirst({ where: (t, { eq }) => eq(t.id, assetId) });
-  if (!a) throw new InputMissing('Input file not found');
+  if (!a) throw new InputMissing('api.run.inputNotFound');
   const obj = await bucketOf(env, a.bucket).get(a.storageKey);
-  if (!obj) throw new InputMissing('Input file missing in storage');
+  if (!obj) throw new InputMissing('api.run.inputMissingInStorage');
   return obj.arrayBuffer();
 }
 

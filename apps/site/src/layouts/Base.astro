@@ -1,42 +1,54 @@
 ---
+import { LOCALES, tagOf } from '@annie3d/i18n';
 import '../styles/site.css';
-import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { basePath, type LocaleProps, localePath, pageT } from '../lib/site';
 
-interface Props {
+interface Props extends LocaleProps {
   title: string;
   description: string;
   noindex?: boolean;
   wide?: boolean;
 }
-const { title, description, noindex = false } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const { title, description, noindex = false, locale } = Astro.props;
+const t = pageT(locale);
+const path = basePath(Astro.url.pathname);
+const canonical = new URL(localePath(locale, path), Astro.site);
+// Every language version of this page, and English for everyone else (x-default).
+const alternates = [
+  ...LOCALES.map((l) => ({ hreflang: l.tag, href: new URL(localePath(l.code, path), Astro.site).href })),
+  { hreflang: 'x-default', href: new URL(localePath('en', path), Astro.site).href },
+];
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={tagOf(locale)} data-locale={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} · Annie 3D</title>
+    <title>{t('site.meta.pageTitle', { title })}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
     {noindex ? <meta name="robots" content="noindex" /> : null}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={tagOf(locale).replace('-', '_')} />
     <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <slot name="head" />
   </head>
   <body>
-    <a href="#main" class="skip-link">Skip to content</a>
-    <Header />
+    <a href="#main" class="skip-link">{t('site.nav.skipToContent')}</a>
+    <Header locale={locale} path={path} />
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    <Footer locale={locale} />
+    <script src="../scripts/lang.ts"></script>
   </body>
 </html>

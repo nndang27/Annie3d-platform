@@ -119,7 +119,7 @@ describe('board store', () => {
     dispatch([{ type: 'node.update', id: model.id, patch: { label: 'lost' } }]);
     await vi.advanceTimersByTimeAsync(300);
     expect(board).toHaveBeenCalledTimes(1);
-    expect(useBoard.getState().graph.nodes.get(model.id)!.label).toBe('3D model');
+    expect(useBoard.getState().graph.nodes.get(model.id)!.label).toBeNull();
   });
 
   it('keeps known versions when the same board resyncs, not across boards', () => {

@@ -12,6 +12,7 @@ import {
 } from '@annie3d/contracts';
 import { create } from 'zustand';
 import { ApiError, api } from '../api/client';
+import { t } from '../i18n';
 import {
   applyRemote,
   loadLocalBoard,
@@ -134,7 +135,7 @@ function desktopHost(id: string, bridge: DocsBridge): DocHost {
     prefix,
     async read() {
       const f = await bridge.read(id);
-      if (!f) throw new Error('This board file is no longer open.');
+      if (!f) throw new Error(t('file.noLongerOpen'));
       const sizes = new Map(f.assets.map((a) => [a.path, a.size]));
       return {
         ...f,
@@ -207,7 +208,7 @@ export function saveDocument(as = false): Promise<boolean> {
     const doc = useDoc.getState().doc;
     if (!doc || !host) return false;
     const rev = revision;
-    patch({ busy: 'Saving…' });
+    patch({ busy: t('file.saving') });
     try {
       const payload = await buildPayload(docRef());
       const suggestedName = doc.path ? doc.name : fileNameFor(useBoard.getState().title);
@@ -224,7 +225,8 @@ export function saveDocument(as = false): Promise<boolean> {
       }
       return true;
     } catch (e) {
-      if ((e as Error).name !== 'AbortError') toast(`Could not save: ${(e as Error).message}`, 'error');
+      if ((e as Error).name !== 'AbortError')
+        toast(t('file.couldNotSave', { reason: (e as Error).message }), 'error');
       return false;
     } finally {
       patch({ busy: null });
@@ -254,15 +256,16 @@ async function saveCopy(
 ): Promise<boolean> {
   const { graph, title } = useBoard.getState();
   if (!graph.nodes.size) {
-    toast('The board is empty');
+    toast(t('file.boardEmpty'));
     return false;
   }
   try {
     const r = await write(await buildPayload(), fileNameFor(title));
-    if (r) toast(`Saved ${r.name}`);
+    if (r) toast(t('file.saved', { name: r.name }));
     return !!r;
   } catch (e) {
-    if ((e as Error).name !== 'AbortError') toast(`Could not save: ${(e as Error).message}`, 'error');
+    if ((e as Error).name !== 'AbortError')
+      toast(t('file.couldNotSave', { reason: (e as Error).message }), 'error');
     return false;
   }
 }
@@ -374,7 +377,7 @@ let attaching: Promise<Attach> | null = null;
 function attachWorkingCopy(need: Need) {
   attaching ??= (async (): Promise<Attach> => {
     const st = useBoard.getState();
-    patch({ busy: 'Preparing to run…' });
+    patch({ busy: t('run.preparing') });
     try {
       let boardId: string;
       try {
@@ -417,7 +420,7 @@ function attachWorkingCopy(need: Need) {
       });
       return { ok: true, idOf };
     } catch (e) {
-      toast(e instanceof Error ? e.message : 'Could not prepare the run', 'error');
+      toast(e instanceof Error ? e.message : t('run.couldNotPrepare'), 'error');
       return { ok: false, signin: false };
     } finally {
       patch({ busy: null });
@@ -432,7 +435,7 @@ async function sendLocalResults(need: Need): Promise<boolean> {
   const st = useBoard.getState();
   const missing = new Set([...readsOf(st.graph, need)].filter((id) => localOnly.has(id)));
   if (!missing.size || !st.boardId) return true;
-  patch({ busy: 'Preparing to run…' });
+  patch({ busy: t('run.preparing') });
   try {
     const payload = await buildPayload(docRef(), { results: missing, nodes: missing });
     const r = await uploadBoardFile(st.boardId, await host!.pack(payload), { x: 0, y: 0 }, 'existing');
@@ -444,7 +447,7 @@ async function sendLocalResults(need: Need): Promise<boolean> {
     for (const id of missing) localOnly.delete(id);
     return true;
   } catch (e) {
-    toast(e instanceof Error ? e.message : 'Could not prepare the run', 'error');
+    toast(e instanceof Error ? e.message : t('run.couldNotPrepare'), 'error');
     return false;
   } finally {
     patch({ busy: null });

@@ -2,11 +2,13 @@ import { NODE_DEFS } from '@annie3d/contracts';
 import { useCallback } from 'react';
 import { deleteNodes, onRunNode, openEditor } from '../canvas/actions';
 import { copySelection, duplicateNodes, hasCopy, pasteNodes } from '../canvas/clipboard';
+import { useT } from '../i18n';
 import { useBoard } from '../store/board';
 import { useUi } from '../store/ui';
 import { Popover } from './Popover';
 
 export function ContextMenu() {
+  const t = useT();
   const menu = useUi((s) => s.contextMenu);
   const close = useCallback(() => useUi.setState({ contextMenu: null }), []);
   if (!menu) return null;
@@ -28,25 +30,25 @@ export function ContextMenu() {
     </button>
   );
   return (
-    <Popover x={menu.x} y={menu.y} onClose={close} label="Canvas menu" testId="context-menu">
+    <Popover x={menu.x} y={menu.y} onClose={close} label={t('menu.canvas')} testId="context-menu">
       <div role="menu">
         {node ? (
           <>
             {NODE_DEFS[node.kind].runnable &&
-              item('Run this node', () => onRunNode(node.id), undefined, 'ctx-run')}
+              item(t('menu.runNode'), () => onRunNode(node.id), undefined, 'ctx-run')}
             {(node.kind === 'model3d' || node.kind === 'upload3d') &&
               node.currentVersionId &&
-              item('Open 3D editor', () => openEditor(node.id))}
+              item(t('menu.openEditor'), () => openEditor(node.id))}
             {(node.kind === 'model3d' || node.kind === 'upload3d' || node.kind === 'export') &&
               node.currentVersionId &&
               item(
-                'Export / download…',
+                t('menu.export'),
                 () => useUi.setState({ dialog: { type: 'export', nodeId: node.id } }),
                 undefined,
                 'ctx-export',
               )}
             {item(
-              'Copy',
+              t('menu.copy'),
               () => {
                 useUi.setState({ selected: new Set(targets) });
                 copySelection();
@@ -54,13 +56,13 @@ export function ContextMenu() {
               '⌘C',
               'ctx-copy',
             )}
-            {item('Duplicate', () => duplicateNodes(targets), '⌘D', 'ctx-duplicate')}
-            {item('Delete', () => deleteNodes(targets), '⌫', 'ctx-delete')}
+            {item(t('menu.duplicate'), () => duplicateNodes(targets), '⌘D', 'ctx-duplicate')}
+            {item(t('menu.delete'), () => deleteNodes(targets), '⌫', 'ctx-delete')}
           </>
         ) : (
           <>
             {item(
-              'Add node…',
+              t('menu.addNode'),
               () =>
                 useUi.setState({ palette: { x: menu.x, y: menu.y, flowX: menu.flowX, flowY: menu.flowY } }),
               'N',
@@ -68,14 +70,19 @@ export function ContextMenu() {
             )}
             {hasCopy() &&
               item(
-                'Paste here',
+                t('menu.paste'),
                 () => pasteNodes(null, () => ({ x: menu.flowX, y: menu.flowY }), true),
                 '⌘V',
                 'ctx-paste',
               )}
             {targets.length > 0 &&
-              item(`Duplicate ${targets.length} selected`, () => duplicateNodes(targets), '⌘D')}
-            {targets.length > 0 && item(`Delete ${targets.length} selected`, () => deleteNodes(targets), '⌫')}
+              item(
+                t('menu.duplicateSelected', { count: targets.length }),
+                () => duplicateNodes(targets),
+                '⌘D',
+              )}
+            {targets.length > 0 &&
+              item(t('menu.deleteSelected', { count: targets.length }), () => deleteNodes(targets), '⌫')}
           </>
         )}
       </div>

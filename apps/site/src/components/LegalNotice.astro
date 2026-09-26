@@ -1,0 +1,21 @@
+---
+import { type LocaleProps, localePath, pageT } from '../lib/site';
+
+interface Props extends LocaleProps {
+  path: string;
+}
+const { locale, path } = Astro.props;
+const t = pageT(locale);
+---
+
+<p class="badge badge-warning">{t('site.legal.draft')}</p>
+{
+  locale !== 'en' && (
+    <p class="legal-reference" data-testid="legal-reference">
+      {t('site.legal.translationNotice')}{' '}
+      <a href={localePath('en', path)} hreflang="en" lang="en">
+        {t('site.legal.readEnglish')}
+      </a>
+    </p>
+  )
+}

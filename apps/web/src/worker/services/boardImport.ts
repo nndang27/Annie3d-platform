@@ -24,11 +24,47 @@ import { nodeVersions } from '@annie3d/db';
 import { eq, inArray } from 'drizzle-orm';
 import { inflateSync } from 'fflate';
 import type { Env } from '../env';
-import { httpError } from '../lib/http';
+import { HttpError, httpError } from '../lib/http';
+import { type MessageKey, tDynamic, translator } from '../lib/i18n';
 import { applyBatch, computeInputHashes, loadBoard, loadGraph, versionDtos } from './boards';
 import { persistVersion } from './runner';
 
 type Db = Parameters<typeof loadBoard>[0];
+
+/** A ZipError raised here, with its message key. */
+class KeyedZipError extends ZipError {
+  constructor(readonly key: MessageKey) {
+    super(tDynamic(translator('en'), key, key));
+  }
+}
+
+/**
+ * ZipError texts come from the shared contracts (English); each maps to its message key so the
+ * person reads it in their language. Unknown texts keep their detail in a generic message.
+ */
+const ZIP_MESSAGES: [RegExp, MessageKey][] = [
+  [/^The file is larger than 2 GB$/, 'api.boardFile.tooLarge'],
+  [/^Not an Annie 3D file$/, 'api.boardFile.notBoardFile'],
+  [/^Multi-part archives are not board files$/, 'api.boardFile.multiPart'],
+  [/^ZIP64 archives are not board files$/, 'api.boardFile.zip64'],
+  [/^The file has too many entries$/, 'api.boardFile.tooManyEntries'],
+  [/^The file is damaged$/, 'api.boardFile.damaged'],
+  [/^Encrypted files are not board files$/, 'api.boardFile.encrypted'],
+  [/^Duplicate entry (?<name>.*)$/s, 'api.boardFile.duplicateEntry'],
+  [/^Unsupported compression$/, 'api.boardFile.unsupportedCompression'],
+  [/^The board description is too large$/, 'api.boardFile.manifestTooLarge'],
+  [/^Unexpected entry (?<name>.*)$/s, 'api.boardFile.unexpectedEntry'],
+  [/^(?<name>.*) is compressed; board files store media as they are$/s, 'api.boardFile.entryCompressed'],
+];
+
+export function zipHttpError(e: ZipError): HttpError {
+  if (e instanceof KeyedZipError) return new HttpError(400, 'bad_request', e.key);
+  for (const [re, key] of ZIP_MESSAGES) {
+    const m = re.exec(e.message);
+    if (m) return new HttpError(400, 'bad_request', key, m.groups ? { ...m.groups } : undefined);
+  }
+  return httpError(400, 'bad_request', 'api.boardFile.unreadable', { reason: e.message });
+}
 
 /**
  * A board file to import, read by range: request bytes already in memory (small files) or an
@@ -45,7 +81,7 @@ export function memorySource(b: Uint8Array): FileSource {
   return {
     size: b.length,
     read: async (o, l) => {
-      if (o + l > b.length) throw new ZipError('The file is damaged');
+      if (o + l > b.length) throw new KeyedZipError('api.boardFile.damaged');
       return b.subarray(o, o + l);
     },
     stream: async (o, l) => new Response(b.subarray(o, o + l)).body!,
@@ -55,7 +91,7 @@ export function memorySource(b: Uint8Array): FileSource {
 export function r2Source(bucket: R2Bucket, key: string, size: number): FileSource {
   const get = async (offset: number, length: number) => {
     const obj = await bucket.get(key, { range: { offset, length } });
-    if (!obj) throw new ZipError('The uploaded file is gone');
+    if (!obj) throw new KeyedZipError('api.boardFile.uploadGone');
     return obj;
   };
   return {
@@ -123,7 +159,7 @@ async function storeEntry(
     ]);
     if (actual !== sha) {
       await env.ARTIFACTS.delete(key);
-      throw httpError(400, 'bad_request', `${e.name} does not match its checksum`);
+      throw httpError(400, 'bad_request', 'api.boardFile.checksum', { name: e.name });
     }
   }
   return { storageKey: key, byteSize: e.size, sha256: sha };
@@ -141,7 +177,7 @@ async function storeBundle(
   let offset = 0;
   for (const m of members) {
     const e = entries.get(m.path);
-    if (!e) throw httpError(400, 'bad_request', `Missing ${m.path}`);
+    if (!e) throw httpError(400, 'bad_request', 'api.boardFile.missingEntry', { path: m.path });
     const w = { name: m.name, method: 0 as const, crc32: e.crc32, compressedSize: e.size, size: e.size };
     const header = localHeader(w);
     parts.push({ e, at: await entryDataOffset(src.read, e), header, w: { ...w, headerOffset: offset } });
@@ -211,14 +247,14 @@ export async function importBoardFile(
       inflateSync(d, { out: new Uint8Array(size) }),
     );
     const parsed = BoardFileManifest.safeParse(JSON.parse(text));
-    if (!parsed.success) throw new ZipError('Not an Annie 3D file (or a newer version)');
+    if (!parsed.success) throw new KeyedZipError('api.boardFile.newerVersion');
     m = parsed.data;
   } catch (e) {
-    if (e instanceof ZipError || e instanceof SyntaxError)
-      throw httpError(400, 'bad_request', e instanceof ZipError ? e.message : 'Not an Annie 3D file');
+    if (e instanceof ZipError) throw zipHttpError(e);
+    if (e instanceof SyntaxError) throw httpError(400, 'bad_request', 'api.boardFile.notBoardFile');
     throw e;
   }
-  if (!m.nodes.length) throw httpError(400, 'bad_request', 'The file has no nodes');
+  if (!m.nodes.length) throw httpError(400, 'bad_request', 'api.boardFile.noNodes');
   await loadBoard(db, workspaceId, boardId);
 
   // 1. Nodes and wires with fresh ids, placed with their top-left at (x, y).
@@ -228,7 +264,7 @@ export async function importBoardFile(
   if (existing)
     for (const n of m.nodes)
       if (existing.nodes.get(n.id)?.kind !== n.kind)
-        throw httpError(400, 'bad_request', 'The results are for nodes this board does not have');
+        throw httpError(400, 'bad_request', 'api.boardFile.unknownNodes');
   const ids = new Map(m.nodes.map((n) => [n.id, existing ? n.id : newId()]));
   let z = nextZKey((await loadGraph(db, boardId)).graph);
   const create: GraphOp[] = existing
@@ -275,7 +311,7 @@ export async function importBoardFile(
         ? await storeBundle(env, prefix, src, entries, f.bundle)
         : await (async () => {
             const e = entries.get(f.path);
-            if (!e) throw httpError(400, 'bad_request', `Missing ${f.path}`);
+            if (!e) throw httpError(400, 'bad_request', 'api.boardFile.missingEntry', { path: f.path });
             return storeEntry(env, prefix, src, e, { mime: f.mime, tag: `-${f.kind}`, claim: claimOf(f) });
           })();
       const variants: EngineVariant[] = [];

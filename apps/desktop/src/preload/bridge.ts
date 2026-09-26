@@ -19,6 +19,7 @@ const bridge: DesktopBridge = {
     },
   },
   ready: () => ipcRenderer.send('app:ready'),
+  setLocale: (locale) => ipcRenderer.send('app:setLocale', String(locale)),
   onOpenFile(cb) {
     const h = (_: unknown, f: { name: string; bytes: Uint8Array }) => cb(f);
     ipcRenderer.on('files:open', h);

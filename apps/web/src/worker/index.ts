@@ -3,7 +3,8 @@ import { Hono } from 'hono';
 import { createAuth, publicOrigin } from './auth';
 import type { AppEnv, Env } from './env';
 import { closeDb, getDb } from './lib/db';
-import { HttpError } from './lib/http';
+import { errorResponse, unknownEndpoint } from './lib/http';
+import { localeOf } from './lib/i18n';
 import { loadSession } from './lib/session';
 import { agentRoutes } from './routes/agent';
 import { assetRoutes } from './routes/assets';
@@ -46,34 +47,8 @@ app.use('/s/*', closeDb);
 app.use('/billing/*', closeDb);
 app.use('/billing/*', loadSession);
 
-app.onError((err, c) => {
-  if (err instanceof HttpError)
-    return c.json({ error: { code: err.code, message: err.message, details: err.details } }, err.status);
-  console.error(
-    JSON.stringify({
-      level: 'error',
-      requestId: c.get('requestId'),
-      path: c.req.path,
-      message: String(err),
-      stack: (err as Error).stack?.split('\n').slice(0, 5),
-    }),
-  );
-  return c.json(
-    {
-      error: {
-        code: 'internal',
-        message: 'Something went wrong. Try again.',
-        details: { requestId: c.get('requestId') },
-      },
-    },
-    500,
-  );
-});
-app.notFound((c) =>
-  c.req.path.startsWith('/api/')
-    ? c.json({ error: { code: 'not_found', message: 'Unknown endpoint' } }, 404)
-    : c.env.ASSETS.fetch(c.req.raw),
-);
+app.onError(errorResponse);
+app.notFound((c) => (c.req.path.startsWith('/api/') ? unknownEndpoint(c) : c.env.ASSETS.fetch(c.req.raw)));
 
 app.get('/api/health', async (c) => {
   const started = Date.now();
@@ -83,13 +58,12 @@ app.get('/api/health', async (c) => {
 
 // Better Auth owns /api/auth/* (Google sign-in, session, sign-out).
 app.on(['GET', 'POST'], '/api/auth/*', (c) =>
-  createAuth(c.env, getDb(c), publicOrigin(c.env, c.req.raw)).handler(c.req.raw),
+  createAuth(c.env, getDb(c), publicOrigin(c.env, c.req.raw), localeOf(c.req.raw)).handler(c.req.raw),
 );
 
 // Test-only (local, test auth on): run the working-copy cleanup as of a given time.
 app.post('/api/test/purge-working-copies', async (c) => {
-  if (c.env.APP_ENV !== 'development' || c.env.ANNIE3D_TEST_AUTH !== '1')
-    return c.json({ error: { code: 'not_found', message: 'Unknown endpoint' } }, 404);
+  if (c.env.APP_ENV !== 'development' || c.env.ANNIE3D_TEST_AUTH !== '1') return unknownEndpoint(c);
   const { now } = (await c.req.json().catch(() => ({}))) as { now?: string };
   return c.json(await purgeWorkingCopies(c.env, getDb(c), now ? new Date(now) : new Date()));
 });

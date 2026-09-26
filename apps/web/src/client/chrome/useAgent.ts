@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../api/client';
+import { t } from '../i18n';
 import { sendAgentMessage } from '../lib/agentClient';
 import { isDoc, withCloud } from '../lib/doc';
 import { perfEnd, perfStart } from '../lib/perf';
@@ -90,13 +91,16 @@ export function useAgent() {
               patch((m) => ({ ...m, text: m.text + e.delta }));
             } else if (e.type === 'ops' && e.applied) {
               applyRemote(e.batch.ops, e.seq, { undoable: true });
-              patch((m) => ({ ...m, applied: [...(m.applied ?? []), { label: e.label ?? 'Board edited' }] }));
+              patch((m) => ({
+                ...m,
+                applied: [...(m.applied ?? []), { label: e.label ?? t('agent.boardEdited') }],
+              }));
             } else if (e.type === 'run') attachRun(e.runId, queryClient);
             else if (e.type === 'error') toast(e.message, 'error');
           },
         );
       } catch (err) {
-        patch((m) => ({ ...m, text: m.text || `Sorry, that failed: ${(err as Error).message}` }));
+        patch((m) => ({ ...m, text: m.text || t('agent.failed', { message: (err as Error).message }) }));
       } finally {
         perfEnd('agent.reply');
         setBusy(false);

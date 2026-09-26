@@ -12,6 +12,7 @@ import {
   SIM_ENVIRONMENTS,
   type SimEnvironment,
 } from '@annie3d/contracts';
+import { en, type MessageKey, type Translator } from '@annie3d/i18n';
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import {
   AudioLines,
@@ -27,11 +28,11 @@ import {
 } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Popover } from '../chrome/Popover';
+import { useT } from '../i18n';
 import { withCloud } from '../lib/doc';
 import { pickImage } from '../lib/media';
 import { perfStart } from '../lib/perf';
 import { editorOverlay, ignore, prefetchAsset, simulatorOverlay } from '../lib/preload';
-import { SIM_ENV_META } from '../sim/inputs';
 import { SimThumb } from '../sim/SimThumb';
 import { dispatch, useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
@@ -39,6 +40,10 @@ import { useUi } from '../store/ui';
 import { deleteNodes, onRunNode, openEditor, uploadIntoNode } from './actions';
 import { copySelection, duplicateNodes } from './clipboard';
 import { KIND_ICON, PORT_ICON } from './kindIcons';
+
+/** A quality gate's readable name (`api.gate.<id>`); an id without one is shown as it is. */
+const gateName = (t: Translator, gate?: string | null) =>
+  gate && `api.gate.${gate}` in en ? t(`api.gate.${gate}` as MessageKey) : (gate ?? '');
 
 const PROMPT_KEY: Partial<Record<NodeKind, string>> = {
   model3d: 'prompt',
@@ -59,6 +64,24 @@ const PORT_TOP = 30;
 const PORT_GAP = 38;
 /** Reference thumbnails shown in an empty result (the rest are counted). */
 const MAX_REFS = 5;
+
+/** A node's name: the one the person gave it, else its kind's name in the current language. */
+const nodeName = (t: Translator, n: Pick<NodeRecord, 'kind' | 'label'>) => n.label ?? t(`node.${n.kind}`);
+
+/** Screen-reader name of a port: its name and the data types it takes ("Model or scene (3D model or Scene)"). */
+function portName(t: Translator, port: string, types: readonly PortType[]) {
+  const names = types.map((p) => t(`portType.${p}`));
+  if (names.length === 1) return t('canvas.port.one', { port, type: names[0]! });
+  if (names.length === 2) return t('canvas.port.two', { port, first: names[0]!, second: names[1]! });
+  return t('canvas.port.many', {
+    port,
+    list: names.slice(0, -1).join(t('canvas.port.separator')),
+    last: names.at(-1)!,
+  });
+}
+
+const simEnvName = (t: Translator, env: unknown) =>
+  (SIM_ENVIRONMENTS as readonly unknown[]).includes(env) ? t(`simEnv.${env as SimEnvironment}`) : null;
 
 /**
  * Incoming/outgoing wire index, rebuilt once per edges map (not once per node per render):
@@ -94,6 +117,7 @@ function incomingIndex(edges: Map<string, EdgeRecord>) {
  * re-renders it (react-best-practices: rerender-memo, rerender-derived-state).
  */
 export const FlowNode = memo(function FlowNode({ id, selected }: NodeProps) {
+  const t = useT();
   const node = useBoard((s) => s.graph.nodes.get(id));
   const lod = useUi((s) => s.lod);
   const single = useUi((s) => s.selected.size === 1);
@@ -117,9 +141,7 @@ export const FlowNode = memo(function FlowNode({ id, selected }: NodeProps) {
             <Preview node={node} selected={!!selected} />
             {node.kind === 'simulation' && (
               <div className="node-body sim-body">
-                <span className="sim-env-label">
-                  {SIM_ENV_META[node.settings.environment as SimEnvironment]?.label}
-                </span>
+                <span className="sim-env-label">{simEnvName(t, node.settings.environment)}</span>
                 <button
                   type="button"
                   className="open-sim nodrag"
@@ -127,7 +149,7 @@ export const FlowNode = memo(function FlowNode({ id, selected }: NodeProps) {
                   onClick={() => openSimulator(node.id)}
                   data-testid="open-sim"
                 >
-                  Open
+                  {t('canvas.node.openSim')}
                 </button>
               </div>
             )}
@@ -151,6 +173,7 @@ export const FlowNode = memo(function FlowNode({ id, selected }: NodeProps) {
 });
 
 function Ports({ node }: { node: NodeRecord }) {
+  const t = useT();
   const def = NODE_DEFS[node.kind];
   const wires = useBoard((s) => {
     const idx = incomingIndex(s.graph.edges);
@@ -164,6 +187,7 @@ function Ports({ node }: { node: NodeRecord }) {
       {def.inputs.map((p, i) => {
         const type = p.accepts[0] as PortType;
         const Icon = PORT_ICON[type];
+        const name = t(`port.${node.kind}.${p.id}` as MessageKey);
         return (
           <Handle
             key={p.id}
@@ -172,11 +196,11 @@ function Ports({ node }: { node: NodeRecord }) {
             position={Position.Left}
             className={`port port-${type}${connected.has(p.id) ? ' on' : ''}`}
             style={{ top: PORT_TOP + i * PORT_GAP }}
-            aria-label={`${p.label} (${p.accepts.join(' or ')})`}
+            aria-label={portName(t, name, p.accepts as readonly PortType[])}
           >
             <Icon size={12} strokeWidth={2.25} aria-hidden />
             <span className="port-tip" role="tooltip">
-              {p.label}
+              {name}
             </span>
           </Handle>
         );
@@ -184,6 +208,7 @@ function Ports({ node }: { node: NodeRecord }) {
       {def.output &&
         (() => {
           const Icon = PORT_ICON[def.output.type];
+          const name = t(`port.${node.kind}.out` as MessageKey);
           return (
             <Handle
               id="out"
@@ -191,11 +216,11 @@ function Ports({ node }: { node: NodeRecord }) {
               position={Position.Right}
               className={`port port-${def.output.type}${outFlag === 'true' ? ' on' : ''}`}
               style={{ top: PORT_TOP }}
-              aria-label={`${def.output.label} (${def.output.type})`}
+              aria-label={portName(t, name, [def.output.type])}
             >
               <Icon size={12} strokeWidth={2.25} aria-hidden />
               <span className="port-tip" role="tooltip">
-                {def.output.label}
+                {name}
               </span>
             </Handle>
           );
@@ -205,6 +230,7 @@ function Ports({ node }: { node: NodeRecord }) {
 }
 
 function Header({ node }: { node: NodeRecord }) {
+  const t = useT();
   const def = NODE_DEFS[node.kind];
   const version = useBoard((s) =>
     node.currentVersionId ? s.versions.get(node.currentVersionId) : undefined,
@@ -214,16 +240,16 @@ function Header({ node }: { node: NodeRecord }) {
   return (
     <div className="node-head">
       <Icon size={14} strokeWidth={2} aria-hidden className="kind-icon" />
-      <span className="label">{node.label ?? def.label}</span>
+      <span className="label">{nodeName(t, node)}</span>
       {stale && (
-        <span className="badge-stale" title="Inputs changed since this version">
-          stale
+        <span className="badge-stale" title={t('canvas.node.staleTitle')}>
+          {t('canvas.node.stale')}
         </span>
       )}
       {/* Information, not a control: plain meta text (Soft UI keeps "raised" for things you press). */}
       <span className="engine">
         {def.runnable && version ? <span className="ver">v{version.versionNo}</span> : null}
-        {def.category !== 'input' && def.category !== 'note' ? def.engine : null}
+        {def.category !== 'input' && def.category !== 'note' ? t(`engine.${node.kind}`) : null}
       </span>
     </div>
   );
@@ -248,6 +274,7 @@ function useReferenceThumbs(node: NodeRecord): string[] {
 }
 
 function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
+  const t = useT();
   const version = useBoard((s) =>
     node.currentVersionId ? s.versions.get(node.currentVersionId) : undefined,
   );
@@ -292,8 +319,8 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
           className="open3d nodrag"
           onClick={() => openSimulator(node.id)}
           tabIndex={selected ? 0 : -1}
-          aria-label="Open simulator"
-          title="Open simulator (or double-click)"
+          aria-label={t('canvas.node.openSimLabel')}
+          title={t('canvas.node.openSimTitle')}
         >
           <Maximize2 size={15} strokeWidth={2} aria-hidden />
         </button>
@@ -322,10 +349,10 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
         <span className="placeholder">
           <Upload size={20} strokeWidth={1.75} aria-hidden />
           {kind === 'photo'
-            ? 'Drop, paste or click to add a photo'
+            ? t('canvas.node.dropPhoto')
             : kind === 'audio'
-              ? 'Drop a music file'
-              : 'Drop a .glb file'}
+              ? t('canvas.node.dropMusic')
+              : t('canvas.node.dropGlb')}
         </span>
         <input
           type="file"
@@ -345,7 +372,7 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
       <span className="placeholder-icon">
         <Zap size={18} strokeWidth={1.75} aria-hidden />
       </span>
-      {progress ? progress.stage : 'Your generation will appear here'}
+      {progress ? progress.stage : t('canvas.node.emptyResult')}
     </span>
   );
   if (kind === 'export' && version) {
@@ -355,13 +382,17 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
     const preset = gates[0]?.id.split(':')[0];
     content = (
       <div className="export-summary" data-testid="export-summary">
-        <b>
-          {outputs.length} file{outputs.length === 1 ? '' : 's'} ready
-        </b>
+        <b>{t('canvas.node.filesReady', { count: outputs.length })}</b>
         {gates.length > 0 && (
           <span className={passed === gates.length ? 'ok' : 'bad'}>
-            {passed}/{gates.length} checks passed
-            {preset ? ` (${GLB_PRESETS[preset as keyof typeof GLB_PRESETS]?.label ?? preset})` : ''}
+            {preset
+              ? t('canvas.node.checksPassedPreset', {
+                  passed,
+                  total: gates.length,
+                  preset:
+                    preset in GLB_PRESETS ? t(`glbPreset.${preset as keyof typeof GLB_PRESETS}`) : preset,
+                })
+              : t('canvas.node.checksPassed', { passed, total: gates.length })}
           </span>
         )}
       </div>
@@ -390,9 +421,11 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
       playing && video ? (
         <video src={video} poster={poster ?? undefined} autoPlay muted loop playsInline preload="none" />
       ) : poster ? (
-        <img src={poster} alt={node.label ?? NODE_DEFS[kind].label} decoding="async" draggable={false} />
+        <img src={poster} alt={nodeName(t, node)} decoding="async" draggable={false} />
       ) : (
-        <span className="placeholder">{primary.kind === 'model3d' ? '3D model' : primary.mime}</span>
+        <span className="placeholder">
+          {primary.kind === 'model3d' ? t('portType.model3d') : primary.mime}
+        </span>
       );
   }
   const contain = kind === 'adVideo' || kind === 'packshot';
@@ -411,7 +444,7 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
         // Wired-in images as a stack (back cards offset up-right); hovering fans them out in a row.
         <div
           className="refs"
-          aria-label={`${refs.length} reference image${refs.length > 1 ? 's' : ''}`}
+          aria-label={t('canvas.node.referenceImages', { count: refs.length })}
           style={{ '--n': Math.min(refs.length, MAX_REFS) } as React.CSSProperties}
           data-testid="refs"
         >
@@ -431,11 +464,13 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
       {progress && <span className="stage-label">{progress.stage}</span>}
       {error && !progress && (
         <div className="node-error" role="alert" title={error.message} data-testid="node-error">
-          {error.code === 'gate_failed' ? `Check failed: ${error.gate}` : error.message}
+          {error.code === 'gate_failed'
+            ? t('run.checkFailed', { gate: gateName(t, error.gate) })
+            : error.message}
         </div>
       )}
       {pct !== null && (
-        <div className="progress" aria-label={`Progress ${pct}%`}>
+        <div className="progress" aria-label={t('canvas.node.progress', { percent: pct })}>
           <i style={{ width: `${pct}%` }} />
         </div>
       )}
@@ -446,8 +481,8 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
           onClick={() => openEditor(node.id)}
           data-testid="open-3d"
           tabIndex={selected ? 0 : -1}
-          aria-label="Open 3D editor"
-          title="Open 3D editor (or double-click)"
+          aria-label={t('canvas.node.openEditorLabel')}
+          title={t('canvas.node.openEditorTitle')}
         >
           <AxesIcon />
         </button>
@@ -460,7 +495,7 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
           data-testid="run-from-here"
           tabIndex={selected ? 0 : -1}
         >
-          Run from here
+          {t('canvas.node.runFromHere')}
         </button>
       )}
     </div>
@@ -504,6 +539,7 @@ function runFromHere(nodeId: string) {
  * (Miro: a widget is live DOM only while edited, otherwise a static rendering).
  */
 function Prompt({ node }: { node: NodeRecord }) {
+  const t = useT();
   const key = PROMPT_KEY[node.kind]!;
   const value = String(node.settings[key] ?? '');
   const requested = useUi((s) => s.editPromptId === node.id);
@@ -535,6 +571,7 @@ function Prompt({ node }: { node: NodeRecord }) {
     if (v !== value) dispatch([{ type: 'node.update', id: node.id, patch: { settings: { [key]: v } } }]);
   };
   const isText = node.kind === 'text' || node.kind === 'note';
+  const placeholder = isText ? t('canvas.node.writePlaceholder') : t('canvas.node.describePlaceholder');
   if (!editing) {
     return (
       <div
@@ -547,7 +584,7 @@ function Prompt({ node }: { node: NodeRecord }) {
         }}
         data-testid="prompt"
       >
-        {value || (isText ? 'Write something…' : 'Describe what you want…')}
+        {value || placeholder}
       </div>
     );
   }
@@ -556,7 +593,7 @@ function Prompt({ node }: { node: NodeRecord }) {
       ref={ref}
       className="prompt nodrag nowheel"
       defaultValue={value}
-      placeholder={isText ? 'Write something…' : 'Describe what you want…'}
+      placeholder={placeholder}
       maxLength={isText ? 4000 : 2000}
       onBlur={(e) => commit(e.target.value)}
       // Grow with the text (up to the CSS max-height) so the first lines never scroll away.
@@ -579,6 +616,7 @@ function autosize(el: HTMLTextAreaElement) {
 
 /** Run with a split menu (ElevenLabs "Run ▾"): this node alone, from here downstream, or with upstream. */
 function RunButton({ node }: { node: NodeRecord }) {
+  const t = useT();
   const running = useRuns((s) => s.progress.has(node.id));
   const cost = creditsFor(node.kind, node.settings);
   const [menu, setMenu] = useState<DOMRect | null>(null);
@@ -597,16 +635,16 @@ function RunButton({ node }: { node: NodeRecord }) {
         onClick={() => onRunNode(node.id)}
         disabled={running}
         data-testid="run-node"
-        aria-label={`Run (${cost} credits)`}
-        title={`Run (${cost} credits)`}
+        aria-label={t('canvas.node.runCost', { credits: t('common.credits', { count: cost }) })}
+        title={t('canvas.node.runCost', { credits: t('common.credits', { count: cost }) })}
       >
-        {running ? 'Running…' : 'Run'}
+        {running ? t('canvas.node.running') : t('canvas.node.run')}
       </button>
       <button
         ref={more}
         type="button"
         className="run-more"
-        aria-label="Run options"
+        aria-label={t('canvas.node.runOptions')}
         aria-haspopup="menu"
         aria-expanded={!!menu}
         onClick={(e) => setMenu(menu ? null : e.currentTarget.getBoundingClientRect())}
@@ -623,18 +661,18 @@ function RunButton({ node }: { node: NodeRecord }) {
           align="end"
           trigger={more.current}
           onClose={() => setMenu(null)}
-          label="Run options"
+          label={t('canvas.node.runOptions')}
           testId="run-menu"
         >
           <div role="menu">
             <button type="button" role="menuitem" onClick={() => scoped('with_upstream')}>
-              Run with inputs
+              {t('canvas.node.runWithInputs')}
             </button>
             <button type="button" role="menuitem" onClick={() => scoped('node')}>
-              Run this node only
+              {t('canvas.node.runNodeOnly')}
             </button>
             <button type="button" role="menuitem" onClick={() => scoped('from_here')}>
-              Run this and everything after
+              {t('canvas.node.runDownstream')}
             </button>
           </div>
         </Popover>
@@ -643,8 +681,33 @@ function RunButton({ node }: { node: NodeRecord }) {
   );
 }
 
+/** Screen-reader names of the toolbar's selects, by setting. */
+const SELECT_NAME = {
+  builder: 'canvas.toolbar.builder',
+  detail: 'canvas.toolbar.detail',
+  look: 'canvas.toolbar.look',
+  angles: 'canvas.toolbar.angles',
+  size: 'canvas.toolbar.size',
+  motion: 'canvas.toolbar.motion',
+  aspect: 'canvas.toolbar.aspect',
+  durationSec: 'canvas.toolbar.durationSec',
+  environment: 'canvas.toolbar.environment',
+  glbPreset: 'canvas.toolbar.glbPreset',
+} as const satisfies Record<string, MessageKey>;
+const BUILDER_NAME = {
+  auto: 'canvas.toolbar.builderAuto',
+  code: 'canvas.toolbar.builderCode',
+  generative: 'canvas.toolbar.builderGenerative',
+} as const satisfies Record<string, MessageKey>;
+const DETAIL_NAME = {
+  draft: 'canvas.toolbar.detailDraft',
+  standard: 'canvas.toolbar.detailStandard',
+  high: 'canvas.toolbar.detailHigh',
+} as const satisfies Record<string, MessageKey>;
+
 /** Settings and actions under the selected node (ElevenLabs node toolbar). */
 function Toolbar({ node }: { node: NodeRecord }) {
+  const t = useT();
   const set = (patch: Record<string, unknown>) =>
     dispatch([{ type: 'node.update', id: node.id, patch: { settings: patch } }]);
   const s = node.settings;
@@ -654,12 +717,12 @@ function Toolbar({ node }: { node: NodeRecord }) {
   const [more, setMore] = useState<DOMRect | null>(null);
   const moreBtn = useRef<HTMLButtonElement>(null);
   const sel = (
-    key: string,
+    key: keyof typeof SELECT_NAME,
     options: readonly (string | number)[],
     label?: (v: string | number) => string,
   ) => (
     <select
-      aria-label={key}
+      aria-label={t(SELECT_NAME[key])}
       value={String(s[key])}
       onChange={(e) =>
         set({ [key]: typeof options[0] === 'number' ? Number(e.target.value) : e.target.value })
@@ -676,20 +739,24 @@ function Toolbar({ node }: { node: NodeRecord }) {
   if (node.kind === 'model3d')
     controls = (
       <>
-        {sel('builder', ['auto', 'code', 'generative'], (v) => `Builder: ${v}`)}
-        {sel('detail', ['draft', 'standard', 'high'])}
+        {sel('builder', ['auto', 'code', 'generative'], (v) =>
+          t(BUILDER_NAME[v as keyof typeof BUILDER_NAME]),
+        )}
+        {sel('detail', ['draft', 'standard', 'high'], (v) => t(DETAIL_NAME[v as keyof typeof DETAIL_NAME]))}
       </>
     );
   if (node.kind === 'stage')
     controls = sel(
       'look',
       LOOK_PRESETS.map((l) => l.id),
-      (v) => LOOK_PRESETS.find((l) => l.id === v)!.label,
+      (v) => t(`look.${v as (typeof LOOK_PRESETS)[number]['id']}`),
     );
   if (node.kind === 'packshot')
     controls = (
       <>
-        {sel('angles', ['four', 'custom'], (v) => (v === 'four' ? '4 angles' : 'Custom camera'))}
+        {sel('angles', ['four', 'custom'], (v) =>
+          v === 'four' ? t('canvas.toolbar.anglesFour') : t('canvas.toolbar.anglesCustom'),
+        )}
         {sel('size', ['1k', '2k'])}
       </>
     );
@@ -699,19 +766,19 @@ function Toolbar({ node }: { node: NodeRecord }) {
         {sel(
           'motion',
           MOTION_PRESETS.map((m) => m.id),
-          (v) => MOTION_PRESETS.find((m) => m.id === v)!.label,
+          (v) => t(`motion.${v as (typeof MOTION_PRESETS)[number]['id']}`),
         )}
         {sel('aspect', ASPECTS)}
-        {sel('durationSec', [6, 10, 15], (v) => `${v}s`)}
+        {sel('durationSec', [6, 10, 15], (v) => t('canvas.toolbar.seconds', { seconds: v }))}
       </>
     );
   if (node.kind === 'simulation')
     controls = (
       <>
-        {sel('environment', SIM_ENVIRONMENTS, (v) => SIM_ENV_META[v as SimEnvironment].label)}
+        {sel('environment', SIM_ENVIRONMENTS, (v) => t(`simEnv.${v as SimEnvironment}`))}
         <input
           className="tb-input"
-          aria-label="price"
+          aria-label={t('canvas.toolbar.price')}
           defaultValue={String(s.price ?? '')}
           maxLength={24}
           onBlur={(e) => e.target.value !== s.price && set({ price: e.target.value })}
@@ -723,10 +790,8 @@ function Toolbar({ node }: { node: NodeRecord }) {
       </>
     );
   if (node.kind === 'export')
-    controls = sel(
-      'glbPreset',
-      Object.keys(GLB_PRESETS),
-      (v) => GLB_PRESETS[v as keyof typeof GLB_PRESETS].label,
+    controls = sel('glbPreset', Object.keys(GLB_PRESETS), (v) =>
+      t(`glbPreset.${v as keyof typeof GLB_PRESETS}`),
     );
   const replace = ACCEPT[node.kind] && primary;
   const download = primary?.urls.original;
@@ -736,7 +801,7 @@ function Toolbar({ node }: { node: NodeRecord }) {
         {controls}
         {replace && (
           <label className="tb-btn">
-            Replace
+            {t('canvas.toolbar.replace')}
             <input
               type="file"
               accept={ACCEPT[node.kind]}
@@ -754,8 +819,8 @@ function Toolbar({ node }: { node: NodeRecord }) {
             className="tb-icon"
             href={download}
             download
-            aria-label="Download"
-            title="Download"
+            aria-label={t('canvas.toolbar.download')}
+            title={t('canvas.toolbar.download')}
             target="_blank"
             rel="noreferrer"
           >
@@ -765,8 +830,8 @@ function Toolbar({ node }: { node: NodeRecord }) {
         <button
           type="button"
           className="tb-icon"
-          aria-label="Delete node"
-          title="Delete"
+          aria-label={t('canvas.toolbar.deleteNode')}
+          title={t('canvas.toolbar.delete')}
           onClick={() => deleteNodes([node.id])}
           data-testid="node-delete"
         >
@@ -776,7 +841,7 @@ function Toolbar({ node }: { node: NodeRecord }) {
           type="button"
           className="tb-icon"
           ref={moreBtn}
-          aria-label="More actions"
+          aria-label={t('canvas.toolbar.more')}
           aria-haspopup="menu"
           aria-expanded={!!more}
           onClick={(e) => setMore(more ? null : e.currentTarget.getBoundingClientRect())}
@@ -791,7 +856,7 @@ function Toolbar({ node }: { node: NodeRecord }) {
           align="end"
           trigger={moreBtn.current}
           onClose={() => setMore(null)}
-          label="More actions"
+          label={t('canvas.toolbar.more')}
           testId="node-more-menu"
         >
           <div role="menu">
@@ -803,7 +868,7 @@ function Toolbar({ node }: { node: NodeRecord }) {
                 duplicateNodes([node.id]);
               }}
             >
-              <Copy size={14} aria-hidden /> Duplicate <kbd>⌘D</kbd>
+              <Copy size={14} aria-hidden /> {t('canvas.toolbar.duplicate')} <kbd>⌘D</kbd>
             </button>
             <button
               type="button"
@@ -813,7 +878,7 @@ function Toolbar({ node }: { node: NodeRecord }) {
                 copySelection();
               }}
             >
-              <Copy size={14} aria-hidden /> Copy <kbd>⌘C</kbd>
+              <Copy size={14} aria-hidden /> {t('canvas.toolbar.copy')} <kbd>⌘C</kbd>
             </button>
             {NODE_DEFS[node.kind].runnable && (
               <button
@@ -824,7 +889,7 @@ function Toolbar({ node }: { node: NodeRecord }) {
                   onRunNode(node.id);
                 }}
               >
-                <Play size={14} aria-hidden /> Run with inputs
+                <Play size={14} aria-hidden /> {t('canvas.node.runWithInputs')}
               </button>
             )}
           </div>

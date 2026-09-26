@@ -29,6 +29,7 @@ import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { ENGINE_VERSIONS } from '../engines/versions';
 import type { Env } from '../env';
 import { httpError } from '../lib/http';
+import { type Translator, translator } from '../lib/i18n';
 import { assetDto } from './assets';
 import { type HashInput, inputHash, sha256Hex } from './hash';
 
@@ -63,7 +64,7 @@ export async function loadBoard(db: Db, workspaceId: string, boardId: string) {
     where: (t, { and, eq, isNull }) =>
       and(eq(t.id, boardId), eq(t.workspaceId, workspaceId), isNull(t.archivedAt)),
   });
-  if (!b) throw httpError(404, 'not_found', 'Board not found');
+  if (!b) throw httpError(404, 'not_found', 'api.board.notFound');
   return b;
 }
 
@@ -194,11 +195,19 @@ export async function createBoard(
   starter: 'blank' | StarterId,
   guest?: { nodes: Omit<NodeRecord, 'version' | 'currentVersionId'>[]; edges: EdgeRecord[] },
   expiresAt: Date | null = null,
+  /** Language of the words a starter writes (labels, sample headline): the request's. */
+  t: Translator = translator('en'),
 ) {
   const g = guest
     ? { nodes: guest.nodes.map((n) => ({ ...n, version: 1, currentVersionId: null })), edges: guest.edges }
     : starter !== 'blank' && (STARTERS as readonly string[]).includes(starter)
-      ? starterGraph(starter as StarterId)
+      ? starterGraph(starter as StarterId, undefined, {
+          photo: t('starter.node.photo'),
+          headline: t('starter.node.headline'),
+          pack: t('starter.node.pack'),
+          headlineText: t(`starter.${starter as StarterId}.headline`),
+          cta: t('setting.simulation.cta'),
+        })
       : { nodes: [], edges: [] };
   const ops: GraphOp[] = [
     ...g.nodes.map(
@@ -347,7 +356,7 @@ export async function applyBatch(
       sql`SELECT seq FROM boards WHERE id = ${boardId} AND workspace_id = ${workspaceId} AND archived_at IS NULL FOR UPDATE`,
     );
     const row = locked.rows[0];
-    if (!row) throw httpError(404, 'not_found', 'Board not found');
+    if (!row) throw httpError(404, 'not_found', 'api.board.notFound');
     const dup = await tx
       .select({ seq: boardOps.seq })
       .from(boardOps)
@@ -358,14 +367,11 @@ export async function applyBatch(
     try {
       result = applyOps(graph, ops);
     } catch (e) {
-      if (e instanceof OpError)
-        throw httpError(
-          e.code === 'conflict' ? 409 : 400,
-          e.code === 'conflict' ? 'conflict' : 'bad_request',
-          `Op ${e.opIndex} rejected: ${e.code}`,
-          { opIndex: e.opIndex, reason: e.code },
-        );
-      throw e;
+      if (!(e instanceof OpError)) throw e;
+      const [status, code] =
+        e.code === 'conflict' ? ([409, 'conflict'] as const) : ([400, 'bad_request'] as const);
+      const details = { opIndex: e.opIndex, reason: e.code };
+      throw httpError(status, code, 'api.board.opRejected', { index: e.opIndex, reason: e.code }, details);
     }
     // A node.create may revive a tombstoned id (undo of delete): make sure it is this board's.
     const created = ops
@@ -378,7 +384,7 @@ export async function applyBatch(
           sql`, `,
         )}) AND board_id <> ${boardId}`,
       );
-      if (foreign.rows.length) throw httpError(409, 'conflict', 'Node id belongs to another board');
+      if (foreign.rows.length) throw httpError(409, 'conflict', 'api.board.nodeOfOtherBoard');
     }
     // Upload versions: write the node first (old version pointer), insert the version, then point
     // the node at it — satisfies both the FK and the "current version belongs to node" trigger.
@@ -460,13 +466,13 @@ async function createUploadVersions(
     });
     if (own?.nodeId === node.id) continue;
     const assetId = op.patch.settings?.assetId as string | undefined;
-    if (!assetId) throw httpError(400, 'bad_request', 'Upload versions need settings.assetId');
+    if (!assetId) throw httpError(400, 'bad_request', 'api.board.uploadNeedsAsset');
     const asset = await tx.query.assets.findFirst({
       where: (t, { and, eq }) =>
         and(eq(t.id, assetId), eq(t.workspaceId, workspaceId), eq(t.status, 'ready')),
     });
-    if (!asset) throw httpError(400, 'bad_request', 'Unknown asset');
-    if (own) throw httpError(400, 'bad_request', 'Version belongs to another node');
+    if (!asset) throw httpError(400, 'bad_request', 'api.board.unknownAsset');
+    if (own) throw httpError(400, 'bad_request', 'api.board.versionOfOtherNode');
     const max = await tx.execute<{ n: number }>(
       sql`SELECT coalesce(max(version_no), 0)::int AS n FROM node_versions WHERE node_id = ${node.id}`,
     );
@@ -505,7 +511,7 @@ async function copyVersion(
   const src = await tx.query.nodeVersions.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, sourceId), eq(t.workspaceId, workspaceId)),
   });
-  if (!src) throw httpError(400, 'bad_request', 'Unknown source version');
+  if (!src) throw httpError(400, 'bad_request', 'api.board.unknownSourceVersion');
   const outputs = await tx.query.nodeVersionOutputs.findMany({
     where: (t, { eq }) => eq(t.versionId, sourceId),
   });

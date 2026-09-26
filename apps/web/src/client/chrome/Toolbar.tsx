@@ -3,12 +3,14 @@ import { useReactFlow } from '@xyflow/react';
 import { Hand, MessageSquare, MousePointer2, Plus, Redo2, Undo2 } from 'lucide-react';
 import { createNodeAt } from '../canvas/actions';
 import { KIND_ICON } from '../canvas/kindIcons';
+import { useT } from '../i18n';
 import { redo, undo, useBoard } from '../store/board';
 import { useUi } from '../store/ui';
 
 const QUICK: NodeKind[] = (Object.keys(NODE_DEFS) as NodeKind[]).filter((k) => NODE_DEFS[k].toolbar);
 
 export function Toolbar() {
+  const t = useT();
   const tool = useUi((s) => s.tool);
   const agentOpen = useUi((s) => s.agentOpen);
   const canUndo = useBoard((s) => s.undoStack.length > 0);
@@ -25,10 +27,10 @@ export function Toolbar() {
     useUi.setState({ palette: { x: innerWidth / 2 - 130, y: innerHeight - 440, flowX: f.x, flowY: f.y } });
   };
   return (
-    <nav className="toolbar pill" aria-label="Canvas tools">
+    <nav className="toolbar pill" aria-label={t('toolbar.label')}>
       <button
         type="button"
-        aria-label="Select (V)"
+        aria-label={t('toolbar.select')}
         aria-pressed={tool === 'select'}
         onClick={() => useUi.setState({ tool: 'select' })}
       >
@@ -36,7 +38,7 @@ export function Toolbar() {
       </button>
       <button
         type="button"
-        aria-label="Hand (H)"
+        aria-label={t('toolbar.hand')}
         aria-pressed={tool === 'hand'}
         onClick={() => useUi.setState({ tool: 'hand' })}
       >
@@ -46,46 +48,59 @@ export function Toolbar() {
       {/* Each kind shows the icon its nodes carry (not a colour to decode). */}
       {QUICK.map((k) => {
         const Icon = KIND_ICON[k];
+        const name = t(`node.${k}`);
         return (
           <button
             type="button"
             key={k}
             className="quick-add"
             onClick={() => addAtCenter(k)}
-            title={`Add ${NODE_DEFS[k].label}`}
-            aria-label={`Add ${NODE_DEFS[k].label}`}
+            title={t('toolbar.add', { name })}
+            aria-label={t('toolbar.add', { name })}
             data-testid={`add-${k}`}
           >
             <Icon aria-hidden="true" />
-            <span className="hide-md">{NODE_DEFS[k].label}</span>
+            <span className="hide-md">{name}</span>
           </button>
         );
       })}
       <button
         type="button"
-        aria-label="More nodes (N)"
+        aria-label={t('toolbar.moreNodes')}
         onClick={openPaletteAtCenter}
         data-testid="more-nodes"
       >
         <Plus aria-hidden="true" />
       </button>
       <span className="sep" />
-      <button type="button" aria-label="Undo (⌘Z)" disabled={!canUndo} onClick={undo} data-testid="undo">
+      <button
+        type="button"
+        aria-label={t('toolbar.undo')}
+        disabled={!canUndo}
+        onClick={undo}
+        data-testid="undo"
+      >
         <Undo2 aria-hidden="true" />
       </button>
-      <button type="button" aria-label="Redo (⇧⌘Z)" disabled={!canRedo} onClick={redo} data-testid="redo">
+      <button
+        type="button"
+        aria-label={t('toolbar.redo')}
+        disabled={!canRedo}
+        onClick={redo}
+        data-testid="redo"
+      >
         <Redo2 aria-hidden="true" />
       </button>
       <span className="sep" />
       <button
         type="button"
-        aria-label="Ask Annie"
+        aria-label={t('toolbar.askAnnie')}
         aria-pressed={agentOpen}
         onClick={() => useUi.setState({ agentOpen: !agentOpen })}
         data-testid="toggle-agent"
       >
         <MessageSquare aria-hidden="true" />
-        <span className="hide-md">Ask Annie</span>
+        <span className="hide-md">{t('toolbar.askAnnie')}</span>
       </button>
     </nav>
   );

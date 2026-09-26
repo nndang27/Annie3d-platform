@@ -76,6 +76,8 @@ export interface DesktopInfo {
   webVersion: string;
   /** `dev` loads the live dev server; `pack` serves the stored web pack. */
   mode: 'dev' | 'pack';
+  /** The shell's language for menus and dialogs (shell 0.3.3+). */
+  locale?: string;
 }
 
 /** `window.annieDesktop`: the only bridge between the web app and the desktop shell. */
@@ -98,6 +100,8 @@ export interface DesktopBridge {
   onOpenFile(cb: (file: { name: string; bytes: Uint8Array }) => void): () => void;
   /** Board files as documents (shell 0.3.0+). Absent on older shells. */
   docs?: DocsBridge;
+  /** The language the person picked: menus and dialogs follow (shell 0.3.3+). Absent on older shells. */
+  setLocale?(locale: string): void;
 }
 
 /**

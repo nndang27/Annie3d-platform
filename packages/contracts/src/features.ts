@@ -119,6 +119,13 @@ export const FEATURES: Feature[] = [
     paths: [`${C}/chrome/ReelDialog.tsx`, `${C}/lib/reel.ts`],
   },
   {
+    id: 'languages',
+    title: 'Languages',
+    surface: 'shared',
+    layer: 'web',
+    paths: [`${C}/i18n.tsx`, `${C}/chrome/LanguageMenu.tsx`, 'packages/i18n/**'],
+  },
+  {
     id: 'performance',
     title: 'Performance meter',
     surface: 'shared',

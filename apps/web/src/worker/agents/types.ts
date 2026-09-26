@@ -1,4 +1,5 @@
 import type { Graph, GraphOp } from '@annie3d/contracts';
+import type { Locale } from '../lib/i18n';
 
 /**
  * AGENT PLUG POINT (F7). An agent turns one user message into a stream of actions:
@@ -18,6 +19,12 @@ export interface AgentInput {
   nodeIds: string[];
   budgetCredits: number;
   history: { role: 'user' | 'assistant'; text: string }[];
+  /**
+   * The person's language (cookie, then Accept-Language): answer and name changes (op labels)
+   * in it. An LLM agent tells the model to reply in this language (LOCALES in @annie3d/i18n
+   * has its name); board content people typed stays as it is.
+   */
+  locale: Locale;
 }
 
 export interface Agent {

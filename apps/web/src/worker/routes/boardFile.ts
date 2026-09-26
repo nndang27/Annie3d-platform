@@ -26,12 +26,12 @@ const into = (c: { req: { query(k: string): string | undefined } }) =>
 boardFileRoutes.post('/api/boards/:boardId/import', requireEditor, async (c) => {
   const boardId = uuidParam(c, 'boardId');
   const lim = await c.env.RL_UPLOAD.limit({ key: c.get('user')!.id });
-  if (!lim.success) throw httpError(429, 'rate_limited', 'Too many imports, slow down');
+  if (!lim.success) throw httpError(429, 'rate_limited', 'api.boardFile.tooManyImports');
   if (Number(c.req.header('content-length') ?? 0) > BOARD_FILE_DIRECT_MAX_BYTES)
-    throw httpError(413 as 400, 'bad_request', 'Send files over 80 MB through /import-upload');
+    throw httpError(413 as 400, 'bad_request', 'api.boardFile.useUpload');
   const raw = new Uint8Array(await c.req.arrayBuffer());
   if (raw.byteLength > BOARD_FILE_DIRECT_MAX_BYTES)
-    throw httpError(413 as 400, 'bad_request', 'Send files over 80 MB through /import-upload');
+    throw httpError(413 as 400, 'bad_request', 'api.boardFile.useUpload');
   const who = { workspaceId: c.get('workspaceId')!, userId: c.get('user')!.id };
   return c.json(await importBoardFile(c.env, getDb(c), who, boardId, memorySource(raw), at(c), into(c)), 201);
 });
@@ -43,7 +43,7 @@ const tempKey = (prefix: string, ws: string, id: string) => `${prefix}ws/${ws}/i
 boardFileRoutes.post('/api/boards/:boardId/import-upload', requireEditor, async (c) => {
   uuidParam(c, 'boardId');
   const lim = await c.env.RL_UPLOAD.limit({ key: c.get('user')!.id });
-  if (!lim.success) throw httpError(429, 'rate_limited', 'Too many imports, slow down');
+  if (!lim.success) throw httpError(429, 'rate_limited', 'api.boardFile.tooManyImports');
   const { byteSize } = await body(c, ImportUploadRequest);
   const id = crypto.randomUUID();
   const key = tempKey(c.env.R2_KEY_PREFIX, c.get('workspaceId')!, id);
@@ -76,11 +76,11 @@ boardFileRoutes.post('/api/boards/:boardId/import-upload/complete', requireEdito
   try {
     await completeMultipart(c.env, BUCKET_NAMES.uploads, key, uploadId, req.parts);
   } catch {
-    throw httpError(400, 'bad_request', 'The upload is missing, unfinished or already imported');
+    throw httpError(400, 'bad_request', 'api.boardFile.uploadUnfinished');
   }
   try {
     const head = await c.env.UPLOADS.head(key);
-    if (!head) throw httpError(400, 'bad_request', 'The upload is missing');
+    if (!head) throw httpError(400, 'bad_request', 'api.boardFile.uploadMissing');
     const who = { workspaceId: c.get('workspaceId')!, userId: c.get('user')!.id };
     const src = r2Source(c.env.UPLOADS, key, head.size);
     return c.json(await importBoardFile(c.env, getDb(c), who, boardId, src, at(c), into(c)), 201);

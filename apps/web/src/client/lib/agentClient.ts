@@ -1,4 +1,5 @@
 import type { GraphOp } from '@annie3d/contracts';
+import { t } from '../i18n';
 
 export type AgentEvent =
   | { type: 'thread'; threadId: string; messageId: string }
@@ -27,7 +28,7 @@ export async function sendAgentMessage(
   });
   if (!res.ok || !res.body) {
     const err = await res.json().catch(() => null);
-    throw new Error(err?.error?.message ?? `Agent unavailable (${res.status})`);
+    throw new Error(err?.error?.message ?? t('canvas.agentUnavailable', { status: res.status }));
   }
   const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
   let buf = '';

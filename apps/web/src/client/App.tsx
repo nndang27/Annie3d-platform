@@ -20,6 +20,7 @@ import { SignInPrompt } from './chrome/SignInPrompt';
 import { Toasts } from './chrome/Toasts';
 import { Toolbar } from './chrome/Toolbar';
 import { TopBar } from './chrome/TopBar';
+import { t, useT } from './i18n';
 import { grantAndLoad, loadDocument, startsAsDoc, useDoc } from './lib/doc';
 import { timed } from './lib/perf';
 import { editorOverlay, simulatorOverlay } from './lib/preload';
@@ -81,8 +82,9 @@ function useBoot() {
           // A guest who just signed in brings their board along (F1 → F11 hand-off).
           const guest = await loadGuest<GuestBoard>();
           if (guest?.nodes?.length) {
+            // The untouched example board gets a fresh name in the current language.
             const snap = await api.createBoard({
-              title: guest.title === 'Example board' ? 'My first board' : guest.title,
+              title: guest.title === exampleBoard().title ? t('app.board.firstTitle') : guest.title,
               starter: 'blank',
               fromGuest: guestPayload(guest),
             });
@@ -94,15 +96,18 @@ function useBoot() {
           } else {
             const list = await api.boards();
             // New accounts start on the example board with its rendered outputs (F1).
-            id =
-              list.boards[0]?.id ??
-              (
+            const first = list.boards[0]?.id;
+            if (first) id = first;
+            else {
+              const example = exampleBoard();
+              id = (
                 await api.createBoard({
-                  title: 'Example board',
+                  title: example.title,
                   starter: 'blank',
-                  fromGuest: guestPayload(exampleBoard()),
+                  fromGuest: guestPayload(example),
                 })
               ).board.id;
+            }
           }
           history.replaceState(null, '', `/b/${id}${location.search}`);
         }
@@ -136,7 +141,7 @@ function useCheckoutReturn() {
     history.replaceState(null, '', u);
     void queryClient.invalidateQueries({ queryKey: ['me'] });
     void queryClient.invalidateQueries({ queryKey: ['credits'] });
-    toast('Payment complete. Credits added.');
+    toast(t('app.checkoutDone'));
   }, []);
 }
 
@@ -154,16 +159,18 @@ function useEditParam() {
  * the browser lets it read the file again.
  */
 function DocAccess() {
+  const t = useT();
   const name = useDoc((s) => s.needsPermission);
-  if (!name) return <>Loading board…</>;
+  if (!name) return <>{t('app.loading')}</>;
   return (
     <button type="button" className="doc-access" onClick={() => void grantAndLoad()} data-testid="doc-access">
-      Open {name}
+      {t('app.docAccess', { name })}
     </button>
   );
 }
 
 function Workspace() {
+  const t = useT();
   const error = useBoot();
   const mode = useBoard((s) => s.mode);
   const agentOpen = useUi((s) => s.agentOpen);
@@ -178,7 +185,7 @@ function Workspace() {
   }, [error]);
   return (
     <div className={`shell${agentOpen ? '' : ' agent-closed'}`}>
-      <main className="canvas-wrap" aria-label="Board canvas" aria-busy={mode === 'loading'}>
+      <main className="canvas-wrap" aria-label={t('app.canvas')} aria-busy={mode === 'loading'}>
         {mode === 'loading' ? (
           <div className="splash" data-testid="loading">
             <DocAccess />
@@ -201,7 +208,7 @@ function Workspace() {
       <Toasts />
       {editing && (
         <EditorBoundary key={editing}>
-          <Suspense fallback={<div className="editor-loading">Opening 3D…</div>}>
+          <Suspense fallback={<div className="editor-loading">{t('app.opening3d')}</div>}>
             <EditorOverlay nodeId={editing} />
           </Suspense>
         </EditorBoundary>
@@ -218,7 +225,7 @@ function Workspace() {
       )}
       {simulating && (
         <EditorBoundary key={simulating}>
-          <Suspense fallback={<div className="editor-loading">Opening simulator…</div>}>
+          <Suspense fallback={<div className="editor-loading">{t('app.openingSimulator')}</div>}>
             <SimulatorOverlay nodeId={simulating} />
           </Suspense>
         </EditorBoundary>
@@ -234,7 +241,7 @@ class EditorBoundary extends Component<{ children: ReactNode }, { failed: boolea
     return { failed: true };
   }
   componentDidCatch(error: Error) {
-    toast(`The 3D view could not start: ${error.message}`, 'error');
+    toast(t('app.error3d', { message: error.message }), 'error');
     useUi.setState({ editingNodeId: null, simulatingNodeId: null });
     const u = new URL(location.href);
     u.searchParams.delete('edit');

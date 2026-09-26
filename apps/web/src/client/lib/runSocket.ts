@@ -1,5 +1,6 @@
 import { downstreamOf, NODE_DEFS, type RunEvent } from '@annie3d/contracts';
 import type { QueryClient } from '@tanstack/react-query';
+import { t } from '../i18n';
 import { applyRemote, setStale, upsertVersions, useBoard } from '../store/board';
 import { setError, setProgress, useRuns } from '../store/runs';
 import { toast } from '../store/ui';
@@ -52,11 +53,11 @@ function apply(e: RunEvent, queryClient: QueryClient) {
       useRuns.setState({ plan: new Set(e.plan) });
       for (const id of e.plan) {
         setError(id, null);
-        setProgress(id, { runId: e.runId, progress: 0, stage: 'Queued' });
+        setProgress(id, { runId: e.runId, progress: 0, stage: t('run.queued') });
       }
       return;
     case 'step.started':
-      setProgress(e.nodeId, { runId: e.runId, progress: 0.02, stage: 'Starting' });
+      setProgress(e.nodeId, { runId: e.runId, progress: 0.02, stage: t('run.starting') });
       return;
     case 'step.progress':
       setProgress(e.nodeId, { runId: e.runId, progress: e.progress, stage: e.stage });
@@ -98,12 +99,13 @@ function apply(e: RunEvent, queryClient: QueryClient) {
         ...(e.status === 'succeeded' || e.status === 'partial' ? { lastFinishedRunId: e.runId } : {}),
       });
       void queryClient.invalidateQueries({ queryKey: ['me'] });
+      const count = e.chargedCredits;
       const msg = {
-        succeeded: `Run finished: ${e.chargedCredits} credits used`,
-        partial: `Run finished with errors: ${e.chargedCredits} credits used`,
-        failed: 'Run failed. Credits refunded.',
-        cancelled: `Run cancelled: ${e.chargedCredits} credits used`,
-      }[e.status];
+        succeeded: () => t('run.finished', { count }),
+        partial: () => t('run.finishedWithErrors', { count }),
+        failed: () => t('run.failedRefunded'),
+        cancelled: () => t('run.cancelled', { count }),
+      }[e.status]();
       toast(msg, e.status === 'succeeded' ? 'info' : 'error');
       return;
     }

@@ -31,7 +31,7 @@ async function ownRun(c: Context<AppEnv>, db: Db) {
   const run = await db.query.runs.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, runId), eq(t.workspaceId, c.get('workspaceId')!)),
   });
-  if (!run) throw httpError(404, 'not_found', 'Run not found');
+  if (!run) throw httpError(404, 'not_found', 'api.run.notFound');
   return run;
 }
 
@@ -45,19 +45,13 @@ reelRoutes.post('/api/runs/:runId/reels', requireEditor, async (c) => {
   const db = getDb(c);
   const run = await ownRun(c, db);
   const req = await body(c, CreateReelRequest);
-  if (req.mode === 'server')
-    throw httpError(
-      501 as 400,
-      'bad_request',
-      'Server-side reel rendering is not attached yet; record the reel in the browser',
-    );
-  if (!['succeeded', 'partial'].includes(run.status))
-    throw httpError(409, 'conflict', 'Make a reel after the run has finished');
+  if (req.mode === 'server') throw httpError(501 as 400, 'bad_request', 'api.reel.serverNotAttached');
+  if (!['succeeded', 'partial'].includes(run.status)) throw httpError(409, 'conflict', 'api.reel.afterRun');
   const a = await db.query.assets.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, req.assetId), eq(t.workspaceId, run.workspaceId)),
   });
   if (a?.kind !== 'video' || a.status !== 'ready')
-    throw httpError(400, 'bad_request', 'Upload the recorded reel video first');
+    throw httpError(400, 'bad_request', 'api.reel.uploadFirst');
   const [row] = await db
     .insert(reels)
     .values({ runId: run.id, workspaceId: run.workspaceId, mode: 'client', status: 'ready', assetId: a.id })

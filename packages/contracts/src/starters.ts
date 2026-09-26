@@ -51,39 +51,63 @@ const HEADLINE: Record<StarterId, string> = {
 };
 
 /**
+ * The words a Starter writes into its nodes, in the person's language (the web app passes them
+ * from its catalog; the contracts do not depend on i18n). English when left out.
+ */
+export interface StarterWords {
+  /** Label of the photo node ("Product photo"). */
+  photo?: string;
+  /** Label of the headline Text node ("Headline"). */
+  headline?: string;
+  /** Label of the Packshot node ("Packshots"). */
+  pack?: string;
+  /** The sample headline itself. */
+  headlineText?: string;
+  /** The Simulation node's call to action ("Shop now"). */
+  cta?: string;
+}
+
+/**
  * Starter graphs are ordinary, editable nodes (approved UI, 2026-09-24): no frame, no lock.
- * Coordinates follow docs/ui/approved-canvas-free-graph.png.
+ * Coordinates follow docs/ui/approved-canvas-free-graph.png. Nodes named after their kind have
+ * no label, so their name follows the language they are shown in.
  */
 export function starterGraph(
   id: StarterId,
   origin = { x: 0, y: 0 },
+  words: StarterWords = {},
 ): { nodes: NodeRecord[]; edges: EdgeRecord[] } {
   const specs: Spec[] = [
-    { key: 'photo', kind: 'photo', x: 0, y: 40, label: 'Product photo' },
+    { key: 'photo', kind: 'photo', x: 0, y: 40, label: words.photo ?? 'Product photo' },
     {
       key: 'headline',
       kind: 'text',
       x: 0,
       y: 420,
-      label: 'Headline',
-      settings: { role: 'headline', text: HEADLINE[id] },
+      label: words.headline ?? 'Headline',
+      settings: { role: 'headline', text: words.headlineText ?? HEADLINE[id] },
     },
     {
       key: 'model',
       kind: 'model3d',
       x: 480,
       y: 60,
-      label: '3D model',
       settings: { builder: 'auto', detail: 'standard' },
     },
-    { key: 'pack', kind: 'packshot', x: 960, y: -140, label: 'Packshots', settings: { angles: 'four' } },
-    { key: 'stage', kind: 'stage', x: 960, y: 250, label: 'Stage', settings: { look: LOOK[id] } },
+    {
+      key: 'pack',
+      kind: 'packshot',
+      x: 960,
+      y: -140,
+      label: words.pack ?? 'Packshots',
+      settings: { angles: 'four' },
+    },
+    { key: 'stage', kind: 'stage', x: 960, y: 250, settings: { look: LOOK[id] } },
     {
       key: 'video',
       kind: 'adVideo',
       x: 1440,
       y: 200,
-      label: 'Ad video',
       settings: { motion: id, aspect: '9:16', durationSec: 10 },
     },
     {
@@ -91,7 +115,6 @@ export function starterGraph(
       kind: 'export',
       x: 1920,
       y: 200,
-      label: 'Export',
       settings: { glbPreset: 'web', includeMp4: true, includePng: true },
     },
     {
@@ -99,8 +122,7 @@ export function starterGraph(
       kind: 'simulation',
       x: 1440,
       y: 620,
-      label: 'Simulation',
-      settings: { environment: SIM_FOR[id] },
+      settings: { environment: SIM_FOR[id], ...(words.cta ? { cta: words.cta } : {}) },
     },
   ];
   const ids = new Map(specs.map((s) => [s.key, newId()]));

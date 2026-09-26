@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom';
 
 /** The bottom toolbar's band: menus that would open under it open above their button instead. */
 const BOTTOM_BAND = 76;
-const ITEMS = '[role="menuitem"]:not(:disabled), [role="option"]:not(:disabled)';
+const ITEMS =
+  '[role="menuitem"]:not(:disabled), [role="menuitemradio"]:not(:disabled), [role="option"]:not(:disabled)';
 
 /**
  * Fixed-position popover and menu, in screen space (not on the zoomed board).
@@ -51,10 +52,14 @@ export function Popover({
     top = Math.max(8, Math.min(top, innerHeight - r.height - 8));
     setPos({ left, top });
   }, [x, y, anchor, align]);
-  // Start on the first item, unless something inside (a search field) already took focus.
+  // Start on the checked item (a radio menu) or the first one, unless something inside (a search
+  // field) already took focus.
   useEffect(() => {
     const el = ref.current;
-    if (el && !el.contains(document.activeElement)) el.querySelector<HTMLElement>(ITEMS)?.focus();
+    if (el && !el.contains(document.activeElement))
+      (
+        el.querySelector<HTMLElement>('[aria-checked="true"]') ?? el.querySelector<HTMLElement>(ITEMS)
+      )?.focus();
   }, []);
   useEffect(() => {
     const inside = (n: EventTarget | null) =>

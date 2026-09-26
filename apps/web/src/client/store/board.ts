@@ -14,6 +14,7 @@ import {
 } from '@annie3d/contracts';
 import { create } from 'zustand';
 import { api } from '../api/client';
+import { t, useI18n } from '../i18n';
 import { record } from '../lib/perf';
 import { loadOutbox, type PendingBatch, saveGuest, saveOutbox } from './persist';
 
@@ -40,7 +41,7 @@ export interface BoardState {
 const initial: BoardState = {
   mode: 'loading',
   boardId: null,
-  title: 'Untitled board',
+  title: t('board.untitled'),
   graph: { nodes: new Map(), edges: new Map() },
   versions: new Map(),
   stale: new Set(),
@@ -52,6 +53,11 @@ const initial: BoardState = {
 };
 
 export const useBoard = create<BoardState>()(() => initial);
+
+// Until a board is loaded, the placeholder title follows the language (chosen after this module loads).
+useI18n.subscribe(({ t: tr }) => {
+  if (useBoard.getState().mode === 'loading') useBoard.setState({ title: tr('board.untitled') });
+});
 const set = useBoard.setState;
 const get = useBoard.getState;
 

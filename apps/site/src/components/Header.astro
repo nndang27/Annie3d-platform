@@ -1,12 +1,23 @@
 ---
-import { CANVAS } from '../lib/site';
+import { CANVAS, type LocaleProps, localePath, pageT } from '../lib/site';
+import LanguagePicker from './LanguagePicker.astro';
+
+interface Props extends LocaleProps {
+  /** This page's path without the language prefix, for the language links. */
+  path: string;
+}
+const { locale, path } = Astro.props;
+const t = pageT(locale);
+// From a page in another language, opening the canvas keeps that language (see scripts/lang.ts).
+const keep = locale === 'en' ? undefined : locale;
 ---
 
 <header class="site-header">
   <div class="container">
-    <a href="/home" class="logo" aria-label="Annie 3D home"><span class="logo-mark" aria-hidden="true">A</span><span>Annie 3D</span></a>
+    <a href={localePath(locale, '/home')} class="logo" aria-label={t('site.nav.homeLabel')}><span class="logo-mark" aria-hidden="true">A</span><span>{t('common.brand')}</span></a>
     <div class="site-actions" style="display:flex;margin-left:auto">
-      <a class="btn btn-primary btn-sm btn-pill" href={CANVAS} data-testid="header-open-canvas">Open the canvas</a>
+      <LanguagePicker locale={locale} path={path} />
+      <a class="btn btn-primary btn-sm btn-pill" href={CANVAS} data-lang={keep} data-testid="header-open-canvas">{t('site.nav.openCanvas')}</a>
     </div>
   </div>
 </header>

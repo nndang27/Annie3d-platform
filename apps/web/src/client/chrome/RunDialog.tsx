@@ -2,6 +2,7 @@ import { NODE_DEFS } from '@annie3d/contracts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { ApiError, api } from '../api/client';
+import { t as tr, useT } from '../i18n';
 import { perfStart } from '../lib/perf';
 import { followRun } from '../lib/runSocket';
 import { useBoard } from '../store/board';
@@ -43,6 +44,7 @@ export function RunDialog() {
 }
 
 function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
+  const t = useT();
   const boardId = useBoard((s) => s.boardId)!;
   const nodes = useBoard((s) => s.graph.nodes);
   const queryClient = useQueryClient();
@@ -67,7 +69,7 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
         useUi.setState({ dialog: { type: 'billing' } });
       } else if (e instanceof ApiError && e.code === 'conflict' && (e.details as { runId?: string })?.runId) {
         attachRun((e.details as { runId: string }).runId, queryClient);
-        toast('A run is already in progress on this board', 'error');
+        toast(t('dialog.run.inProgress'), 'error');
         close();
       } else {
         toast((e as Error).message, 'error');
@@ -75,9 +77,13 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
       }
     }
   };
-  if (est.isLoading) return <p className="muted">Checking cost…</p>;
+  if (est.isLoading) return <p className="muted">{t('dialog.run.checking')}</p>;
   if (est.error || !est.data)
-    return <p className="muted">Could not estimate this run. {(est.error as Error)?.message}</p>;
+    return (
+      <p className="muted">
+        {t('dialog.run.estimateFailed')} {(est.error as Error)?.message}
+      </p>
+    );
   const runnable = est.data.plan.filter((p) => NODE_DEFS[p.kind].runnable);
   const steps = runnable.filter((p) => !p.cached);
   const cached = runnable.length - steps.length;
@@ -86,14 +92,11 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
   if (!steps.length) {
     return (
       <>
-        <h2 id="run-title">Everything is up to date</h2>
-        <p className="muted">
-          {cached} {cached === 1 ? 'node already has' : 'nodes already have'} results for their current
-          inputs. Change a prompt, setting or input to run again.
-        </p>
+        <h2 id="run-title">{t('dialog.run.upToDate')}</h2>
+        <p className="muted">{t('dialog.run.allCached', { count: cached })}</p>
         <div className="modal-actions">
           <button type="button" className="btn-primary" onClick={close} data-testid="run-close">
-            OK
+            {t('dialog.run.ok')}
           </button>
         </div>
       </>
@@ -103,36 +106,39 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
     <>
       <h2 id="run-title">
         {steps.length === 1
-          ? `Run ${label(nodes.get(steps[0]!.nodeId)?.label, steps[0]!.kind)}`
-          : `Run ${steps.length} nodes`}
+          ? t('dialog.run.titleOne', { name: label(nodes.get(steps[0]!.nodeId)?.label, steps[0]!.kind) })
+          : t('dialog.run.titleMany', { count: steps.length })}
       </h2>
       <ul className="run-plan" data-testid="run-plan">
         {steps.map((p) => (
           <li key={p.nodeId}>
             <span>{label(nodes.get(p.nodeId)?.label, p.kind)}</span>
-            <span className="muted">{p.credits} credits</span>
+            <span className="muted">{t('common.credits', { count: p.credits })}</span>
           </li>
         ))}
         {cached > 0 && (
           <li className="muted" data-testid="run-cached">
-            <span>
-              {cached} unchanged {cached === 1 ? 'node' : 'nodes'} reuse their results
-            </span>
-            <span>free</span>
+            <span>{t('dialog.run.cached', { count: cached })}</span>
+            <span>{t('dialog.run.free')}</span>
           </li>
         )}
       </ul>
       <p className="run-total">
-        <span>Total</span>
-        <b data-testid="run-total">{total} credits</b>
+        <span>{t('dialog.run.total')}</span>
+        <b data-testid="run-total">{t('common.credits', { count: total })}</b>
       </p>
       <p className="muted">
-        Balance: {est.data.balance} credits.{est.data.freeRunAvailable ? ' Your first run is free.' : ''}{' '}
-        Failed steps are refunded.
+        {[
+          t('dialog.run.balance', { count: est.data.balance }),
+          est.data.freeRunAvailable && t('dialog.run.firstRunFree'),
+          t('dialog.run.refunded'),
+        ]
+          .filter(Boolean)
+          .join(' ')}
       </p>
       <div className="modal-actions">
         <button type="button" className="btn-secondary" onClick={close}>
-          Cancel
+          {t('common.cancel')}
         </button>
         {enough ? (
           <button
@@ -142,8 +148,8 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
             disabled={starting}
             data-testid="run-confirm"
           >
-            {starting ? 'Starting…' : 'Run'}
-            {!starting && <span className="cost">{total} credits</span>}
+            {starting ? t('dialog.run.starting') : t('dialog.run.run')}
+            {!starting && <span className="cost">{t('common.credits', { count: total })}</span>}
           </button>
         ) : (
           <button
@@ -152,7 +158,7 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
             onClick={() => useUi.setState({ dialog: { type: 'billing' } })}
             data-testid="get-credits"
           >
-            Get credits
+            {t('dialog.run.getCredits')}
           </button>
         )}
       </div>
@@ -161,5 +167,5 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
 }
 
 function label(l: string | null | undefined, kind: keyof typeof NODE_DEFS) {
-  return l ?? NODE_DEFS[kind].label;
+  return l ?? tr(`node.${kind}`);
 }

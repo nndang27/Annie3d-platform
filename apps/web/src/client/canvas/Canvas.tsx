@@ -6,7 +6,9 @@ import {
   type NodeRecord,
   newId,
 } from '@annie3d/contracts';
+import type { Translator } from '@annie3d/i18n';
 import {
+  type AriaLabelConfig,
   type Connection,
   type Edge,
   type Node,
@@ -19,6 +21,7 @@ import {
   type Viewport,
 } from '@xyflow/react';
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { useT } from '../i18n';
 import { importBoardFile, isBoardFile, setViewCentre } from '../lib/boardFile';
 import { markBoardReady } from '../lib/perf';
 import { preloadEditorWhenIdle } from '../lib/preload';
@@ -37,6 +40,31 @@ import { useWheelZoom } from './useWheelZoom';
 // Defined once at module level (React Flow custom-nodes guide: prevents re-mounting every render).
 const nodeTypes = { annie: FlowNode };
 const edgeTypes = { annie: FlowEdge };
+
+const DIRECTION: Record<
+  string,
+  'canvas.a11y.up' | 'canvas.a11y.down' | 'canvas.a11y.left' | 'canvas.a11y.right'
+> = {
+  Up: 'canvas.a11y.up',
+  Down: 'canvas.a11y.down',
+  Left: 'canvas.a11y.left',
+  Right: 'canvas.a11y.right',
+};
+
+/** React Flow's screen-reader texts in the current language (its defaults are English). */
+function reactFlowLabels(t: Translator): Partial<AriaLabelConfig> {
+  return {
+    'node.a11yDescription.default': t('canvas.a11y.nodeDescription'),
+    'node.a11yDescription.keyboardDisabled': t('canvas.a11y.nodeDescriptionKeyboard'),
+    'node.a11yDescription.ariaLiveMessage': ({ direction, x, y }) =>
+      t('canvas.a11y.nodeMoved', {
+        direction: DIRECTION[direction] ? t(DIRECTION[direction]) : direction,
+        x,
+        y,
+      }),
+    'edge.a11yDescription.default': t('canvas.a11y.edgeDescription'),
+  };
+}
 
 /**
  * Measured node sizes, as React Flow reports them ('dimensions' changes). A controlled flow must
@@ -103,6 +131,8 @@ function saveViewport(boardId: string | null, vp: Viewport) {
 }
 
 export function Canvas() {
+  const t = useT();
+  const ariaLabelConfig = useMemo(() => reactFlowLabels(t), [t]);
   const graph = useBoard((s) => s.graph);
   const selected = useUi((s) => s.selected);
   const tool = useUi((s) => s.tool);
@@ -124,10 +154,16 @@ export function Canvas() {
     () =>
       [...graph.edges.values()].map((e) => {
         const src = graph.nodes.get(e.source);
+        const dst = graph.nodes.get(e.target);
         const out = src ? NODE_DEFS[src.kind].output?.type : undefined;
-        return toRfEdge(e, out ?? 'file');
+        // Screen readers hear node names, not React Flow's default "Edge from <id> to <id>".
+        const name = (n: typeof src) => (n ? (n.label ?? t(`node.${n.kind}`)) : '');
+        return {
+          ...toRfEdge(e, out ?? 'file'),
+          ariaLabel: t('canvas.edge.label', { from: name(src), to: name(dst) }),
+        };
       }),
-    [graph.edges, graph.nodes],
+    [graph.edges, graph.nodes, t],
   );
 
   // Drag frames: coalesce to one store update per animation frame (Excalidraw throttleRAF).
@@ -415,6 +451,7 @@ export function Canvas() {
       connectionRadius={28}
       elevateNodesOnSelect={false}
       proOptions={{ hideAttribution: false }}
+      ariaLabelConfig={ariaLabelConfig}
       style={{ background: 'var(--canvas-bg)' }}
     >
       <Grid />

@@ -2,6 +2,7 @@ import { GLB_PRESETS, type GlbPresetId } from '@annie3d/contracts';
 import { type Document, WebIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { zipSync } from 'fflate';
+import { type Translator, translator } from '../lib/i18n';
 
 export interface ExportCheck {
   id: 'bytes' | 'triangles' | 'texture' | 'animation' | 'validator';
@@ -95,6 +96,8 @@ function triangles(doc: Document): number {
 export async function exportGlb(
   input: Uint8Array,
   presetId: GlbPresetId,
+  /** Language of the check messages (the report is stored with the export). */
+  t: Translator = translator('en'),
 ): Promise<{ glb: Uint8Array; report: ExportReport }> {
   const preset = GLB_PRESETS[presetId];
   const io = new WebIO().registerExtensions(ALL_EXTENSIONS);
@@ -111,14 +114,14 @@ export async function exportGlb(
   // Re-read what we wrote: a structural round trip is the validator available in Workers.
   let validatorOk = !readError;
   let validatorMsg = readError
-    ? `Not a valid glTF: ${readError.slice(0, 160)}`
-    : 'Reads back as valid glTF 2.0';
+    ? t('api.export.checkInvalid', { reason: readError.slice(0, 160) })
+    : t('api.export.checkValid');
   if (!readError) {
     try {
       await io.readBinary(glb);
     } catch (e) {
       validatorOk = false;
-      validatorMsg = `Round trip failed: ${(e as Error).message.slice(0, 160)}`;
+      validatorMsg = t('api.export.checkRoundTrip', { reason: (e as Error).message.slice(0, 160) });
     }
   }
   const tris = readError ? 0 : triangles(doc);
@@ -129,28 +132,33 @@ export async function exportGlb(
     if (size) maxTex = Math.max(maxTex, size.w, size.h);
   }
   const anims = doc.getRoot().listAnimations().length;
-  const mb = (n: number) => `${(n / 1048576).toFixed(2)} MB`;
+  const mb = (n: number) =>
+    t('api.export.megabytes', {
+      value: t.number(n / 1048576, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    });
   const checks: ExportCheck[] = [
     {
       id: 'bytes',
       passed: glb.byteLength <= preset.maxBytes,
       value: glb.byteLength,
       limit: preset.maxBytes,
-      message: `${mb(glb.byteLength)} of ${mb(preset.maxBytes)}`,
+      message: t('api.export.checkBytes', { size: mb(glb.byteLength), limit: mb(preset.maxBytes) }),
     },
     {
       id: 'triangles',
       passed: tris <= preset.maxTriangles,
       value: tris,
       limit: preset.maxTriangles,
-      message: `${tris.toLocaleString('en')} of ${preset.maxTriangles.toLocaleString('en')} triangles`,
+      message: t('api.export.checkTriangles', { count: tris, limit: preset.maxTriangles }),
     },
     {
       id: 'texture',
       passed: maxTex <= preset.maxTexture,
       value: maxTex,
       limit: preset.maxTexture,
-      message: maxTex ? `Largest texture ${maxTex}px (limit ${preset.maxTexture}px)` : 'No image textures',
+      message: maxTex
+        ? t('api.export.checkTexture', { size: maxTex, limit: preset.maxTexture })
+        : t('api.export.checkNoTextures'),
     },
     {
       id: 'animation',
@@ -159,9 +167,9 @@ export async function exportGlb(
       limit: preset.requiresAnimation ? 1 : 0,
       message: preset.requiresAnimation
         ? anims
-          ? `${anims} animation clip(s)`
-          : 'Needs an animation (e.g. turntable)'
-        : `${anims} animation clip(s), none required`,
+          ? t('api.export.checkAnimation', { count: anims })
+          : t('api.export.checkAnimationNeeded')
+        : t('api.export.checkAnimationOptional', { count: anims }),
     },
     { id: 'validator', passed: validatorOk, value: validatorOk ? 1 : 0, limit: 1, message: validatorMsg },
   ];

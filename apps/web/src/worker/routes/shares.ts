@@ -12,6 +12,7 @@ import type { z } from 'zod';
 import type { AppEnv } from '../env';
 import { getDb } from '../lib/db';
 import { body, httpError, uuidParam } from '../lib/http';
+import { escapeHtml as esc, richHtml, type Translator, tFor } from '../lib/i18n';
 import { requireEditor, requireUser } from '../lib/session';
 import { assetDto, bucketOf } from '../services/assets';
 import { loadBoard } from '../services/boards';
@@ -57,7 +58,7 @@ shareRoutes.post('/api/shares', requireEditor, async (c) => {
     const v = await db.query.nodeVersions.findFirst({
       where: (t, { and, eq }) => and(eq(t.id, req.targetId), eq(t.workspaceId, ws)),
     });
-    if (!v) throw httpError(404, 'not_found', 'Version not found');
+    if (!v) throw httpError(404, 'not_found', 'api.share.versionNotFound');
     boardId = v.boardId;
   }
   // One live link per target: sharing again returns the existing link (no link sprawl). The
@@ -89,7 +90,7 @@ shareRoutes.post('/api/shares', requireEditor, async (c) => {
   if (row) return c.json(shareDto(c, row), 201);
   // Another request created it a moment ago.
   const winner = await live();
-  if (!winner) throw httpError(409, 'conflict', 'Share changed, try again');
+  if (!winner) throw httpError(409, 'conflict', 'api.share.changed');
   return c.json(shareDto(c, winner));
 });
 
@@ -116,7 +117,7 @@ shareRoutes.delete('/api/shares/:shareId', requireEditor, async (c) => {
   const share = await db.query.shares.findFirst({
     where: (t, { and, eq, isNull }) => and(eq(t.id, id), eq(t.workspaceId, ws), isNull(t.revokedAt)),
   });
-  if (!share) throw httpError(404, 'not_found', 'Share not found');
+  if (!share) throw httpError(404, 'not_found', 'api.share.notFound');
   // "Turn off link" turns off the target's link, including any duplicate made before the unique
   // index existed.
   await db
@@ -138,7 +139,7 @@ interface Resolved {
   items: { assetId: string; kind: NodeKind }[];
 }
 
-async function resolveShare(db: Db, token: string): Promise<Resolved | null> {
+async function resolveShare(db: Db, token: string, t: Translator): Promise<Resolved | null> {
   if (!/^[A-Za-z0-9_-]{22,64}$/.test(token)) return null;
   const share = await db.query.shares.findFirst({
     where: (t, { and, eq, isNull }) => and(eq(t.token, token), isNull(t.revokedAt)),
@@ -193,7 +194,7 @@ async function resolveShare(db: Db, token: string): Promise<Resolved | null> {
   return {
     share,
     title: b.title,
-    ownerName: owner?.name ?? 'Annie 3D user',
+    ownerName: owner?.name ?? t('api.share.anonymousOwner'),
     items: items
       .filter((i) => {
         if (seen.has(i.assetId)) return false;
@@ -220,8 +221,8 @@ async function publicAssets(c: Context<AppEnv>, db: Db, r: Resolved): Promise<As
 
 shareRoutes.get('/api/public/shares/:token', async (c) => {
   const db = getDb(c);
-  const r = await resolveShare(db, c.req.param('token'));
-  if (!r) throw httpError(404, 'not_found', 'This link is not available');
+  const r = await resolveShare(db, c.req.param('token'), tFor(c));
+  if (!r) throw httpError(404, 'not_found', 'api.share.unavailable');
   // Awaited, not waitUntil: closeDb ends the connection in waitUntil and could cut this off.
   await db.execute(sql`UPDATE shares SET view_count = view_count + 1 WHERE id = ${r.share.id}`);
   const res: z.infer<typeof PublicShareResponse> = {
@@ -239,11 +240,11 @@ shareRoutes.get('/api/public/shares/:token', async (c) => {
 /** Files of a share: only assets in the shared target; revocation takes effect within 5 min. */
 shareRoutes.get('/api/public/shares/:token/assets/:assetId/content', async (c) => {
   const db = getDb(c);
-  const r = await resolveShare(db, c.req.param('token'));
+  const r = await resolveShare(db, c.req.param('token'), tFor(c));
   const assetId = uuidParam(c, 'assetId');
-  if (!r?.items.some((i) => i.assetId === assetId)) throw httpError(404, 'not_found', 'Not found');
+  if (!r?.items.some((i) => i.assetId === assetId)) throw httpError(404, 'not_found', 'api.http.notFound');
   const a = await db.query.assets.findFirst({ where: (t, { eq }) => eq(t.id, assetId) });
-  if (a?.status !== 'ready') throw httpError(404, 'not_found', 'Not found');
+  if (a?.status !== 'ready') throw httpError(404, 'not_found', 'api.http.notFound');
   let key = a.storageKey;
   let mime = a.mime;
   const variant = c.req.query('variant');
@@ -252,7 +253,7 @@ shareRoutes.get('/api/public/shares/:token/assets/:assetId/content', async (c) =
       .select()
       .from(assetVariants)
       .where(and(eq(assetVariants.assetId, assetId), eq(assetVariants.variant, variant)));
-    if (!v) throw httpError(404, 'not_found', 'Not found');
+    if (!v) throw httpError(404, 'not_found', 'api.http.notFound');
     key = v.storageKey;
     mime = v.mime;
   }
@@ -267,26 +268,22 @@ shareRoutes.get('/api/public/shares/:token/assets/:assetId/content', async (c) =
 });
 
 // ------------------------------------------------------------------ share page (SSR + Open Graph)
-const esc = (s: string) =>
-  s.replace(
-    /[&<>"']/g,
-    (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!,
-  );
-
 /**
  * F10 share page: server-rendered so link previews (Slack, iMessage, X, LinkedIn) read the
- * Open Graph tags without running JavaScript. No scripts; video autoplays muted.
+ * Open Graph tags without running JavaScript. No scripts; video autoplays muted. Written in the
+ * visitor's language (cookie, then Accept-Language); the board's title and owner stay as typed.
  */
 shareRoutes.get('/s/:token', async (c) => {
   const db = getDb(c);
-  const r = await resolveShare(db, c.req.param('token'));
+  const t = tFor(c);
+  const r = await resolveShare(db, c.req.param('token'), t);
   const base = origin(c);
   if (!r) {
     return c.html(
       page(
-        base,
-        'Link not available',
-        '<main class="empty"><h1>This link is not available</h1><p>It may have been revoked by its owner.</p><a class="cta" href="/">Open Annie 3D</a></main>',
+        t,
+        t('share.unavailableTitle'),
+        `<main class="empty"><h1>${esc(t('share.unavailableHeading'))}</h1><p>${esc(t('share.unavailableBody'))}</p><a class="cta" href="/">${esc(t('share.openApp'))}</a></main>`,
         '',
       ),
       404,
@@ -302,7 +299,7 @@ shareRoutes.get('/s/:token', async (c) => {
   const ogImage = abs(
     video?.urls.poster ?? images[0]?.urls.poster ?? model?.urls.poster ?? images[0]?.urls.original,
   );
-  const desc = `${r.ownerName} made this with Annie 3D: 3D product ads from one photo.`;
+  const desc = t('share.description', { owner: r.ownerName });
   const og =
     [
       ['og:type', video ? 'video.other' : 'website'],
@@ -310,6 +307,7 @@ shareRoutes.get('/s/:token', async (c) => {
       ['og:description', desc],
       ['og:url', `${base}/s/${r.share.token}`],
       ['og:site_name', 'Annie 3D'],
+      ['og:locale', t.tag.replace('-', '_')],
       ...(ogImage ? [['og:image', ogImage]] : []),
       ...(video?.urls.original
         ? [
@@ -321,10 +319,18 @@ shareRoutes.get('/s/:token', async (c) => {
       .map(([p, v]) => `<meta property="${p}" content="${esc(v!)}">`)
       .join('\n') +
     `\n<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(r.title)}"><meta name="twitter:description" content="${esc(desc)}">${ogImage ? `<meta name="twitter:image" content="${esc(ogImage)}">` : ''}`;
-  const body = `<header><a href="/" class="brand"><span class="mark">A</span> Annie 3D</a><a class="cta" href="/" data-testid="share-cta">Make yours free</a></header>
+  const modelFacts = model
+    ? [
+        ...(model.triangleCount ? [t('share.triangles', { count: model.triangleCount })] : []),
+        t('share.megabytes', {
+          size: t.number(model.byteSize / 1048576, { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+        }),
+      ].join(' · ')
+    : '';
+  const body = `<header><a href="/" class="brand"><span class="mark">A</span> Annie 3D</a><a class="cta" href="/" data-testid="share-cta">${esc(t('share.makeYours'))}</a></header>
 <main>
   <h1>${esc(r.title)}</h1>
-  <p class="by">by ${esc(r.ownerName)}</p>
+  <p class="by">${esc(t('share.by', { owner: r.ownerName }))}</p>
   ${video ? `<section class="hero"><video src="${esc(video.urls.original!)}" poster="${esc(video.urls.poster ?? '')}" autoplay muted loop playsinline controls preload="metadata" data-testid="share-video"></video></section>` : ''}
   ${
     images.length
@@ -337,9 +343,9 @@ shareRoutes.get('/s/:token', async (c) => {
           .join('')}</section>`
       : ''
   }
-  ${model ? `<section class="model"><img src="${esc(model.urls.poster ?? '')}" alt="3D model preview" loading="lazy"><div><h2>3D model</h2><p>${model.triangleCount ? `${model.triangleCount.toLocaleString('en')} triangles · ` : ''}${(model.byteSize / 1048576).toFixed(1)} MB</p><a class="btn" href="${esc(model.urls.original!)}?download=model.glb">Download GLB</a></div></section>` : ''}
+  ${model ? `<section class="model"><img src="${esc(model.urls.poster ?? '')}" alt="${esc(t('share.modelAlt'))}" loading="lazy"><div><h2>${esc(t('share.modelTitle'))}</h2><p>${esc(modelFacts)}</p><a class="btn" href="${esc(model.urls.original!)}?download=model.glb">${esc(t('share.downloadGlb'))}</a></div></section>` : ''}
 </main>
-<footer>Made with <a href="/">Annie 3D</a> · <a href="/legal/terms">Terms</a></footer>`;
+<footer>${richHtml(t, 'share.madeWith', { brand: '<a href="/">Annie 3D</a>' })} · <a href="${sitePath(t, '/legal/terms')}">${esc(t('share.terms'))}</a></footer>`;
   // Revalidate every view: a revoked link must stop working at once (a 60 s max-age kept it
   // alive in WebKit's cache after revocation, E2E 2026-09-24).
   c.header('cache-control', 'no-cache');
@@ -348,11 +354,15 @@ shareRoutes.get('/s/:token', async (c) => {
     'content-security-policy',
     "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; media-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
   );
-  return c.html(page(base, `${r.title} · Annie 3D`, body, og));
+  return c.html(page(t, `${r.title} · Annie 3D`, body, og));
 });
 
-function page(_base: string, title: string, body: string, head: string) {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+/** A page of the static site in the reader's language: `/legal/terms`, `/vi/legal/terms`. */
+const sitePath = (t: Translator, path: string) => (t.locale === 'en' ? path : `/${t.locale}${path}`);
+
+/** The share page's HTML document, in the translator's language (`<html lang>`). */
+export function page(t: Translator, title: string, body: string, head: string) {
+  return `<!doctype html><html lang="${t.tag}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title><meta name="robots" content="noindex">${head}
 <style>
 :root{color-scheme:light dark;--bg:#f6f6f4;--fg:#17191d;--muted:#6b6f76;--card:#fff;--line:#e4e4df}

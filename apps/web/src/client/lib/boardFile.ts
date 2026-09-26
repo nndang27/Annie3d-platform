@@ -35,6 +35,7 @@ import {
 import { deflateSync, inflateSync } from 'fflate';
 import { ApiError } from '../api/client';
 import { insertPayload } from '../canvas/clipboard';
+import { t } from '../i18n';
 import { applyRemote, type LocalBoard, upsertVersions, useBoard } from '../store/board';
 import { saveGuestFile } from '../store/persist';
 import { toast, useUi } from '../store/ui';
@@ -185,10 +186,10 @@ export function parseManifest(text: string): BoardFileManifest {
   try {
     json = JSON.parse(text);
   } catch {
-    throw new ZipError('Not an Annie 3D file');
+    throw new ZipError(t('file.notBoardFile'));
   }
   const r = ManifestSchema.safeParse(json);
-  if (!r.success) throw new ZipError('Not an Annie 3D file (or a newer version)');
+  if (!r.success) throw new ZipError(t('file.notBoardFileOrNewer'));
   return r.data;
 }
 
@@ -250,7 +251,8 @@ async function localBoardFromBlob(file: Blob): Promise<LocalBoard> {
  * send it to the server (through R2 when large); guest and desktop file boards keep it local.
  */
 export async function importBoardFile(file: File, at: { x: number; y: number }) {
-  if (file.size > BOARD_FILE_MAX_BYTES) return toast('Board files up to 2 GB can be opened', 'error');
+  if (file.size > BOARD_FILE_MAX_BYTES)
+    return toast(t('file.tooLarge', { size: BOARD_FILE_MAX_BYTES / 1024 ** 3 }), 'error');
   try {
     await timed('file.import', async () => {
       const { mode, boardId } = useBoard.getState();
@@ -265,7 +267,7 @@ export async function importBoardFile(file: File, at: { x: number; y: number }) 
         useUi.setState({ selected: new Set(body.nodeIds) });
       } else {
         const b = await localBoardFromBlob(file);
-        if (!b.nodes.length) throw new ZipError('The file has no nodes');
+        if (!b.nodes.length) throw new ZipError(t('file.noNodes'));
         // Guests keep files in the browser (by asset id); they come back after a reload.
         if (mode === 'guest')
           for (const v of b.versions)
@@ -289,9 +291,9 @@ export async function importBoardFile(file: File, at: { x: number; y: number }) 
         );
       }
     });
-    toast(`Opened ${file.name}`);
+    toast(t('file.opened', { name: file.name }));
   } catch (e) {
-    toast(e instanceof ApiError || e instanceof Error ? e.message : 'Could not open the file', 'error');
+    toast(e instanceof ApiError || e instanceof Error ? e.message : t('file.couldNotOpen'), 'error');
   }
 }
 
@@ -320,7 +322,7 @@ export async function uploadBoardFile(
       throw new ApiError(
         r.status,
         body?.error?.code ?? 'internal',
-        body?.error?.message ?? 'Could not open the file',
+        body?.error?.message ?? t('file.couldNotOpen'),
       );
     return body;
   };
@@ -350,7 +352,7 @@ export async function uploadBoardFile(
       const start = (p.partNumber - 1) * up.partSize;
       const body = await src.slice(start, Math.min(up.partSize, src.size - start));
       const r = await fetch(p.url, { method: 'PUT', body });
-      if (!r.ok) throw new Error(`Upload part ${p.partNumber} failed (${r.status})`);
+      if (!r.ok) throw new Error(t('file.uploadPartFailed', { part: p.partNumber, status: r.status }));
       parts.push({ partNumber: p.partNumber, etag: r.headers.get('etag') ?? '' });
     }
   };
@@ -402,7 +404,7 @@ export async function buildPayload(
       if (sha && doc.assets.has(name(sha))) return keep(name(sha));
     }
     const r = await fetch(url, { credentials: 'same-origin' });
-    if (!r.ok) throw new Error(`Could not read a result (${r.status})`);
+    if (!r.ok) throw new Error(t('file.couldNotReadResult', { status: r.status }));
     const bytes = new Uint8Array(await r.arrayBuffer());
     return keep(name(sha || (await sha256(bytes))), bytes);
   };
@@ -545,7 +547,7 @@ export function payloadBlob(
     if (f.bytes) add(f.path, 0, f.bytes, crc32(f.bytes), f.bytes.length);
     else {
       const s = source?.(f.path);
-      if (!s) throw new Error(`Missing ${f.path}`);
+      if (!s) throw new Error(t('file.missing', { path: f.path }));
       add(f.path, 0, s.blob, s.crc32, s.blob.size);
     }
   }
@@ -556,7 +558,7 @@ export function payloadBlob(
 /** Website: download the whole canvas as `<title>.annie3d`. */
 export async function downloadBoardFile() {
   const { graph, title } = useBoard.getState();
-  if (!graph.nodes.size) return toast('The board is empty');
+  if (!graph.nodes.size) return toast(t('file.boardEmpty'));
   await timed('file.export', async () => {
     const blob = payloadBlob(await buildPayload());
     const a = document.createElement('a');

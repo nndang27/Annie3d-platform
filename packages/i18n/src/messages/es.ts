@@ -1,0 +1,1245 @@
+import type { Catalog } from '../index';
+
+/**
+ * Spanish (neutral international, "tú", sentence case, « » quotes). Glossary (keep these
+ * choices when adding keys):
+ * board = tablero, node = nodo, wire / connection = conexión (verb: conectar),
+ * run = ejecutar / ejecución, credits = créditos, Stage (node) = Set, scene = escena,
+ * Packshot = packshot (loanword), Ad video = video publicitario, video = video,
+ * Export (node) = Exportar, Simulation = Simulación, Starter / template = plantilla,
+ * preset = preajuste, look = estilo, motion = movimiento, version = versión, Annie = Annie,
+ * canvas = lienzo, headline = titular, prompt = instrucción, input / output = entrada / salida,
+ * settings = ajustes, upload = subir / subida, download = descargar, share link = enlace para
+ * compartir, sign in = iniciar sesión, cost = precio, check (quality) = comprobación,
+ * region = región, face = cara, reel = reel, sticker = sticker, showroom = showroom,
+ * phone = teléfono, Builder = Constructor, plan names Creator / Studio stay as they are.
+ * Plurals: `many` (1 000 000 and up) puts "de" before the noun ("{count} de créditos").
+ */
+const catalog: Catalog = {
+  // Words used across the product.
+  'common.credits': { one: '{count} crédito', many: '{count} de créditos', other: '{count} créditos' },
+  'common.cancel': 'Cancelar',
+  'common.close': 'Cerrar',
+  'common.save': 'Guardar',
+  'common.done': 'Listo',
+  'common.retry': 'Reintentar',
+  'common.language': 'Idioma',
+  'common.brand': 'Annie 3D',
+
+  // Names from packages/contracts (node kinds, ports, presets, starters).
+  'node.photo': 'Foto',
+  'node.text': 'Texto',
+  'node.upload3d': 'Subir 3D',
+  'node.audio': 'Música',
+  'node.model3d': 'Modelo 3D',
+  'node.stage': 'Set',
+  'node.packshot': 'Packshot',
+  'node.adVideo': 'Video publicitario',
+  'node.export': 'Exportar',
+  'node.simulation': 'Simulación',
+  'node.note': 'Nota',
+
+  'engine.photo': 'Subida',
+  'engine.text': 'Texto',
+  'engine.upload3d': 'Subida',
+  'engine.audio': 'Subida',
+  'engine.model3d': 'Constructor',
+  'engine.stage': 'Director de escena',
+  'engine.packshot': 'Renderizador',
+  'engine.adVideo': 'Renderizador',
+  'engine.export': 'Empaquetador',
+  'engine.simulation': 'Vista previa en vivo',
+  'engine.note': 'Nota',
+
+  'category.input': 'Entradas',
+  'category.build': 'Construcción',
+  'category.stage': 'Set',
+  'category.output': 'Salidas',
+  'category.note': 'Notas',
+
+  'port.photo.out': 'Imagen',
+  'port.text.out': 'Texto',
+  'port.upload3d.out': 'Modelo 3D',
+  'port.audio.out': 'Audio',
+  'port.model3d.images': 'Fotos',
+  'port.model3d.prompt': 'Descripción',
+  'port.model3d.out': 'Modelo 3D',
+  'port.stage.model': 'Modelo 3D',
+  'port.stage.prompt': 'Indicaciones',
+  'port.stage.style': 'Referencia de estilo',
+  'port.stage.out': 'Escena',
+  'port.packshot.subject': 'Modelo o escena',
+  'port.packshot.out': 'Imágenes',
+  'port.adVideo.subject': 'Escena o modelo',
+  'port.adVideo.headline': 'Titular',
+  'port.adVideo.logo': 'Logo',
+  'port.adVideo.music': 'Música',
+  'port.adVideo.out': 'Video',
+  'port.export.items': 'Salidas',
+  'port.export.out': 'Archivos',
+  'port.simulation.subject': 'Modelo o escena',
+  'port.simulation.headline': 'Titular',
+  'port.simulation.logo': 'Logo',
+
+  'portType.image': 'Imagen',
+  'portType.text': 'Texto',
+  'portType.model3d': 'Modelo 3D',
+  'portType.scene': 'Escena',
+  'portType.video': 'Video',
+  'portType.audio': 'Audio',
+  'portType.file': 'Archivo',
+
+  'look.studio-light': 'Luz de estudio',
+  'look.dark-lab': 'Laboratorio oscuro',
+  'look.stone-water': 'Piedra y agua',
+  'look.velvet': 'Terciopelo',
+  'look.splash-pastel': 'Salpicadura pastel',
+  'look.podium-botanical': 'Podio y botánica',
+
+  'motion.turntable': 'Plataforma giratoria',
+  'motion.hero-orbit': 'Órbita protagonista',
+  'motion.teardown-reveal': 'Despiece revelador',
+  'motion.stone-water': 'Piedra y agua',
+  'motion.splash-hero': 'Salpicadura protagonista',
+
+  'glbPreset.web': 'Web / tienda',
+  'glbPreset.google_merchant': 'Google Merchant',
+  'glbPreset.google_swirl': 'Google Swirl',
+
+  'simEnv.shop': 'Página de tienda',
+  'simEnv.tiktok': 'TikTok',
+  'simEnv.sticker': 'Sticker',
+  'simEnv.showroom': 'Showroom',
+
+  'starter.teardown-reveal.title': 'Despiece revelador',
+  'starter.teardown-reveal.vertical': 'Electrónica',
+  'starter.teardown-reveal.description':
+    'El producto se desmonta capa a capa, se detiene y vuelve a encajar de golpe.',
+  'starter.teardown-reveal.headline': 'Diseñado hasta el último tornillo',
+  'starter.stone-water.title': 'Piedra y agua',
+  'starter.stone-water.vertical': 'Joyería',
+  'starter.stone-water.description':
+    'La pieza reposa sobre piedra mojada junto a una fina cascada; acercamiento lento y destellos.',
+  'starter.stone-water.headline': 'Hecha para no pasar desapercibida',
+  'starter.splash-hero.title': 'Salpicadura protagonista',
+  'starter.splash-hero.vertical': 'Belleza',
+  'starter.splash-hero.description':
+    'El frasco emerge de una salpicadura de su propio color y se posa sobre un podio.',
+  'starter.splash-hero.headline': 'Descubre la nueva fórmula',
+  'starter.node.photo': 'Foto del producto',
+  'starter.node.headline': 'Titular',
+  'starter.node.pack': 'Packshots',
+
+  'setting.simulation.cta': 'Comprar ahora',
+
+  // App shell (App.tsx): loading splash, lazy overlays, checkout return.
+  'app.canvas': 'Lienzo del tablero',
+  'app.loading': 'Cargando tablero…',
+  'app.docAccess': 'Abrir {name}',
+  'app.opening3d': 'Abriendo 3D…',
+  'app.openingSimulator': 'Abriendo simulador…',
+  'app.error3d': 'No se pudo iniciar la vista 3D: {message}',
+  'app.checkoutDone': 'Pago completado. Créditos añadidos.',
+  'app.board.firstTitle': 'Mi primer tablero',
+
+  // Top bar: logo, title, save state.
+  'topbar.home': 'Inicio de Annie 3D',
+  'topbar.title': 'Título del tablero',
+  'topbar.save.saved': 'Guardado',
+  'topbar.save.saving': 'Guardando…',
+  'topbar.save.offline': 'Sin conexión, se sincronizará',
+  'topbar.save.error': 'Reintentando…',
+  'topbar.save.edited': 'Editado',
+  'topbar.save.notSaved': 'Sin guardar',
+  'topbar.save.noFile': 'Aún no se ha guardado en un archivo',
+  'topbar.save.guest': 'Guardado en este navegador',
+  'topbar.save.guestHint': 'Inicia sesión para guardarlo en tu cuenta',
+
+  // Top bar: board file ("…") menu.
+  'topbar.file.menu': 'Archivo del tablero',
+  'topbar.file.save': 'Guardar',
+  'topbar.file.saveAsFile': 'Guardar como archivo…',
+  'topbar.file.saveAs': 'Guardar como…',
+  'topbar.file.open': 'Abrir…',
+  'topbar.file.new': 'Nuevo archivo de tablero',
+  'topbar.file.import': 'Importar a este tablero…',
+  'topbar.file.download': 'Descargar tablero (.annie3d)',
+  'topbar.file.openFile': 'Abrir archivo de tablero…',
+
+  // Top bar: templates, run all, zoom.
+  'topbar.templates': 'Plantillas',
+  'topbar.running': 'Ejecutando…',
+  'topbar.runAll': 'Ejecutar todo',
+  'topbar.runAllHint': 'Los nodos sin cambios son gratis; verás el precio exacto antes de confirmar',
+  'topbar.upToDate': 'Todo al día',
+  'topbar.zoomOut': 'Alejar',
+  'topbar.zoomIn': 'Acercar',
+  'topbar.zoomLevel': 'Zoom al {percent}, ajustar a la pantalla',
+  'topbar.fitToScreen': 'Ajustar a la pantalla (Mayús+1)',
+
+  // Top bar: account, credits, share.
+  'topbar.creditsHint': 'Créditos y plan',
+  'topbar.signIn': 'Iniciar sesión',
+  'topbar.share': 'Compartir',
+  'topbar.shareFile': 'Un archivo de tablero se comparte como archivo: envía el propio archivo .annie3d.',
+  'topbar.account': 'Cuenta',
+  'topbar.accountOf': 'Cuenta: {name}',
+  'topbar.creditsAndPlan': 'Créditos y plan',
+  'topbar.signOut': 'Cerrar sesión',
+
+  // Language picker (top bar and the file menu).
+  'lang.button': 'Idioma: {language}',
+
+  // Bottom toolbar.
+  'toolbar.label': 'Herramientas del lienzo',
+  'toolbar.select': 'Seleccionar (V)',
+  'toolbar.hand': 'Mano (H)',
+  'toolbar.add': 'Añadir {name}',
+  'toolbar.moreNodes': 'Más nodos (N)',
+  'toolbar.undo': 'Deshacer (⌘Z)',
+  'toolbar.redo': 'Rehacer (⇧⌘Z)',
+  'toolbar.askAnnie': 'Pregunta a Annie',
+
+  // Add-node palette.
+  'palette.label': 'Añadir nodo',
+  'palette.search': 'Añade un nodo…',
+  'palette.searchLabel': 'Buscar nodos',
+  'palette.list': 'Nodos',
+  'palette.starters': 'Plantillas',
+  'palette.starter': 'Plantilla {title}',
+  'palette.noMatch': 'Ningún nodo coincide con «{query}».',
+  'palette.accepts.image': 'Nodos que aceptan una imagen…',
+  'palette.accepts.text': 'Nodos que aceptan texto…',
+  'palette.accepts.model3d': 'Nodos que aceptan un modelo 3D…',
+  'palette.accepts.scene': 'Nodos que aceptan una escena…',
+  'palette.accepts.video': 'Nodos que aceptan un video…',
+  'palette.accepts.audio': 'Nodos que aceptan audio…',
+  'palette.accepts.file': 'Nodos que aceptan un archivo…',
+
+  // Right-click menu on the canvas.
+  'menu.canvas': 'Menú del lienzo',
+  'menu.runNode': 'Ejecutar este nodo',
+  'menu.openEditor': 'Abrir editor 3D',
+  'menu.export': 'Exportar / descargar…',
+  'menu.copy': 'Copiar',
+  'menu.duplicate': 'Duplicar',
+  'menu.delete': 'Eliminar',
+  'menu.addNode': 'Añadir nodo…',
+  'menu.paste': 'Pegar aquí',
+  'menu.duplicateSelected': {
+    one: 'Duplicar {count} seleccionado',
+    many: 'Duplicar {count} seleccionados',
+    other: 'Duplicar {count} seleccionados',
+  },
+  'menu.deleteSelected': {
+    one: 'Eliminar {count} seleccionado',
+    many: 'Eliminar {count} seleccionados',
+    other: 'Eliminar {count} seleccionados',
+  },
+
+  // Agent dock (Ask Annie).
+  'agent.title': 'Pregunta a Annie',
+  'agent.close': 'Cerrar agente',
+  'agent.intro': 'Annie modifica este tablero por ti: nodos, ajustes y conexiones. ⌘Z deshace sus cambios.',
+  'agent.suggestion.warmerStage': 'Haz el set más cálido y añade un corte de 6 segundos',
+  'agent.suggestion.fourAngles': 'Añade un packshot con cuatro ángulos',
+  'agent.suggestion.softerLight': 'Usa una luz más suave en el modelo 3D',
+  'agent.undoHint': 'Deshaz con ⌘Z',
+  'agent.thinking': 'Pensando…',
+  'agent.input': 'Mensaje para el agente',
+  'agent.placeholder': 'Describe un cambio…',
+  'agent.budget': 'Presupuesto',
+  'agent.budgetLabel': 'Presupuesto en créditos',
+  'agent.send': 'Enviar',
+  'agent.boardEdited': 'Tablero editado',
+  'agent.failed': 'Lo siento, algo falló: {message}',
+
+  // Shared dialog words.
+  'dialog.download': 'Descargar',
+
+  // Billing dialog.
+  'dialog.billing.title': 'Créditos',
+  'dialog.billing.guest': {
+    one: 'Inicia sesión y obtén {count} crédito gratis: suficiente para una ejecución completa.',
+    many: 'Inicia sesión y obtén {count} de créditos gratis: suficiente para una ejecución completa.',
+    other: 'Inicia sesión y obtén {count} créditos gratis: suficiente para una ejecución completa.',
+  },
+  'dialog.billing.signIn': 'Iniciar sesión',
+  'dialog.billing.balance': {
+    one: '{balance} crédito',
+    many: '{balance} de créditos',
+    other: '{balance} créditos',
+  },
+  'dialog.billing.held': {
+    one: '({count} reservado por un trabajo en curso)',
+    many: '({count} reservados por trabajos en curso)',
+    other: '({count} reservados por trabajos en curso)',
+  },
+  'dialog.billing.plan.free': 'Gratis',
+  'dialog.billing.plan.creator': 'Creator',
+  'dialog.billing.plan.studio': 'Studio',
+  'dialog.billing.firstRunFree': {
+    one: 'Tu primera ejecución es gratis (incluye {count} crédito).',
+    many: 'Tu primera ejecución es gratis (incluye {count} de créditos).',
+    other: 'Tu primera ejecución es gratis (incluye {count} créditos).',
+  },
+  'dialog.billing.chargedOnSuccess':
+    'Solo se cobran los pasos que salen bien; los pasos en caché son gratis.',
+  'dialog.billing.perMonth': '/mes',
+  'dialog.billing.creditsPerMonth': {
+    one: '{count} crédito al mes',
+    many: '{count} de créditos al mes',
+    other: '{count} créditos al mes',
+  },
+  'dialog.billing.openingCheckout': 'Abriendo el pago…',
+  'dialog.billing.addCredits': 'Añadir créditos',
+  'dialog.billing.choose': 'Elegir {plan}',
+  'dialog.billing.history': 'Historial',
+  'dialog.billing.reason.grantFree': 'Créditos gratis',
+  'dialog.billing.reason.purchase': 'Compra de plan',
+  'dialog.billing.reason.subscription': 'Créditos mensuales',
+  'dialog.billing.reason.runReserve': 'Ejecución iniciada (reservado)',
+  'dialog.billing.reason.runSettle': 'Ejecución cobrada',
+  'dialog.billing.reason.runRefund': 'Reembolso',
+  'dialog.billing.reason.adjust': 'Ajuste',
+
+  // Export dialog.
+  'dialog.export.noNode': 'Selecciona un nodo Modelo 3D o Exportar para exportar.',
+  'dialog.export.titleBundle': 'Exportar paquete',
+  'dialog.export.titleModel': 'Exportar modelo 3D',
+  'dialog.export.preset': 'Preajuste',
+  'dialog.export.limits': 'Hasta {size}, {triangles} triángulos, texturas de {texture} px',
+  'dialog.export.limitsAnimated': 'Hasta {size}, {triangles} triángulos, texturas de {texture} px, animado',
+  'dialog.export.megabytes': '{size} MB',
+  'dialog.export.includeVideo': 'Video publicitario (MP4)',
+  'dialog.export.includeImages': 'Imágenes (PNG)',
+  'dialog.export.ready': 'Listo para {preset}',
+  'dialog.export.notReady': 'Aún no cumple con {preset}',
+  'dialog.export.passed': 'superada',
+  'dialog.export.failed': 'no superada',
+  'dialog.export.zip': 'Todos los archivos (.zip)',
+  'dialog.export.glb': 'Modelo GLB',
+  'dialog.export.exporting': 'Exportando…',
+  'dialog.export.run': 'Exportar (gratis)',
+
+  // Process reel dialog.
+  'dialog.reel.button': 'Reel del proceso',
+  'dialog.reel.hint': 'Un video 9:16: el anuncio arriba y, abajo, cómo se hizo',
+  'dialog.reel.title': 'Reel del proceso',
+  'dialog.reel.intro':
+    'Un video 9:16 para Reels y TikTok: tu anuncio arriba y, abajo, cómo lo hizo Annie 3D.',
+  'dialog.reel.preview': 'Vista previa del reel',
+  'dialog.reel.recording': 'Grabando… {percent}',
+  'dialog.reel.saving': 'Guardando…',
+  'dialog.reel.record': 'Grabar reel',
+
+  // Run dialog (cost before charging).
+  'dialog.run.inProgress': 'Ya hay una ejecución en curso en este tablero',
+  'dialog.run.checking': 'Calculando el precio…',
+  'dialog.run.estimateFailed': 'No se pudo estimar esta ejecución.',
+  'dialog.run.upToDate': 'Todo está al día',
+  'dialog.run.allCached': {
+    one: '{count} nodo ya tiene resultados para sus entradas actuales. Cambia una instrucción, un ajuste o una entrada para volver a ejecutarlo.',
+    many: '{count} de nodos ya tienen resultados para sus entradas actuales. Cambia una instrucción, un ajuste o una entrada para volver a ejecutarlos.',
+    other:
+      '{count} nodos ya tienen resultados para sus entradas actuales. Cambia una instrucción, un ajuste o una entrada para volver a ejecutarlos.',
+  },
+  'dialog.run.ok': 'Aceptar',
+  'dialog.run.titleOne': 'Ejecutar {name}',
+  'dialog.run.titleMany': {
+    one: 'Ejecutar {count} nodo',
+    many: 'Ejecutar {count} de nodos',
+    other: 'Ejecutar {count} nodos',
+  },
+  'dialog.run.cached': {
+    one: '{count} nodo sin cambios reutiliza sus resultados',
+    many: '{count} de nodos sin cambios reutilizan sus resultados',
+    other: '{count} nodos sin cambios reutilizan sus resultados',
+  },
+  'dialog.run.free': 'gratis',
+  'dialog.run.total': 'Total',
+  'dialog.run.balance': {
+    one: 'Saldo: {count} crédito.',
+    many: 'Saldo: {count} de créditos.',
+    other: 'Saldo: {count} créditos.',
+  },
+  'dialog.run.firstRunFree': 'Tu primera ejecución es gratis.',
+  'dialog.run.refunded': 'Los pasos fallidos se reembolsan.',
+  'dialog.run.starting': 'Iniciando…',
+  'dialog.run.run': 'Ejecutar',
+  'dialog.run.getCredits': 'Conseguir créditos',
+
+  // Share dialog.
+  'dialog.share.copied': 'Enlace copiado',
+  'dialog.share.copyFailed': 'No se pudo copiar: selecciona el enlace y cópialo',
+  'dialog.share.revoked': 'Enlace desactivado',
+  'dialog.share.title': 'Compartir este tablero',
+  'dialog.share.body':
+    'Cualquiera con el enlace puede ver el anuncio y las imágenes, y descargar el modelo 3D. No puede editar.',
+  'dialog.share.creating': 'Creando enlace…',
+  'dialog.share.link': 'Enlace para compartir',
+  'dialog.share.copy': 'Copiar',
+  'dialog.share.views': { one: '{count} vista.', many: '{count} de vistas.', other: '{count} vistas.' },
+  'dialog.share.openPreview': 'Abrir vista previa',
+  'dialog.share.revoke': 'Desactivar enlace',
+
+  // Shared UI primitives (packages/ui): the host app passes these in.
+  'dialog.close': 'Cerrar diálogo',
+  'dialog.locked': 'Espera a que termine la acción en curso.',
+  'dialog.dismiss': 'Descartar',
+  'dialog.loading': 'Cargando',
+
+  // Sign-in prompt (guest tries a paid or cloud action).
+  'signin.run.title': 'Inicia sesión para ejecutarlo',
+  'signin.run.body': {
+    one: 'Tu primera ejecución completa es gratis ({count} crédito). Tu tablero se queda contigo.',
+    many: 'Tu primera ejecución completa es gratis ({count} de créditos). Tu tablero se queda contigo.',
+    other: 'Tu primera ejecución completa es gratis ({count} créditos). Tu tablero se queda contigo.',
+  },
+  'signin.share.title': 'Inicia sesión para compartir',
+  'signin.share.body':
+    'Para compartir un enlace, el tablero debe estar guardado. Tu tablero se queda contigo.',
+  'signin.save.title': 'Inicia sesión para conservar este tablero',
+  'signin.save.body': 'Los tableros de invitado solo existen en este navegador.',
+  'signin.google': 'Continuar con Google',
+  'signin.notNow': 'Ahora no',
+
+  // Performance panel (developer tool, ⌥P).
+  'perf.title': 'Rendimiento',
+  'perf.copied': 'Informe de rendimiento copiado',
+  'perf.copy': 'Copiar informe',
+  'perf.copyHint': 'Copiar informe (JSON)',
+  'perf.close': 'Cerrar panel de rendimiento',
+  'perf.pageLoad': 'Carga de la página',
+  'perf.network': {
+    one: '{count} solicitud, {kb} KB transferidos',
+    many: '{count} de solicitudes, {kb} KB transferidos',
+    other: '{count} solicitudes, {kb} KB transferidos',
+  },
+  'perf.features': 'Funciones',
+  'perf.action': 'Acción',
+  'perf.last': 'última',
+  'perf.slowApis': 'Llamadas a la API más lentas',
+  'perf.slowFiles': 'Archivos más lentos',
+  'perf.serverTime': 'Tiempo del Worker (Server-Timing)',
+  'perf.server': 'srv {time}',
+  'perf.ms': '{value} ms',
+  'perf.seconds': '{value} s',
+  'perf.budget': '≤ {value}',
+  'perf.foot':
+    'Medido en este navegador. Límites: Core Web Vitals (web.dev), RAIL y límites de respuesta de Nielsen. Las mismas cifras se envían al servidor cuando sales de la pestaña.',
+  'perf.metric.ttfb': 'Respuesta del servidor (TTFB)',
+  'perf.metric.fcp': 'Primer renderizado (FCP)',
+  'perf.metric.lcp': 'Contenido principal (LCP)',
+  'perf.metric.cls': 'Cambio de diseño (CLS)',
+  'perf.metric.inp': 'Respuesta a la interacción (INP)',
+  'perf.metric.boardReady': 'Tablero listo para usar',
+  'perf.metric.boardLoad': 'Cargar datos del tablero',
+  'perf.metric.clipboardPaste': 'Pegar / duplicar nodos',
+  'perf.metric.imageAdd': 'Pegar o soltar una imagen',
+  'perf.metric.uploadFile': 'Subir un archivo',
+  'perf.metric.editorOpen': 'Abrir editor 3D',
+  'perf.metric.simulatorOpen': 'Abrir simulador',
+  'perf.metric.runStart': 'Iniciar una ejecución (hasta el primer evento)',
+  'perf.metric.runTotal': 'Ejecución completa',
+  'perf.metric.agentFirst': 'Primeras palabras del agente',
+  'perf.metric.agentReply': 'Respuesta completa del agente',
+  'perf.metric.exportBundle': 'Exportar archivos',
+  'perf.metric.undoApply': 'Deshacer / rehacer',
+  'perf.metric.fileExport': 'Descargar .annie3d',
+  'perf.metric.fileImport': 'Abrir .annie3d',
+  'perf.metric.api': 'Llamada a la API',
+
+  // Desktop app update pill.
+  'update.rolledBack': 'La actualización {version} no se inició, así que se restauró la versión anterior.',
+  'update.shellRequired': 'La última actualización requiere una app más reciente (app {version}+).',
+  'update.available': 'Actualización disponible',
+  'update.restarting': 'Reiniciando…',
+  'update.restart': 'Reiniciar para actualizar',
+
+  // canvas/FlowNode.tsx: the node card
+  'canvas.node.openSim': 'Abrir',
+  'canvas.node.staleTitle': 'Las entradas cambiaron desde esta versión',
+  'canvas.node.stale': 'desactualizado',
+  'canvas.node.openSimLabel': 'Abrir simulador',
+  'canvas.node.openSimTitle': 'Abrir simulador (o doble clic)',
+  'canvas.node.dropPhoto': 'Suelta, pega o haz clic para añadir una foto',
+  'canvas.node.dropMusic': 'Suelta un archivo de música',
+  'canvas.node.dropGlb': 'Suelta un archivo .glb',
+  'canvas.node.emptyResult': 'Aquí aparecerá tu resultado',
+  'canvas.node.filesReady': {
+    one: '{count} archivo listo',
+    many: '{count} de archivos listos',
+    other: '{count} archivos listos',
+  },
+  'canvas.node.checksPassed': '{passed}/{total} comprobaciones superadas',
+  'canvas.node.checksPassedPreset': '{passed}/{total} comprobaciones superadas ({preset})',
+  'canvas.node.referenceImages': {
+    one: '{count} imagen de referencia',
+    many: '{count} de imágenes de referencia',
+    other: '{count} imágenes de referencia',
+  },
+  'canvas.node.progress': 'Progreso: {percent}%',
+  'canvas.node.openEditorLabel': 'Abrir editor 3D',
+  'canvas.node.openEditorTitle': 'Abrir editor 3D (o doble clic)',
+  'canvas.node.runFromHere': 'Ejecutar desde aquí',
+  'canvas.node.writePlaceholder': 'Escribe algo…',
+  'canvas.node.describePlaceholder': 'Describe lo que quieres…',
+  'canvas.node.runCost': 'Ejecutar ({credits})',
+  'canvas.node.run': 'Ejecutar',
+  'canvas.node.running': 'Ejecutando…',
+  'canvas.node.runOptions': 'Opciones de ejecución',
+  'canvas.node.runWithInputs': 'Ejecutar con entradas',
+  'canvas.node.runNodeOnly': 'Ejecutar solo este nodo',
+  'canvas.node.runDownstream': 'Ejecutar este y todo lo que sigue',
+
+  // canvas/FlowNode.tsx: port bubbles (screen-reader name: port and the types it takes)
+  'canvas.port.one': '{port} ({type})',
+  'canvas.port.two': '{port} ({first} o {second})',
+  'canvas.port.many': '{port} ({list} o {last})',
+  'canvas.port.separator': ', ',
+
+  // canvas/FlowNode.tsx: settings toolbar under the selected node (screen-reader labels).
+  'canvas.toolbar.builder': 'Constructor',
+  'canvas.toolbar.detail': 'Detalle',
+  'canvas.toolbar.look': 'Estilo',
+  'canvas.toolbar.angles': 'Ángulos',
+  'canvas.toolbar.size': 'Tamaño',
+  'canvas.toolbar.motion': 'Movimiento',
+  'canvas.toolbar.aspect': 'Relación de aspecto',
+  'canvas.toolbar.durationSec': 'Duración (segundos)',
+  'canvas.toolbar.environment': 'Lugar',
+  'canvas.toolbar.glbPreset': 'Preajuste GLB',
+  'canvas.toolbar.price': 'Precio',
+  'canvas.toolbar.builderAuto': 'Constructor: automático',
+  'canvas.toolbar.builderCode': 'Constructor: código',
+  'canvas.toolbar.builderGenerative': 'Constructor: generativo',
+  'canvas.toolbar.detailDraft': 'borrador',
+  'canvas.toolbar.detailStandard': 'estándar',
+  'canvas.toolbar.detailHigh': 'alto',
+  'canvas.toolbar.anglesFour': '4 ángulos',
+  'canvas.toolbar.anglesCustom': 'Cámara personalizada',
+  'canvas.toolbar.seconds': '{seconds} s',
+  'canvas.toolbar.replace': 'Reemplazar',
+  'canvas.toolbar.download': 'Descargar',
+  'canvas.toolbar.deleteNode': 'Eliminar nodo',
+  'canvas.toolbar.delete': 'Eliminar',
+  'canvas.toolbar.more': 'Más acciones',
+  'canvas.toolbar.duplicate': 'Duplicar',
+  'canvas.toolbar.copy': 'Copiar',
+
+  // canvas/FlowEdge.tsx
+  'canvas.edge.remove': 'Quitar conexión',
+  'canvas.edge.label': 'Conexión de {from} a {to}',
+
+  // canvas/Canvas.tsx: React Flow's screen-reader texts
+  'canvas.a11y.nodeDescription':
+    'Pulsa Intro o Espacio para seleccionar un nodo. Pulsa Suprimir para eliminarlo y Escape para cancelar.',
+  'canvas.a11y.nodeDescriptionKeyboard':
+    'Pulsa Intro o Espacio para seleccionar un nodo. Después puedes moverlo con las teclas de flecha. Pulsa Suprimir para eliminarlo y Escape para cancelar.',
+  'canvas.a11y.edgeDescription':
+    'Pulsa Intro o Espacio para seleccionar una conexión. Después pulsa Suprimir para eliminarla o Escape para cancelar.',
+  'canvas.a11y.nodeMoved': 'Nodo seleccionado movido: {direction}. Nueva posición, x: {x}, y: {y}',
+  'canvas.a11y.up': 'Arriba',
+  'canvas.a11y.down': 'Abajo',
+  'canvas.a11y.left': 'Izquierda',
+  'canvas.a11y.right': 'Derecha',
+
+  // canvas/clipboard.ts
+  'canvas.imageTooLarge': 'Se pueden añadir imágenes de hasta {size} MB',
+
+  // lib/agentClient.ts
+  'canvas.agentUnavailable': 'Agente no disponible ({status})',
+
+  // canvas/example.ts, store/board.ts: board titles and labels the app writes
+  'board.example': 'Tablero de ejemplo',
+  'board.untitled': 'Tablero sin título',
+  'board.exampleLabel': '{label} ({product})',
+  'board.product.serum': 'sérum',
+  'board.product.headphones': 'auriculares',
+  'board.product.ring': 'anillo',
+
+  // lib/runSocket.ts, lib/doc.ts: runs
+  'run.queued': 'En cola',
+  'run.starting': 'Iniciando',
+  'run.checkFailed': 'Comprobación no superada: {gate}',
+  'run.finished': {
+    one: 'Ejecución terminada: {count} crédito usado',
+    many: 'Ejecución terminada: {count} de créditos usados',
+    other: 'Ejecución terminada: {count} créditos usados',
+  },
+  'run.finishedWithErrors': {
+    one: 'Ejecución terminada con errores: {count} crédito usado',
+    many: 'Ejecución terminada con errores: {count} de créditos usados',
+    other: 'Ejecución terminada con errores: {count} créditos usados',
+  },
+  'run.failedRefunded': 'La ejecución falló. Créditos reembolsados.',
+  'run.cancelled': {
+    one: 'Ejecución cancelada: {count} crédito usado',
+    many: 'Ejecución cancelada: {count} de créditos usados',
+    other: 'Ejecución cancelada: {count} créditos usados',
+  },
+  'run.preparing': 'Preparando la ejecución…',
+  'run.couldNotPrepare': 'No se pudo preparar la ejecución',
+
+  // lib/reel.ts: the process reel (drawn into the video)
+  'reel.historyUnavailable': 'El historial de ejecuciones no está disponible',
+  'reel.couldNotLoadHistory': 'No se pudo cargar el historial de ejecuciones',
+  'reel.howItWasMade': 'CÓMO SE HIZO',
+  'reel.madeWith': 'Hecho con Annie 3D',
+  'reel.tagline': 'Anuncios 3D de productos a partir de una foto',
+
+  // canvas/actions.ts: uploads
+  'file.uploadFailed': 'Error al subir ({status})',
+  'file.partFailed': 'Falló la parte {part}',
+
+  // lib/boardFile.ts: .annie3d board files
+  'file.tooLarge': 'Se pueden abrir archivos de tablero de hasta {size} GB',
+  'file.opened': 'Abierto: {name}',
+  'file.couldNotOpen': 'No se pudo abrir el archivo',
+  'file.notBoardFile': 'No es un archivo de Annie 3D',
+  'file.notBoardFileOrNewer': 'No es un archivo de Annie 3D (o es de una versión más reciente)',
+  'file.noNodes': 'El archivo no tiene nodos',
+  'file.uploadPartFailed': 'Error al subir la parte {part} ({status})',
+  'file.couldNotReadResult': 'No se pudo leer un resultado ({status})',
+  'file.missing': 'Falta {path}',
+  'file.boardEmpty': 'El tablero está vacío',
+
+  // lib/doc.ts, lib/webDoc.ts: saving and opening board files
+  'file.saving': 'Guardando…',
+  'file.saved': 'Guardado: {name}',
+  'file.couldNotSave': 'No se pudo guardar: {reason}',
+  'file.noLongerOpen': 'Este archivo de tablero ya no está abierto.',
+  'file.typeDescription': 'Tablero de Annie 3D',
+  'file.writeDenied': 'No se concedió permiso para escribir el archivo',
+  'file.notOpenHere': 'Este archivo de tablero ya no está abierto en este navegador. Vuelve a abrirlo.',
+  'file.allowAccess': 'Permite el acceso a {name} para abrirlo.',
+  'file.windowTitle': '{name} – Annie 3D',
+  'file.windowTitleUnsaved': '• {name} – Annie 3D',
+
+  // The 3D editor overlay. Header
+  'editor.dialog.label': 'Editor 3D: {name}',
+  'editor.head.back': 'Volver al lienzo',
+  'editor.head.notCurrent': '(no es la actual)',
+  'editor.head.compare': 'Comparar',
+  'editor.head.compareHint': 'Comparar lado a lado',
+  'editor.head.compareNeedsTwo': 'Para comparar se necesitan dos versiones',
+  'editor.head.export': 'Exportar',
+  'editor.version': 'v{version}',
+
+  // Tools (left rail); `{key}` is the keyboard shortcut letter.
+  'editor.tools.label': 'Herramientas del editor',
+  'editor.tool.withKey': '{tool} ({key})',
+  'editor.tool.orbit': 'Orbitar',
+  'editor.tool.brush': 'Selección con pincel',
+  'editor.tool.lasso': 'Selección con lazo',
+  'editor.tool.camera': 'Cámara de packshot',
+  'editor.tool.light': 'Luz de vista previa',
+  'editor.tool.clear': 'Borrar selección (Supr)',
+
+  // Viewport
+  'editor.viewport.label': 'Visor 3D',
+  'editor.viewport.loading': 'Cargando modelo…',
+  'editor.option.brush': 'Pincel',
+  'editor.option.brushSize': 'Tamaño del pincel',
+  'editor.option.light': 'Luz',
+  'editor.option.lightDirection': 'Dirección de la luz',
+  'editor.camera.hint': 'Encuadra el producto y pulsa {button}',
+  'editor.camera.useView': 'Usar esta vista para packshots',
+  'editor.playback.play': 'Reproducir',
+  'editor.playback.pause': 'Pausar',
+
+  // Version strip; `{source}` is one of editor.versionSource.*.
+  'editor.versions.label': 'Versiones',
+  'editor.versions.itemTitle': '{source}, {date}',
+  'editor.versions.makeCurrent': 'Usar como actual',
+  'editor.versionSource.run': 'ejecución',
+  'editor.versionSource.edit': 'edición',
+  'editor.versionSource.upload': 'subida',
+  'editor.versionSource.agent': 'agente',
+  'editor.versionSource.copy': 'copia',
+
+  // Edit panel (right)
+  'editor.panel.title': 'Editar una región',
+  'editor.selection.summary': '{regions}, {faces}',
+  'editor.selection.regions': {
+    one: '{count} región',
+    many: '{count} de regiones',
+    other: '{count} regiones',
+  },
+  'editor.selection.faces': { one: '{count} cara', many: '{count} de caras', other: '{count} caras' },
+  'editor.panel.stepPaint': '1. Pinta o rodea con el lazo una región del modelo',
+  'editor.panel.stepDescribe': '¿Qué debe cambiar en la selección?',
+  'editor.panel.placeholder': 'Por ejemplo: haz el tapón negro mate',
+  'editor.panel.apply': 'Aplicar',
+  'editor.panel.help':
+    'Solo cambian las caras seleccionadas. El resultado es una nueva versión; la anterior se queda en la lista de versiones.',
+
+  // Toasts
+  'editor.toast.loadFailed': 'No se pudo cargar el modelo: {message}',
+  'editor.toast.nowCurrent': 'v{version} es ahora la versión actual',
+  'editor.toast.cameraSet': {
+    one: 'Cámara de packshot aplicada a {count} nodo',
+    many: 'Cámara de packshot aplicada a {count} de nodos',
+    other: 'Cámara de packshot aplicada a {count} nodos',
+  },
+  'editor.toast.packshotAdded': 'Se añadió un nodo Packshot con esta vista',
+  'editor.toast.readyAgain': 'Listo: vuelve a seleccionar la región y pulsa Aplicar',
+  'editor.toast.selectFirst': 'Primero selecciona una región (pincel o lazo)',
+
+  'editor.packshot.customLabel': 'Packshot (vista personalizada)',
+
+  // The simulator. What each place is (tab tooltip).
+  'sim.envHint.shop': 'Página de producto de una tienda online',
+  'sim.envHint.tiktok': 'Feed social vertical con ficha de tienda',
+  'sim.envHint.sticker': 'Sticker de chat con fondo transparente',
+  'sim.envHint.showroom': 'Espacio en vivo que controlas desde tu teléfono',
+  'sim.product.default': 'Tu producto',
+
+  // Overlay header
+  'sim.dialog.label': 'Simulador',
+  'sim.head.environments': 'Entorno',
+  'sim.head.spin': 'Girar',
+  'sim.head.stopSpin': 'Detener giro',
+  'sim.head.download': 'Descargar PNG',
+  'sim.head.close': 'Cerrar simulador',
+  'sim.stage.empty': 'Conecta un modelo 3D a este nodo para verlo aquí.',
+  'sim.stage.loading': 'Cargando 3D…',
+  'sim.toast.loadFailed': 'No se pudo cargar el modelo 3D: {message}',
+
+  // Shop page mock-up
+  'sim.shop.brand': 'MARCA',
+  'sim.shop.navNew': 'Novedades',
+  'sim.shop.navShop': 'Tienda',
+  'sim.shop.navAbout': 'Nosotros',
+  'sim.shop.crumb': 'Inicio / Novedades',
+  'sim.shop.rating': {
+    one: '{rating} ({count} reseña)',
+    many: '{rating} ({count} de reseñas)',
+    other: '{rating} ({count} reseñas)',
+  },
+  'sim.shop.description': 'Arrastra para girarlo. Lo que ves es el producto real en 3D.',
+  'sim.shop.addToCart': 'Añadir al carrito',
+  'sim.shop.freeShipping': 'Envío gratis desde $50',
+  'sim.shop.returns': 'Devoluciones en 30 días',
+
+  // TikTok feed mock-up
+  'sim.tiktok.following': 'Siguiendo',
+  'sim.tiktok.forYou': 'Para ti',
+  'sim.tiktok.share': 'Compartir',
+  'sim.tiktok.handle': '@tumarca',
+  'sim.tiktok.tags': '#parati #tiktokshop #novedades',
+
+  // Chat sticker mock-up
+  'sim.sticker.msgAsk': '¿¿viste lo nuevo que sacaron?? 👀',
+  'sim.sticker.msgSend': 'te paso el sticker',
+  'sim.sticker.msgReply': 'omg lo quiero 😍',
+  'sim.sticker.note':
+    'El sticker es la vista en vivo con fondo transparente: gíralo y luego descarga el PNG.',
+
+  // Showroom: phone pairing panel
+  'sim.showroom.title': 'Control con el teléfono',
+  'sim.showroom.help':
+    'Escanea con tu teléfono e inclínalo: el producto lo sigue. Funciona en ambos sentidos: el teléfono ve lo que muestra esta pantalla.',
+  'sim.showroom.localhost':
+    'Los teléfonos no pueden abrir localhost. Abre este tablero desde el enlace de {command} para vincular un teléfono.',
+  'sim.showroom.phones': {
+    one: '{count} teléfono conectado',
+    many: '{count} de teléfonos conectados',
+    other: '{count} teléfonos conectados',
+  },
+  'sim.showroom.waiting': 'Esperando un teléfono',
+  'sim.showroom.pose': 'α {alpha}°, β {beta}°, γ {gamma}°',
+
+  // Shared by the overlay and the phone remote
+  'sim.status.connecting': 'Conectando…',
+  'sim.action.recenter': 'Recentrar',
+
+  // Phone remote page (/sim/<room>)
+  'sim.remote.title': 'Control de Annie 3D',
+  'sim.remote.connected': 'Conectado',
+  'sim.remote.waitingScreen': 'Esperando la pantalla',
+  'sim.remote.product': 'Producto',
+  'sim.remote.startMotion': 'Activar control por movimiento',
+  'sim.remote.tilt': 'Inclina el teléfono para girarlo',
+  'sim.remote.motionDenied': 'Se denegó el acceso al movimiento. Usa el panel de abajo.',
+  'sim.remote.motionUnsupported': 'Este dispositivo no tiene sensor de movimiento. Usa el panel.',
+  'sim.remote.padLabel': 'Arrastra para girar el producto',
+  'sim.remote.pad': 'Arrastra aquí para girar',
+  'sim.remote.spin': 'Girar',
+  'sim.remote.stop': 'Detener',
+  'sim.remote.snapshot': 'Captura',
+  'sim.remote.places': 'Lugar',
+  'sim.remote.snapshotAlt': 'Captura de la pantalla',
+
+  // Worker: errors every route can return (lib/http.ts, index.ts)
+  'api.error.internal': 'Algo salió mal. Inténtalo de nuevo.',
+  'api.error.unknownEndpoint': 'Endpoint desconocido',
+  'api.http.bodyNotJson': 'El cuerpo debe ser JSON',
+  'api.http.invalidBody': 'Cuerpo de la solicitud no válido',
+  'api.http.invalidQuery': 'Consulta no válida',
+  'api.http.unknownParam': '{name} desconocido',
+  'api.http.notFound': 'No encontrado',
+  'api.http.expectedWebSocket': 'Se esperaba una conexión WebSocket',
+
+  // Sign-in and roles (lib/session.ts)
+  'api.auth.signIn': 'Inicia sesión para continuar',
+  'api.auth.viewerCannotEdit': 'Los lectores no pueden editar',
+
+  // Workspace made at sign-up (auth.ts)
+  'api.workspace.named': 'Espacio de trabajo de {name}',
+  'api.workspace.unnamed': 'Mi espacio de trabajo',
+
+  // Boards and board edits (routes/boards.ts, services/boards.ts)
+  'api.board.notFound': 'Tablero no encontrado',
+  'api.board.tooManyEdits': 'Demasiadas ediciones, ve más despacio',
+  'api.board.nodeNotFound': 'Nodo no encontrado',
+  'api.board.opRejected': 'Operación {index} rechazada: {reason}',
+  'api.board.nodeOfOtherBoard': 'El id del nodo pertenece a otro tablero',
+  'api.board.uploadNeedsAsset': 'Las versiones subidas necesitan settings.assetId',
+  'api.board.unknownAsset': 'Archivo desconocido',
+  'api.board.versionOfOtherNode': 'La versión pertenece a otro nodo',
+  'api.board.unknownSourceVersion': 'Versión de origen desconocida',
+
+  // Uploads and files (routes/assets.ts)
+  'api.upload.tooMany': 'Demasiadas subidas, inténtalo de nuevo en un minuto',
+  'api.upload.mimeNotAccepted': '{mime} no se acepta para el tipo {kind}',
+  'api.upload.tooLarge': 'Máximo {size} MB para el tipo {kind}',
+  'api.upload.assetNotFound': 'Archivo no encontrado',
+  'api.upload.partsRequired': 'Una subida en varias partes necesita sus partes',
+  'api.upload.notInStorage': 'No se encontró la subida en el almacenamiento',
+  'api.upload.sizeMismatch': 'El tamaño no coincide: se esperaba {expected}, se guardó {stored}',
+  'api.upload.typeMismatch': 'El contenido del archivo no coincide con su tipo declarado',
+  'api.upload.imageTooLarge': 'Imagen mayor de {size} px',
+  'api.upload.variantNotFound': 'Variante no encontrada',
+
+  // Board files (.annie3d) import (routes/boardFile.ts, services/boardImport.ts)
+  'api.boardFile.tooManyImports': 'Demasiadas importaciones, ve más despacio',
+  'api.boardFile.useUpload': 'Envía los archivos de más de 80 MB mediante /import-upload',
+  'api.boardFile.uploadUnfinished': 'La subida falta, está sin terminar o ya se importó',
+  'api.boardFile.uploadMissing': 'Falta la subida',
+  'api.boardFile.uploadGone': 'El archivo subido ya no existe',
+  'api.boardFile.checksum': '{name} no coincide con su suma de verificación',
+  'api.boardFile.missingEntry': 'Falta {path}',
+  'api.boardFile.notBoardFile': 'No es un archivo de Annie 3D',
+  'api.boardFile.newerVersion': 'No es un archivo de Annie 3D (o es de una versión más reciente)',
+  'api.boardFile.noNodes': 'El archivo no tiene nodos',
+  'api.boardFile.unknownNodes': 'Los resultados son de nodos que este tablero no tiene',
+  'api.boardFile.tooLarge': 'El archivo supera los 2 GB',
+  'api.boardFile.multiPart': 'Los archivos comprimidos en varias partes no son archivos de tablero',
+  'api.boardFile.zip64': 'Los archivos ZIP64 no son archivos de tablero',
+  'api.boardFile.tooManyEntries': 'El archivo tiene demasiadas entradas',
+  'api.boardFile.damaged': 'El archivo está dañado',
+  'api.boardFile.encrypted': 'Los archivos cifrados no son archivos de tablero',
+  'api.boardFile.duplicateEntry': 'Entrada duplicada {name}',
+  'api.boardFile.unsupportedCompression': 'Compresión no compatible',
+  'api.boardFile.manifestTooLarge': 'La descripción del tablero es demasiado grande',
+  'api.boardFile.unexpectedEntry': 'Entrada inesperada {name}',
+  'api.boardFile.entryCompressed':
+    '{name} está comprimido; los archivos de tablero guardan los medios tal cual',
+  'api.boardFile.unreadable': 'No se pudo leer el archivo: {reason}',
+
+  // Runs (routes/runs.ts, routes/credits.ts)
+  'api.run.notFound': 'Ejecución no encontrada',
+  'api.run.tooMany': 'Demasiadas ejecuciones. Espera un minuto.',
+  'api.run.alreadyRunning': 'Ya hay una ejecución en curso en este tablero',
+  'api.run.notEnoughCredits': 'No tienes créditos suficientes para esta ejecución',
+  'api.run.nothingToRun': 'No hay nada que ejecutar: añade un nodo ejecutable',
+  'api.run.upToDate': 'Todo está al día',
+  'api.run.editNeedsModel': 'Las ediciones de región se aplican a nodos Modelo 3D',
+  'api.run.versionNotOnNode': 'No se encontró la versión en este nodo',
+  'api.run.selectRegion': 'Primero selecciona una región',
+
+  // Run steps (services/runner.ts, engines/*)
+  'api.run.connectFirst': 'Conecta primero «{port}»',
+  'api.run.noEngine': 'No hay motor para {kind}',
+  'api.run.baseHasNoModel': 'La versión base no tiene modelo',
+  'api.run.baseModelMissing': 'Falta el archivo del modelo base',
+  'api.run.selectionExpired': 'La selección caducó; vuelve a seleccionar la región',
+  'api.run.inputNotFound': 'Archivo de entrada no encontrado',
+  'api.run.inputMissingInStorage': 'Falta el archivo de entrada en el almacenamiento',
+  'api.run.gateFailed': 'No se superó la comprobación de calidad «{gate}»',
+  'api.run.needsPhotoOrText': 'Añade una foto del producto o una descripción',
+  'api.run.regionNotOnVersion': 'La región seleccionada no está en esta versión',
+
+  // Progress stages of the engines
+  'api.stage.model3d.readingPhotos': 'Leyendo fotos',
+  'api.stage.model3d.segmenting': 'Separando el producto',
+  'api.stage.model3d.estimatingShape': 'Estimando la forma',
+  'api.stage.model3d.buildingMesh': 'Construyendo la malla',
+  'api.stage.model3d.bakingTextures': 'Horneando texturas',
+  'api.stage.model3d.checkingSilhouette': 'Comprobando la silueta',
+  'api.stage.stage.readingBrief': 'Leyendo el brief',
+  'api.stage.stage.blockingSet': 'Montando el set',
+  'api.stage.stage.lighting': 'Iluminando',
+  'api.stage.stage.placingProduct': 'Colocando el producto',
+  'api.stage.stage.testRender': 'Render de prueba',
+  'api.stage.packshot.framing': 'Encuadrando cámaras',
+  'api.stage.packshot.renderingFront': 'Renderizando el frente',
+  'api.stage.packshot.renderingAngles': 'Renderizando ángulos',
+  'api.stage.packshot.denoising': 'Eliminando ruido',
+  'api.stage.adVideo.storyboard': 'Storyboard',
+  'api.stage.adVideo.cameraMoves': 'Movimientos de cámara',
+  'api.stage.adVideo.renderingFrames': 'Renderizando fotogramas',
+  'api.stage.adVideo.addingHeadline': 'Añadiendo el titular',
+  'api.stage.adVideo.mixingMusic': 'Mezclando la música',
+  'api.stage.adVideo.encoding': 'Codificando',
+  'api.stage.export.packaging': 'Empaquetando',
+  'api.stage.export.validating': 'Validando glTF',
+  'api.stage.export.writing': 'Escribiendo archivos',
+  'api.stage.working': 'Procesando',
+  'api.stage.done': 'Listo',
+  'api.stage.edit.readingSelection': 'Leyendo la selección',
+  'api.stage.edit.applying': 'Aplicando la edición',
+  'api.stage.edit.checking': 'Comprobando el resultado',
+  'api.stage.export.optimising': 'Optimizando para {preset}',
+  'api.stage.export.collecting': 'Reuniendo archivos',
+  'api.stage.export.exported': 'Exportado',
+  'api.stage.export.exportedWithFailures': 'Exportado con comprobaciones no superadas',
+
+  // Quality gates and export checks by id
+  'api.gate.inputs': 'Entradas',
+  'api.gate.selection': 'Selección',
+  'api.gate.silhouette_iou': 'Coincidencia de silueta',
+  'api.gate.watertight': 'Malla cerrada',
+  'api.gate.triangles': 'Número de triángulos',
+  'api.gate.product_visible': 'Producto visible',
+  'api.gate.framing': 'Encuadre',
+  'api.gate.duration_ok': 'Duración',
+  'api.gate.loudness_lufs': 'Sonoridad',
+  'api.gate.edit_applied': 'Edición aplicada',
+  'api.gate.bytes': 'Tamaño del archivo',
+  'api.gate.texture': 'Tamaño de textura',
+  'api.gate.animation': 'Animación',
+  'api.gate.validator': 'Validación glTF',
+
+  // Exports (routes/exports.ts, services/exporter.ts)
+  'api.export.notFound': 'Exportación no encontrada',
+  'api.export.noModelYet': 'Este nodo aún no tiene un modelo que exportar',
+  'api.export.wrongNode': 'Exporta un nodo Modelo 3D o Exportar',
+  'api.export.nothingToExport': 'No hay nada que exportar: conecta un modelo 3D, un video o imágenes',
+  'api.export.failed': 'Error al exportar: {reason}',
+  'api.export.megabytes': '{value} MB',
+  'api.export.checkBytes': '{size} de {limit}',
+  'api.export.checkTriangles': '{count} de {limit} triángulos',
+  'api.export.checkTexture': 'Textura más grande: {size} px (límite: {limit} px)',
+  'api.export.checkNoTextures': 'Sin texturas de imagen',
+  'api.export.checkAnimation': {
+    one: '{count} clip de animación',
+    many: '{count} de clips de animación',
+    other: '{count} clips de animación',
+  },
+  'api.export.checkAnimationNeeded': 'Necesita una animación (p. ej., plataforma giratoria)',
+  'api.export.checkAnimationOptional': {
+    one: '{count} clip de animación, ninguno obligatorio',
+    many: '{count} de clips de animación, ninguno obligatorio',
+    other: '{count} clips de animación, ninguno obligatorio',
+  },
+  'api.export.checkValid': 'Se lee de nuevo como glTF 2.0 válido',
+  'api.export.checkInvalid': 'No es un glTF válido: {reason}',
+  'api.export.checkRoundTrip': 'Falló la prueba de ida y vuelta: {reason}',
+
+  // Shares (routes/shares.ts)
+  'api.share.versionNotFound': 'Versión no encontrada',
+  'api.share.changed': 'El enlace compartido cambió, inténtalo de nuevo',
+  'api.share.notFound': 'Enlace compartido no encontrado',
+  'api.share.unavailable': 'Este enlace no está disponible',
+  'api.share.anonymousOwner': 'Usuario de Annie 3D',
+
+  // Plans and the simulated checkout page (routes/credits.ts)
+  'api.plan.creator': 'Creator',
+  'api.plan.studio': 'Studio',
+  'api.checkout.invalidSignature': 'Firma de pago no válida',
+  'api.checkout.expired': 'El pago caducó',
+  'api.checkout.otherWorkspace': 'El pago pertenece a otro espacio de trabajo',
+  'api.checkout.invalidLink': 'Enlace de pago no válido',
+  'api.checkout.pageTitle': 'Pago · Annie 3D',
+  'api.checkout.simulated':
+    'Pago simulado: no se cobra a ninguna tarjeta. Un proveedor real sustituirá esta página.',
+  'api.checkout.planName': 'Plan {plan}',
+  'api.checkout.creditsMonthly': {
+    one: '{count} crédito al mes',
+    many: '{count} de créditos al mes',
+    other: '{count} créditos al mes',
+  },
+  'api.checkout.dueToday': 'A pagar hoy',
+  'api.checkout.pay': 'Pagar {price}',
+  'api.checkout.cancel': 'Cancelar y volver',
+
+  // Reels (routes/reels.ts)
+  'api.reel.serverNotAttached':
+    'La generación de reels en el servidor aún no está disponible; graba el reel en el navegador',
+  'api.reel.afterRun': 'Crea un reel cuando haya terminado la ejecución',
+  'api.reel.uploadFirst': 'Primero sube el video del reel grabado',
+
+  // Simulation remote link (routes/sim.ts)
+  'api.sim.badRoom': 'Id de sala no válido',
+
+  // Agent route (routes/agent.ts)
+  'api.agent.tooMany': 'Demasiados mensajes. Espera un minuto.',
+  'api.agent.threadNotFound': 'Conversación no encontrada',
+  'api.agent.couldNotApply': 'No se pudo aplicar «{label}»: {reason}',
+  'api.agent.upToDate': 'Todo ya estaba al día, así que no se ejecutó nada.',
+  'api.agent.overBudget': {
+    one: 'Esa ejecución necesita {count} crédito, más que el presupuesto de este mensaje ({budget}). Sube el presupuesto y vuelve a pedirlo.',
+    many: 'Esa ejecución necesita {count} de créditos, más que el presupuesto de este mensaje ({budget}). Sube el presupuesto y vuelve a pedirlo.',
+    other:
+      'Esa ejecución necesita {count} créditos, más que el presupuesto de este mensaje ({budget}). Sube el presupuesto y vuelve a pedirlo.',
+  },
+  'api.agent.couldNotStart': 'No pude iniciar la ejecución: {reason}',
+
+  // Simulated agent's replies and change labels (agents/simulated.ts)
+  'api.agent.help':
+    'Puedo cambiar el estilo de un Set (laboratorio oscuro, piedra y agua, terciopelo, salpicadura pastel, botánico, estudio), hacerlo más cálido o más frío, poner el video en 6, 10 o 15 segundos, cambiar a 9:16, 1:1 o 16:9, cambiar el movimiento, fijar el titular ("headline: ..."), añadir packshots, elegir un preajuste de exportación y ejecutarlo. Selecciona nodos primero para indicarme una línea.',
+  'api.agent.ambiguous': {
+    one: 'Hay {count} nodo {kind}. Selecciona el que quieres (o un nodo de su línea) y vuelve a pedirlo.',
+    many: 'Hay {count} de nodos {kind}. Selecciona el que quieres (o un nodo de su línea) y vuelve a pedirlo.',
+    other: 'Hay {count} nodos {kind}. Selecciona el que quieres (o un nodo de su línea) y vuelve a pedirlo.',
+  },
+  'api.agent.noNode': 'Aún no hay ningún nodo {kind}, así que omití «{change}».',
+  'api.agent.alreadySet': {
+    one: '{nodes} ya tiene {value}.',
+    many: '{nodes} ya tienen {value}.',
+    other: '{nodes} ya tienen {value}.',
+  },
+  'api.agent.changeOn': '{nodes}: {change}',
+  'api.agent.change.look': 'estilo → {value}',
+  'api.agent.change.direction': 'indicaciones: {value}',
+  'api.agent.change.duration': 'duración → {value}',
+  'api.agent.change.aspect': 'formato → {value}',
+  'api.agent.change.motion': 'movimiento → {value}',
+  'api.agent.change.detail': 'detalle → {value}',
+  'api.agent.change.preset': 'preajuste → {value}',
+  'api.agent.change.headline': 'Titular → «{text}»',
+  'api.agent.change.addPackshot': 'Se añadió un nodo Packshot desde {node}',
+  'api.agent.value.seconds': '{seconds} s',
+  'api.agent.value.secondsClosest': '{seconds} s (lo más cercano a {wanted} s)',
+  'api.agent.value.detailHigh': 'alto',
+  'api.agent.value.detailDraft': 'borrador',
+  'api.agent.ambiguousHeadline': {
+    one: 'Hay {count} titular. Selecciona la línea que quieres y vuelve a pedirlo.',
+    many: 'Hay {count} de titulares. Selecciona la línea que quieres y vuelve a pedirlo.',
+    other: 'Hay {count} titulares. Selecciona la línea que quieres y vuelve a pedirlo.',
+  },
+  'api.agent.pickModel': 'Selecciona el modelo 3D del que deben salir los packshots.',
+  'api.agent.packshotLabel': 'Packshots (agente)',
+  'api.agent.done': 'Listo:',
+  'api.agent.madeChanges': {
+    one: 'Hice {count} cambio:',
+    many: 'Hice {count} de cambios:',
+    other: 'Hice {count} cambios:',
+  },
+  'api.agent.runningChanged': 'Ejecutando lo que cambió; los nodos sin cambios siguen en caché.',
+  'api.agent.runningBoard': 'Ejecutando el tablero; los nodos sin cambios siguen en caché.',
+  'api.agent.sayRun': 'Di «run it» cuando quieras ver el resultado.',
+
+  // Desktop shell: macOS application menu ({app} is "Annie 3D").
+  'desktop.menu.about': 'Acerca de {app}',
+  'desktop.menu.services': 'Servicios',
+  'desktop.menu.hide': 'Ocultar {app}',
+  'desktop.menu.hideOthers': 'Ocultar otros',
+  'desktop.menu.showAll': 'Mostrar todo',
+  'desktop.menu.quitApp': 'Salir de {app}',
+  // File
+  'desktop.menu.file': 'Archivo',
+  'desktop.menu.newBoardFile': 'Nuevo archivo de tablero',
+  'desktop.menu.open': 'Abrir…',
+  'desktop.menu.openRecent': 'Abrir recientes',
+  'desktop.menu.clearRecent': 'Borrar menú',
+  'desktop.menu.save': 'Guardar',
+  'desktop.menu.saveAs': 'Guardar como…',
+  'desktop.menu.importIntoBoard': 'Importar a este tablero…',
+  'desktop.menu.closeWindow': 'Cerrar ventana',
+  'desktop.menu.quit': 'Salir',
+  'desktop.menu.exit': 'Salir',
+  // Edit
+  'desktop.menu.edit': 'Edición',
+  'desktop.menu.undo': 'Deshacer',
+  'desktop.menu.redo': 'Rehacer',
+  'desktop.menu.cut': 'Cortar',
+  'desktop.menu.copy': 'Copiar',
+  'desktop.menu.paste': 'Pegar',
+  'desktop.menu.selectAll': 'Seleccionar todo',
+  // View
+  'desktop.menu.view': 'Ver',
+  'desktop.menu.reload': 'Volver a cargar',
+  'desktop.menu.toggleDevTools': 'Mostrar/ocultar herramientas para desarrolladores',
+  'desktop.menu.toggleFullScreen': 'Activar/desactivar pantalla completa',
+  // Window
+  'desktop.menu.window': 'Ventana',
+  'desktop.menu.minimize': 'Minimizar',
+  'desktop.menu.zoom': 'Zoom',
+  'desktop.menu.bringAllToFront': 'Traer todo al frente',
+  'desktop.menu.close': 'Cerrar',
+  // Help
+  'desktop.menu.help': 'Ayuda',
+  'desktop.menu.website': 'Sitio web de {app}',
+
+  // Board files as documents
+  'desktop.doc.untitled': 'Sin título.annie3d',
+  'desktop.doc.fileType': 'Tablero de Annie 3D',
+  'desktop.close.message': '¿Quieres guardar los cambios en «{name}»?',
+  'desktop.close.detail': 'Si no los guardas, se perderán los cambios.',
+  'desktop.close.dontSave': 'No guardar',
+  'desktop.open.failed': 'No se pudo abrir «{name}»',
+
+  // Why a board file was refused ({name} is a path inside the file)
+  'desktop.file.tooLarge': 'El archivo supera los 2 GB',
+  'desktop.file.notBoard': 'No es un archivo de Annie 3D',
+  'desktop.file.notBoardOrNewer': 'No es un archivo de Annie 3D (o es de una versión más reciente)',
+  'desktop.file.damaged': 'El archivo está dañado',
+  'desktop.file.invalidDescription': 'La descripción del tablero no es válida',
+  'desktop.file.multiPart': 'Los archivos comprimidos en varias partes no son archivos de tablero',
+  'desktop.file.zip64': 'Los archivos ZIP64 no son archivos de tablero',
+  'desktop.file.tooManyEntries': 'El archivo tiene demasiadas entradas',
+  'desktop.file.encrypted': 'Los archivos cifrados no son archivos de tablero',
+  'desktop.file.duplicateEntry': 'Entrada duplicada {name}',
+  'desktop.file.unsupportedCompression': 'Compresión no compatible',
+  'desktop.file.descriptionTooLarge': 'La descripción del tablero es demasiado grande',
+  'desktop.file.unexpectedEntry': 'Entrada inesperada {name}',
+  'desktop.file.compressedMedia':
+    '{name} está comprimido; los archivos de tablero guardan los medios tal cual',
+  'desktop.file.invalidBoard': 'Tablero no válido',
+  'desktop.file.invalidAsset': 'Archivo no válido: {name}',
+  'desktop.file.missingAsset': 'Falta {name}',
+  'desktop.file.boardTooLarge': 'El tablero supera los 2 GB',
+  'desktop.file.needsBytes': 'Cada archivo necesita su contenido',
+
+  // Static site: every page
+  'site.meta.pageTitle': '{title} · Annie 3D',
+  'site.nav.skipToContent': 'Ir al contenido',
+  'site.nav.homeLabel': 'Inicio de Annie 3D',
+  'site.nav.openCanvas': 'Abrir el lienzo',
+  'site.nav.footer': 'Pie de página',
+  'site.nav.canvas': 'Lienzo',
+  'site.nav.privacy': 'Privacidad',
+  'site.nav.terms': 'Términos',
+  'site.nav.contact': 'Contacto',
+  'site.nav.languages': 'Idiomas',
+  'site.footer.copyright': '© 2026 Annie 3D, Australia.',
+
+  // /home
+  'site.home.title': 'Anuncios 3D de productos a partir de una foto',
+  'site.home.description':
+    'Annie 3D convierte una foto de producto en un modelo 3D real, videos publicitarios, packshots desde cualquier ángulo y un GLB animado, en un lienzo que puedes abrir sin registrarte.',
+  'site.home.eyebrow': 'Espacio de trabajo de publicidad 3D',
+  'site.home.headline': 'Entra una foto de producto. Sale un anuncio 3D.',
+  'site.home.lead':
+    'Suelta una foto de producto en el lienzo. Annie 3D crea el producto como un modelo 3D real y te da un video publicitario, packshots desde cualquier ángulo, un GLB animado para tu tienda y un enlace que cualquiera puede abrir. Como todos los resultados salen del mismo modelo, tu producto se ve exactamente igual en todos.',
+  'site.home.whatEyebrow': 'Qué obtienes',
+  'site.home.whatTitle': 'Todo a partir de un solo modelo',
+  'site.home.videosTitle': 'Videos publicitarios',
+  'site.home.videosBody':
+    'Despieces reveladores para tecnología, piedra y agua para joyería, salpicaduras protagonistas para belleza, en 1:1, 4:5 y 9:16.',
+  'site.home.packshotsTitle': 'Packshots desde cualquier ángulo',
+  'site.home.packshotsBody': 'Encuadra la cámara tú mismo o usa cuatro ángulos estándar.',
+  'site.home.glbTitle': 'GLB animado',
+  'site.home.glbBody':
+    'Comprobado con los límites de la web, Google Merchant y Google Swirl antes de descargarlo.',
+  'site.home.howEyebrow': 'Cómo funciona',
+  'site.home.howTitle': 'Un lienzo de nodos que puedes reconectar',
+  'site.home.howBody':
+    'Empieza con un grafo ya preparado o añade tus propios nodos: foto, texto, modelo 3D, set, packshot, video publicitario y exportación. Selecciona una región del modelo y describe el cambio; cada edición se convierte en una nueva versión que puedes comparar o deshacer.',
+  'site.home.tryExample': 'Probar el tablero de ejemplo',
+
+  // /legal/*
+  'site.legal.draft':
+    'Borrador para la versión preliminar · pendiente de revisión legal antes del lanzamiento',
+  'site.legal.translationNotice':
+    'Esta traducción se ofrece por comodidad. Si difiere de la versión en inglés, prevalece la versión en inglés.',
+  'site.legal.readEnglish': 'Leer la versión en inglés',
+
+  'site.terms.title': 'Términos de uso',
+  'site.terms.description': 'Términos para usar Annie 3D.',
+  'site.terms.contentTitle': 'Tu contenido',
+  'site.terms.contentBody':
+    'Conservas los derechos sobre las fotos que subes y los resultados que creas. Sube solo productos que tengas derecho a anunciar.',
+  'site.terms.useTitle': 'Uso aceptable',
+  'site.terms.useBody':
+    'No uses Annie 3D para crear anuncios de productos falsificados, para suplantar a marcas o personas, ni para producir contenido ilícito.',
+  'site.terms.creditsTitle': 'Créditos',
+  'site.terms.creditsBody':
+    'Las ejecuciones consumen créditos. Una ejecución que no supera nuestras comprobaciones de calidad se reembolsa automáticamente.',
+  'site.terms.preReleaseTitle': 'Versión preliminar',
+  'site.terms.preReleaseBody':
+    'Las funciones pueden cambiar. Anunciaremos los cambios que afecten a tus datos antes de que entren en vigor.',
+
+  'site.privacy.title': 'Aviso de privacidad',
+  'site.privacy.description': 'Cómo trata Annie 3D tus datos.',
+  'site.privacy.whoTitle': 'Quiénes somos',
+  'site.privacy.whoBody': 'Annie 3D se opera desde Australia. Contacto: {email}.',
+  'site.privacy.storeTitle': 'Qué guardamos',
+  'site.privacy.storeBody':
+    'El nombre, la dirección de correo electrónico y la foto de perfil de tu cuenta de Google cuando inicias sesión; los tableros, nodos, instrucciones y versiones que creas; los archivos que subes y los que generamos para ti; el historial de ejecuciones y las transacciones de créditos.',
+  'site.privacy.whereTitle': 'Dónde se guardan',
+  'site.privacy.whereBody':
+    'Los datos de la cuenta y de los tableros, en una base de datos Postgres alojada por Neon en Sídney (Australia). Los archivos, en el almacenamiento de objetos Cloudflare R2 en la región de Oceanía. Las páginas se entregan a través de la red de Cloudflare.',
+  'site.privacy.cookiesTitle': 'Cookies',
+  'site.privacy.cookiesBody':
+    'Una cookie de sesión propia mantiene tu sesión iniciada y otra cookie propia recuerda el idioma que eliges. No usamos cookies publicitarias.',
+  'site.privacy.sharingTitle': 'Compartir',
+  'site.privacy.sharingBody':
+    'Nada es público a menos que crees un enlace para compartir. Puedes desactivar un enlace en cualquier momento.',
+  'site.privacy.deleteTitle': 'Eliminar tus datos',
+  'site.privacy.deleteBody':
+    'Elimina tableros desde el lienzo o escríbenos por correo electrónico para eliminar tu cuenta y todos tus archivos.',
+
+  // Public share page rendered by the Worker (/s/<token>)
+  'share.unavailableTitle': 'Enlace no disponible',
+  'share.unavailableHeading': 'Este enlace no está disponible',
+  'share.unavailableBody': 'Puede que su propietario lo haya desactivado.',
+  'share.openApp': 'Abrir Annie 3D',
+  'share.makeYours': 'Crea el tuyo gratis',
+  'share.description': '{owner} hizo esto con Annie 3D: anuncios 3D de productos a partir de una foto.',
+  'share.by': 'de {owner}',
+  'share.modelAlt': 'Vista previa del modelo 3D',
+  'share.modelTitle': 'Modelo 3D',
+  'share.triangles': { one: '{count} triángulo', many: '{count} de triángulos', other: '{count} triángulos' },
+  'share.megabytes': '{size} MB',
+  'share.downloadGlb': 'Descargar GLB',
+  'share.madeWith': 'Hecho con {brand}',
+  'share.terms': 'Términos',
+};
+
+/** Keys whose correct Spanish is the English text (names, loanwords). */
+export const sameAsEnglish: readonly string[] = [
+  'node.packshot',
+  'port.audio.out',
+  'port.adVideo.logo',
+  'port.adVideo.out',
+  'port.simulation.logo',
+  'portType.video',
+  'portType.audio',
+  'simEnv.sticker',
+  'simEnv.showroom',
+  'starter.node.pack',
+  'dialog.billing.plan.creator',
+  'dialog.billing.plan.studio',
+  'dialog.run.total',
+  'perf.server',
+  'perf.ms',
+  'perf.seconds',
+  'perf.budget',
+  'dialog.export.megabytes',
+  'canvas.port.one',
+  'board.exampleLabel',
+  'editor.version',
+  'editor.tool.withKey',
+  'editor.versions.itemTitle',
+  'editor.selection.summary',
+  'sim.showroom.pose',
+  'api.export.megabytes',
+  'api.agent.changeOn',
+  'share.megabytes',
+  'file.windowTitle',
+  'file.windowTitleUnsaved',
+  'api.stage.adVideo.storyboard',
+  'api.plan.creator',
+  'api.plan.studio',
+  'desktop.menu.zoom',
+  'site.meta.pageTitle',
+  'site.footer.copyright',
+  'site.privacy.cookiesTitle',
+];
+
+export default catalog;

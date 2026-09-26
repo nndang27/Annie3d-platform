@@ -1,5 +1,7 @@
+import type { MessageKey } from '@annie3d/i18n';
 import { Copy, X } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
+import { t, useT } from '../i18n';
 import {
   type Budget,
   FEATURE_BUDGETS,
@@ -15,14 +17,48 @@ import {
 import { toast, useUi } from '../store/ui';
 
 const fmt = (b: Budget | undefined, v: number) =>
-  b?.unit === 'ms' ? (v >= 1000 ? `${(v / 1000).toFixed(2)} s` : `${Math.round(v)} ms`) : String(v);
-const budgetText = (b: Budget) => `≤ ${fmt(b, b.good)}`;
+  b?.unit === 'ms'
+    ? v >= 1000
+      ? t('perf.seconds', {
+          value: t.number(v / 1000, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+        })
+      : t('perf.ms', { value: Math.round(v) })
+    : t.number(v);
+const budgetText = (b: Budget) => t('perf.budget', { value: fmt(b, b.good) });
+
+/** Display names of the budgets in lib/perf (their `label` is the English fallback). */
+const METRIC: Record<string, MessageKey> = {
+  TTFB: 'perf.metric.ttfb',
+  FCP: 'perf.metric.fcp',
+  LCP: 'perf.metric.lcp',
+  CLS: 'perf.metric.cls',
+  INP: 'perf.metric.inp',
+  'board.ready': 'perf.metric.boardReady',
+  'board.load': 'perf.metric.boardLoad',
+  'clipboard.paste': 'perf.metric.clipboardPaste',
+  'image.add': 'perf.metric.imageAdd',
+  'upload.file': 'perf.metric.uploadFile',
+  'editor.open': 'perf.metric.editorOpen',
+  'simulator.open': 'perf.metric.simulatorOpen',
+  'run.start': 'perf.metric.runStart',
+  'run.total': 'perf.metric.runTotal',
+  'agent.first': 'perf.metric.agentFirst',
+  'agent.reply': 'perf.metric.agentReply',
+  'export.bundle': 'perf.metric.exportBundle',
+  'undo.apply': 'perf.metric.undoApply',
+  'file.export': 'perf.metric.fileExport',
+  'file.import': 'perf.metric.fileImport',
+  api: 'perf.metric.api',
+};
+const metricName = (k: string, b: Budget) => (METRIC[k] ? t(METRIC[k]) : b.label);
 
 /**
  * Performance panel: this browser's page-load vitals, network summary and per-feature timings
  * against their budgets (docs/PERFORMANCE_STANDARDS.md). Opened from the top bar, ⌥P or `?perf`.
  */
 export default function PerfPanel() {
+  // Subscribed so a change of language re-renders the panel (the helpers read `t` at call time).
+  const tr = useT();
   useSyncExternalStore(subscribePerf, perfVersion);
   const vitals = getVitals();
   const net = resourceSummary();
@@ -47,23 +83,21 @@ export default function PerfPanel() {
       ),
       api: slowApis,
     };
-    void navigator.clipboard
-      .writeText(JSON.stringify(report, null, 2))
-      .then(() => toast('Performance report copied'));
+    void navigator.clipboard.writeText(JSON.stringify(report, null, 2)).then(() => toast(tr('perf.copied')));
   };
   return (
-    <aside className="perf-panel" aria-label="Performance" data-testid="perf-panel">
+    <aside className="perf-panel" aria-label={tr('perf.title')} data-testid="perf-panel">
       <header>
-        <b>Performance</b>
+        <b>{tr('perf.title')}</b>
         <span className="grow" />
-        <button type="button" onClick={copy} aria-label="Copy report" title="Copy report (JSON)">
+        <button type="button" onClick={copy} aria-label={tr('perf.copy')} title={tr('perf.copyHint')}>
           <Copy size={14} />
         </button>
-        <button type="button" onClick={close} aria-label="Close performance panel">
+        <button type="button" onClick={close} aria-label={tr('perf.close')}>
           <X size={15} />
         </button>
       </header>
-      <h3>Page load</h3>
+      <h3>{tr('perf.pageLoad')}</h3>
       <table>
         <tbody>
           {Object.entries(PAGE_BUDGETS).map(([k, b]) => {
@@ -72,7 +106,7 @@ export default function PerfPanel() {
               <tr key={k} data-testid={`perf-${k}`}>
                 <td>
                   <i className={`dot ${v === undefined ? 'none' : rate(b, v)}`} />
-                  {b.label}
+                  {metricName(k, b)}
                 </td>
                 <td className="num">{v === undefined ? '—' : fmt(b, v)}</td>
                 <td className="budget">{budgetText(b)}</td>
@@ -81,15 +115,13 @@ export default function PerfPanel() {
           })}
         </tbody>
       </table>
-      <p className="net">
-        {net.count} requests, {net.kb} KB transferred
-      </p>
-      <h3>Features</h3>
+      <p className="net">{tr('perf.network', { count: net.count, kb: net.kb })}</p>
+      <h3>{tr('perf.features')}</h3>
       <table>
         <thead>
           <tr>
-            <th>Action</th>
-            <th className="num">last</th>
+            <th>{tr('perf.action')}</th>
+            <th className="num">{tr('perf.last')}</th>
             <th className="num">p95</th>
             <th className="num">n</th>
           </tr>
@@ -106,7 +138,7 @@ export default function PerfPanel() {
               >
                 <td>
                   <i className={`dot ${st ? rate(b, st.p95) : 'none'}`} />
-                  {b.label}
+                  {metricName(k, b)}
                 </td>
                 <td className="num">{st ? fmt(b, st.last) : '—'}</td>
                 <td className="num">{st ? fmt(b, st.p95) : '—'}</td>
@@ -118,7 +150,7 @@ export default function PerfPanel() {
       </table>
       {slowApis.length > 0 && (
         <>
-          <h3>Slowest API calls</h3>
+          <h3>{tr('perf.slowApis')}</h3>
           <table>
             <tbody>
               {slowApis.map((a) => (
@@ -135,24 +167,21 @@ export default function PerfPanel() {
           </table>
         </>
       )}
-      <h3>Slowest files</h3>
+      <h3>{tr('perf.slowFiles')}</h3>
       <table>
         <tbody>
           {net.slow.map((r) => (
             <tr key={r.name}>
               <td className="mono">{r.name.slice(0, 44)}</td>
-              <td className="num">{r.ms} ms</td>
-              <td className="num" title="Worker time (Server-Timing)">
-                {r.server ? `srv ${r.server}` : ''}
+              <td className="num">{tr('perf.ms', { value: r.ms })}</td>
+              <td className="num" title={tr('perf.serverTime')}>
+                {r.server ? tr('perf.server', { time: r.server }) : ''}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="foot">
-        Measured in this browser. Budgets: Core Web Vitals (web.dev), RAIL, Nielsen response limits. The same
-        numbers are sent to the server when you leave the tab.
-      </p>
+      <p className="foot">{tr('perf.foot')}</p>
     </aside>
   );
 }

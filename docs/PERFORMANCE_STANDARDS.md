@@ -173,3 +173,21 @@ content. Measured the same way (Chrome for Testing, example board):
 | Cold pointer-sweep stalls | 0–1 | 0–2 (the second at the first video playback) |
 | 200-node pan / zoom | 116–120 / 117–120 fps | 116–119 / 117–120 fps |
 | Board ready / images ready, local cold | 0.11 / 0.15 s | 0.11 / 0.16 s |
+
+## Ten languages (2026-09-26)
+
+English is built into the main bundle; each other language is one chunk, fetched before the
+first paint only when it is the chosen one (docs/I18N.md).
+
+| | Size |
+| --- | --- |
+| One language chunk | 15.0–18.0 KB gzip (Russian is the largest) |
+| Main bundle `index.js` | 60 KB gzip, including the English text |
+
+| Local preview, cold, median of 3 | Board ready | Images ready |
+| --- | --- | --- |
+| Before (English only) | 111 ms | 157 ms |
+| English, three series | 114 / 117 / 128 ms | 141 / 159 / 180 ms |
+| Vietnamese (plus its chunk and the Inter font) | 125 ms | 160 ms |
+
+The spread between series (114–128 ms) is as large as any difference measured.

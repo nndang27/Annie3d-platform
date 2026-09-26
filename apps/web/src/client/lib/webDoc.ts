@@ -8,6 +8,7 @@ import {
   type ZipEntry,
 } from '@annie3d/contracts';
 import { inflateSync } from 'fflate';
+import { t } from '../i18n';
 import { kvDelete, kvGet, kvPut } from '../store/persist';
 import { blobRange, payloadBlob, zipBlob } from './boardFile';
 import { type DocHost, useDoc } from './doc';
@@ -22,8 +23,9 @@ import { type DocHost, useDoc } from './doc';
  * leaves the old file whole. Assets are slices of the file: nothing is loaded until shown.
  */
 
-const TYPES: { description: string; accept: Record<string, string[]> }[] = [
-  { description: 'Annie 3D board', accept: { 'application/vnd.annie3d+zip': ['.annie3d'] } },
+/** File types for the browser's file pickers, named in the current language. */
+const TYPES = (): { description: string; accept: Record<string, string[]> }[] => [
+  { description: t('file.typeDescription'), accept: { 'application/vnd.annie3d+zip': ['.annie3d'] } },
 ];
 const handleKey = (key: string) => `handle:${key}`;
 const draftKey = (key: string) => `draft:${key}`;
@@ -44,7 +46,7 @@ const picker = () => window as unknown as Picker;
  */
 export async function openFileInTab() {
   try {
-    const [handle] = await picker().showOpenFilePicker({ types: TYPES, multiple: false });
+    const [handle] = await picker().showOpenFilePicker({ types: TYPES(), multiple: false });
     if (!handle) return;
     const key = crypto.randomUUID();
     await kvPut(handleKey(key), handle);
@@ -62,7 +64,7 @@ async function write(handle: FileSystemFileHandle, blob: Blob) {
   const h = handle as Permitted;
   if ((await h.queryPermission({ mode: 'readwrite' })) !== 'granted')
     if ((await h.requestPermission({ mode: 'readwrite' })) !== 'granted')
-      throw new Error('Permission to write the file was not given');
+      throw new Error(t('file.writeDenied'));
   const w = await handle.createWritable();
   await w.write(blob);
   await w.close();
@@ -70,7 +72,7 @@ async function write(handle: FileSystemFileHandle, blob: Blob) {
 
 /** ⌘S on a cloud or guest board: save a copy as a new file. */
 export async function saveCopyAs(p: DocPayload, suggestedName: string) {
-  const handle = await picker().showSaveFilePicker({ suggestedName, types: TYPES });
+  const handle = await picker().showSaveFilePicker({ suggestedName, types: TYPES() });
   await write(handle, payloadBlob(p));
   return { name: handle.name };
 }
@@ -83,10 +85,10 @@ export async function requestAccess(key: string) {
 
 export async function webDocHost(key: string, picked?: FileSystemFileHandle): Promise<DocHost> {
   let handle = (picked as Permitted | undefined) ?? (await kvGet<Permitted>(handleKey(key)));
-  if (!handle) throw new Error('This board file is not open in this browser any more. Open it again.');
+  if (!handle) throw new Error(t('file.notOpenHere'));
   if ((await handle.queryPermission({ mode: 'read' })) !== 'granted') {
     useDoc.setState({ needsPermission: handle.name });
-    throw new Error(`Allow access to ${handle.name} to open it.`);
+    throw new Error(t('file.allowAccess', { name: handle.name }));
   }
   let file: File;
   let entries = new Map<string, ZipEntry>();
@@ -150,7 +152,7 @@ export async function webDocHost(key: string, picked?: FileSystemFileHandle): Pr
     },
     async save(payload, as, suggestedName) {
       let target: Permitted = handle!;
-      if (as) target = (await picker().showSaveFilePicker({ suggestedName, types: TYPES })) as Permitted;
+      if (as) target = (await picker().showSaveFilePicker({ suggestedName, types: TYPES() })) as Permitted;
       await write(
         target,
         payloadBlob(payload, (p) => slice(p)),
@@ -183,7 +185,7 @@ export async function webDocHost(key: string, picked?: FileSystemFileHandle): Pr
       });
     },
     setDirty(dirty, name) {
-      document.title = `${dirty ? '• ' : ''}${name} – Annie 3D`;
+      document.title = dirty ? t('file.windowTitleUnsaved', { name }) : t('file.windowTitle', { name });
       if (dirty && !unload) {
         unload = (e) => e.preventDefault();
         window.addEventListener('beforeunload', unload);

@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+import { CANVAS, type LocaleProps, localeStaticPaths, pageT } from '../../lib/site';
+
+export const getStaticPaths = localeStaticPaths;
+const { locale } = Astro.props as LocaleProps;
+const t = pageT(locale);
+// From a page in another language, opening the canvas keeps that language (see scripts/lang.ts).
+const keep = locale === 'en' ? undefined : locale;
+---
+
+<Base locale={locale} title={t('site.home.title')} description={t('site.home.description')}>
+  <section class="container-wide hero">
+    <div>
+      <p class="eyebrow">{t('site.home.eyebrow')}</p>
+      <h1 class="h1" style="margin-top:12px">{t('site.home.headline')}</h1>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-lg btn-pill" href={CANVAS} data-lang={keep} data-testid="hero-open-canvas">{t('site.nav.openCanvas')}</a>
+      </div>
+    </div>
+    <div>
+      <p class="lead">{t('site.home.lead')}</p>
+    </div>
+  </section>
+
+  <section class="section container" aria-labelledby="h-what">
+    <p class="eyebrow">{t('site.home.whatEyebrow')}</p>
+    <h2 id="h-what" class="h2" style="margin-top:10px">{t('site.home.whatTitle')}</h2>
+    <div class="steps" style="margin-top:32px">
+      <div class="step"><h3 class="h3">{t('site.home.videosTitle')}</h3><p class="body" style="margin-top:8px">{t('site.home.videosBody')}</p></div>
+      <div class="step"><h3 class="h3">{t('site.home.packshotsTitle')}</h3><p class="body" style="margin-top:8px">{t('site.home.packshotsBody')}</p></div>
+      <div class="step"><h3 class="h3">{t('site.home.glbTitle')}</h3><p class="body" style="margin-top:8px">{t('site.home.glbBody')}</p></div>
+    </div>
+  </section>
+
+  <section class="section container" style="padding-top:0" aria-labelledby="h-how">
+    <p class="eyebrow">{t('site.home.howEyebrow')}</p>
+    <h2 id="h-how" class="h2" style="margin-top:10px">{t('site.home.howTitle')}</h2>
+    <p class="body" style="margin-top:12px;max-width:60ch">{t('site.home.howBody')}</p>
+    <p style="margin-top:24px"><a class="btn btn-secondary" href={CANVAS} data-lang={keep}>{t('site.home.tryExample')}</a></p>
+  </section>
+</Base>

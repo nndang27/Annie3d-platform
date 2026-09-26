@@ -383,6 +383,12 @@ export interface DialogProps {
   /** Prevent closing on Escape/backdrop while a mutation is in flight. */
   locked?: boolean;
   width?: number;
+  /**
+   * Text is the host app's (translated with its own `t`): the close button's name, and why it is
+   * unavailable while `locked`.
+   */
+  closeLabel: string;
+  lockedReason?: string;
 }
 
 export function Dialog(props: DialogProps) {
@@ -392,7 +398,17 @@ export function Dialog(props: DialogProps) {
   return <OpenDialog {...props} />;
 }
 
-function OpenDialog({ onClose, title, children, actions, description, locked, width }: DialogProps) {
+function OpenDialog({
+  onClose,
+  title,
+  children,
+  actions,
+  description,
+  locked,
+  width,
+  closeLabel,
+  lockedReason,
+}: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const restoreRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
@@ -442,10 +458,10 @@ function OpenDialog({ onClose, title, children, actions, description, locked, wi
             variant="tertiary"
             icon
             size="sm"
-            aria-label="Close dialog"
+            aria-label={closeLabel}
             data-close
             onClick={onClose}
-            disabledReason={locked ? 'Wait for the current action to finish.' : undefined}
+            disabledReason={locked ? lockedReason : undefined}
           >
             <X size={18} aria-hidden="true" />
           </Button>
@@ -472,7 +488,8 @@ interface ToastApi {
 
 const ToastCtx = createContext<ToastApi | null>(null);
 
-export function ToastProvider({ children }: { children: ReactNode }) {
+/** `dismissLabel` names each toast's close button, in the host app's language. */
+export function ToastProvider({ children, dismissLabel }: { children: ReactNode; dismissLabel: string }) {
   const [items, setItems] = useState<ToastItem[]>([]);
   const counter = useRef(0);
   const push = useCallback((t: Omit<ToastItem, 'id'>) => {
@@ -503,7 +520,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               className="btn btn-tertiary btn-sm btn-icon"
-              aria-label="Dismiss"
+              aria-label={dismissLabel}
               onClick={() => setItems((l) => l.filter((x) => x.id !== t.id))}
             >
               <X size={16} aria-hidden="true" />
@@ -620,7 +637,8 @@ export function Menu({
 
 /* ---------- Misc ---------- */
 
-export function Spinner({ label = 'Loading' }: { label?: string }) {
+/** `label` is the host app's translated text (e.g. "Loading"). */
+export function Spinner({ label }: { label: string }) {
   return <span className="spinner" role="status" aria-label={label} />;
 }
 
@@ -641,16 +659,17 @@ export function useReducedMotion(): boolean {
   return reduced;
 }
 
-export function formatRelative(ts: number, now = Date.now()): string {
-  const diff = now - ts;
-  const m = Math.round(diff / 60000);
-  if (m < 1) return 'just now';
-  if (m < 60) return `${m} min ago`;
+/** Time since `ts` in the language `tag` (BCP 47, e.g. the app translator's `t.tag`). */
+export function formatRelative(ts: number, tag = 'en', now = Date.now()): string {
+  const rtf = new Intl.RelativeTimeFormat(tag, { numeric: 'auto', style: 'short' });
+  const m = Math.round((now - ts) / 60000);
+  if (m < 1) return rtf.format(0, 'second');
+  if (m < 60) return rtf.format(-m, 'minute');
   const h = Math.round(m / 60);
-  if (h < 24) return `${h} h ago`;
+  if (h < 24) return rtf.format(-h, 'hour');
   const d = Math.round(h / 24);
-  if (d < 30) return `${d} d ago`;
-  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (d < 30) return rtf.format(-d, 'day');
+  return new Date(ts).toLocaleDateString(tag, { month: 'short', day: 'numeric' });
 }
 
 export function formatBytes(n?: number): string {

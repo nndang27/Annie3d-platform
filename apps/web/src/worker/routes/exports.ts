@@ -3,6 +3,8 @@ import {
   type ExportResponse,
   GLB_PRESETS,
   type GlbPresetId,
+  NODE_DEFS,
+  type NodeKind,
   type ResolvedInput,
 } from '@annie3d/contracts';
 import { assetVariants, exportFiles, exports } from '@annie3d/db';
@@ -12,7 +14,8 @@ import type { z } from 'zod';
 import { buildBundle } from '../engines/export';
 import type { AppEnv } from '../env';
 import { getDb } from '../lib/db';
-import { body, httpError, uuidParam } from '../lib/http';
+import { body, HttpError, httpError, uuidParam } from '../lib/http';
+import { LocalizedError, tFor } from '../lib/i18n';
 import { requireEditor, requireUser } from '../lib/session';
 import { assetDto } from '../services/assets';
 import { loadGraph } from '../services/boards';
@@ -25,7 +28,7 @@ async function exportDto(c: Context<AppEnv>, db: Db, id: string): Promise<z.infe
   const e = await db.query.exports.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, id), eq(t.workspaceId, c.get('workspaceId')!)),
   });
-  if (!e) throw httpError(404, 'not_found', 'Export not found');
+  if (!e) throw httpError(404, 'not_found', 'api.export.notFound');
   const links = await db.select().from(exportFiles).where(eq(exportFiles.exportId, id));
   const ids = links.map((l) => l.assetId);
   const [rows, variants] = ids.length
@@ -60,7 +63,7 @@ exportRoutes.post('/api/exports', requireEditor, async (c) => {
   const node = await db.query.boardNodes.findFirst({
     where: (t, { and, eq, isNull }) => and(eq(t.id, req.nodeId), eq(t.workspaceId, ws), isNull(t.deletedAt)),
   });
-  if (!node) throw httpError(404, 'not_found', 'Node not found');
+  if (!node) throw httpError(404, 'not_found', 'api.board.nodeNotFound');
   let inputs: ResolvedInput[];
   let versionId: string | null = null;
   if (node.kind === 'model3d' || node.kind === 'upload3d') {
@@ -70,14 +73,14 @@ exportRoutes.post('/api/exports', requireEditor, async (c) => {
           where: (t, { and, eq }) => and(eq(t.id, versionId!), eq(t.nodeId, node.id)),
         })
       : undefined;
-    if (!v?.outputAssetId) throw httpError(400, 'bad_request', 'This node has no model to export yet');
+    if (!v?.outputAssetId) throw httpError(400, 'bad_request', 'api.export.noModelYet');
     const a = await db.query.assets.findFirst({ where: (t, { eq }) => eq(t.id, v.outputAssetId!) });
     inputs = [{ port: 'model', type: 'model3d', assetId: a!.id, mime: a!.mime, versionId: v.id }];
   } else if (node.kind === 'export') {
     const { graph } = await loadGraph(db, node.boardId);
     inputs = await resolveInputs(db, graph, node.id);
   } else {
-    throw httpError(400, 'bad_request', 'Export a 3D model or an Export node');
+    throw httpError(400, 'bad_request', 'api.export.wrongNode');
   }
   const settings = node.settings as { glbPreset?: string; includeMp4?: boolean; includePng?: boolean };
   const preset = (req.glbPreset ??
@@ -92,10 +95,18 @@ exportRoutes.post('/api/exports', requireEditor, async (c) => {
         progress: async () => {},
       },
       inputs,
-      { preset, includeMp4: req.includeMp4, includePng: req.includePng, name: node.label ?? node.kind },
+      {
+        preset,
+        includeMp4: req.includeMp4,
+        includePng: req.includePng,
+        // English kind name when unnamed: file names stay stable across languages.
+        name: node.label ?? NODE_DEFS[node.kind as NodeKind].label,
+        t: tFor(c),
+      },
     );
   } catch (e) {
-    throw httpError(400, 'bad_request', (e as Error).message);
+    if (e instanceof LocalizedError) throw new HttpError(400, 'bad_request', e.key, e.params);
+    throw httpError(400, 'bad_request', 'api.export.failed', { reason: (e as Error).message });
   }
   const id = crypto.randomUUID();
   await db.transaction(async (tx0) => {

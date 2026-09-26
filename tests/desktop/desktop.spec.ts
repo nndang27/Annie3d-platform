@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { type ElectronApplication, _electron as electron, expect, type Page, test } from '@playwright/test';
 import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
+import { translator } from '../../packages/i18n/src/all';
 import { builtManifest, DIST, FakeSite, signed } from './site';
 
 const APP_DIR = join(__dirname, '../../apps/desktop');
@@ -374,6 +375,70 @@ test('a zip bomb is refused with a message and nothing is read', async () => {
     .poll(async () => ((await calls('showErrorBox')) as unknown[] | undefined)?.length ?? 0)
     .toBe(1);
   expect(await docWindow()).toHaveLength(1); // still just the board that was open
+});
+
+test('the language picked in the page drives the menus, now and at the next start', async () => {
+  await launch();
+  const info = async () =>
+    (await win.evaluate(() => (window as any).annieDesktop.info())) as { locale: string };
+  const setLocale = (code: string) => win.evaluate((c) => (window as any).annieDesktop.setLocale(c), code);
+  const menu = () =>
+    app.evaluate(({ Menu }) => {
+      const m = Menu.getApplicationMenu()!;
+      const prev = (globalThis as Record<string, unknown>).__menu;
+      (globalThis as Record<string, unknown>).__menu = m;
+      return {
+        rebuilt: prev !== undefined && prev !== m,
+        top: m.items.map((i) => i.label),
+        file: m.items
+          .find((i) => i.submenu?.items.some((x) => x.accelerator === 'CmdOrCtrl+N'))
+          ?.submenu?.items.map((x) => x.label),
+      };
+    });
+  const expected = (code: 'fr' | 'vi') => {
+    const tr = translator(code);
+    return {
+      top: [
+        ...(process.platform === 'darwin' ? [tr('common.brand')] : []),
+        ...(['file', 'edit', 'view', 'window', 'help'] as const).map((k) => tr(`desktop.menu.${k}`)),
+      ],
+      newFile: tr('desktop.menu.newBoardFile'),
+    };
+  };
+  const localeFile = () => {
+    try {
+      return JSON.parse(readFileSync(join(userData, 'locale.json'), 'utf8'));
+    } catch {
+      return null;
+    }
+  };
+
+  await setLocale('fr');
+  await expect.poll(async () => (await info()).locale).toBe('fr');
+  expect(localeFile()).toEqual({ locale: 'fr' });
+  await menu(); // remember this menu
+  await setLocale('vi');
+  await expect.poll(async () => (await info()).locale).toBe('vi');
+  expect(localeFile()).toEqual({ locale: 'vi' });
+  const vi = await menu();
+  // A new menu was built, in the picked language (text from the vi catalog).
+  expect(vi.rebuilt).toBe(true);
+  expect(vi.top).toEqual(expected('vi').top);
+  expect(vi.file?.[0]).toBe(expected('vi').newFile);
+  // A code the app does not speak changes nothing.
+  await setLocale('xx');
+  await win.waitForTimeout(200);
+  expect((await info()).locale).toBe('vi');
+  expect((await menu()).rebuilt).toBe(false);
+  expect(localeFile()).toEqual({ locale: 'vi' });
+
+  // The next start begins in the kept language, before the page says anything; Chromium's own
+  // text in the page (and navigator.language) follows it too.
+  await app.close();
+  await launch();
+  expect((await info()).locale).toBe('vi');
+  expect((await menu()).top).toEqual(expected('vi').top);
+  expect(await win.evaluate(() => navigator.language)).toBe('vi');
 });
 
 test('a 200 MB board file opens at once: assets stream from disk by range', async () => {

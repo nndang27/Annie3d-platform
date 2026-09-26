@@ -3,6 +3,7 @@ import { createAuth, publicOrigin } from '../auth';
 import type { AppEnv } from '../env';
 import { getDb } from './db';
 import { httpError } from './http';
+import { localeOf } from './i18n';
 
 /** Resolves the session (optional). Anonymous visitors can read public data and estimate runs. */
 export const loadSession: MiddlewareHandler<AppEnv> = async (c, next) => {
@@ -11,7 +12,7 @@ export const loadSession: MiddlewareHandler<AppEnv> = async (c, next) => {
   c.set('role', null);
   const cookie = c.req.header('cookie') ?? '';
   if (!cookie.includes('better-auth')) return next();
-  const auth = createAuth(c.env, getDb(c), publicOrigin(c.env, c.req.raw));
+  const auth = createAuth(c.env, getDb(c), publicOrigin(c.env, c.req.raw), localeOf(c.req.raw));
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
   if (session) {
     const u = session.user;
@@ -29,12 +30,12 @@ export const loadSession: MiddlewareHandler<AppEnv> = async (c, next) => {
 };
 
 export const requireUser: MiddlewareHandler<AppEnv> = async (c, next) => {
-  if (!c.get('user') || !c.get('workspaceId')) throw httpError(401, 'unauthenticated', 'Sign in to continue');
+  if (!c.get('user') || !c.get('workspaceId')) throw httpError(401, 'unauthenticated', 'api.auth.signIn');
   return next();
 };
 
 export const requireEditor: MiddlewareHandler<AppEnv> = async (c, next) => {
-  if (!c.get('user')) throw httpError(401, 'unauthenticated', 'Sign in to continue');
-  if (c.get('role') === 'viewer') throw httpError(403, 'forbidden', 'Viewers cannot edit');
+  if (!c.get('user')) throw httpError(401, 'unauthenticated', 'api.auth.signIn');
+  if (c.get('role') === 'viewer') throw httpError(403, 'forbidden', 'api.auth.viewerCannotEdit');
   return next();
 };

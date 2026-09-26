@@ -1,5 +1,6 @@
 import { BaseEdge, type EdgeProps, getBezierPath } from '@xyflow/react';
 import { memo, useEffect, useRef, useState } from 'react';
+import { useT } from '../i18n';
 import { dispatch } from '../store/board';
 
 /**
@@ -47,6 +48,7 @@ export const FlowEdge = memo(function FlowEdge({
     targetPosition,
     curvature: 0.35,
   });
+  const t = useT();
   const [hover, setHover] = useState(false);
   /** Head position along the path (px) and tail length (px); null when idle. */
   const [pulse, setPulse] = useState<{ head: number; tail: number } | null>(null);
@@ -144,14 +146,14 @@ export const FlowEdge = memo(function FlowEdge({
           transform={`translate(${labelX} ${labelY})`}
           role="button"
           tabIndex={0}
-          aria-label="Remove connection"
+          aria-label={t('canvas.edge.remove')}
           data-testid="edge-delete"
           onClick={remove}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') remove(e);
           }}
         >
-          <title>Remove connection</title>
+          <title>{t('canvas.edge.remove')}</title>
           <circle r={12} />
           <path d="M -4 -4 L 4 4 M 4 -4 L -4 4" />
         </g>

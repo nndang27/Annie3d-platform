@@ -5,6 +5,7 @@ import { Hono } from 'hono';
 import type { AppEnv } from '../env';
 import { getDb } from '../lib/db';
 import { body, httpError, uuidParam } from '../lib/http';
+import { escapeHtml as esc, tFor } from '../lib/i18n';
 import { requireEditor, requireUser } from '../lib/session';
 import { loadBoard, loadGraph } from '../services/boards';
 import { sha256Hex } from '../services/hash';
@@ -14,8 +15,8 @@ export const creditRoutes = new Hono<AppEnv>();
 
 /** Illustrative prices until payments launch (docs/MVP_STRATEGY.md §10). */
 export const PLANS = [
-  { id: 'creator' as const, name: 'Creator', priceMonthlyUsd: 19, creditsPerMonth: 300 },
-  { id: 'studio' as const, name: 'Studio', priceMonthlyUsd: 49, creditsPerMonth: 1000 },
+  { id: 'creator' as const, priceMonthlyUsd: 19, creditsPerMonth: 300 },
+  { id: 'studio' as const, priceMonthlyUsd: 49, creditsPerMonth: 1000 },
 ];
 
 creditRoutes.post('/api/boards/:boardId/runs/estimate', requireUser, async (c) => {
@@ -25,7 +26,7 @@ creditRoutes.post('/api/boards/:boardId/runs/estimate', requireUser, async (c) =
   const ws = c.get('workspaceId')!;
   await loadBoard(db, ws, boardId);
   const { graph } = await loadGraph(db, boardId);
-  if (req.nodeId && !graph.nodes.has(req.nodeId)) throw httpError(404, 'not_found', 'Node not found');
+  if (req.nodeId && !graph.nodes.has(req.nodeId)) throw httpError(404, 'not_found', 'api.board.nodeNotFound');
   const plan = await planRun(db, graph, req.nodeId, req.scope);
   const [acc] = await db.select().from(creditAccounts).where(eq(creditAccounts.workspaceId, ws));
   const [w] = await db.select().from(workspaces).where(eq(workspaces.id, ws));
@@ -61,7 +62,10 @@ creditRoutes.get('/api/credits', requireUser, async (c) => {
   });
 });
 
-creditRoutes.get('/api/billing/plans', (c) => c.json({ plans: PLANS, provider: 'simulated' }));
+creditRoutes.get('/api/billing/plans', (c) => {
+  const t = tFor(c);
+  return c.json({ plans: PLANS.map((p) => ({ ...p, name: t(`api.plan.${p.id}`) })), provider: 'simulated' });
+});
 
 // ---------------------------------------------------------------------------------------------
 // Simulated checkout. Same shape as a real provider: checkout URL → confirmation → signed event
@@ -106,7 +110,7 @@ creditRoutes.post('/api/billing/simulated/confirm', requireEditor, async (c) => 
   const p = c.req.query('p') ?? '';
   const s = c.req.query('s') ?? '';
   if ((await hmac(c.env.BETTER_AUTH_SECRET, p)) !== s)
-    throw httpError(400, 'bad_request', 'Invalid checkout signature');
+    throw httpError(400, 'bad_request', 'api.checkout.invalidSignature');
   const data = JSON.parse(atob(p)) as {
     ws: string;
     plan: 'creator' | 'studio';
@@ -114,9 +118,8 @@ creditRoutes.post('/api/billing/simulated/confirm', requireEditor, async (c) => 
     exp: number;
     ret?: string;
   };
-  if (data.exp < Date.now()) throw httpError(400, 'bad_request', 'Checkout expired');
-  if (data.ws !== c.get('workspaceId'))
-    throw httpError(403, 'forbidden', 'Checkout belongs to another workspace');
+  if (data.exp < Date.now()) throw httpError(400, 'bad_request', 'api.checkout.expired');
+  if (data.ws !== c.get('workspaceId')) throw httpError(403, 'forbidden', 'api.checkout.otherWorkspace');
   const db = getDb(c);
   const plan = PLANS.find((x) => x.id === data.plan)!;
   const inserted = await db
@@ -158,29 +161,30 @@ creditRoutes.get('/billing/checkout', requireUser, async (c) => {
   const p = c.req.query('p') ?? '';
   const s = c.req.query('s') ?? '';
   if (!/^[0-9a-f]{64}$/.test(s) || (await hmac(c.env.BETTER_AUTH_SECRET, p)) !== s)
-    throw httpError(400, 'bad_request', 'Invalid checkout link');
+    throw httpError(400, 'bad_request', 'api.checkout.invalidLink');
   const data = JSON.parse(atob(p)) as { plan: 'creator' | 'studio'; exp: number; ret?: string };
   const plan = PLANS.find((x) => x.id === data.plan)!;
-  const esc = (x: string) => x.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
+  const t = tFor(c);
+  const price = t.number(plan.priceMonthlyUsd, { style: 'currency', currency: 'USD' });
   const action = `/api/billing/simulated/confirm?p=${encodeURIComponent(p)}&s=${s}`;
   c.header(
     'content-security-policy',
     "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'",
   );
   c.header('cache-control', 'no-store');
-  return c.html(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout · Annie 3D</title><meta name="robots" content="noindex">
+  return c.html(`<!doctype html><html lang="${t.tag}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(t('api.checkout.pageTitle'))}</title><meta name="robots" content="noindex">
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f6f6f4;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#17191d}
 .card{background:#fff;border:1px solid #e4e4df;border-radius:16px;padding:28px;width:min(420px,calc(100vw - 32px));box-shadow:0 8px 30px rgb(0 0 0/.06)}
 .row{display:flex;justify-content:space-between;margin:6px 0}.muted{color:#6b6f76;font-size:13px}.total{font-weight:600;font-size:18px;border-top:1px solid #e4e4df;padding-top:12px;margin-top:12px}
 button{width:100%;margin-top:18px;background:#17191d;color:#fff;border:0;border-radius:10px;padding:12px;font:inherit;font-weight:600;cursor:pointer}.note{background:#fff7e6;color:#7a4d00;border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:14px}
 a{color:#6b6f76;display:block;text-align:center;margin-top:12px;font-size:13px}</style></head><body>
 <form class="card" method="post" action="${esc(action)}" data-testid="checkout-page">
-<div class="note">Simulated checkout: no card is charged. A real provider replaces this page.</div>
-<div class="muted">Annie 3D</div><h1 style="margin:4px 0 12px;font-size:22px">${esc(plan.name)} plan</h1>
-<div class="row"><span>${plan.creditsPerMonth} credits every month</span><span>$${plan.priceMonthlyUsd}.00</span></div>
-<div class="row total"><span>Due today</span><span>$${plan.priceMonthlyUsd}.00</span></div>
-<button type="submit" data-testid="checkout-pay">Pay $${plan.priceMonthlyUsd}.00</button>
-<a href="${esc(data.ret?.startsWith('/') ? data.ret : '/')}">Cancel and go back</a>
+<div class="note">${esc(t('api.checkout.simulated'))}</div>
+<div class="muted">Annie 3D</div><h1 style="margin:4px 0 12px;font-size:22px">${esc(t('api.checkout.planName', { plan: t(`api.plan.${plan.id}`) }))}</h1>
+<div class="row"><span>${esc(t('api.checkout.creditsMonthly', { count: plan.creditsPerMonth }))}</span><span>${esc(price)}</span></div>
+<div class="row total"><span>${esc(t('api.checkout.dueToday'))}</span><span>${esc(price)}</span></div>
+<button type="submit" data-testid="checkout-pay">${esc(t('api.checkout.pay', { price }))}</button>
+<a href="${esc(data.ret?.startsWith('/') ? data.ret : '/')}">${esc(t('api.checkout.cancel'))}</a>
 </form></body></html>`);
 });
 

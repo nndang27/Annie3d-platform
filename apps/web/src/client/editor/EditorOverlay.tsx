@@ -1,10 +1,11 @@
-import { EDIT_CREDITS, NODE_DEFS, type NodeVersionDto, newId, nextZKey } from '@annie3d/contracts';
+import { EDIT_CREDITS, type NodeVersionDto, newId, nextZKey } from '@annie3d/contracts';
 import { type EditorTool, ModelEditor, prefetchRoomEnvironment } from '@annie3d/viewer-3d';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Brush, Camera, Columns2, Eraser, Lasso, Pause, Play, Rotate3d, Sun } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ApiError, api } from '../api/client';
 import { attachRun } from '../chrome/RunDialog';
+import { rich, t as tNow, useT } from '../i18n';
 import { afterNextPaint } from '../lib/afterNextPaint';
 import { hasFileResult, isDoc, withCloud } from '../lib/doc';
 import { perfEnd } from '../lib/perf';
@@ -17,13 +18,24 @@ prefetchRoomEnvironment().catch(() => {});
 
 type Tool = EditorTool | 'camera' | 'light';
 
-const TOOLS: { id: Tool; label: string; key: string; Icon: typeof Brush }[] = [
-  { id: 'orbit', label: 'Orbit', key: 'O', Icon: Rotate3d },
-  { id: 'brush', label: 'Brush select', key: 'B', Icon: Brush },
-  { id: 'lasso', label: 'Lasso select', key: 'L', Icon: Lasso },
-  { id: 'camera', label: 'Packshot camera', key: 'C', Icon: Camera },
-  { id: 'light', label: 'Preview light', key: 'G', Icon: Sun },
+/** Tools and their shortcut keys; names are `editor.tool.<id>`. */
+const TOOLS: { id: Tool; key: string; Icon: typeof Brush }[] = [
+  { id: 'orbit', key: 'O', Icon: Rotate3d },
+  { id: 'brush', key: 'B', Icon: Brush },
+  { id: 'lasso', key: 'L', Icon: Lasso },
+  { id: 'camera', key: 'C', Icon: Camera },
+  { id: 'light', key: 'G', Icon: Sun },
 ];
+
+/** Version date as `toLocaleString()` shows it, in the app's language. */
+const VERSION_DATE: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+};
 
 function closeEditor() {
   useUi.setState({ editingNodeId: null });
@@ -41,6 +53,7 @@ function glbOf(v: NodeVersionDto | undefined) {
  * Loaded lazily with three.js; owns one WebGL context that is disposed on close.
  */
 export default function EditorOverlay({ nodeId }: { nodeId: string }) {
+  const t = useT();
   const node = useBoard((s) => s.graph.nodes.get(nodeId));
   const mode = useBoard((s) => s.mode);
   const boardId = useBoard((s) => s.boardId);
@@ -89,7 +102,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
     // cannot be reused (StrictMode mounts effects twice in development).
     const canvas = document.createElement('canvas');
     canvas.setAttribute('data-testid', 'editor-canvas');
-    canvas.setAttribute('aria-label', '3D viewport');
+    canvas.setAttribute('aria-label', tNow('editor.viewport.label'));
     host.prepend(canvas);
     // The click that opened the editor paints the overlay first; the WebGL context and the
     // environment map (~50 ms) are built right after that paint (lib/afterNextPaint.ts).
@@ -97,10 +110,10 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
     const cancel = afterNextPaint(() => {
       ed = new ModelEditor(canvas, {
         onSelection: (faces, regions) => setSel({ faces, regions }),
-        onTime: (t, d, playing) => setTime({ t, d, playing }),
+        onTime: (at, d, playing) => setTime({ t: at, d, playing }),
       });
-      const t = toolRef.current;
-      if (t === 'brush' || t === 'lasso') ed.setTool(t);
+      const current = toolRef.current;
+      if (current === 'brush' || current === 'lasso') ed.setTool(current);
       editorRef.current = ed;
       setGlEditor(ed);
     });
@@ -111,6 +124,10 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
       editorRef.current = null;
     };
   }, []);
+  // The canvas is made outside React: name it again when the language changes.
+  useEffect(() => {
+    hostRef.current?.querySelector('canvas')?.setAttribute('aria-label', t('editor.viewport.label'));
+  }, [t]);
 
   // (Re)load the shown version; a new current version after an edit replaces the view.
   const url = glbOf(shown);
@@ -123,7 +140,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
         perfEnd('editor.open');
         setTime({ t: 0, d: info.duration, playing: false });
       })
-      .catch((e: Error) => toast(`Could not load the model: ${e.message}`, 'error'))
+      .catch((e: Error) => toast(tNow('editor.toast.loadFailed', { message: e.message }), 'error'))
       .finally(() => setLoading(false));
     setSel({ faces: 0, regions: 0 });
   }, [url, glEditor]);
@@ -133,11 +150,11 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
     void glEditor?.compareWith(compareUrl ?? null);
   }, [compareUrl, glEditor]);
 
-  const pick = useCallback((t: Tool) => {
-    setTool(t);
+  const pick = useCallback((next: Tool) => {
+    setTool(next);
     const ed = editorRef.current;
     if (!ed) return;
-    ed.setTool(t === 'brush' || t === 'lasso' ? t : 'orbit');
+    ed.setTool(next === 'brush' || next === 'lasso' ? next : 'orbit');
   }, []);
 
   // Keyboard: Esc closes, tool letters switch tools (not while typing).
@@ -146,8 +163,8 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
       const el = e.target as HTMLElement;
       if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') return;
       if (e.key === 'Escape') closeEditor();
-      const t = TOOLS.find((x) => x.key.toLowerCase() === e.key.toLowerCase());
-      if (t && !e.metaKey && !e.ctrlKey) pick(t.id);
+      const hit = TOOLS.find((x) => x.key.toLowerCase() === e.key.toLowerCase());
+      if (hit && !e.metaKey && !e.ctrlKey) pick(hit.id);
       if (e.key === 'Backspace' || e.key === 'Delete') editorRef.current?.clearSelection();
     };
     window.addEventListener('keydown', onKey);
@@ -160,7 +177,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
   }, [mode, node]);
 
   if (!node) return null;
-  const label = node.label ?? NODE_DEFS[node.kind].label;
+  const label = node.label ?? t(`node.${node.kind}`);
   const shownNo = shown?.versionNo ?? 1;
 
   const makeCurrent = () => {
@@ -171,7 +188,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
     // Revert is an ordinary, undoable op (F9).
     dispatch([{ type: 'node.update', id: nodeId, patch: { currentVersionId: shownId } }]);
     setViewing(null);
-    toast(`v${shownNo} is now current`);
+    toast(t('editor.toast.nowCurrent', { version: shownNo }));
   };
 
   const usePackshotView = () => {
@@ -190,7 +207,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
           patch: { settings: { angles: 'custom', camera } },
         })),
       );
-      toast(`Packshot camera set on ${targets.length} node${targets.length > 1 ? 's' : ''}`);
+      toast(t('editor.toast.cameraSet', { count: targets.length }));
     } else {
       const id = newId();
       dispatch([
@@ -201,7 +218,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
             kind: 'packshot',
             x: node.x + 380,
             y: node.y - 200,
-            label: 'Packshot (custom view)',
+            label: t('editor.packshot.customLabel'),
             settings: { angles: 'custom', size: '1k', camera },
             zKey: nextZKey(g),
           },
@@ -211,7 +228,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
           edge: { id: newId(), source: nodeId, sourcePort: 'out', target: id, targetPort: 'subject' },
         },
       ]);
-      toast('Added a packshot node with this view');
+      toast(t('editor.toast.packshotAdded'));
     }
   };
 
@@ -223,10 +240,10 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
     // then Apply works as usual.
     if (mode === 'file' || (isDoc() && hasFileResult(nodeId)))
       return withCloud('run', { kind: 'edit', nodeId: nodeId ?? undefined }, () =>
-        toast('Ready: select the region again and press Apply'),
+        toast(tNow('editor.toast.readyAgain')),
       );
     const faces = ed.selection();
-    if (!faces.length) return toast('Select a region first (brush or lasso)', 'error');
+    if (!faces.length) return toast(t('editor.toast.selectFirst'), 'error');
     if (!shownId || !boardId) return;
     try {
       const run = await api.edit(boardId, nodeId, {
@@ -252,16 +269,16 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
       className="editor"
       role="dialog"
       aria-modal="true"
-      aria-label={`3D editor: ${label}`}
+      aria-label={t('editor.dialog.label', { name: label })}
       data-testid="editor"
     >
       <header className="editor-head">
         <button type="button" className="btn-link-inline" onClick={closeEditor} data-testid="editor-back">
-          <ArrowLeft size={16} aria-hidden="true" /> Back to canvas
+          <ArrowLeft size={16} aria-hidden="true" /> {t('editor.head.back')}
         </button>
         <span className="editor-title" data-testid="editor-title">
-          {label} <span className="ver">v{shownNo}</span>
-          {shownId !== currentId && <span className="muted"> (not current)</span>}
+          {label} <span className="ver">{t('editor.version', { version: shownNo })}</span>
+          {shownId !== currentId && <span className="muted"> {t('editor.head.notCurrent')}</span>}
         </span>
         <button
           type="button"
@@ -275,9 +292,9 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
             if (other) setCompareId(other.id);
           }}
           data-testid="compare"
-          title={versions.length < 2 ? 'Compare needs two versions' : 'Compare side by side'}
+          title={versions.length < 2 ? t('editor.head.compareNeedsTwo') : t('editor.head.compareHint')}
         >
-          <Columns2 size={14} aria-hidden="true" /> Compare
+          <Columns2 size={14} aria-hidden="true" /> {t('editor.head.compare')}
         </button>
         <span style={{ flex: 1 }} />
         <button
@@ -286,17 +303,17 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
           onClick={() => useUi.setState({ dialog: { type: 'export', nodeId } })}
           data-testid="editor-export"
         >
-          Export ▾
+          {t('editor.head.export')} ▾
         </button>
       </header>
       <div className="editor-body">
-        <nav className="editor-tools" aria-label="Editor tools">
-          {TOOLS.map(({ id, label: l, key, Icon }) => (
+        <nav className="editor-tools" aria-label={t('editor.tools.label')}>
+          {TOOLS.map(({ id, key, Icon }) => (
             <button
               key={id}
               type="button"
-              aria-label={`${l} (${key})`}
-              title={`${l} (${key})`}
+              aria-label={t('editor.tool.withKey', { tool: t(`editor.tool.${id}`), key })}
+              title={t('editor.tool.withKey', { tool: t(`editor.tool.${id}`), key })}
               aria-pressed={tool === id}
               onClick={() => pick(id)}
               data-testid={`tool-${id}`}
@@ -306,8 +323,8 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
           ))}
           <button
             type="button"
-            aria-label="Clear selection (Delete)"
-            title="Clear selection (Delete)"
+            aria-label={t('editor.tool.clear')}
+            title={t('editor.tool.clear')}
             onClick={() => editorRef.current?.clearSelection()}
             data-testid="tool-clear"
           >
@@ -315,16 +332,20 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
           </button>
         </nav>
         <div className="editor-viewport" ref={hostRef}>
-          {loading && <div className="editor-loading-inline">Loading model…</div>}
+          {loading && <div className="editor-loading-inline">{t('editor.viewport.loading')}</div>}
           {compareId && (
             <div className="compare-labels" aria-hidden="true">
-              <span>v{versions.find((v) => v.id === shownId)?.versionNo}</span>
-              <span>v{versions.find((v) => v.id === compareId)?.versionNo}</span>
+              <span>
+                {t('editor.version', { version: versions.find((v) => v.id === shownId)?.versionNo ?? '' })}
+              </span>
+              <span>
+                {t('editor.version', { version: versions.find((v) => v.id === compareId)?.versionNo ?? '' })}
+              </span>
             </div>
           )}
           {tool === 'brush' && (
             <label className="tool-option">
-              Brush{' '}
+              {t('editor.option.brush')}{' '}
               <input
                 type="range"
                 min={6}
@@ -334,13 +355,13 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
                   setBrush(+e.target.value);
                   editorRef.current?.setBrushRadius(+e.target.value);
                 }}
-                aria-label="Brush size"
+                aria-label={t('editor.option.brushSize')}
               />
             </label>
           )}
           {tool === 'light' && (
             <label className="tool-option">
-              Light{' '}
+              {t('editor.option.light')}{' '}
               <input
                 type="range"
                 min={0}
@@ -350,24 +371,27 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
                   setLight(+e.target.value);
                   editorRef.current?.setLightAzimuth(+e.target.value);
                 }}
-                aria-label="Light direction"
+                aria-label={t('editor.option.lightDirection')}
               />
             </label>
           )}
           {tool === 'camera' && (
             <div className="tool-option">
-              Frame the product, then
-              <button
-                type="button"
-                className="btn-primary btn-sm"
-                onClick={usePackshotView}
-                data-testid="use-view"
-              >
-                Use this view for packshots
-              </button>
+              {rich(t, 'editor.camera.hint', {
+                button: (
+                  <button
+                    type="button"
+                    className="btn-primary btn-sm"
+                    onClick={usePackshotView}
+                    data-testid="use-view"
+                  >
+                    {t('editor.camera.useView')}
+                  </button>
+                ),
+              })}
             </div>
           )}
-          <div className="version-strip" role="toolbar" aria-label="Versions">
+          <div className="version-strip" role="toolbar" aria-label={t('editor.versions.label')}>
             {versions.map((v) => (
               <button
                 key={v.id}
@@ -375,10 +399,13 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
                 aria-pressed={v.id === shownId}
                 className={v.id === currentId ? 'current' : ''}
                 onClick={() => setViewing(v.id === currentId ? null : v.id)}
-                title={`${v.source}, ${new Date(v.createdAt).toLocaleString()}`}
+                title={t('editor.versions.itemTitle', {
+                  source: t(`editor.versionSource.${v.source}`),
+                  date: t.date(new Date(v.createdAt), VERSION_DATE),
+                })}
                 data-testid={`version-${v.versionNo}`}
               >
-                v{v.versionNo}
+                {t('editor.version', { version: v.versionNo })}
               </button>
             ))}
             {shownId && shownId !== currentId && (
@@ -388,7 +415,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
                 onClick={makeCurrent}
                 data-testid="make-current"
               >
-                Make current
+                {t('editor.versions.makeCurrent')}
               </button>
             )}
           </div>
@@ -396,7 +423,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
             <div className="playback">
               <button
                 type="button"
-                aria-label={time.playing ? 'Pause' : 'Play'}
+                aria-label={time.playing ? t('editor.playback.pause') : t('editor.playback.play')}
                 onClick={() => (time.playing ? editorRef.current?.pause() : editorRef.current?.play())}
               >
                 {time.playing ? (
@@ -411,28 +438,30 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
             </div>
           )}
         </div>
-        <aside className="editor-agent" aria-label="Edit a region">
-          <h2 className="panel-title">Edit a region</h2>
+        <aside className="editor-agent" aria-label={t('editor.panel.title')}>
+          <h2 className="panel-title">{t('editor.panel.title')}</h2>
           <div className="chips">
             <span className="chip">
-              {label} v{shownNo}
+              {label} {t('editor.version', { version: shownNo })}
             </span>
             {sel.faces > 0 && (
               <span className="chip" data-testid="selection-chip">
-                {sel.regions || 1} region{(sel.regions || 1) > 1 ? 's' : ''}, {sel.faces.toLocaleString()}{' '}
-                faces
+                {t('editor.selection.summary', {
+                  regions: t('editor.selection.regions', { count: sel.regions || 1 }),
+                  faces: t('editor.selection.faces', { count: sel.faces }),
+                })}
               </span>
             )}
           </div>
           {/* The step stays visible (a placeholder disappears as soon as you type). */}
           <label className="field-label" htmlFor="edit-instruction">
-            {sel.faces ? 'What should change in the selection?' : '1. Paint or lasso a region on the model'}
+            {sel.faces ? t('editor.panel.stepDescribe') : t('editor.panel.stepPaint')}
           </label>
           <textarea
             id="edit-instruction"
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}
-            placeholder="For example: make the cap matte black"
+            placeholder={t('editor.panel.placeholder')}
             aria-describedby="edit-help"
             data-testid="edit-instruction"
             onKeyDown={(e) => {
@@ -446,11 +475,11 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
             onClick={() => void apply()}
             data-testid="edit-apply"
           >
-            {running ? `${running.stage}…` : 'Apply'}
-            {!running && <span className="cost">{EDIT_CREDITS} credits</span>}
+            {running ? `${running.stage}…` : t('editor.panel.apply')}
+            {!running && <span className="cost">{t('common.credits', { count: EDIT_CREDITS })}</span>}
           </button>
           <p className="muted small" id="edit-help">
-            Only the selected faces change. The result becomes a new version; the old one stays in the strip.
+            {t('editor.panel.help')}
           </p>
         </aside>
       </div>

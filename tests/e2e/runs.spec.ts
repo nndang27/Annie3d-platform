@@ -64,7 +64,7 @@ test.describe('runs', () => {
     await page.locator(`.react-flow__node[data-id="${model}"] [data-testid=run-node]`).click();
     await page.getByTestId('run-confirm').click();
     await expect(page.locator(`.react-flow__node[data-id="${model}"] [data-testid=node-error]`)).toHaveText(
-      'Check failed: silhouette_iou',
+      'Check failed: Silhouette match',
       { timeout: 45_000 },
     );
     await expect(page.getByText('Run failed. Credits refunded.')).toBeVisible();

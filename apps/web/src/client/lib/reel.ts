@@ -1,4 +1,13 @@
-import { type Graph, NODE_DEFS, type NodeVersionDto, PORT_COLOR, type RunEvent } from '@annie3d/contracts';
+import {
+  type Graph,
+  NODE_DEFS,
+  NODE_KINDS,
+  type NodeKind,
+  type NodeVersionDto,
+  PORT_COLOR,
+  type RunEvent,
+} from '@annie3d/contracts';
+import { t } from '../i18n';
 
 /**
  * F12 process reel, recorded in the browser: 540×960 (9:16), the finished ad on top and a
@@ -25,7 +34,7 @@ export function runEvents(runId: string): Promise<RunEvent[]> {
     const out: RunEvent[] = [];
     const timer = setTimeout(() => {
       ws.close();
-      reject(new Error('Run history is not available'));
+      reject(new Error(t('reel.historyUnavailable')));
     }, 15_000);
     ws.onmessage = (m) => {
       const e = JSON.parse(String(m.data)) as RunEvent;
@@ -38,7 +47,7 @@ export function runEvents(runId: string): Promise<RunEvent[]> {
     };
     ws.onerror = () => {
       clearTimeout(timer);
-      reject(new Error('Could not load the run history'));
+      reject(new Error(t('reel.couldNotLoadHistory')));
     };
   });
 }
@@ -215,6 +224,13 @@ export async function recordReel(
     rec.onstop = () => resolve();
   });
 
+  // Texts drawn into the video, in the language at the start of the recording.
+  const words = {
+    howItWasMade: t('reel.howItWasMade'),
+    madeWith: t('reel.madeWith'),
+    tagline: t('reel.tagline'),
+    kind: Object.fromEntries(NODE_KINDS.map((k) => [k, t(`node.${k}`)])) as Record<NodeKind, string>,
+  };
   const draw = (elapsed: number) => {
     const k = Math.min(1, elapsed / durationMs);
     const runT = t0 + (t1 - t0) * Math.min(1, k * 1.15); // replay finishes just before the end
@@ -227,7 +243,7 @@ export async function recordReel(
       drawContain(ctx, heroImg, heroImg.naturalWidth, heroImg.naturalHeight, 0, 0, W, TOP, 1 + 0.08 * k);
     ctx.fillStyle = '#9a9ea5';
     ctx.font = '600 13px system-ui, sans-serif';
-    ctx.fillText('HOW IT WAS MADE', REPLAY.x, TOP + 30);
+    ctx.fillText(words.howItWasMade, REPLAY.x, TOP + 30);
     ctx.fillStyle = '#f2f2f0';
     ctx.font = '600 18px system-ui, sans-serif';
     ctx.fillText(input.title.slice(0, 40), REPLAY.x, TOP + 54 - 2);
@@ -277,7 +293,7 @@ export async function recordReel(
       }
       ctx.fillStyle = '#c8cbd0';
       ctx.font = '600 9px system-ui, sans-serif';
-      ctx.fillText((n.label ?? NODE_DEFS[n.kind].label).slice(0, 18), b.x + 5, b.y + 10);
+      ctx.fillText((n.label ?? words.kind[n.kind]).slice(0, 18), b.x + 5, b.y + 10);
       if (running && s) {
         const last = [...s.progress].reverse().find((p) => p.t <= runT);
         const p = last?.p ?? 0.05;
@@ -295,10 +311,12 @@ export async function recordReel(
     // Footer
     ctx.fillStyle = '#f2f2f0';
     ctx.font = '600 16px system-ui, sans-serif';
-    ctx.fillText('Made with Annie 3D', REPLAY.x, H - 28);
+    ctx.fillText(words.madeWith, REPLAY.x, H - 28);
+    // The tagline follows the brand line (170 px in, further when a language's line is longer).
+    const taglineX = REPLAY.x + Math.max(170, ctx.measureText(words.madeWith).width + 20);
     ctx.fillStyle = '#9a9ea5';
     ctx.font = '13px system-ui, sans-serif';
-    ctx.fillText('3D product ads from one photo', REPLAY.x + 170, H - 28);
+    ctx.fillText(words.tagline, taglineX, H - 28);
   };
 
   draw(0);

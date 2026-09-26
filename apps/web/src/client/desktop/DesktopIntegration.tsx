@@ -1,6 +1,7 @@
 import type { DesktopBridge, DesktopUpdateState } from '@annie3d/contracts';
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { t as tr, useT } from '../i18n';
 import { currentViewCentre, importBoardFile } from '../lib/boardFile';
 import { onDocCommand } from '../lib/doc';
 import { useBoard } from '../store/board';
@@ -18,6 +19,7 @@ import './desktop.css';
  *   to the previous version if this never arrives).
  */
 export default function DesktopIntegration({ bridge }: { bridge: DesktopBridge }) {
+  const t = useT();
   const [state, setState] = useState<DesktopUpdateState | null>(null);
   const [busy, setBusy] = useState(false);
   const mode = useBoard((s) => s.mode);
@@ -44,8 +46,7 @@ export default function DesktopIntegration({ bridge }: { bridge: DesktopBridge }
   }, [bridge, loaded]);
 
   useEffect(() => {
-    if (state?.rolledBackFrom)
-      toast(`The update ${state.rolledBackFrom} did not start, so the previous version is back.`, 'error');
+    if (state?.rolledBackFrom) toast(tr('update.rolledBack', { version: state.rolledBackFrom }), 'error');
   }, [state?.rolledBackFrom]);
 
   if (!state) return null;
@@ -53,7 +54,7 @@ export default function DesktopIntegration({ bridge }: { bridge: DesktopBridge }
   if (web.status === 'shell-required')
     return (
       <div className="update-pill" role="status" data-testid="update-pill">
-        <span>A newer app is needed for the latest update (app {web.minShell}+).</span>
+        <span>{t('update.shellRequired', { version: web.minShell ?? '' })}</span>
       </div>
     );
   const layer = shell.status === 'ready' ? 'shell' : web.status === 'ready' ? 'web' : null;
@@ -66,9 +67,9 @@ export default function DesktopIntegration({ bridge }: { bridge: DesktopBridge }
   return (
     <div className="update-pill" role="status" data-testid="update-pill">
       <RefreshCw size={14} aria-hidden />
-      <span>Update available</span>
+      <span>{t('update.available')}</span>
       <button type="button" onClick={() => void apply()} disabled={busy} data-testid="update-apply">
-        {busy ? 'Restarting…' : 'Restart to update'}
+        {busy ? t('update.restarting') : t('update.restart')}
       </button>
     </div>
   );

@@ -3,23 +3,24 @@ import {
   downstreamOf,
   type Graph,
   type GraphOp,
-  LOOK_PRESETS,
-  MOTION_PRESETS,
-  NODE_DEFS,
+  type LookPresetId,
+  type MotionPresetId,
   type NodeKind,
   type NodeRecord,
   newId,
   nextZKey,
   upstreamOf,
 } from '@annie3d/contracts';
+import { type Translator, translator } from '../lib/i18n';
 import type { Agent, AgentAction, AgentInput } from './types';
 
 /**
  * Deterministic stand-in for the real agent: understands the board edits the MVP needs
  * (look, duration, aspect, motion, headline, detail, export preset, packshots, run) and asks
- * when a request is ambiguous instead of guessing. Replies stream word by word like an LLM.
+ * when a request is ambiguous instead of guessing. Replies stream word by word like an LLM, in
+ * the person's language (`input.locale`); it understands English requests only.
  */
-const LOOK_WORDS: [RegExp, string][] = [
+const LOOK_WORDS: [RegExp, LookPresetId][] = [
   [/\b(dark|lab|moody|tech)\b/, 'dark-lab'],
   [/\b(stone|water|waterfall|wet)\b/, 'stone-water'],
   [/\bvelvet\b/, 'velvet'],
@@ -27,7 +28,7 @@ const LOOK_WORDS: [RegExp, string][] = [
   [/\b(botanical|podium|plants?|leaves)\b/, 'podium-botanical'],
   [/\b(studio|white|clean|plain)\b/, 'studio-light'],
 ];
-const MOTION_WORDS: [RegExp, string][] = [
+const MOTION_WORDS: [RegExp, MotionPresetId][] = [
   [/\bturntable|spin\b/, 'turntable'],
   [/\borbit\b/, 'hero-orbit'],
   [/\bteardown|exploded?\b/, 'teardown-reveal'],
@@ -41,8 +42,23 @@ interface Change {
   nodeIds: string[];
 }
 
-function label(n: NodeRecord) {
-  return n.label ?? NODE_DEFS[n.kind].label;
+/** A node's name: the label people gave it, else its kind's name in their language. */
+function label(t: Translator, n: NodeRecord) {
+  return n.label ?? t(`node.${n.kind}`);
+}
+
+type ChangeKey =
+  | 'api.agent.change.look'
+  | 'api.agent.change.duration'
+  | 'api.agent.change.aspect'
+  | 'api.agent.change.motion'
+  | 'api.agent.change.detail'
+  | 'api.agent.change.preset';
+
+/** A change to describe: its label (`look → Velvet`) and the value alone (`Velvet`). */
+interface What {
+  change: string;
+  value: string;
 }
 
 /** Nodes of a kind the request can mean: around the selection, else the only one on the board. */
@@ -68,46 +84,56 @@ export function plan(input: AgentInput): {
   wantsRun: boolean;
   notes: string[];
 } {
+  const tr = translator(input.locale);
+  const name = (n: NodeRecord) => label(tr, n);
   const t = input.message.toLowerCase();
   const g = input.graph;
   const changes: Change[] = [];
   const questions: string[] = [];
   const notes: string[] = [];
-  const edit = (kind: NodeKind, what: string, patch: (n: NodeRecord) => Record<string, unknown>) => {
+  const edit = (kind: NodeKind, what: What, patch: (n: NodeRecord) => Record<string, unknown>) => {
     const { nodes, ambiguous } = targets(g, kind, input.nodeIds);
     if (ambiguous) {
-      questions.push(
-        `There are ${ambiguous} ${NODE_DEFS[kind].label} nodes. Select the one you mean (or a node in its line) and ask again.`,
-      );
+      questions.push(tr('api.agent.ambiguous', { count: ambiguous, kind: tr(`node.${kind}`) }));
       return;
     }
     if (!nodes.length) {
-      notes.push(`There is no ${NODE_DEFS[kind].label} node yet, so I skipped “${what}”.`);
+      notes.push(tr('api.agent.noNode', { kind: tr(`node.${kind}`), change: what.change }));
       return;
     }
     // Skip nodes that already have these values: a no-op edit would only confuse the user.
     const real = nodes.filter((n) => Object.entries(patch(n)).some(([k, v]) => n.settings[k] !== v));
     if (!real.length) {
       notes.push(
-        `${nodes.map(label).join(', ')} already ${nodes.length > 1 ? 'have' : 'has'} ${what.replace(/^.*→\s*/, '')}.`,
+        tr('api.agent.alreadySet', {
+          count: nodes.length,
+          nodes: nodes.map(name).join(', '),
+          value: what.value,
+        }),
       );
       return;
     }
     changes.push({
       ops: real.map((n) => ({ type: 'node.update' as const, id: n.id, patch: { settings: patch(n) } })),
-      label: `${real.map(label).join(', ')}: ${what}`,
+      label: tr('api.agent.changeOn', { nodes: real.map(name).join(', '), change: what.change }),
       nodeIds: real.map((n) => n.id),
     });
   };
+  /** `look → Velvet`: the change and its value. */
+  const to = (key: ChangeKey, value: string): What => ({
+    change: tr(key, { value }),
+    value,
+  });
 
   const look = LOOK_WORDS.find(([re]) => re.test(t))?.[1];
   const moods = [...new Set(t.match(MOOD) ?? [])];
   if (look && /\b(stage|look|scene|background|set)\b|dark|stone|velvet|pastel|botanical|studio/.test(t)) {
-    const l = LOOK_PRESETS.find((p) => p.id === look)!;
-    edit('stage', `look → ${l.label}`, () => ({ look }));
+    edit('stage', to('api.agent.change.look', tr(`look.${look}`)), () => ({ look }));
   }
   if (moods.length) {
-    edit('stage', `direction: ${moods.join(', ')}`, (n) => {
+    const direction = tr('api.agent.change.direction', { value: moods.join(', ') });
+    // The value of a direction is the whole change ("already has direction: warmer").
+    edit('stage', { change: direction, value: direction }, (n) => {
       const prev = String(n.settings.prompt ?? '').trim();
       return { prompt: [prev, `${moods.join(', ')} light`].filter(Boolean).join('; ').slice(0, 2000) };
     });
@@ -116,9 +142,11 @@ export function plan(input: AgentInput): {
   if (dur) {
     const want = Number(dur[1]);
     const nearest = [6, 10, 15].reduce((a, b) => (Math.abs(b - want) < Math.abs(a - want) ? b : a));
-    edit('adVideo', `duration → ${nearest}s${nearest !== want ? ` (closest to ${want}s)` : ''}`, () => ({
-      durationSec: nearest,
-    }));
+    const value =
+      nearest !== want
+        ? tr('api.agent.value.secondsClosest', { seconds: nearest, wanted: want })
+        : tr('api.agent.value.seconds', { seconds: nearest });
+    edit('adVideo', to('api.agent.change.duration', value), () => ({ durationSec: nearest }));
   }
   const aspect =
     ASPECTS.find((a) => t.includes(a)) ??
@@ -129,12 +157,11 @@ export function plan(input: AgentInput): {
         : /\b(landscape|wide|youtube)\b/.test(t)
           ? '16:9'
           : null);
-  if (aspect) edit('adVideo', `aspect → ${aspect}`, () => ({ aspect }));
+  if (aspect) edit('adVideo', to('api.agent.change.aspect', aspect), () => ({ aspect }));
   const motion = /\b(motion|move|camera|animation|animate)\b/.test(t)
     ? MOTION_WORDS.find(([re]) => re.test(t))?.[1]
     : undefined;
-  if (motion)
-    edit('adVideo', `motion → ${MOTION_PRESETS.find((m) => m.id === motion)!.label}`, () => ({ motion }));
+  if (motion) edit('adVideo', to('api.agent.change.motion', tr(`motion.${motion}`)), () => ({ motion }));
   const headline = /headline\s*(?:to|:|=|is)?\s*["“'](.+?)["”']/.exec(input.message);
   if (headline) {
     const { nodes, ambiguous } = targets(g, 'text', input.nodeIds);
@@ -144,7 +171,7 @@ export function plan(input: AgentInput): {
         (n) => n.kind === 'text' && (n.settings.role === 'headline' || /headline/i.test(n.label ?? '')),
       );
       if (all.length === 1) heads.push(all[0]!);
-      else questions.push(`There are ${all.length} headlines. Select the line you mean and ask again.`);
+      else questions.push(tr('api.agent.ambiguousHeadline', { count: all.length }));
     }
     if (heads.length)
       changes.push({
@@ -153,19 +180,30 @@ export function plan(input: AgentInput): {
           id: n.id,
           patch: { settings: { text: headline[1]!.slice(0, 200) } },
         })),
-        label: `Headline → “${headline[1]}”`,
+        label: tr('api.agent.change.headline', { text: headline[1]! }),
         nodeIds: heads.map((n) => n.id),
       });
   }
-  if (/\b(high|more) detail\b/.test(t)) edit('model3d', 'detail → high', () => ({ detail: 'high' }));
-  if (/\bdraft\b/.test(t)) edit('model3d', 'detail → draft', () => ({ detail: 'draft' }));
-  if (/\bswirl\b/.test(t)) edit('export', 'preset → Google Swirl', () => ({ glbPreset: 'google_swirl' }));
+  if (/\b(high|more) detail\b/.test(t))
+    edit('model3d', to('api.agent.change.detail', tr('api.agent.value.detailHigh')), () => ({
+      detail: 'high',
+    }));
+  if (/\bdraft\b/.test(t))
+    edit('model3d', to('api.agent.change.detail', tr('api.agent.value.detailDraft')), () => ({
+      detail: 'draft',
+    }));
+  if (/\bswirl\b/.test(t))
+    edit('export', to('api.agent.change.preset', tr('glbPreset.google_swirl')), () => ({
+      glbPreset: 'google_swirl',
+    }));
   else if (/\bmerchant|shopping\b/.test(t))
-    edit('export', 'preset → Google Merchant', () => ({ glbPreset: 'google_merchant' }));
+    edit('export', to('api.agent.change.preset', tr('glbPreset.google_merchant')), () => ({
+      glbPreset: 'google_merchant',
+    }));
   if (/\badd (a |some |more )?packshots?\b/.test(t)) {
     const { nodes: models, ambiguous } = targets(g, 'model3d', input.nodeIds);
     const model = models[0];
-    if (ambiguous) questions.push('Select the 3D model the packshots should come from.');
+    if (ambiguous) questions.push(tr('api.agent.pickModel'));
     else if (model) {
       const id = newId();
       changes.push({
@@ -177,7 +215,7 @@ export function plan(input: AgentInput): {
               kind: 'packshot',
               x: model.x + 380,
               y: model.y + 360,
-              label: 'Packshots (agent)',
+              label: tr('api.agent.packshotLabel'),
               settings: { angles: 'four', size: '1k', camera: null },
               zKey: nextZKey(g),
             },
@@ -187,7 +225,7 @@ export function plan(input: AgentInput): {
             edge: { id: newId(), source: model.id, sourcePort: 'out', target: id, targetPort: 'subject' },
           },
         ],
-        label: `Added a Packshot node from ${label(model)}`,
+        label: tr('api.agent.change.addPackshot', { node: name(model) }),
         nodeIds: [id],
       });
     }
@@ -207,16 +245,17 @@ async function* words(text: string): AsyncGenerator<AgentAction> {
 export const simulatedAgent: Agent = {
   id: 'sim-agent-1',
   async *respond(input) {
+    const tr = translator(input.locale);
     const { changes, questions, wantsRun, notes } = plan(input);
     if (!changes.length && !questions.length && !wantsRun) {
-      yield* words(
-        'I can change the look of a Stage (dark lab, stone & water, velvet, pastel splash, botanical, studio), make it warmer or cooler, set the video to 6, 10 or 15 seconds, switch to 9:16, 1:1 or 16:9, change the motion, set the headline ("headline: ..."), add packshots, pick an export preset, and run it. Select nodes first to point me at a line.',
-      );
+      yield* words(tr('api.agent.help'));
       return;
     }
     for (const q of questions) yield* words(`${q} `);
     if (changes.length) {
-      yield* words(changes.length === 1 ? 'Done: ' : `I made ${changes.length} changes: `);
+      yield* words(
+        `${changes.length === 1 ? tr('api.agent.done') : tr('api.agent.madeChanges', { count: changes.length })} `,
+      );
       for (const c of changes) {
         yield { type: 'ops', ops: c.ops, label: c.label };
         yield* words(`${c.label}. `);
@@ -225,14 +264,10 @@ export const simulatedAgent: Agent = {
     for (const n of notes) yield* words(`${n} `);
     if (wantsRun && !questions.length) {
       const ids = changes.flatMap((c) => c.nodeIds);
-      yield* words(
-        ids.length
-          ? 'Running what changed; unchanged nodes stay cached. '
-          : 'Running the board; unchanged nodes stay cached. ',
-      );
+      yield* words(`${ids.length ? tr('api.agent.runningChanged') : tr('api.agent.runningBoard')} `);
       yield { type: 'run', nodeId: null, scope: 'all' };
     } else if (changes.length) {
-      yield* words('Say “run it” when you want to see the result.');
+      yield* words(tr('api.agent.sayRun'));
     }
   },
 };

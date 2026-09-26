@@ -20,7 +20,7 @@ function board(lines = 3) {
   return graphFrom(nodes, edges);
 }
 const ask = (graph: ReturnType<typeof board>, message: string, nodeIds: string[] = []) =>
-  plan({ message, graph, nodeIds, budgetCredits: 100, history: [] });
+  plan({ message, graph, nodeIds, budgetCredits: 100, history: [], locale: 'en' });
 
 describe('simulated agent planner', () => {
   it('asks which one when several nodes match and nothing is selected', () => {

@@ -1,0 +1,24 @@
+---
+import LegalNotice from '../../../components/LegalNotice.astro';
+import Base from '../../../layouts/Base.astro';
+import { type LocaleProps, localeStaticPaths, pageT } from '../../../lib/site';
+
+export const getStaticPaths = localeStaticPaths;
+const { locale } = Astro.props as LocaleProps;
+const t = pageT(locale);
+---
+
+<Base locale={locale} title={t('site.terms.title')} description={t('site.terms.description')}>
+  <div class="container prose" style="padding:56px 0 96px">
+    <LegalNotice locale={locale} path="/legal/terms" />
+    <h1 class="h2" style="margin-top:12px">{t('site.terms.title')}</h1>
+    <h2>{t('site.terms.contentTitle')}</h2>
+    <p>{t('site.terms.contentBody')}</p>
+    <h2>{t('site.terms.useTitle')}</h2>
+    <p>{t('site.terms.useBody')}</p>
+    <h2>{t('site.terms.creditsTitle')}</h2>
+    <p>{t('site.terms.creditsBody')}</p>
+    <h2>{t('site.terms.preReleaseTitle')}</h2>
+    <p>{t('site.terms.preReleaseBody')}</p>
+  </div>
+</Base>

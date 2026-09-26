@@ -1,0 +1,73 @@
+/** The desktop shell (apps/desktop): native menus, dialogs and board-file errors. */
+export default {
+  // macOS application menu ({app} is "Annie 3D").
+  'desktop.menu.about': 'About {app}',
+  'desktop.menu.services': 'Services',
+  'desktop.menu.hide': 'Hide {app}',
+  'desktop.menu.hideOthers': 'Hide Others',
+  'desktop.menu.showAll': 'Show All',
+  'desktop.menu.quitApp': 'Quit {app}',
+  // File
+  'desktop.menu.file': 'File',
+  'desktop.menu.newBoardFile': 'New Board File',
+  'desktop.menu.open': 'Open…',
+  'desktop.menu.openRecent': 'Open Recent',
+  'desktop.menu.clearRecent': 'Clear Menu',
+  'desktop.menu.save': 'Save',
+  'desktop.menu.saveAs': 'Save As…',
+  'desktop.menu.importIntoBoard': 'Import into This Board…',
+  'desktop.menu.closeWindow': 'Close Window',
+  'desktop.menu.quit': 'Quit',
+  'desktop.menu.exit': 'Exit',
+  // Edit
+  'desktop.menu.edit': 'Edit',
+  'desktop.menu.undo': 'Undo',
+  'desktop.menu.redo': 'Redo',
+  'desktop.menu.cut': 'Cut',
+  'desktop.menu.copy': 'Copy',
+  'desktop.menu.paste': 'Paste',
+  'desktop.menu.selectAll': 'Select All',
+  // View
+  'desktop.menu.view': 'View',
+  'desktop.menu.reload': 'Reload',
+  'desktop.menu.toggleDevTools': 'Toggle Developer Tools',
+  'desktop.menu.toggleFullScreen': 'Toggle Full Screen',
+  // Window
+  'desktop.menu.window': 'Window',
+  'desktop.menu.minimize': 'Minimize',
+  'desktop.menu.zoom': 'Zoom',
+  'desktop.menu.bringAllToFront': 'Bring All to Front',
+  'desktop.menu.close': 'Close',
+  // Help
+  'desktop.menu.help': 'Help',
+  'desktop.menu.website': '{app} website',
+
+  // Board files as documents
+  'desktop.doc.untitled': 'Untitled.annie3d',
+  'desktop.doc.fileType': 'Annie 3D board',
+  'desktop.close.message': 'Do you want to save the changes you made to “{name}”?',
+  'desktop.close.detail': 'Your changes will be lost if you don’t save them.',
+  'desktop.close.dontSave': 'Don’t Save',
+  'desktop.open.failed': '“{name}” could not be opened',
+
+  // Why a board file was refused ({name} is a path inside the file)
+  'desktop.file.tooLarge': 'The file is larger than 2 GB',
+  'desktop.file.notBoard': 'Not an Annie 3D file',
+  'desktop.file.notBoardOrNewer': 'Not an Annie 3D file (or a newer version)',
+  'desktop.file.damaged': 'The file is damaged',
+  'desktop.file.invalidDescription': 'The board description is not valid',
+  'desktop.file.multiPart': 'Multi-part archives are not board files',
+  'desktop.file.zip64': 'ZIP64 archives are not board files',
+  'desktop.file.tooManyEntries': 'The file has too many entries',
+  'desktop.file.encrypted': 'Encrypted files are not board files',
+  'desktop.file.duplicateEntry': 'Duplicate entry {name}',
+  'desktop.file.unsupportedCompression': 'Unsupported compression',
+  'desktop.file.descriptionTooLarge': 'The board description is too large',
+  'desktop.file.unexpectedEntry': 'Unexpected entry {name}',
+  'desktop.file.compressedMedia': '{name} is compressed; board files store media as they are',
+  'desktop.file.invalidBoard': 'Invalid board',
+  'desktop.file.invalidAsset': 'Invalid file {name}',
+  'desktop.file.missingAsset': 'Missing {name}',
+  'desktop.file.boardTooLarge': 'The board is larger than 2 GB',
+  'desktop.file.needsBytes': 'Every file needs its bytes',
+} as const;

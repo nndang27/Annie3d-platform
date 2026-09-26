@@ -13,6 +13,7 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { oneTap } from 'better-auth/plugins';
 import type { Env } from './env';
+import { type Locale, translator } from './lib/i18n';
 
 /**
  * Better Auth on Workers + Drizzle + Hyperdrive (better-auth.com/docs/adapters/drizzle,
@@ -31,7 +32,8 @@ export function publicOrigin(env: Env, req: Request): string {
   return /^[a-z0-9-]+\.trycloudflare\.com$/.test(host) ? `https://${host}` : env.APP_URL;
 }
 
-export function createAuth(env: Env, db: Db, origin = env.APP_URL) {
+/** `locale`: the request's language, for what sign-up creates (the workspace name). */
+export function createAuth(env: Env, db: Db, origin = env.APP_URL, locale: Locale = 'en') {
   return betterAuth({
     appName: 'Annie 3D',
     baseURL: origin,
@@ -79,7 +81,7 @@ export function createAuth(env: Env, db: Db, origin = env.APP_URL) {
       user: {
         create: {
           after: async (user) => {
-            await provisionWorkspace(db, user.id, user.name);
+            await provisionWorkspace(db, user.id, user.name, locale);
           },
         },
       },
@@ -88,13 +90,15 @@ export function createAuth(env: Env, db: Db, origin = env.APP_URL) {
 }
 
 /** Personal workspace, owner membership and the free-run credit grant. Idempotent. */
-export async function provisionWorkspace(db: Db, userId: string, name: string) {
+export async function provisionWorkspace(db: Db, userId: string, name: string, locale: Locale = 'en') {
   const existing = await db.query.workspaceMembers.findFirst({ where: (m, { eq }) => eq(m.userId, userId) });
   if (existing) return existing.workspaceId;
   const workspaceId = newId();
-  await db
-    .insert(workspaces)
-    .values({ id: workspaceId, name: `${name.slice(0, 80) || 'My'} workspace`, createdBy: userId });
+  const t = translator(locale);
+  const title = name.slice(0, 80)
+    ? t('api.workspace.named', { name: name.slice(0, 80) })
+    : t('api.workspace.unnamed');
+  await db.insert(workspaces).values({ id: workspaceId, name: title, createdBy: userId });
   await db.insert(workspaceMembers).values({ workspaceId, userId, role: 'owner' });
   await openAccount(db, workspaceId, FREE_RUN_CREDITS, `free:${workspaceId}`);
   return workspaceId;

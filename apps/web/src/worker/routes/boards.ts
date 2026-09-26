@@ -11,6 +11,7 @@ import { Hono } from 'hono';
 import type { AppEnv } from '../env';
 import { getDb } from '../lib/db';
 import { body, httpError, query, uuidParam } from '../lib/http';
+import { localeOf, translator } from '../lib/i18n';
 import { requireEditor, requireUser } from '../lib/session';
 import { applyBatch, createBoard, loadBoard, snapshot, versionDtos } from '../services/boards';
 import { workingCopyExpiry } from '../services/cleanup';
@@ -56,6 +57,7 @@ boardRoutes.post('/api/boards', requireEditor, async (c) => {
     req.starter,
     req.fromGuest,
     req.workingCopy ? workingCopyExpiry() : null,
+    translator(localeOf(c.req.raw)),
   );
   // Guest boards built on the example keep its rendered outputs (seeded, not copied).
   if (req.fromGuest) await seedExample(db, c.get('workspaceId')!, c.get('user')!.id, b.id);
@@ -89,7 +91,7 @@ boardRoutes.delete('/api/boards/:boardId', requireEditor, async (c) => {
 boardRoutes.post('/api/boards/:boardId/ops', requireEditor, async (c) => {
   const id = uuidParam(c, 'boardId');
   const lim = await c.env.RL_WRITE.limit({ key: c.get('user')!.id });
-  if (!lim.success) throw httpError(429, 'rate_limited', 'Too many edits, slow down');
+  if (!lim.success) throw httpError(429, 'rate_limited', 'api.board.tooManyEdits');
   const req = await body(c, ApplyOpsRequest);
   const res = await applyBatch(getDb(c), c.get('workspaceId')!, c.get('user')!.id, id, req.opId, req.ops);
   return c.json(res, res.duplicate ? 200 : 201);
@@ -146,7 +148,7 @@ boardRoutes.post('/api/boards/:boardId/nodes/:nodeId/select-version', requireEdi
   const node = await db.query.boardNodes.findFirst({
     where: (t, { and, eq, isNull }) => and(eq(t.id, nodeId), eq(t.boardId, boardId), isNull(t.deletedAt)),
   });
-  if (!node) throw httpError(404, 'not_found', 'Node not found');
+  if (!node) throw httpError(404, 'not_found', 'api.board.nodeNotFound');
   // Goes through the op log so undo and replay see it like any other change.
   const res = await applyBatch(db, c.get('workspaceId')!, c.get('user')!.id, boardId, crypto.randomUUID(), [
     { type: 'node.update', id: nodeId, patch: { currentVersionId: versionId } },

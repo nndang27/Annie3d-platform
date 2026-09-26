@@ -1,0 +1,1117 @@
+import type { Catalog } from '../index';
+
+/**
+ * Korean. Glossary (keep these choices when adding keys):
+ * board = 보드, node = 노드, wire / connection / edge = 연결, run = 실행 (cancelled run = 실행 중단,
+ * because 실행 취소 is undo), credits = 크레딧 ("{count}크레딧", no space), Stage (node) = 스테이지,
+ * Packshot = 팩샷, Ad video = 광고 영상, Export = 내보내기, Simulation = 시뮬레이션,
+ * simulator = 시뮬레이터, Starter = 스타터, template = 템플릿, preset = 프리셋, look = 룩,
+ * motion = 모션, version = 버전 ("v{n}" stays), Annie = Annie.
+ * Other recurring words: canvas = 캔버스, 3D model = 3D 모델, scene = 씬, headline = 헤드라인,
+ * angle = 각도, region = 영역, face = 면, 3D editor = 3D 편집기, view = 뷰, share = 공유,
+ * share link = 공유 링크, checkout = 결제, plan = 플랜, sign in = 로그인, guest = 게스트,
+ * process reel = 제작 과정 릴, agent = 에이전트, undo = 실행 취소, redo = 다시 실행,
+ * duplicate = 복제, upload = 업로드, download = 다운로드, drop = 드롭, check / gate = 검사,
+ * cached = 캐시된, stale = 오래됨, board file = 보드 파일, entry (in a file) = 항목, phone = 휴대폰.
+ * Counters attach to numbers ("{count}개", "{count}회"), parentheses attach to the word before.
+ * Buttons are noun phrases (저장, 취소), sentences use 해요체.
+ */
+const catalog: Catalog = {
+  // Words used across the product.
+  'common.credits': { other: '{count}크레딧' },
+  'common.cancel': '취소',
+  'common.close': '닫기',
+  'common.save': '저장',
+  'common.done': '완료',
+  'common.retry': '다시 시도',
+  'common.language': '언어',
+  'common.brand': 'Annie 3D',
+
+  // Names that come from packages/contracts (node kinds, ports, presets, starters).
+  'node.photo': '사진',
+  'node.text': '텍스트',
+  'node.upload3d': '3D 업로드',
+  'node.audio': '음악',
+  'node.model3d': '3D 모델',
+  'node.stage': '스테이지',
+  'node.packshot': '팩샷',
+  'node.adVideo': '광고 영상',
+  'node.export': '내보내기',
+  'node.simulation': '시뮬레이션',
+  'node.note': '메모',
+
+  'engine.photo': '업로드',
+  'engine.text': '텍스트',
+  'engine.upload3d': '업로드',
+  'engine.audio': '업로드',
+  'engine.model3d': '빌더',
+  'engine.stage': '씬 디렉터',
+  'engine.packshot': '렌더러',
+  'engine.adVideo': '렌더러',
+  'engine.export': '패키저',
+  'engine.simulation': '실시간 미리보기',
+  'engine.note': '메모',
+
+  'category.input': '입력',
+  'category.build': '빌드',
+  'category.stage': '스테이지',
+  'category.output': '출력',
+  'category.note': '메모',
+
+  'port.photo.out': '이미지',
+  'port.text.out': '텍스트',
+  'port.upload3d.out': '3D 모델',
+  'port.audio.out': '오디오',
+  'port.model3d.images': '사진',
+  'port.model3d.prompt': '설명',
+  'port.model3d.out': '3D 모델',
+  'port.stage.model': '3D 모델',
+  'port.stage.prompt': '연출 방향',
+  'port.stage.style': '스타일 레퍼런스',
+  'port.stage.out': '씬',
+  'port.packshot.subject': '모델 또는 씬',
+  'port.packshot.out': '이미지',
+  'port.adVideo.subject': '씬 또는 모델',
+  'port.adVideo.headline': '헤드라인',
+  'port.adVideo.logo': '로고',
+  'port.adVideo.music': '음악',
+  'port.adVideo.out': '영상',
+  'port.export.items': '출력물',
+  'port.export.out': '파일',
+  'port.simulation.subject': '모델 또는 씬',
+  'port.simulation.headline': '헤드라인',
+  'port.simulation.logo': '로고',
+
+  'portType.image': '이미지',
+  'portType.text': '텍스트',
+  'portType.model3d': '3D 모델',
+  'portType.scene': '씬',
+  'portType.video': '영상',
+  'portType.audio': '오디오',
+  'portType.file': '파일',
+
+  'look.studio-light': '스튜디오 조명',
+  'look.dark-lab': '다크 랩',
+  'look.stone-water': '돌과 물',
+  'look.velvet': '벨벳',
+  'look.splash-pastel': '스플래시, 파스텔',
+  'look.podium-botanical': '포디움과 식물',
+
+  'motion.turntable': '턴테이블',
+  'motion.hero-orbit': '히어로 오빗',
+  'motion.teardown-reveal': '분해 리빌',
+  'motion.stone-water': '돌과 물',
+  'motion.splash-hero': '스플래시 히어로',
+
+  'glbPreset.web': '웹/스토어',
+  'glbPreset.google_merchant': 'Google Merchant',
+  'glbPreset.google_swirl': 'Google Swirl',
+
+  'simEnv.shop': '쇼핑몰 페이지',
+  'simEnv.tiktok': 'TikTok',
+  'simEnv.sticker': '스티커',
+  'simEnv.showroom': '쇼룸',
+
+  'starter.teardown-reveal.title': '분해 리빌',
+  'starter.teardown-reveal.vertical': '전자제품',
+  'starter.teardown-reveal.description': '제품이 한 겹씩 분해되어 잠시 멈춘 뒤 다시 딱 맞춰져요.',
+  'starter.teardown-reveal.headline': '나사 하나까지 정밀하게',
+  'starter.stone-water.title': '돌과 물',
+  'starter.stone-water.vertical': '주얼리',
+  'starter.stone-water.description':
+    '가느다란 폭포 옆 젖은 돌 위에 놓인 제품에 천천히 다가가며 반짝임을 담아요.',
+  'starter.stone-water.headline': '시선을 사로잡도록',
+  'starter.splash-hero.title': '스플래시 히어로',
+  'starter.splash-hero.vertical': '뷰티',
+  'starter.splash-hero.description': '병이 제품 색의 물보라를 뚫고 솟아올라 포디움 위에 내려앉아요.',
+  'starter.splash-hero.headline': '새로운 포뮬러를 만나 보세요',
+  'starter.node.photo': '제품 사진',
+  'starter.node.headline': '헤드라인',
+  'starter.node.pack': '팩샷',
+
+  'setting.simulation.cta': '지금 구매',
+
+  // App shell (App.tsx): loading splash, lazy overlays, checkout return.
+  'app.canvas': '보드 캔버스',
+  'app.loading': '보드 불러오는 중…',
+  'app.docAccess': '{name} 열기',
+  'app.opening3d': '3D 여는 중…',
+  'app.openingSimulator': '시뮬레이터 여는 중…',
+  'app.error3d': '3D 보기를 시작할 수 없어요: {message}',
+  'app.checkoutDone': '결제가 완료되어 크레딧이 추가됐어요.',
+  'app.board.firstTitle': '나의 첫 보드',
+
+  // Top bar: logo, title, save state.
+  'topbar.home': 'Annie 3D 홈',
+  'topbar.title': '보드 제목',
+  'topbar.save.saved': '저장됨',
+  'topbar.save.saving': '저장 중…',
+  'topbar.save.offline': '오프라인, 나중에 동기화',
+  'topbar.save.error': '다시 시도하는 중…',
+  'topbar.save.edited': '수정됨',
+  'topbar.save.notSaved': '저장 안 됨',
+  'topbar.save.noFile': '아직 파일로 저장하지 않음',
+  'topbar.save.guest': '이 브라우저에 저장됨',
+  'topbar.save.guestHint': '계정에 보관하려면 로그인하세요',
+
+  // Top bar: board file ("…") menu.
+  'topbar.file.menu': '보드 파일',
+  'topbar.file.save': '저장',
+  'topbar.file.saveAsFile': '파일로 저장…',
+  'topbar.file.saveAs': '다른 이름으로 저장…',
+  'topbar.file.open': '열기…',
+  'topbar.file.new': '새 보드 파일',
+  'topbar.file.import': '이 보드로 가져오기…',
+  'topbar.file.download': '보드 다운로드(.annie3d)',
+  'topbar.file.openFile': '보드 파일 열기…',
+
+  // Top bar: templates, run all, zoom.
+  'topbar.templates': '템플릿',
+  'topbar.running': '실행 중…',
+  'topbar.runAll': '모두 실행',
+  'topbar.runAllHint': '변경 없는 노드는 무료이며, 확인하기 전에 정확한 비용을 보여 드려요',
+  'topbar.upToDate': '최신 상태',
+  'topbar.zoomOut': '축소',
+  'topbar.zoomIn': '확대',
+  'topbar.zoomLevel': '확대/축소 {percent}, 화면에 맞추기',
+  'topbar.fitToScreen': '화면에 맞추기(Shift+1)',
+
+  // Top bar: account, credits, share.
+  'topbar.creditsHint': '크레딧 및 플랜',
+  'topbar.signIn': '로그인',
+  'topbar.share': '공유',
+  'topbar.shareFile': '보드 파일은 파일 그대로 공유해요. .annie3d 파일을 직접 보내세요.',
+  'topbar.account': '계정',
+  'topbar.accountOf': '계정: {name}',
+  'topbar.creditsAndPlan': '크레딧 및 플랜',
+  'topbar.signOut': '로그아웃',
+
+  // Language picker (top bar and the file menu).
+  'lang.button': '언어: {language}',
+
+  // Bottom toolbar.
+  'toolbar.label': '캔버스 도구',
+  'toolbar.select': '선택(V)',
+  'toolbar.hand': '손(H)',
+  'toolbar.add': '{name} 추가',
+  'toolbar.moreNodes': '노드 더 보기(N)',
+  'toolbar.undo': '실행 취소(⌘Z)',
+  'toolbar.redo': '다시 실행(⇧⌘Z)',
+  'toolbar.askAnnie': 'Annie에게 묻기',
+
+  // Add-node palette.
+  'palette.label': '노드 추가',
+  'palette.search': '노드 추가…',
+  'palette.searchLabel': '노드 검색',
+  'palette.list': '노드',
+  'palette.starters': '스타터',
+  'palette.starter': '{title} 스타터',
+  'palette.noMatch': '“{query}”에 맞는 노드가 없어요.',
+  'palette.accepts.image': '이미지를 받는 노드…',
+  'palette.accepts.text': '텍스트를 받는 노드…',
+  'palette.accepts.model3d': '3D 모델을 받는 노드…',
+  'palette.accepts.scene': '씬을 받는 노드…',
+  'palette.accepts.video': '영상을 받는 노드…',
+  'palette.accepts.audio': '오디오를 받는 노드…',
+  'palette.accepts.file': '파일을 받는 노드…',
+
+  // Right-click menu on the canvas.
+  'menu.canvas': '캔버스 메뉴',
+  'menu.runNode': '이 노드 실행',
+  'menu.openEditor': '3D 편집기 열기',
+  'menu.export': '내보내기/다운로드…',
+  'menu.copy': '복사',
+  'menu.duplicate': '복제',
+  'menu.delete': '삭제',
+  'menu.addNode': '노드 추가…',
+  'menu.paste': '여기에 붙여넣기',
+  'menu.duplicateSelected': { other: '선택한 {count}개 복제' },
+  'menu.deleteSelected': { other: '선택한 {count}개 삭제' },
+
+  // Agent dock (Ask Annie).
+  'agent.title': 'Annie에게 묻기',
+  'agent.close': '에이전트 닫기',
+  'agent.intro': 'Annie가 노드, 설정, 연결 등 이 보드를 대신 수정해요. Annie의 수정은 ⌘Z로 되돌릴 수 있어요.',
+  'agent.suggestion.warmerStage': '스테이지를 더 따뜻하게 하고 6초 컷을 추가해 주세요',
+  'agent.suggestion.fourAngles': '4개 각도의 팩샷을 추가해 주세요',
+  'agent.suggestion.softerLight': '3D 모델에 더 부드러운 조명을 써 주세요',
+  'agent.undoHint': '⌘Z로 실행 취소',
+  'agent.thinking': '생각하는 중…',
+  'agent.input': '에이전트에게 메시지 보내기',
+  'agent.placeholder': '원하는 변경 사항을 설명하세요…',
+  'agent.budget': '예산',
+  'agent.budgetLabel': '예산(크레딧)',
+  'agent.send': '보내기',
+  'agent.boardEdited': '보드를 수정했어요',
+  'agent.failed': '죄송해요, 실패했어요: {message}',
+
+  // Shared dialog words.
+  'dialog.download': '다운로드',
+
+  // Billing dialog.
+  'dialog.billing.title': '크레딧',
+  'dialog.billing.guest': {
+    other: '로그인하면 {count}크레딧을 무료로 받아요. 전체 실행 1회에 충분한 양이에요.',
+  },
+  'dialog.billing.signIn': '로그인',
+  'dialog.billing.balance': { other: '{balance}크레딧' },
+  'dialog.billing.held': { other: '(실행 중인 작업에 {count}크레딧 예약됨)' },
+  'dialog.billing.plan.free': '무료',
+  'dialog.billing.plan.creator': 'Creator',
+  'dialog.billing.plan.studio': 'Studio',
+  'dialog.billing.firstRunFree': {
+    other: '첫 실행은 무료예요({count}크레딧 포함).',
+  },
+  'dialog.billing.chargedOnSuccess': '실행 비용은 성공한 단계에만 청구되며, 캐시된 단계는 무료예요.',
+  'dialog.billing.perMonth': '/월',
+  'dialog.billing.creditsPerMonth': {
+    other: '매월 {count}크레딧',
+  },
+  'dialog.billing.openingCheckout': '결제 페이지 여는 중…',
+  'dialog.billing.addCredits': '크레딧 추가',
+  'dialog.billing.choose': '{plan} 선택',
+  'dialog.billing.history': '내역',
+  'dialog.billing.reason.grantFree': '무료 크레딧',
+  'dialog.billing.reason.purchase': '플랜 구매',
+  'dialog.billing.reason.subscription': '월간 크레딧',
+  'dialog.billing.reason.runReserve': '실행 시작(예약)',
+  'dialog.billing.reason.runSettle': '실행 비용 청구',
+  'dialog.billing.reason.runRefund': '환불',
+  'dialog.billing.reason.adjust': '조정',
+
+  // Export dialog.
+  'dialog.export.noNode': '내보낼 3D 모델 또는 내보내기 노드를 선택하세요.',
+  'dialog.export.titleBundle': '번들 내보내기',
+  'dialog.export.titleModel': '3D 모델 내보내기',
+  'dialog.export.preset': '프리셋',
+  'dialog.export.limits': '최대 {size}, 삼각형 {triangles}개, 텍스처 {texture}px',
+  'dialog.export.limitsAnimated': '최대 {size}, 삼각형 {triangles}개, 텍스처 {texture}px, 애니메이션 포함',
+  'dialog.export.megabytes': '{size}MB',
+  'dialog.export.includeVideo': '광고 영상(MP4)',
+  'dialog.export.includeImages': '이미지(PNG)',
+  'dialog.export.ready': '{preset} 기준 충족',
+  'dialog.export.notReady': '아직 {preset} 기준 미충족',
+  'dialog.export.passed': '통과',
+  'dialog.export.failed': '실패',
+  'dialog.export.zip': '전체 파일(.zip)',
+  'dialog.export.glb': 'GLB 모델',
+  'dialog.export.exporting': '내보내는 중…',
+  'dialog.export.run': '내보내기(무료)',
+
+  // Process reel dialog.
+  'dialog.reel.button': '제작 과정 릴',
+  'dialog.reel.hint': '9:16 영상: 위에는 광고, 아래에는 제작 과정',
+  'dialog.reel.title': '제작 과정 릴',
+  'dialog.reel.intro':
+    'Reels와 TikTok용 9:16 영상이에요. 위에는 광고가, 아래에는 Annie 3D의 제작 과정이 나와요.',
+  'dialog.reel.preview': '릴 미리보기',
+  'dialog.reel.recording': '녹화 중… {percent}',
+  'dialog.reel.saving': '저장 중…',
+  'dialog.reel.record': '릴 녹화',
+
+  // Run dialog (cost before charging).
+  'dialog.run.inProgress': '이 보드에서 이미 실행 중이에요',
+  'dialog.run.checking': '비용 확인 중…',
+  'dialog.run.estimateFailed': '이 실행의 비용을 계산할 수 없어요.',
+  'dialog.run.upToDate': '모두 최신 상태예요',
+  'dialog.run.allCached': {
+    other:
+      '노드 {count}개에 현재 입력에 대한 결과가 이미 있어요. 다시 실행하려면 프롬프트, 설정 또는 입력을 바꾸세요.',
+  },
+  'dialog.run.ok': '확인',
+  'dialog.run.titleOne': '{name} 실행',
+  'dialog.run.titleMany': { other: '노드 {count}개 실행' },
+  'dialog.run.cached': {
+    other: '변경 없는 노드 {count}개는 기존 결과를 재사용해요',
+  },
+  'dialog.run.free': '무료',
+  'dialog.run.total': '합계',
+  'dialog.run.balance': { other: '잔액: {count}크레딧' },
+  'dialog.run.firstRunFree': '첫 실행은 무료예요.',
+  'dialog.run.refunded': '실패한 단계는 환불돼요.',
+  'dialog.run.starting': '시작하는 중…',
+  'dialog.run.run': '실행',
+  'dialog.run.getCredits': '크레딧 받기',
+
+  // Share dialog.
+  'dialog.share.copied': '링크를 복사했어요',
+  'dialog.share.copyFailed': '복사하지 못했어요. 링크를 선택해서 복사하세요',
+  'dialog.share.revoked': '링크를 비활성화했어요',
+  'dialog.share.title': '이 보드 공유',
+  'dialog.share.body':
+    '링크가 있는 사람은 누구나 광고를 보고, 이미지를 확인하고, 3D 모델을 다운로드할 수 있어요. 편집은 할 수 없어요.',
+  'dialog.share.creating': '링크 만드는 중…',
+  'dialog.share.link': '공유 링크',
+  'dialog.share.copy': '복사',
+  'dialog.share.views': { other: '조회 {count}회' },
+  'dialog.share.openPreview': '미리보기 열기',
+  'dialog.share.revoke': '링크 비활성화',
+
+  // Shared UI primitives (packages/ui): the host app passes these in.
+  'dialog.close': '대화상자 닫기',
+  'dialog.locked': '현재 작업이 끝날 때까지 기다려 주세요.',
+  'dialog.dismiss': '닫기',
+  'dialog.loading': '불러오는 중',
+
+  // Sign-in prompt (guest tries a paid or cloud action).
+  'signin.run.title': '로그인하고 실행하기',
+  'signin.run.body': {
+    other: '첫 전체 실행은 무료예요({count}크레딧). 보드도 그대로 가져가요.',
+  },
+  'signin.share.title': '로그인하고 공유하기',
+  'signin.share.body': '공유 링크를 만들려면 보드를 저장해야 해요. 보드도 그대로 가져가요.',
+  'signin.save.title': '로그인하고 이 보드 보관하기',
+  'signin.save.body': '게스트 보드는 이 브라우저에만 저장돼요.',
+  'signin.google': 'Google로 계속하기',
+  'signin.notNow': '나중에',
+
+  // Performance panel (developer tool, ⌥P).
+  'perf.title': '성능',
+  'perf.copied': '성능 보고서를 복사했어요',
+  'perf.copy': '보고서 복사',
+  'perf.copyHint': '보고서 복사(JSON)',
+  'perf.close': '성능 패널 닫기',
+  'perf.pageLoad': '페이지 로드',
+  'perf.network': {
+    other: '요청 {count}개, {kb}KB 전송',
+  },
+  'perf.features': '기능',
+  'perf.action': '작업',
+  'perf.last': '최근',
+  'perf.slowApis': '가장 느린 API 호출',
+  'perf.slowFiles': '가장 느린 파일',
+  'perf.serverTime': 'Worker 시간(Server-Timing)',
+  'perf.server': '서버 {time}',
+  'perf.ms': '{value}ms',
+  'perf.seconds': '{value}초',
+  'perf.budget': '≤ {value}',
+  'perf.foot':
+    '이 브라우저에서 측정했어요. 기준: Core Web Vitals(web.dev), RAIL, Nielsen 응답 시간 한계. 탭을 떠나면 같은 수치가 서버로 전송돼요.',
+  'perf.metric.ttfb': '서버 응답(TTFB)',
+  'perf.metric.fcp': '첫 페인트(FCP)',
+  'perf.metric.lcp': '주요 콘텐츠(LCP)',
+  'perf.metric.cls': '레이아웃 이동(CLS)',
+  'perf.metric.inp': '입력 응답(INP)',
+  'perf.metric.boardReady': '보드 사용 준비',
+  'perf.metric.boardLoad': '보드 데이터 로드',
+  'perf.metric.clipboardPaste': '노드 붙여넣기/복제',
+  'perf.metric.imageAdd': '이미지 붙여넣기 또는 드롭',
+  'perf.metric.uploadFile': '파일 업로드',
+  'perf.metric.editorOpen': '3D 편집기 열기',
+  'perf.metric.simulatorOpen': '시뮬레이터 열기',
+  'perf.metric.runStart': '실행 시작(첫 이벤트까지)',
+  'perf.metric.runTotal': '실행 완료까지',
+  'perf.metric.agentFirst': '에이전트 첫 응답',
+  'perf.metric.agentReply': '에이전트 전체 응답',
+  'perf.metric.exportBundle': '파일 내보내기',
+  'perf.metric.undoApply': '실행 취소/다시 실행',
+  'perf.metric.fileExport': '.annie3d 다운로드',
+  'perf.metric.fileImport': '.annie3d 열기',
+  'perf.metric.api': 'API 호출',
+
+  // Desktop app update pill.
+  'update.rolledBack': '{version} 업데이트를 시작하지 못해 이전 버전으로 돌아왔어요.',
+  'update.shellRequired': '최신 업데이트를 받으려면 새 앱이 필요해요(앱 {version} 이상).',
+  'update.available': '업데이트 가능',
+  'update.restarting': '다시 시작하는 중…',
+  'update.restart': '재시작하여 업데이트',
+
+  // canvas/FlowNode.tsx: the node card
+  'canvas.node.openSim': '열기',
+  'canvas.node.staleTitle': '이 버전 이후 입력이 바뀌었어요',
+  'canvas.node.stale': '오래됨',
+  'canvas.node.openSimLabel': '시뮬레이터 열기',
+  'canvas.node.openSimTitle': '시뮬레이터 열기(또는 더블클릭)',
+  'canvas.node.dropPhoto': '사진을 드롭하거나 붙여넣거나 클릭해서 추가하세요',
+  'canvas.node.dropMusic': '음악 파일을 드롭하세요',
+  'canvas.node.dropGlb': '.glb 파일을 드롭하세요',
+  'canvas.node.emptyResult': '생성 결과가 여기에 표시돼요',
+  'canvas.node.filesReady': { other: '파일 {count}개 준비됨' },
+  'canvas.node.checksPassed': '검사 {passed}/{total}개 통과',
+  'canvas.node.checksPassedPreset': '검사 {passed}/{total}개 통과({preset})',
+  'canvas.node.referenceImages': { other: '참고 이미지 {count}개' },
+  'canvas.node.progress': '진행률 {percent}%',
+  'canvas.node.openEditorLabel': '3D 편집기 열기',
+  'canvas.node.openEditorTitle': '3D 편집기 열기(또는 더블클릭)',
+  'canvas.node.runFromHere': '여기서부터 실행',
+  'canvas.node.writePlaceholder': '내용을 입력하세요…',
+  'canvas.node.describePlaceholder': '원하는 결과를 설명하세요…',
+  'canvas.node.runCost': '실행({credits})',
+  'canvas.node.run': '실행',
+  'canvas.node.running': '실행 중…',
+  'canvas.node.runOptions': '실행 옵션',
+  'canvas.node.runWithInputs': '입력 노드와 함께 실행',
+  'canvas.node.runNodeOnly': '이 노드만 실행',
+  'canvas.node.runDownstream': '이 노드와 이후 노드 모두 실행',
+
+  // canvas/FlowNode.tsx: port bubbles (screen-reader name: port and the types it takes)
+  'canvas.port.one': '{port}({type})',
+  'canvas.port.two': '{port}({first} 또는 {second})',
+  'canvas.port.many': '{port}({list} 또는 {last})',
+  'canvas.port.separator': ', ',
+
+  // canvas/FlowNode.tsx: settings toolbar under the selected node (screen-reader labels).
+  'canvas.toolbar.builder': '빌더',
+  'canvas.toolbar.detail': '디테일',
+  'canvas.toolbar.look': '룩',
+  'canvas.toolbar.angles': '각도',
+  'canvas.toolbar.size': '크기',
+  'canvas.toolbar.motion': '모션',
+  'canvas.toolbar.aspect': '화면 비율',
+  'canvas.toolbar.durationSec': '길이(초)',
+  'canvas.toolbar.environment': '장소',
+  'canvas.toolbar.glbPreset': 'GLB 프리셋',
+  'canvas.toolbar.price': '가격',
+  'canvas.toolbar.builderAuto': '빌더: 자동',
+  'canvas.toolbar.builderCode': '빌더: 코드',
+  'canvas.toolbar.builderGenerative': '빌더: 생성형',
+  'canvas.toolbar.detailDraft': '초안',
+  'canvas.toolbar.detailStandard': '표준',
+  'canvas.toolbar.detailHigh': '높음',
+  'canvas.toolbar.anglesFour': '4개 각도',
+  'canvas.toolbar.anglesCustom': '사용자 지정 카메라',
+  'canvas.toolbar.seconds': '{seconds}초',
+  'canvas.toolbar.replace': '교체',
+  'canvas.toolbar.download': '다운로드',
+  'canvas.toolbar.deleteNode': '노드 삭제',
+  'canvas.toolbar.delete': '삭제',
+  'canvas.toolbar.more': '작업 더 보기',
+  'canvas.toolbar.duplicate': '복제',
+  'canvas.toolbar.copy': '복사',
+
+  // canvas/FlowEdge.tsx
+  'canvas.edge.remove': '연결 삭제',
+  'canvas.edge.label': '{from}에서 {to}까지의 연결',
+
+  // canvas/Canvas.tsx: React Flow's screen-reader texts
+  'canvas.a11y.nodeDescription':
+    'Enter 또는 Space 키를 눌러 노드를 선택하세요. Delete 키로 삭제하고 Esc 키로 취소할 수 있어요.',
+  'canvas.a11y.nodeDescriptionKeyboard':
+    'Enter 또는 Space 키를 눌러 노드를 선택하세요. 선택한 뒤 화살표 키로 노드를 옮길 수 있어요. Delete 키로 삭제하고 Esc 키로 취소할 수 있어요.',
+  'canvas.a11y.edgeDescription':
+    'Enter 또는 Space 키를 눌러 연결을 선택하세요. 선택한 뒤 Delete 키로 삭제하거나 Esc 키로 취소할 수 있어요.',
+  'canvas.a11y.nodeMoved': '선택한 노드를 {direction}으로 옮겼어요. 새 위치: x {x}, y {y}',
+  'canvas.a11y.up': '위쪽',
+  'canvas.a11y.down': '아래쪽',
+  'canvas.a11y.left': '왼쪽',
+  'canvas.a11y.right': '오른쪽',
+
+  // canvas/clipboard.ts
+  'canvas.imageTooLarge': '이미지는 최대 {size}MB까지 추가할 수 있어요',
+
+  // lib/agentClient.ts
+  'canvas.agentUnavailable': '에이전트를 사용할 수 없어요({status})',
+
+  // canvas/example.ts, store/board.ts: board titles and labels the app writes
+  'board.example': '예시 보드',
+  'board.untitled': '제목 없는 보드',
+  'board.exampleLabel': '{label}({product})',
+  'board.product.serum': '세럼',
+  'board.product.headphones': '헤드폰',
+  'board.product.ring': '반지',
+
+  // lib/runSocket.ts, lib/doc.ts: runs
+  'run.queued': '대기 중',
+  'run.starting': '시작하는 중',
+  'run.checkFailed': '검사 실패: {gate}',
+  'run.finished': { other: '실행 완료: {count}크레딧 사용' },
+  'run.finishedWithErrors': {
+    other: '실행 완료(오류 있음): {count}크레딧 사용',
+  },
+  'run.failedRefunded': '실행에 실패해서 크레딧을 환불했어요.',
+  'run.cancelled': {
+    other: '실행 중단됨: {count}크레딧 사용',
+  },
+  'run.preparing': '실행 준비 중…',
+  'run.couldNotPrepare': '실행을 준비하지 못했어요',
+
+  // lib/reel.ts: the process reel (drawn into the video)
+  'reel.historyUnavailable': '실행 기록을 사용할 수 없어요',
+  'reel.couldNotLoadHistory': '실행 기록을 불러오지 못했어요',
+  'reel.howItWasMade': '제작 과정',
+  'reel.madeWith': 'Annie 3D로 제작',
+  'reel.tagline': '사진 한 장으로 만드는 3D 제품 광고',
+
+  // canvas/actions.ts: uploads
+  'file.uploadFailed': '업로드 실패({status})',
+  'file.partFailed': '파트 {part} 실패',
+
+  // lib/boardFile.ts: .annie3d board files
+  'file.tooLarge': '보드 파일은 최대 {size}GB까지 열 수 있어요',
+  'file.opened': '{name} 파일을 열었어요',
+  'file.couldNotOpen': '파일을 열 수 없어요',
+  'file.notBoardFile': 'Annie 3D 파일이 아니에요',
+  'file.notBoardFileOrNewer': 'Annie 3D 파일이 아니거나 더 새로운 버전이에요',
+  'file.noNodes': '파일에 노드가 없어요',
+  'file.uploadPartFailed': '파트 {part} 업로드 실패({status})',
+  'file.couldNotReadResult': '결과를 읽을 수 없어요({status})',
+  'file.missing': '누락됨: {path}',
+  'file.boardEmpty': '보드가 비어 있어요',
+
+  // lib/doc.ts, lib/webDoc.ts: saving and opening board files
+  'file.saving': '저장 중…',
+  'file.saved': '{name} 파일을 저장했어요',
+  'file.couldNotSave': '저장할 수 없어요: {reason}',
+  'file.noLongerOpen': '이 보드 파일은 더 이상 열려 있지 않아요.',
+  'file.typeDescription': 'Annie 3D 보드',
+  'file.writeDenied': '파일 쓰기 권한이 없어요',
+  'file.notOpenHere': '이 보드 파일은 이 브라우저에서 더 이상 열려 있지 않아요. 다시 열어 주세요.',
+  'file.allowAccess': '{name} 파일을 열려면 접근을 허용하세요.',
+  'file.windowTitle': '{name} – Annie 3D',
+  'file.windowTitleUnsaved': '• {name} – Annie 3D',
+
+  // The 3D editor overlay: header
+  'editor.dialog.label': '3D 편집기: {name}',
+  'editor.head.back': '캔버스로 돌아가기',
+  'editor.head.notCurrent': '(현재 버전 아님)',
+  'editor.head.compare': '비교',
+  'editor.head.compareHint': '나란히 비교',
+  'editor.head.compareNeedsTwo': '비교하려면 버전이 2개 필요해요',
+  'editor.head.export': '내보내기',
+  'editor.version': 'v{version}',
+
+  // Tools (left rail); `{key}` is the keyboard shortcut letter.
+  'editor.tools.label': '편집 도구',
+  'editor.tool.withKey': '{tool}({key})',
+  'editor.tool.orbit': '궤도 회전',
+  'editor.tool.brush': '브러시 선택',
+  'editor.tool.lasso': '올가미 선택',
+  'editor.tool.camera': '팩샷 카메라',
+  'editor.tool.light': '미리보기 조명',
+  'editor.tool.clear': '선택 해제(Delete)',
+
+  // Viewport
+  'editor.viewport.label': '3D 뷰포트',
+  'editor.viewport.loading': '모델 불러오는 중…',
+  'editor.option.brush': '브러시',
+  'editor.option.brushSize': '브러시 크기',
+  'editor.option.light': '조명',
+  'editor.option.lightDirection': '조명 방향',
+  'editor.camera.hint': '제품 구도를 잡은 다음 {button}',
+  'editor.camera.useView': '이 뷰를 팩샷에 사용',
+  'editor.playback.play': '재생',
+  'editor.playback.pause': '일시정지',
+
+  // Version strip; `{source}` is one of editor.versionSource.*.
+  'editor.versions.label': '버전',
+  'editor.versions.itemTitle': '{source}, {date}',
+  'editor.versions.makeCurrent': '현재 버전으로 설정',
+  'editor.versionSource.run': '실행',
+  'editor.versionSource.edit': '편집',
+  'editor.versionSource.upload': '업로드',
+  'editor.versionSource.agent': '에이전트',
+  'editor.versionSource.copy': '복사본',
+
+  // Edit panel (right)
+  'editor.panel.title': '영역 편집',
+  'editor.selection.summary': '{regions}, {faces}',
+  'editor.selection.regions': { other: '영역 {count}개' },
+  'editor.selection.faces': { other: '면 {count}개' },
+  'editor.panel.stepPaint': '1. 모델에서 영역을 칠하거나 올가미로 선택하세요',
+  'editor.panel.stepDescribe': '선택 영역에서 무엇을 바꿀까요?',
+  'editor.panel.placeholder': '예: 뚜껑을 무광 블랙으로 바꿔 줘',
+  'editor.panel.apply': '적용',
+  'editor.panel.help': '선택한 면만 바뀌어요. 결과는 새 버전이 되고, 이전 버전은 버전 목록에 남아요.',
+
+  // Toasts
+  'editor.toast.loadFailed': '모델을 불러올 수 없어요: {message}',
+  'editor.toast.nowCurrent': '현재 버전: v{version}',
+  'editor.toast.cameraSet': {
+    other: '노드 {count}개에 팩샷 카메라를 설정했어요',
+  },
+  'editor.toast.packshotAdded': '이 뷰로 팩샷 노드를 추가했어요',
+  'editor.toast.readyAgain': '준비됐어요. 영역을 다시 선택하고 적용을 누르세요',
+  'editor.toast.selectFirst': '먼저 영역을 선택하세요(브러시 또는 올가미)',
+
+  'editor.packshot.customLabel': '팩샷(사용자 지정 뷰)',
+
+  // Simulator: what each place is (tab tooltip).
+  'sim.envHint.shop': '온라인 스토어의 상품 페이지',
+  'sim.envHint.tiktok': '쇼핑 카드가 있는 세로형 소셜 피드',
+  'sim.envHint.sticker': '투명 배경의 채팅 스티커',
+  'sim.envHint.showroom': '휴대폰으로 조종하는 라이브 무대',
+  'sim.product.default': '내 제품',
+
+  // Overlay header
+  'sim.dialog.label': '시뮬레이터',
+  'sim.head.environments': '환경',
+  'sim.head.spin': '회전',
+  'sim.head.stopSpin': '회전 멈춤',
+  'sim.head.download': 'PNG 다운로드',
+  'sim.head.close': '시뮬레이터 닫기',
+  'sim.stage.empty': '여기에 표시하려면 이 노드에 3D 모델을 연결하세요.',
+  'sim.stage.loading': '3D 불러오는 중…',
+  'sim.toast.loadFailed': '3D 모델을 불러올 수 없어요: {message}',
+
+  // Shop page mock-up
+  'sim.shop.brand': '브랜드',
+  'sim.shop.navNew': '신상품',
+  'sim.shop.navShop': '쇼핑',
+  'sim.shop.navAbout': '소개',
+  'sim.shop.crumb': '홈 / 신상품',
+  'sim.shop.rating': { other: '{rating}(리뷰 {count}개)' },
+  'sim.shop.description': '드래그해서 돌려 보세요. 보이는 그대로가 실제 3D 제품이에요.',
+  'sim.shop.addToCart': '장바구니 담기',
+  'sim.shop.freeShipping': '$50 이상 구매 시 무료 배송',
+  'sim.shop.returns': '30일 이내 반품 가능',
+
+  // TikTok feed mock-up
+  'sim.tiktok.following': '팔로잉',
+  'sim.tiktok.forYou': '추천',
+  'sim.tiktok.share': '공유',
+  'sim.tiktok.handle': '@yourbrand',
+  'sim.tiktok.tags': '#fyp #틱톡샵 #신상',
+
+  // Chat sticker mock-up
+  'sim.sticker.msgAsk': '이번 신상 봤어?? 👀',
+  'sim.sticker.msgSend': '스티커 보내 줄게',
+  'sim.sticker.msgReply': '헐 갖고 싶다 😍',
+  'sim.sticker.note': '스티커는 투명 배경의 실시간 뷰예요. 원하는 방향으로 돌린 다음 PNG로 다운로드하세요.',
+
+  // Showroom: phone pairing panel
+  'sim.showroom.title': '휴대폰 리모컨',
+  'sim.showroom.help':
+    '휴대폰으로 스캔한 뒤 기울이면 제품이 따라 움직여요. 양방향이라 휴대폰에서도 이 화면을 볼 수 있어요.',
+  'sim.showroom.localhost':
+    '휴대폰에서는 localhost를 열 수 없어요. 휴대폰을 연결하려면 {command} 링크로 이 보드를 여세요.',
+  'sim.showroom.phones': { other: '휴대폰 {count}대 연결됨' },
+  'sim.showroom.waiting': '휴대폰 연결 대기 중',
+  'sim.showroom.pose': 'α {alpha}°, β {beta}°, γ {gamma}°',
+
+  // Shared by the overlay and the phone remote
+  'sim.status.connecting': '연결 중…',
+  'sim.action.recenter': '가운데로',
+
+  // Phone remote page (/sim/<room>)
+  'sim.remote.title': 'Annie 3D 리모컨',
+  'sim.remote.connected': '연결됨',
+  'sim.remote.waitingScreen': '화면 연결 대기 중',
+  'sim.remote.product': '제품',
+  'sim.remote.startMotion': '모션 컨트롤 시작',
+  'sim.remote.tilt': '휴대폰을 기울여 돌려 보세요',
+  'sim.remote.motionDenied': '모션 접근이 거부됐어요. 아래 패드를 사용하세요.',
+  'sim.remote.motionUnsupported': '이 기기에는 모션 센서가 없어요. 패드를 사용하세요.',
+  'sim.remote.padLabel': '드래그해서 제품 돌리기',
+  'sim.remote.pad': '여기를 드래그해서 돌리기',
+  'sim.remote.spin': '회전',
+  'sim.remote.stop': '정지',
+  'sim.remote.snapshot': '스냅샷',
+  'sim.remote.places': '장소',
+  'sim.remote.snapshotAlt': '화면 스냅샷',
+
+  // API: errors every route can return (lib/http.ts, index.ts)
+  'api.error.internal': '문제가 발생했어요. 다시 시도하세요.',
+  'api.error.unknownEndpoint': '알 수 없는 엔드포인트',
+  'api.http.bodyNotJson': '본문은 JSON이어야 해요',
+  'api.http.invalidBody': '요청 본문이 올바르지 않아요',
+  'api.http.invalidQuery': '쿼리가 올바르지 않아요',
+  'api.http.unknownParam': '알 수 없는 {name}',
+  'api.http.notFound': '찾을 수 없어요',
+  'api.http.expectedWebSocket': 'WebSocket 업그레이드 요청이어야 해요',
+
+  // Sign-in and roles (lib/session.ts)
+  'api.auth.signIn': '계속하려면 로그인하세요',
+  'api.auth.viewerCannotEdit': '보기 권한으로는 편집할 수 없어요',
+
+  // Workspace made at sign-up (auth.ts)
+  'api.workspace.named': '{name}의 워크스페이스',
+  'api.workspace.unnamed': '내 워크스페이스',
+
+  // Boards and board edits (routes/boards.ts, services/boards.ts)
+  'api.board.notFound': '보드를 찾을 수 없어요',
+  'api.board.tooManyEdits': '편집이 너무 많아요. 잠시 후 다시 시도하세요',
+  'api.board.nodeNotFound': '노드를 찾을 수 없어요',
+  'api.board.opRejected': '작업 {index} 거부됨: {reason}',
+  'api.board.nodeOfOtherBoard': '다른 보드에 속한 노드 ID예요',
+  'api.board.uploadNeedsAsset': '업로드 버전에는 settings.assetId가 필요해요',
+  'api.board.unknownAsset': '알 수 없는 에셋',
+  'api.board.versionOfOtherNode': '다른 노드에 속한 버전이에요',
+  'api.board.unknownSourceVersion': '알 수 없는 원본 버전',
+
+  // Uploads and files (routes/assets.ts)
+  'api.upload.tooMany': '업로드가 너무 많아요. 1분 후 다시 시도하세요',
+  'api.upload.mimeNotAccepted': '{kind}에는 {mime} 형식을 사용할 수 없어요',
+  'api.upload.tooLarge': '{kind}: 최대 {size}MB',
+  'api.upload.assetNotFound': '에셋을 찾을 수 없어요',
+  'api.upload.partsRequired': '멀티파트 업로드에는 각 파트가 필요해요',
+  'api.upload.notInStorage': '스토리지에서 업로드를 찾을 수 없어요',
+  'api.upload.sizeMismatch': '크기 불일치: 예상 {expected}, 저장됨 {stored}',
+  'api.upload.typeMismatch': '파일 내용이 선언된 형식과 일치하지 않아요',
+  'api.upload.imageTooLarge': '이미지가 {size}px보다 커요',
+  'api.upload.variantNotFound': '변형을 찾을 수 없어요',
+
+  // Board files (.annie3d) import (routes/boardFile.ts, services/boardImport.ts)
+  'api.boardFile.tooManyImports': '가져오기가 너무 많아요. 잠시 후 다시 시도하세요',
+  'api.boardFile.useUpload': '80MB가 넘는 파일은 /import-upload로 보내세요',
+  'api.boardFile.uploadUnfinished': '업로드가 없거나, 완료되지 않았거나, 이미 가져왔어요',
+  'api.boardFile.uploadMissing': '업로드가 없어요',
+  'api.boardFile.uploadGone': '업로드한 파일이 없어졌어요',
+  'api.boardFile.checksum': '{name}: 체크섬이 일치하지 않아요',
+  'api.boardFile.missingEntry': '누락됨: {path}',
+  'api.boardFile.notBoardFile': 'Annie 3D 파일이 아니에요',
+  'api.boardFile.newerVersion': 'Annie 3D 파일이 아니거나 더 새로운 버전이에요',
+  'api.boardFile.noNodes': '파일에 노드가 없어요',
+  'api.boardFile.unknownNodes': '이 보드에 없는 노드의 결과예요',
+  'api.boardFile.tooLarge': '파일이 2GB보다 커요',
+  'api.boardFile.multiPart': '분할 압축 파일은 보드 파일이 아니에요',
+  'api.boardFile.zip64': 'ZIP64 압축 파일은 보드 파일이 아니에요',
+  'api.boardFile.tooManyEntries': '파일에 항목이 너무 많아요',
+  'api.boardFile.damaged': '파일이 손상됐어요',
+  'api.boardFile.encrypted': '암호화된 파일은 보드 파일이 아니에요',
+  'api.boardFile.duplicateEntry': '중복 항목: {name}',
+  'api.boardFile.unsupportedCompression': '지원하지 않는 압축 방식이에요',
+  'api.boardFile.manifestTooLarge': '보드 설명 데이터가 너무 커요',
+  'api.boardFile.unexpectedEntry': '예상하지 못한 항목: {name}',
+  'api.boardFile.entryCompressed': '{name}: 압축되어 있어요. 보드 파일은 미디어를 원본 그대로 저장해요',
+  'api.boardFile.unreadable': '파일을 읽을 수 없어요: {reason}',
+
+  // Runs (routes/runs.ts, routes/credits.ts)
+  'api.run.notFound': '실행을 찾을 수 없어요',
+  'api.run.tooMany': '실행이 너무 많아요. 1분 후 다시 시도하세요.',
+  'api.run.alreadyRunning': '이 보드에서 이미 실행 중이에요',
+  'api.run.notEnoughCredits': '이 실행에 필요한 크레딧이 부족해요',
+  'api.run.nothingToRun': '실행할 항목이 없어요. 실행할 수 있는 노드를 추가하세요',
+  'api.run.upToDate': '모두 최신 상태예요',
+  'api.run.editNeedsModel': '영역 편집은 3D 모델 노드에만 적용돼요',
+  'api.run.versionNotOnNode': '이 노드에서 버전을 찾을 수 없어요',
+  'api.run.selectRegion': '먼저 영역을 선택하세요',
+
+  // Run steps, sent over the run's WebSocket (services/runner.ts, engines/*)
+  'api.run.connectFirst': '먼저 “{port}” 입력을 연결하세요',
+  'api.run.noEngine': '{kind}에 사용할 엔진이 없어요',
+  'api.run.baseHasNoModel': '기준 버전에 모델이 없어요',
+  'api.run.baseModelMissing': '기준 모델 파일이 없어요',
+  'api.run.selectionExpired': '선택이 만료됐어요. 영역을 다시 선택하세요',
+  'api.run.inputNotFound': '입력 파일을 찾을 수 없어요',
+  'api.run.inputMissingInStorage': '스토리지에 입력 파일이 없어요',
+  'api.run.gateFailed': '품질 검사 “{gate}” 실패',
+  'api.run.needsPhotoOrText': '제품 사진이나 설명을 추가하세요',
+  'api.run.regionNotOnVersion': '선택한 영역이 이 버전에 없어요',
+
+  // Progress stages of the engines (engines/simulator.ts, engines/registry.ts, engines/export.ts)
+  'api.stage.model3d.readingPhotos': '사진 읽는 중',
+  'api.stage.model3d.segmenting': '제품 분리 중',
+  'api.stage.model3d.estimatingShape': '형태 추정 중',
+  'api.stage.model3d.buildingMesh': '메시 생성 중',
+  'api.stage.model3d.bakingTextures': '텍스처 베이킹 중',
+  'api.stage.model3d.checkingSilhouette': '실루엣 확인 중',
+  'api.stage.stage.readingBrief': '브리프 읽는 중',
+  'api.stage.stage.blockingSet': '세트 배치 중',
+  'api.stage.stage.lighting': '조명 설정 중',
+  'api.stage.stage.placingProduct': '제품 배치 중',
+  'api.stage.stage.testRender': '테스트 렌더링',
+  'api.stage.packshot.framing': '카메라 구도 잡는 중',
+  'api.stage.packshot.renderingFront': '정면 렌더링 중',
+  'api.stage.packshot.renderingAngles': '각도별 렌더링 중',
+  'api.stage.packshot.denoising': '노이즈 제거 중',
+  'api.stage.adVideo.storyboard': '스토리보드',
+  'api.stage.adVideo.cameraMoves': '카메라 움직임',
+  'api.stage.adVideo.renderingFrames': '프레임 렌더링 중',
+  'api.stage.adVideo.addingHeadline': '헤드라인 추가 중',
+  'api.stage.adVideo.mixingMusic': '음악 믹싱 중',
+  'api.stage.adVideo.encoding': '인코딩 중',
+  'api.stage.export.packaging': '패키징 중',
+  'api.stage.export.validating': 'glTF 검증 중',
+  'api.stage.export.writing': '파일 쓰는 중',
+  'api.stage.working': '작업 중',
+  'api.stage.done': '완료',
+  'api.stage.edit.readingSelection': '선택 영역 읽는 중',
+  'api.stage.edit.applying': '편집 적용 중',
+  'api.stage.edit.checking': '결과 확인 중',
+  'api.stage.export.optimising': '{preset}에 맞게 최적화 중',
+  'api.stage.export.collecting': '파일 모으는 중',
+  'api.stage.export.exported': '내보내기 완료',
+  'api.stage.export.exportedWithFailures': '내보내기 완료(실패한 검사 있음)',
+
+  // Quality gates and export checks by id
+  'api.gate.inputs': '입력',
+  'api.gate.selection': '선택 영역',
+  'api.gate.silhouette_iou': '실루엣 일치도',
+  'api.gate.watertight': '닫힌 메시',
+  'api.gate.triangles': '삼각형 수',
+  'api.gate.product_visible': '제품 노출',
+  'api.gate.framing': '구도',
+  'api.gate.duration_ok': '길이',
+  'api.gate.loudness_lufs': '음량',
+  'api.gate.edit_applied': '편집 적용',
+  'api.gate.bytes': '파일 크기',
+  'api.gate.texture': '텍스처 크기',
+  'api.gate.animation': '애니메이션',
+  'api.gate.validator': 'glTF 검증',
+
+  // Exports (routes/exports.ts, services/exporter.ts)
+  'api.export.notFound': '내보내기를 찾을 수 없어요',
+  'api.export.noModelYet': '이 노드에는 아직 내보낼 모델이 없어요',
+  'api.export.wrongNode': '3D 모델 또는 내보내기 노드를 내보내세요',
+  'api.export.nothingToExport': '내보낼 항목이 없어요. 3D 모델, 영상 또는 이미지를 연결하세요',
+  'api.export.failed': '내보내기 실패: {reason}',
+  'api.export.megabytes': '{value}MB',
+  'api.export.checkBytes': '{size} / {limit}',
+  'api.export.checkTriangles': '삼각형 {count}개 / {limit}개',
+  'api.export.checkTexture': '가장 큰 텍스처 {size}px(한도 {limit}px)',
+  'api.export.checkNoTextures': '이미지 텍스처 없음',
+  'api.export.checkAnimation': { other: '애니메이션 클립 {count}개' },
+  'api.export.checkAnimationNeeded': '애니메이션이 필요해요(예: 턴테이블)',
+  'api.export.checkAnimationOptional': {
+    other: '애니메이션 클립 {count}개, 필수 아님',
+  },
+  'api.export.checkValid': '유효한 glTF 2.0으로 다시 읽혀요',
+  'api.export.checkInvalid': '유효한 glTF가 아니에요: {reason}',
+  'api.export.checkRoundTrip': '왕복 변환 실패: {reason}',
+
+  // Shares (routes/shares.ts; the share page's own text is `share.*`)
+  'api.share.versionNotFound': '버전을 찾을 수 없어요',
+  'api.share.changed': '공유가 변경됐어요. 다시 시도하세요',
+  'api.share.notFound': '공유를 찾을 수 없어요',
+  'api.share.unavailable': '이 링크는 사용할 수 없어요',
+  'api.share.anonymousOwner': 'Annie 3D 사용자',
+
+  // Plans and the simulated checkout page (routes/credits.ts)
+  'api.plan.creator': 'Creator',
+  'api.plan.studio': 'Studio',
+  'api.checkout.invalidSignature': '결제 서명이 올바르지 않아요',
+  'api.checkout.expired': '결제가 만료됐어요',
+  'api.checkout.otherWorkspace': '다른 워크스페이스의 결제예요',
+  'api.checkout.invalidLink': '결제 링크가 올바르지 않아요',
+  'api.checkout.pageTitle': '결제 · Annie 3D',
+  'api.checkout.simulated':
+    '시뮬레이션 결제예요. 카드에 비용이 청구되지 않아요. 실제 결제 서비스가 이 페이지를 대체해요.',
+  'api.checkout.planName': '{plan} 플랜',
+  'api.checkout.creditsMonthly': { other: '매월 {count}크레딧' },
+  'api.checkout.dueToday': '오늘 결제 금액',
+  'api.checkout.pay': '{price} 결제',
+  'api.checkout.cancel': '취소하고 돌아가기',
+
+  // Reels (routes/reels.ts)
+  'api.reel.serverNotAttached': '서버 측 릴 렌더링은 아직 연결되지 않았어요. 브라우저에서 릴을 녹화하세요',
+  'api.reel.afterRun': '실행이 끝난 후에 릴을 만드세요',
+  'api.reel.uploadFirst': '먼저 녹화한 릴 영상을 업로드하세요',
+
+  // Simulation remote link (routes/sim.ts)
+  'api.sim.badRoom': '잘못된 룸 ID',
+
+  // Agent route (routes/agent.ts)
+  'api.agent.tooMany': '메시지가 너무 많아요. 1분 후 다시 시도하세요.',
+  'api.agent.threadNotFound': '대화를 찾을 수 없어요',
+  'api.agent.couldNotApply': '“{label}” 변경을 적용할 수 없어요: {reason}',
+  'api.agent.upToDate': '모두 최신 상태라서 실행한 항목이 없어요.',
+  'api.agent.overBudget': {
+    other:
+      '이 실행에는 {count}크레딧이 필요해서 이 메시지의 예산({budget})을 넘어요. 예산을 늘리고 다시 요청해 주세요.',
+  },
+  'api.agent.couldNotStart': '실행을 시작하지 못했어요: {reason}',
+
+  // Simulated agent's replies and change labels (agents/simulated.ts)
+  'api.agent.help':
+    '스테이지의 룩(다크 랩, 돌과 물, 벨벳, 파스텔 스플래시, 식물, 스튜디오)을 바꾸고, 더 따뜻하거나 차갑게 만들고, 영상 길이를 6초, 10초, 15초로 정하고, 9:16, 1:1, 16:9로 바꾸고, 모션을 바꾸고, 헤드라인을 설정하고("headline: ..."), 팩샷을 추가하고, 내보내기 프리셋을 고르고, 실행할 수 있어요. 특정 흐름을 지정하려면 먼저 노드를 선택하세요.',
+  'api.agent.ambiguous': {
+    other:
+      '{kind} 노드가 {count}개 있어요. 원하는 노드(또는 그 흐름에 있는 노드)를 선택하고 다시 요청해 주세요.',
+  },
+  'api.agent.noNode': '아직 {kind} 노드가 없어서 “{change}” 변경은 건너뛰었어요.',
+  'api.agent.alreadySet': { other: '{nodes}: 이미 적용되어 있어요({value}).' },
+  'api.agent.changeOn': '{nodes}: {change}',
+  'api.agent.change.look': '룩 → {value}',
+  'api.agent.change.direction': '연출 방향: {value}',
+  'api.agent.change.duration': '길이 → {value}',
+  'api.agent.change.aspect': '화면 비율 → {value}',
+  'api.agent.change.motion': '모션 → {value}',
+  'api.agent.change.detail': '디테일 → {value}',
+  'api.agent.change.preset': '프리셋 → {value}',
+  'api.agent.change.headline': '헤드라인 → “{text}”',
+  'api.agent.change.addPackshot': '{node}에서 팩샷 노드를 추가했어요',
+  'api.agent.value.seconds': '{seconds}초',
+  'api.agent.value.secondsClosest': '{seconds}초({wanted}초에 가장 가까운 값)',
+  'api.agent.value.detailHigh': '높음',
+  'api.agent.value.detailDraft': '초안',
+  'api.agent.ambiguousHeadline': {
+    other: '헤드라인이 {count}개 있어요. 원하는 흐름을 선택하고 다시 요청해 주세요.',
+  },
+  'api.agent.pickModel': '팩샷을 만들 3D 모델을 선택하세요.',
+  'api.agent.packshotLabel': '팩샷(에이전트)',
+  'api.agent.done': '완료:',
+  'api.agent.madeChanges': { other: '{count}개를 변경했어요:' },
+  'api.agent.runningChanged': '변경된 부분만 실행해요. 변경 없는 노드는 캐시를 그대로 써요.',
+  'api.agent.runningBoard': '보드를 실행해요. 변경 없는 노드는 캐시를 그대로 써요.',
+  'api.agent.sayRun': '결과를 보고 싶을 때 “실행해 줘”라고 말하세요.',
+
+  // Desktop: macOS application menu ({app} is "Annie 3D").
+  'desktop.menu.about': '{app} 정보',
+  'desktop.menu.services': '서비스',
+  'desktop.menu.hide': '{app} 가리기',
+  'desktop.menu.hideOthers': '기타 가리기',
+  'desktop.menu.showAll': '모두 보기',
+  'desktop.menu.quitApp': '{app} 종료',
+  // File
+  'desktop.menu.file': '파일',
+  'desktop.menu.newBoardFile': '새 보드 파일',
+  'desktop.menu.open': '열기…',
+  'desktop.menu.openRecent': '최근 항목 열기',
+  'desktop.menu.clearRecent': '메뉴 지우기',
+  'desktop.menu.save': '저장',
+  'desktop.menu.saveAs': '다른 이름으로 저장…',
+  'desktop.menu.importIntoBoard': '이 보드로 가져오기…',
+  'desktop.menu.closeWindow': '윈도우 닫기',
+  'desktop.menu.quit': '종료',
+  'desktop.menu.exit': '끝내기',
+  // Edit
+  'desktop.menu.edit': '편집',
+  'desktop.menu.undo': '실행 취소',
+  'desktop.menu.redo': '다시 실행',
+  'desktop.menu.cut': '잘라내기',
+  'desktop.menu.copy': '복사',
+  'desktop.menu.paste': '붙여넣기',
+  'desktop.menu.selectAll': '모두 선택',
+  // View
+  'desktop.menu.view': '보기',
+  'desktop.menu.reload': '새로고침',
+  'desktop.menu.toggleDevTools': '개발자 도구 켜기/끄기',
+  'desktop.menu.toggleFullScreen': '전체 화면 켜기/끄기',
+  // Window
+  'desktop.menu.window': '윈도우',
+  'desktop.menu.minimize': '최소화',
+  'desktop.menu.zoom': '확대/축소',
+  'desktop.menu.bringAllToFront': '모두 앞으로 가져오기',
+  'desktop.menu.close': '닫기',
+  // Help
+  'desktop.menu.help': '도움말',
+  'desktop.menu.website': '{app} 웹사이트',
+
+  // Board files as documents
+  'desktop.doc.untitled': '제목 없음.annie3d',
+  'desktop.doc.fileType': 'Annie 3D 보드',
+  'desktop.close.message': '“{name}”의 변경 사항을 저장할까요?',
+  'desktop.close.detail': '저장하지 않으면 변경 사항이 사라져요.',
+  'desktop.close.dontSave': '저장 안 함',
+  'desktop.open.failed': '“{name}” 파일을 열 수 없어요',
+
+  // Why a board file was refused ({name} is a path inside the file)
+  'desktop.file.tooLarge': '파일이 2GB보다 커요',
+  'desktop.file.notBoard': 'Annie 3D 파일이 아니에요',
+  'desktop.file.notBoardOrNewer': 'Annie 3D 파일이 아니거나 더 새로운 버전이에요',
+  'desktop.file.damaged': '파일이 손상됐어요',
+  'desktop.file.invalidDescription': '보드 설명 데이터가 올바르지 않아요',
+  'desktop.file.multiPart': '분할 압축 파일은 보드 파일이 아니에요',
+  'desktop.file.zip64': 'ZIP64 압축 파일은 보드 파일이 아니에요',
+  'desktop.file.tooManyEntries': '파일에 항목이 너무 많아요',
+  'desktop.file.encrypted': '암호화된 파일은 보드 파일이 아니에요',
+  'desktop.file.duplicateEntry': '중복 항목: {name}',
+  'desktop.file.unsupportedCompression': '지원하지 않는 압축 방식이에요',
+  'desktop.file.descriptionTooLarge': '보드 설명 데이터가 너무 커요',
+  'desktop.file.unexpectedEntry': '예상하지 못한 항목: {name}',
+  'desktop.file.compressedMedia': '{name}: 압축되어 있어요. 보드 파일은 미디어를 원본 그대로 저장해요',
+  'desktop.file.invalidBoard': '올바르지 않은 보드',
+  'desktop.file.invalidAsset': '올바르지 않은 파일: {name}',
+  'desktop.file.missingAsset': '누락됨: {name}',
+  'desktop.file.boardTooLarge': '보드가 2GB보다 커요',
+  'desktop.file.needsBytes': '모든 파일에는 데이터가 있어야 해요',
+
+  // Site: every page
+  'site.meta.pageTitle': '{title} · Annie 3D',
+  'site.nav.skipToContent': '본문으로 건너뛰기',
+  'site.nav.homeLabel': 'Annie 3D 홈',
+  'site.nav.openCanvas': '캔버스 열기',
+  'site.nav.footer': '푸터',
+  'site.nav.canvas': '캔버스',
+  'site.nav.privacy': '개인정보',
+  'site.nav.terms': '이용약관',
+  'site.nav.contact': '문의',
+  'site.nav.languages': '언어',
+  'site.footer.copyright': '© 2026 Annie 3D, 호주.',
+
+  // /home
+  'site.home.title': '사진 한 장으로 만드는 3D 제품 광고',
+  'site.home.description':
+    'Annie 3D는 제품 사진 한 장을 실제 3D 모델, 광고 영상, 모든 각도의 팩샷, 애니메이션 GLB로 바꿔 줘요. 가입 없이 바로 캔버스를 열 수 있어요.',
+  'site.home.eyebrow': '3D 광고 워크스페이스',
+  'site.home.headline': '제품 사진 한 장으로 3D 광고까지.',
+  'site.home.lead':
+    '캔버스에 제품 사진을 드롭하세요. Annie 3D가 제품을 실제 3D 모델로 만든 다음 광고 영상, 모든 각도의 팩샷, 스토어용 애니메이션 GLB, 누구나 열 수 있는 링크를 만들어 줘요. 모든 결과물이 같은 모델에서 나오기 때문에 어디서든 제품이 정확하게 보여요.',
+  'site.home.whatEyebrow': '제공되는 결과물',
+  'site.home.whatTitle': '모델 하나로 모든 것을',
+  'site.home.videosTitle': '광고 영상',
+  'site.home.videosBody':
+    '테크 제품은 분해 리빌, 주얼리는 돌과 물, 뷰티는 스플래시 히어로로. 1:1, 4:5, 9:16 비율을 지원해요.',
+  'site.home.packshotsTitle': '모든 각도의 팩샷',
+  'site.home.packshotsBody': '카메라 구도를 직접 잡거나 표준 4개 각도로 촬영하세요.',
+  'site.home.glbTitle': '애니메이션 GLB',
+  'site.home.glbBody': '다운로드하기 전에 웹, Google Merchant, Google Swirl 기준을 충족하는지 검사해요.',
+  'site.home.howEyebrow': '작동 방식',
+  'site.home.howTitle': '자유롭게 다시 연결하는 노드 캔버스',
+  'site.home.howBody':
+    '미리 만들어진 그래프에서 시작하거나 사진, 텍스트, 3D 모델, 스테이지, 팩샷, 광고 영상, 내보내기 노드를 직접 추가하세요. 모델에서 영역을 선택하고 변경 사항을 설명하면, 모든 편집이 새 버전이 되어 비교하거나 되돌릴 수 있어요.',
+  'site.home.tryExample': '예시 보드 사용해 보기',
+
+  // /legal/*
+  'site.legal.draft': '정식 출시 전 초안 · 출시 전 법률 자문 검토 예정',
+  'site.legal.translationNotice':
+    '이 번역본은 편의를 위해 제공됩니다. 영어 원문과 내용이 다를 경우 영어 원문이 적용됩니다.',
+  'site.legal.readEnglish': '영어 원문 보기',
+
+  'site.terms.title': '이용약관',
+  'site.terms.description': 'Annie 3D 이용에 관한 약관입니다.',
+  'site.terms.contentTitle': '사용자 콘텐츠',
+  'site.terms.contentBody':
+    '업로드한 사진과 생성한 결과물에 대한 권리는 사용자에게 있습니다. 광고할 권리가 있는 제품만 업로드해야 합니다.',
+  'site.terms.useTitle': '허용되는 사용',
+  'site.terms.useBody':
+    'Annie 3D를 위조 제품 광고 제작, 브랜드나 개인 사칭, 불법 콘텐츠 제작에 사용해서는 안 됩니다.',
+  'site.terms.creditsTitle': '크레딧',
+  'site.terms.creditsBody':
+    '실행에는 크레딧이 사용됩니다. 품질 검사를 통과하지 못한 실행은 자동으로 환불됩니다.',
+  'site.terms.preReleaseTitle': '정식 출시 전 버전',
+  'site.terms.preReleaseBody':
+    '기능은 변경될 수 있습니다. 사용자 데이터에 영향을 주는 변경 사항은 적용되기 전에 공지합니다.',
+
+  'site.privacy.title': '개인정보 처리방침',
+  'site.privacy.description': 'Annie 3D가 사용자 데이터를 처리하는 방법입니다.',
+  'site.privacy.whoTitle': '운영 주체',
+  'site.privacy.whoBody': 'Annie 3D는 호주에서 운영됩니다. 문의: {email}.',
+  'site.privacy.storeTitle': '저장하는 정보',
+  'site.privacy.storeBody':
+    '로그인 시 Google 계정 이름, 이메일 주소, 프로필 사진; 사용자가 만든 보드, 노드, 프롬프트, 버전; 사용자가 업로드한 파일과 Annie 3D가 생성한 파일; 실행 기록과 크레딧 거래 내역.',
+  'site.privacy.whereTitle': '저장 위치',
+  'site.privacy.whereBody':
+    '계정 및 보드 데이터는 호주 시드니에 있는 Neon 호스팅 Postgres 데이터베이스에 저장됩니다. 파일은 오세아니아 지역의 Cloudflare R2 객체 스토리지에 저장됩니다. 페이지는 Cloudflare 네트워크를 통해 전송됩니다.',
+  'site.privacy.cookiesTitle': '쿠키',
+  'site.privacy.cookiesBody':
+    '로그인 상태를 유지하는 퍼스트 파티 세션 쿠키 1개와 선택한 언어를 기억하는 퍼스트 파티 쿠키 1개를 사용합니다. 광고 쿠키는 사용하지 않습니다.',
+  'site.privacy.sharingTitle': '공유',
+  'site.privacy.sharingBody':
+    '공유 링크를 만들지 않는 한 어떤 정보도 공개되지 않습니다. 링크는 언제든지 해제할 수 있습니다.',
+  'site.privacy.deleteTitle': '데이터 삭제',
+  'site.privacy.deleteBody':
+    '보드는 캔버스에서 삭제할 수 있으며, 계정과 모든 파일을 삭제하려면 이메일로 요청하세요.',
+
+  // Public share page rendered by the Worker (/s/<token>)
+  'share.unavailableTitle': '링크를 사용할 수 없음',
+  'share.unavailableHeading': '이 링크는 사용할 수 없어요',
+  'share.unavailableBody': '소유자가 링크를 해제했을 수 있어요.',
+  'share.openApp': 'Annie 3D 열기',
+  'share.makeYours': '무료로 만들어 보기',
+  'share.description': '{owner} 님이 Annie 3D로 만들었어요. 사진 한 장으로 만드는 3D 제품 광고.',
+  'share.by': '제작: {owner}',
+  'share.modelAlt': '3D 모델 미리보기',
+  'share.modelTitle': '3D 모델',
+  'share.triangles': { other: '삼각형 {count}개' },
+  'share.megabytes': '{size}MB',
+  'share.downloadGlb': 'GLB 다운로드',
+  'share.madeWith': '{brand}로 제작',
+  'share.terms': '이용약관',
+};
+
+/** Keys whose correct Korean is the English text (names, loanwords). */
+export const sameAsEnglish: readonly string[] = [
+  'editor.version',
+  'editor.versions.itemTitle',
+  'editor.selection.summary',
+  'perf.budget',
+  'sim.showroom.pose',
+  'sim.tiktok.handle',
+  'file.windowTitle',
+  'file.windowTitleUnsaved',
+  'site.meta.pageTitle',
+  'api.agent.changeOn',
+];
+
+export default catalog;

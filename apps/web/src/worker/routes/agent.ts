@@ -7,6 +7,7 @@ import { agentFor } from '../agents/registry';
 import type { AppEnv } from '../env';
 import { getDb } from '../lib/db';
 import { body, httpError, uuidParam } from '../lib/http';
+import { errorText, LocalizedError, localeOf, tFor } from '../lib/i18n';
 import { requireEditor, requireUser } from '../lib/session';
 import { applyBatch, loadBoard, loadGraph } from '../services/boards';
 import { startGraphRun } from './runs';
@@ -30,7 +31,7 @@ agentRoutes.post('/api/boards/:boardId/agent/messages', requireEditor, async (c)
   const ws = c.get('workspaceId')!;
   const user = c.get('user')!;
   const lim = await c.env.RL_WRITE.limit({ key: user.id });
-  if (!lim.success) throw httpError(429, 'rate_limited', 'Too many messages. Wait a minute.');
+  if (!lim.success) throw httpError(429, 'rate_limited', 'api.agent.tooMany');
   const db = getDb(c);
   await loadBoard(db, ws, boardId);
   let threadId = req.threadId;
@@ -38,7 +39,7 @@ agentRoutes.post('/api/boards/:boardId/agent/messages', requireEditor, async (c)
     const t = await db.query.agentThreads.findFirst({
       where: (t, { and, eq }) => and(eq(t.id, threadId!), eq(t.boardId, boardId)),
     });
-    if (!t) throw httpError(404, 'not_found', 'Thread not found');
+    if (!t) throw httpError(404, 'not_found', 'api.agent.threadNotFound');
   } else {
     const [t] = await db
       .insert(agentThreads)
@@ -72,6 +73,8 @@ agentRoutes.post('/api/boards/:boardId/agent/messages', requireEditor, async (c)
   });
   const { graph } = await loadGraph(db, boardId);
   const agent = agentFor(c.env);
+  const locale = localeOf(c.req.raw);
+  const t = tFor(c);
   const messageId = crypto.randomUUID();
 
   return streamSSE(c, async (stream) => {
@@ -91,6 +94,7 @@ agentRoutes.post('/api/boards/:boardId/agent/messages', requireEditor, async (c)
         nodeIds: req.context.nodeIds,
         budgetCredits: req.budgetCredits,
         history,
+        locale,
       })) {
         if (stream.aborted) break;
         if (a.type === 'text') {
@@ -110,7 +114,7 @@ agentRoutes.post('/api/boards/:boardId/agent/messages', requireEditor, async (c)
             });
           } catch (e) {
             await send({ type: 'ops', batch: { opId, ops: a.ops }, applied: false, label: a.label });
-            const msg = ` (Could not apply “${a.label}”: ${(e as Error).message})`;
+            const msg = ` (${t('api.agent.couldNotApply', { label: a.label, reason: errorText(e, t) })})`;
             text += msg;
             await send({ type: 'text', delta: msg });
           }
@@ -129,10 +133,10 @@ agentRoutes.post('/api/boards/:boardId/agent/messages', requireEditor, async (c)
             credits += r.credits;
             parts.push({ type: 'run', runId: r.runId });
             await send({ type: 'run', runId: r.runId });
-          } else if ('upToDate' in r) note = ' Everything is already up to date, so nothing ran.';
+          } else if ('upToDate' in r) note = ` ${t('api.agent.upToDate')}`;
           else if ('overBudget' in r)
-            note = ` That run needs ${r.overBudget} credits, more than this message's budget of ${req.budgetCredits}. Raise the budget and ask again.`;
-          else note = ` I could not start the run: ${r.error.message}`;
+            note = ` ${t('api.agent.overBudget', { count: r.overBudget, budget: req.budgetCredits })}`;
+          else note = ` ${t('api.agent.couldNotStart', { reason: errorText(r.error, t) })}`;
           if (note) {
             text += note;
             await send({ type: 'text', delta: note });
@@ -141,7 +145,12 @@ agentRoutes.post('/api/boards/:boardId/agent/messages', requireEditor, async (c)
       }
       await send({ type: 'done', usage: { credits } });
     } catch (e) {
-      await send({ type: 'error', code: 'internal', message: (e as Error).message });
+      if (!(e instanceof LocalizedError)) console.error('agent_error', boardId, e);
+      await send({
+        type: 'error',
+        code: 'internal',
+        message: e instanceof LocalizedError ? e.in(t) : t('api.error.internal'),
+      });
     } finally {
       await sdb.insert(agentMessages).values({
         id: messageId,
@@ -177,7 +186,7 @@ agentRoutes.get('/api/agent/threads/:threadId/messages', requireUser, async (c) 
   const t = await db.query.agentThreads.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, threadId), eq(t.workspaceId, c.get('workspaceId')!)),
   });
-  if (!t) throw httpError(404, 'not_found', 'Thread not found');
+  if (!t) throw httpError(404, 'not_found', 'api.agent.threadNotFound');
   const rows = await db
     .select()
     .from(agentMessages)

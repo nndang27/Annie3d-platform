@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { renderSVG } from 'uqr';
+import { rich, t as tNow, useT } from '../i18n';
 import { afterNextPaint } from '../lib/afterNextPaint';
 import { perfEnd } from '../lib/perf';
 import { dispatch, useBoard } from '../store/board';
@@ -26,6 +27,9 @@ import './sim.css';
 
 // This chunk loads on hover or at idle (lib/preload.ts): fetch the baked room lighting now too.
 prefetchRoomEnvironment().catch(() => {});
+
+/** Social counters on the TikTok mock-up, short form (12.4K). */
+const COMPACT: Intl.NumberFormatOptions = { notation: 'compact', maximumFractionDigits: 1 };
 
 /** A small JPEG of the view for the phone (two-way link): white background, 360 px wide. */
 async function phoneSnapshot(viewer: SimViewer): Promise<string> {
@@ -48,12 +52,13 @@ async function phoneSnapshot(viewer: SimViewer): Promise<string> {
  * commands, the screen answers with state and snapshots). One WebGL canvas moves between layouts.
  */
 export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
+  const t = useT();
   const node = useBoard((s) => s.graph.nodes.get(nodeId));
   useSimKey(nodeId);
   const inputs = simInputs(nodeId);
   const env = (node?.settings.environment as SimEnvironment | undefined) ?? 'shop';
   const price = String(node?.settings.price ?? '$49');
-  const cta = String(node?.settings.cta ?? 'Shop now');
+  const cta = String(node?.settings.cta ?? t('setting.simulation.cta'));
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const slotEl = useRef<HTMLDivElement | null>(null);
   const viewer = useRef<SimViewer | null>(null);
@@ -111,7 +116,7 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
         perfEnd('simulator.open');
         setReady(true);
       })
-      .catch((e: Error) => toast(`Could not load the 3D model: ${e.message}`, 'error'));
+      .catch((e: Error) => toast(tNow('sim.toast.loadFailed', { message: e.message }), 'error'));
   }, [inputs.glb, glViewer]);
 
   // Two-way remote link.
@@ -208,9 +213,9 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
         (inputs.poster ? (
           <img className="sim-still" src={inputs.poster} alt={inputs.title} />
         ) : (
-          <p className="sim-empty">Wire a 3D model into this node to see it here.</p>
+          <p className="sim-empty">{t('sim.stage.empty')}</p>
         ))}
-      {inputs.glb && !ready && <p className="sim-empty">Loading 3D…</p>}
+      {inputs.glb && !ready && <p className="sim-empty">{t('sim.stage.loading')}</p>}
     </div>
   );
 
@@ -219,22 +224,22 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
       className="sim-overlay"
       role="dialog"
       aria-modal="true"
-      aria-label="Simulator"
+      aria-label={t('sim.dialog.label')}
       data-testid="simulator"
     >
       <header className="sim-head">
-        <b className="sim-title">Simulation</b>
-        <nav className="sim-tabs" aria-label="Environment">
+        <b className="sim-title">{t('node.simulation')}</b>
+        <nav className="sim-tabs" aria-label={t('sim.head.environments')}>
           {SIM_ENVIRONMENTS.map((id) => (
             <button
               key={id}
               type="button"
               aria-pressed={env === id}
               onClick={() => setEnv(id)}
-              title={SIM_ENV_META[id].hint}
+              title={t(`sim.envHint.${id}`)}
               data-testid={`sim-env-${id}`}
             >
-              {SIM_ENV_META[id].label}
+              {t(`simEnv.${id}`)}
             </button>
           ))}
         </nav>
@@ -243,7 +248,7 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
           type="button"
           className="sim-icon"
           onClick={toggleSpin}
-          aria-label={spin ? 'Stop spin' : 'Spin'}
+          aria-label={spin ? t('sim.head.stopSpin') : t('sim.head.spin')}
         >
           {spin ? <Pause size={16} /> : <Play size={16} />}
         </button>
@@ -251,12 +256,12 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
           type="button"
           className="sim-icon"
           onClick={download}
-          aria-label="Download PNG"
-          title="Download PNG"
+          aria-label={t('sim.head.download')}
+          title={t('sim.head.download')}
         >
           <Download size={16} />
         </button>
-        <button type="button" className="sim-icon" onClick={close} aria-label="Close simulator">
+        <button type="button" className="sim-icon" onClick={close} aria-label={t('sim.head.close')}>
           <X size={18} />
         </button>
       </header>
@@ -268,17 +273,18 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
               <i />
               <i />
               <i />
+              {/* A sample address, not text to translate. i18n-ignore */}
               <span>shop.example.com/products/{inputs.title.toLowerCase().replace(/[^\w]+/g, '-')}</span>
             </div>
             <div className="shop-nav">
               {inputs.logo ? (
                 <img src={inputs.logo} alt="" className="logo" />
               ) : (
-                <b className="brand">BRAND</b>
+                <b className="brand">{t('sim.shop.brand')}</b>
               )}
-              <span>New</span>
-              <span>Shop</span>
-              <span>About</span>
+              <span>{t('sim.shop.navNew')}</span>
+              <span>{t('sim.shop.navShop')}</span>
+              <span>{t('sim.shop.navAbout')}</span>
               <span className="grow" />
               <ShoppingBag size={18} />
             </div>
@@ -292,30 +298,30 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
                 </div>
               </div>
               <div className="buy">
-                <p className="crumb">Home / New arrivals</p>
+                <p className="crumb">{t('sim.shop.crumb')}</p>
                 <h1>{inputs.title}</h1>
                 <p className="rating">
                   {[0, 1, 2, 3, 4].map((i) => (
                     <Star key={i} size={15} fill="currentColor" />
                   ))}
-                  <span>4.9 (128 reviews)</span>
+                  <span>{t('sim.shop.rating', { rating: 4.9, count: 128 })}</span>
                 </p>
                 <p className="price">{price}</p>
-                <p className="desc">Drag to turn it around. What you see is the real 3D product.</p>
+                <p className="desc">{t('sim.shop.description')}</p>
                 <div className="swatches">
                   <i />
                   <i />
                   <i />
                 </div>
                 <button type="button" className="add">
-                  Add to cart
+                  {t('sim.shop.addToCart')}
                 </button>
                 <button type="button" className="buy-now">
                   {cta}
                 </button>
                 <ul>
-                  <li>Free shipping over $50</li>
-                  <li>30-day returns</li>
+                  <li>{t('sim.shop.freeShipping')}</li>
+                  <li>{t('sim.shop.returns')}</li>
                 </ul>
               </div>
             </div>
@@ -326,32 +332,32 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
           <div className="tiktok">
             <div className="phone">
               <div className="feed-top">
-                <span>Following</span>
-                <b>For You</b>
+                <span>{t('sim.tiktok.following')}</span>
+                <b>{t('sim.tiktok.forYou')}</b>
               </div>
               {stage}
               <div className="rail">
                 <span>
                   <Heart size={26} fill="#fff" />
-                  12.4K
+                  {t.number(12_400, COMPACT)}
                 </span>
                 <span>
                   <MessageCircle size={26} fill="#fff" />
-                  318
+                  {t.number(318, COMPACT)}
                 </span>
                 <span>
                   <Bookmark size={26} fill="#fff" />
-                  2.1K
+                  {t.number(2_100, COMPACT)}
                 </span>
                 <span>
                   <Send size={24} />
-                  Share
+                  {t('sim.tiktok.share')}
                 </span>
               </div>
               <div className="caption">
-                <b>@yourbrand</b>
+                <b>{t('sim.tiktok.handle')}</b>
                 <p>
-                  {inputs.title} ✨ <span>#fyp #tiktokshop #newin</span>
+                  {inputs.title} ✨ <span>{t('sim.tiktok.tags')}</span>
                 </p>
                 <div className="shop-card">
                   <ShoppingBag size={16} />
@@ -367,14 +373,12 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
         {env === 'sticker' && (
           <div className="sticker-env">
             <div className="chat">
-              <p className="msg in">did you see the new drop?? 👀</p>
-              <p className="msg out">sending you the sticker</p>
+              <p className="msg in">{t('sim.sticker.msgAsk')}</p>
+              <p className="msg out">{t('sim.sticker.msgSend')}</p>
               <div className="sticker-slot">{stage}</div>
-              <p className="msg in">omg want 😍</p>
+              <p className="msg in">{t('sim.sticker.msgReply')}</p>
             </div>
-            <p className="sticker-note">
-              The sticker is the live view with a transparent background: turn it, then download the PNG.
-            </p>
+            <p className="sticker-note">{t('sim.sticker.note')}</p>
           </div>
         )}
 
@@ -387,12 +391,9 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
             </div>
             <aside className="remote" data-testid="sim-remote">
               <h2>
-                <Smartphone size={16} /> Phone remote
+                <Smartphone size={16} /> {t('sim.showroom.title')}
               </h2>
-              <p className="muted">
-                Scan with your phone, then tilt it: the product follows. Two-way: the phone sees what this
-                screen shows.
-              </p>
+              <p className="muted">{t('sim.showroom.help')}</p>
               {/* QR of our own controller URL (uqr output, no user content). */}
               <div className="qr" dangerouslySetInnerHTML={{ __html: qr }} />
               <a
@@ -406,25 +407,30 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
               </a>
               {local && (
                 <p className="warn">
-                  Phones cannot open localhost. Open this board through the <code>pnpm share</code> link to
-                  pair a phone.
+                  {rich(t, 'sim.showroom.localhost', {
+                    command: <code>pnpm share</code>, // i18n-ignore: a command name
+                  })}
                 </p>
               )}
               <p className="sim-status" data-state={link}>
                 <i />
                 {link !== 'open'
-                  ? 'Connecting…'
+                  ? t('sim.status.connecting')
                   : phones
-                    ? `${phones} phone${phones > 1 ? 's' : ''} connected`
-                    : 'Waiting for a phone'}
+                    ? t('sim.showroom.phones', { count: phones })
+                    : t('sim.showroom.waiting')}
               </p>
               {pose && (
                 <p className="pose" data-testid="sim-pose">
-                  α {pose.alpha.toFixed(0)}°, β {pose.beta.toFixed(0)}°, γ {pose.gamma.toFixed(0)}°
+                  {t('sim.showroom.pose', {
+                    alpha: Math.round(pose.alpha),
+                    beta: Math.round(pose.beta),
+                    gamma: Math.round(pose.gamma),
+                  })}
                 </p>
               )}
               <button type="button" className="sim-btn" onClick={() => viewer.current?.recenter()}>
-                <RotateCcw size={14} /> Recenter
+                <RotateCcw size={14} /> {t('sim.action.recenter')}
               </button>
             </aside>
           </div>

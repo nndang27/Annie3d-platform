@@ -13,11 +13,13 @@ import {
   starterGraph,
 } from '@annie3d/contracts';
 import { api } from '../api/client';
+import { t } from '../i18n';
 import { withCloud } from '../lib/doc';
 import { perfStart, timed } from '../lib/perf';
 import { dispatch, upsertVersions, useBoard } from '../store/board';
 import { loadGuestFileUrl, saveGuestFile } from '../store/persist';
 import { toast, useUi } from '../store/ui';
+import { starterWords } from './example';
 
 const KIND_BY_NODE = { photo: 'image', upload3d: 'model3d', audio: 'audio' } as const;
 
@@ -48,14 +50,14 @@ async function uploadAssetInner(file: File, kind: AssetDto['kind']): Promise<Ass
   if (up.mode === 'existing') return up.asset;
   if (up.mode === 'single') {
     const put = await fetch(up.url, { method: 'PUT', headers: up.headers, body: file });
-    if (!put.ok) throw new Error(`Upload failed (${put.status})`);
+    if (!put.ok) throw new Error(t('file.uploadFailed', { status: put.status }));
     return api.completeUpload(up.assetId);
   }
   const parts: { partNumber: number; etag: string }[] = [];
   for (const p of up.parts) {
     const chunk = file.slice((p.partNumber - 1) * up.partSize, p.partNumber * up.partSize);
     const r = await fetch(p.url, { method: 'PUT', body: chunk });
-    if (!r.ok) throw new Error(`Part ${p.partNumber} failed`);
+    if (!r.ok) throw new Error(t('file.partFailed', { part: p.partNumber }));
     parts.push({ partNumber: p.partNumber, etag: r.headers.get('etag') ?? '' });
   }
   return api.completeUpload(up.assetId, parts);
@@ -167,7 +169,12 @@ export function createNodeAt(
         x: Math.round(x),
         y: Math.round(y),
         label: null,
-        settings: { ...defaultSettings(kind), ...settings },
+        // Defaults the product writes are in the person's language when the node is created.
+        settings: {
+          ...defaultSettings(kind),
+          ...(kind === 'simulation' ? { cta: t('setting.simulation.cta') } : {}),
+          ...settings,
+        },
         zKey: nextZKey(g),
       },
     },
@@ -192,7 +199,7 @@ export function createNodeAt(
 /** Drops a Starter line (ordinary pre-wired nodes) with its top-left at `origin`. */
 export function insertStarter(id: StarterId, origin: { x: number; y: number }) {
   const g = useBoard.getState().graph;
-  const s = starterGraph(id, origin);
+  const s = starterGraph(id, origin, starterWords(id));
   let z = nextZKey(g);
   const ops: GraphOp[] = [];
   for (const n of s.nodes) {

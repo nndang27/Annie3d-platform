@@ -53,6 +53,9 @@ importers:
 
   apps/desktop:
     dependencies:
+      '@annie3d/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       electron-updater:
         specifier: ^6.8.9
         version: 6.8.9
@@ -78,6 +81,9 @@ importers:
 
   apps/site:
     dependencies:
+      '@annie3d/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@annie3d/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -109,6 +115,9 @@ importers:
       '@annie3d/fixtures':
         specifier: workspace:*
         version: link:../../fixtures
+      '@annie3d/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@annie3d/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -116,6 +125,9 @@ importers:
         specifier: workspace:*
         version: link:../../packages/viewer-3d
       '@fontsource-variable/instrument-sans':
+        specifier: 5.3.0
+        version: 5.3.0
+      '@fontsource-variable/inter':
         specifier: 5.3.0
         version: 5.3.0
       '@gltf-transform/core':
@@ -248,6 +260,15 @@ importers:
       drizzle-kit:
         specifier: ^0.31.11
         version: 0.31.11
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+
+  packages/i18n:
+    devDependencies:
+      '@annie3d/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       typescript:
         specifier: ~5.9.3
         version: 5.9.3

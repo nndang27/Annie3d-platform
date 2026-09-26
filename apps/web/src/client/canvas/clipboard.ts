@@ -7,6 +7,7 @@ import {
   newId,
   nextZKey,
 } from '@annie3d/contracts';
+import { t } from '../i18n';
 import { timed } from '../lib/perf';
 import { dispatch, setStale, upsertVersions, useBoard } from '../store/board';
 import { toast, useUi } from '../store/ui';
@@ -209,10 +210,12 @@ export function handlePaste(e: ClipboardEvent, at: FlowPoint, pointerOnCanvas: b
   return false;
 }
 
+const IMAGE_MAX_MB = 25;
+
 /** An image file (pasted or dropped from outside) becomes a Photo node holding it. */
 export async function imageToNode(file: File, at: { x: number; y: number }) {
-  if (file.size > 25 * 1024 * 1024) {
-    toast('Images up to 25 MB can be added', 'error');
+  if (file.size > IMAGE_MAX_MB * 1024 * 1024) {
+    toast(t('canvas.imageTooLarge', { size: IMAGE_MAX_MB }), 'error');
     return;
   }
   const id = createNodeAt('photo', at.x, at.y);

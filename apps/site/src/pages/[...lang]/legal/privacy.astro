@@ -1,0 +1,28 @@
+---
+import LegalNotice from '../../../components/LegalNotice.astro';
+import Base from '../../../layouts/Base.astro';
+import { CONTACT_EMAIL, type LocaleProps, localeStaticPaths, pageT } from '../../../lib/site';
+
+export const getStaticPaths = localeStaticPaths;
+const { locale } = Astro.props as LocaleProps;
+const t = pageT(locale);
+---
+
+<Base locale={locale} title={t('site.privacy.title')} description={t('site.privacy.description')}>
+  <div class="container prose" style="padding:56px 0 96px">
+    <LegalNotice locale={locale} path="/legal/privacy" />
+    <h1 class="h2" style="margin-top:12px">{t('site.privacy.title')}</h1>
+    <h2>{t('site.privacy.whoTitle')}</h2>
+    <p>{t('site.privacy.whoBody', { email: CONTACT_EMAIL })}</p>
+    <h2>{t('site.privacy.storeTitle')}</h2>
+    <p>{t('site.privacy.storeBody')}</p>
+    <h2>{t('site.privacy.whereTitle')}</h2>
+    <p>{t('site.privacy.whereBody')}</p>
+    <h2>{t('site.privacy.cookiesTitle')}</h2>
+    <p>{t('site.privacy.cookiesBody')}</p>
+    <h2>{t('site.privacy.sharingTitle')}</h2>
+    <p>{t('site.privacy.sharingBody')}</p>
+    <h2>{t('site.privacy.deleteTitle')}</h2>
+    <p>{t('site.privacy.deleteBody')}</p>
+  </div>
+</Base>

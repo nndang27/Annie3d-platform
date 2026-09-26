@@ -10,7 +10,8 @@ import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { AppEnv } from '../env';
 import { getDb } from '../lib/db';
-import { body, httpError, uuidParam } from '../lib/http';
+import { body, type HttpError, httpError, uuidParam } from '../lib/http';
+import { localeOf, tFor, translator } from '../lib/i18n';
 import { requireEditor, requireUser } from '../lib/session';
 import { assetDto, bucketOf } from '../services/assets';
 import { BUCKET_NAMES, completeMultipart, createMultipart, presignPart, presignPut } from '../services/r2';
@@ -19,6 +20,7 @@ export const assetRoutes = new Hono<AppEnv>();
 
 const SINGLE_PUT_MAX = 64 * 1024 * 1024;
 const PART_SIZE = 16 * 1024 * 1024;
+const MAX_IMAGE_PX = 12000;
 
 /** Magic-byte sniffing: the declared MIME must match the file's real signature. */
 function sniff(head: Uint8Array): string | null {
@@ -66,16 +68,20 @@ function dimensions(head: Uint8Array): { width: number; height: number } | null 
 
 assetRoutes.post('/api/assets/uploads', requireEditor, async (c) => {
   const lim = await c.env.RL_UPLOAD.limit({ key: c.get('user')!.id });
-  if (!lim.success) throw httpError(429, 'rate_limited', 'Too many uploads, try again in a minute');
+  if (!lim.success) throw httpError(429, 'rate_limited', 'api.upload.tooMany');
   const req = await body(c, CreateUploadRequest);
+  // The kind as the person's language names it ("3D model"), not the id ("model3d").
+  const kindName = tFor(c)(`portType.${req.kind}`);
   if (!ALLOWED_MIME[req.kind].includes(req.mime))
-    throw httpError(415, 'unsupported_media', `${req.mime} is not accepted for ${req.kind}`);
+    throw httpError(415, 'unsupported_media', 'api.upload.mimeNotAccepted', {
+      mime: req.mime,
+      kind: kindName,
+    });
   if (req.byteSize > UPLOAD_LIMITS[req.kind])
-    throw httpError(
-      413,
-      'payload_too_large',
-      `Max ${UPLOAD_LIMITS[req.kind] / 1024 / 1024} MB for ${req.kind}`,
-    );
+    throw httpError(413, 'payload_too_large', 'api.upload.tooLarge', {
+      size: UPLOAD_LIMITS[req.kind] / 1024 / 1024,
+      kind: kindName,
+    });
   const db = getDb(c);
   const ws = c.get('workspaceId')!;
   const existing = await db.query.assets.findFirst({
@@ -134,26 +140,29 @@ assetRoutes.post('/api/assets/:assetId/complete', requireEditor, async (c) => {
   const a = await db.query.assets.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, id), eq(t.workspaceId, c.get('workspaceId')!)),
   });
-  if (!a) throw httpError(404, 'not_found', 'Asset not found');
+  if (!a) throw httpError(404, 'not_found', 'api.upload.assetNotFound');
   if (a.status === 'ready') return c.json(assetDto(c.env, a));
   const uploadId = (a.meta as { uploadId?: string }).uploadId;
   if (uploadId) {
-    if (!req.parts?.length) throw httpError(400, 'bad_request', 'parts required for multipart upload');
+    if (!req.parts?.length) throw httpError(400, 'bad_request', 'api.upload.partsRequired');
     await completeMultipart(c.env, BUCKET_NAMES.uploads, a.storageKey, uploadId, req.parts);
   }
   const obj = await c.env.UPLOADS.get(a.storageKey, { range: { offset: 0, length: 64 * 1024 } });
-  if (!obj) throw httpError(400, 'bad_request', 'Upload not found in storage');
+  if (!obj) throw httpError(400, 'bad_request', 'api.upload.notInStorage');
   const head = new Uint8Array(await obj.arrayBuffer());
-  const fail = async (msg: string) => {
+  const fail = async (e: HttpError) => {
     await db.update(assets).set({ status: 'failed' }).where(eq(assets.id, id));
     await c.env.UPLOADS.delete(a.storageKey);
-    throw httpError(400, 'bad_request', msg);
+    throw e;
   };
-  if (obj.size !== a.byteSize) await fail(`Size mismatch: expected ${a.byteSize}, stored ${obj.size}`);
-  if (!compatible(a.mime, sniff(head))) await fail('File content does not match its declared type');
+  if (obj.size !== a.byteSize)
+    await fail(
+      httpError(400, 'bad_request', 'api.upload.sizeMismatch', { expected: a.byteSize, stored: obj.size }),
+    );
+  if (!compatible(a.mime, sniff(head))) await fail(httpError(400, 'bad_request', 'api.upload.typeMismatch'));
   const dims = a.kind === 'image' ? dimensions(head) : null;
-  if (a.kind === 'image' && dims && (dims.width > 12000 || dims.height > 12000))
-    await fail('Image larger than 12000 px');
+  if (a.kind === 'image' && dims && (dims.width > MAX_IMAGE_PX || dims.height > MAX_IMAGE_PX))
+    await fail(httpError(400, 'bad_request', 'api.upload.imageTooLarge', { size: MAX_IMAGE_PX }));
   // The dedupe index can race with a concurrent identical upload: fall back to the winner.
   try {
     const [updated] = await db
@@ -187,7 +196,7 @@ assetRoutes.get('/api/assets/:assetId', requireUser, async (c) => {
   const a = await db.query.assets.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, id), eq(t.workspaceId, c.get('workspaceId')!)),
   });
-  if (!a) throw httpError(404, 'not_found', 'Asset not found');
+  if (!a) throw httpError(404, 'not_found', 'api.upload.assetNotFound');
   const variants = await db.select().from(assetVariants).where(eq(assetVariants.assetId, id));
   return c.json(assetDto(c.env, a, variants));
 });
@@ -200,7 +209,7 @@ assetRoutes.get('/api/assets/:assetId/content', requireUser, async (c) => {
   const a = await db.query.assets.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, id), eq(t.workspaceId, c.get('workspaceId')!)),
   });
-  if (a?.status !== 'ready') throw httpError(404, 'not_found', 'Asset not found');
+  if (a?.status !== 'ready') throw httpError(404, 'not_found', 'api.upload.assetNotFound');
   let key = a.storageKey;
   let mime = a.mime;
   if (variant) {
@@ -208,7 +217,7 @@ assetRoutes.get('/api/assets/:assetId/content', requireUser, async (c) => {
       .select()
       .from(assetVariants)
       .where(and(eq(assetVariants.assetId, id), eq(assetVariants.variant, variant)));
-    if (!v) throw httpError(404, 'not_found', 'Variant not found');
+    if (!v) throw httpError(404, 'not_found', 'api.upload.variantNotFound');
     key = v.storageKey;
     mime = v.mime;
   }
@@ -239,7 +248,10 @@ export async function streamObject(
 ): Promise<Response> {
   const range = req.headers.get('range');
   const obj = await bucket.get(key, { onlyIf: req.headers, range: range ? req.headers : undefined });
-  if (!obj) return new Response('Not found', { status: 404 });
+  if (!obj) {
+    const t = translator(localeOf(req));
+    return new Response(t('api.http.notFound'), { status: 404, headers: { 'content-language': t.tag } });
+  }
   const headers = new Headers({
     'content-type': mime,
     'cache-control': cacheControl,

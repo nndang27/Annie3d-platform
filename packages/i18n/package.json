@@ -1,0 +1,17 @@
+{
+  "name": "@annie3d/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./all": "./src/all.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@annie3d/contracts": "workspace:*",
+    "typescript": "~5.9.3"
+  }
+}

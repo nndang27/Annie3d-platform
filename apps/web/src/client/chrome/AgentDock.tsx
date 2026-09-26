@@ -1,6 +1,6 @@
-import { NODE_DEFS } from '@annie3d/contracts';
 import { ArrowUp, Check, X } from 'lucide-react';
 import { useState } from 'react';
+import { useT } from '../i18n';
 import { useBoard } from '../store/board';
 import { useUi } from '../store/ui';
 import { useAgent } from './useAgent';
@@ -14,10 +14,10 @@ export interface AgentMessage {
 }
 
 const SUGGESTIONS = [
-  'Make the stage warmer and add a 6-second cut',
-  'Add a packshot with four angles',
-  'Use a softer light on the 3D model',
-];
+  'agent.suggestion.warmerStage',
+  'agent.suggestion.fourAngles',
+  'agent.suggestion.softerLight',
+] as const;
 
 /**
  * Right dock (F7). The composer carries a budget and the selected nodes as context chips.
@@ -37,6 +37,7 @@ export function AgentDockView({
   onSend?: (text: string, budget: number, nodeIds: string[]) => void;
   busy?: boolean;
 }) {
+  const t = useT();
   const open = useUi((s) => s.agentOpen);
   const selected = useUi((s) => s.selected);
   const nodes = useBoard((s) => s.graph.nodes);
@@ -45,23 +46,23 @@ export function AgentDockView({
   if (!open) return null;
   const chips = [...selected].map((id) => nodes.get(id)).filter((n) => !!n);
   const send = () => {
-    const t = text.trim();
-    if (!t || busy) return;
+    const msg = text.trim();
+    if (!msg || busy) return;
     onSend?.(
-      t,
+      msg,
       budget,
       chips.map((n) => n.id),
     );
     setText('');
   };
   return (
-    <aside className="agent" aria-label="Ask Annie" data-testid="agent-dock" data-busy={busy}>
+    <aside className="agent" aria-label={t('agent.title')} data-testid="agent-dock" data-busy={busy}>
       <header>
-        Ask Annie
+        {t('agent.title')}
         <button
           type="button"
           className="icon-btn close"
-          aria-label="Close agent"
+          aria-label={t('agent.close')}
           onClick={() => useUi.setState({ agentOpen: false })}
         >
           <X size={16} aria-hidden="true" />
@@ -71,11 +72,11 @@ export function AgentDockView({
         {messages.length === 0 ? (
           // Right above the box they fill: what Annie does, and changes to start from.
           <div className="empty">
-            <p>Annie changes this board for you: nodes, settings and wires. ⌘Z undoes her edits.</p>
+            <p>{t('agent.intro')}</p>
             <div className="suggestions">
-              {SUGGESTIONS.map((t) => (
-                <button key={t} type="button" onClick={() => setText(t)} data-testid="agent-suggestion">
-                  {t}
+              {SUGGESTIONS.map((k) => (
+                <button key={k} type="button" onClick={() => setText(t(k))} data-testid="agent-suggestion">
+                  {t(k)}
                 </button>
               ))}
             </div>
@@ -89,7 +90,7 @@ export function AgentDockView({
                 {!!m.applied?.length && (
                   <div className="op-chips">
                     {m.applied.map((a, i) => (
-                      <span key={`${a.label}-${i}`} className="op-chip" title="Undo with ⌘Z">
+                      <span key={`${a.label}-${i}`} className="op-chip" title={t('agent.undoHint')}>
                         <Check size={12} aria-hidden="true" /> {a.label}
                       </span>
                     ))}
@@ -98,22 +99,22 @@ export function AgentDockView({
               </div>
             ))
         )}
-        {busy && !messages.at(-1)?.text && <div className="msg msg-agent typing">Thinking…</div>}
+        {busy && !messages.at(-1)?.text && <div className="msg msg-agent typing">{t('agent.thinking')}</div>}
       </div>
       <div className="composer">
         {chips.length > 0 && (
           <div className="chips">
             {chips.slice(0, 6).map((n) => (
               <span key={n.id} className="chip">
-                {n.label ?? NODE_DEFS[n.kind].label}
+                {n.label ?? t(`node.${n.kind}`)}
               </span>
             ))}
             {chips.length > 6 && <span className="chip">+{chips.length - 6}</span>}
           </div>
         )}
         <textarea
-          aria-label="Message the agent"
-          placeholder="Describe a change…"
+          aria-label={t('agent.input')}
+          placeholder={t('agent.placeholder')}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
@@ -126,15 +127,15 @@ export function AgentDockView({
         />
         <div className="row">
           <label>
-            Budget{' '}
+            {t('agent.budget')}{' '}
             <select
               value={budget}
               onChange={(e) => setBudget(Number(e.target.value))}
-              aria-label="Budget in credits"
+              aria-label={t('agent.budgetLabel')}
             >
               {[25, 50, 100, 200].map((b) => (
                 <option key={b} value={b}>
-                  {b} credits
+                  {t('common.credits', { count: b })}
                 </option>
               ))}
             </select>
@@ -142,7 +143,7 @@ export function AgentDockView({
           <button
             type="button"
             className="send"
-            aria-label="Send"
+            aria-label={t('agent.send')}
             onClick={send}
             disabled={busy || !text.trim()}
             data-testid="agent-send"

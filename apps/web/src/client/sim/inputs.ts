@@ -1,12 +1,21 @@
-import { type AssetDto, NODE_DEFS, type SimEnvironment } from '@annie3d/contracts';
+import { type AssetDto, NODE_DEFS, SIM_ENVIRONMENTS, type SimEnvironment } from '@annie3d/contracts';
+import { t } from '../i18n';
 import { useBoard } from '../store/board';
 
-export const SIM_ENV_META: Record<SimEnvironment, { label: string; hint: string }> = {
-  shop: { label: 'Shop page', hint: 'Product page of an online store' },
-  tiktok: { label: 'TikTok', hint: 'Vertical social feed with a shop card' },
-  sticker: { label: 'Sticker', hint: 'Chat sticker with a transparent background' },
-  showroom: { label: 'Showroom', hint: 'Live stage you steer from your phone' },
-};
+/** Name and tooltip of each place, in the current language (read when rendered). */
+export const SIM_ENV_META = Object.fromEntries(
+  SIM_ENVIRONMENTS.map((id) => [
+    id,
+    {
+      get label() {
+        return t(`simEnv.${id}`);
+      },
+      get hint() {
+        return t(`sim.envHint.${id}`);
+      },
+    },
+  ]),
+) as Record<SimEnvironment, { readonly label: string; readonly hint: string }>;
 
 export interface SimInputs {
   title: string;
@@ -42,7 +51,7 @@ export function simInputs(nodeId: string): SimInputs {
         ? subjectNode.label
         : '') ||
       node?.label ||
-      'Your product',
+      t('sim.product.default'),
     glb: subject?.kind === 'model3d' ? subject.urls.original : null,
     poster: subject ? (subject.urls.poster ?? subject.urls.thumb ?? subject.urls.original) : null,
     logo: logo ? (logo.urls.thumb ?? logo.urls.original) : null,

@@ -2,6 +2,7 @@ import { GLB_PRESETS, type GlbPresetId } from '@annie3d/contracts';
 import { Check, Download, X } from 'lucide-react';
 import { useState } from 'react';
 import { api, type ExportResult } from '../api/client';
+import { t as tr, useT } from '../i18n';
 import { isDoc, withCloud } from '../lib/doc';
 import { timed } from '../lib/perf';
 import { useBoard } from '../store/board';
@@ -9,7 +10,11 @@ import { toast, useUi } from '../store/ui';
 import { Modal } from './Modal';
 
 const PRESETS = Object.entries(GLB_PRESETS) as [GlbPresetId, (typeof GLB_PRESETS)[GlbPresetId]][];
-const mb = (b: number) => `${(b / 1048576).toFixed(b < 1048576 ? 2 : 1)} MB`;
+const mb = (b: number) => {
+  const digits = b < 1048576 ? 2 : 1;
+  const size = tr.number(b / 1048576, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  return tr('dialog.export.megabytes', { size });
+};
 
 /** F6: pick a preset, export, read the pass/fail report, download files or the zip. */
 export function ExportDialog() {
@@ -24,6 +29,7 @@ export function ExportDialog() {
 }
 
 function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void }) {
+  const t = useT();
   const mode = useBoard((s) => s.mode);
   const node = useBoard((s) => (nodeId ? s.graph.nodes.get(nodeId) : undefined));
   const [preset, setPreset] = useState<GlbPresetId>(
@@ -36,7 +42,7 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ExportResult | null>(null);
   const [key] = useState(() => crypto.randomUUID());
-  if (!node) return <p className="muted">Select a 3D model or Export node to export.</p>;
+  if (!node) return <p className="muted">{t('dialog.export.noNode')}</p>;
   const isBundle = node.kind === 'export';
   const run = async (ready = false) => {
     if (mode === 'guest') return useUi.setState({ dialog: null, signInPrompt: { reason: 'save' } });
@@ -72,8 +78,8 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
   const report = result?.report;
   return (
     <>
-      <h2 id="export-title">Export {isBundle ? 'bundle' : '3D model'}</h2>
-      <div className="preset-list" role="radiogroup" aria-label="Preset">
+      <h2 id="export-title">{isBundle ? t('dialog.export.titleBundle') : t('dialog.export.titleModel')}</h2>
+      <div className="preset-list" role="radiogroup" aria-label={t('dialog.export.preset')}>
         {PRESETS.map(([id, p]) => (
           <label key={id} className={`preset${preset === id ? ' on' : ''}`}>
             <input
@@ -86,11 +92,13 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
                 setResult(null);
               }}
             />
-            <b>{p.label}</b>
+            <b>{t(`glbPreset.${id}`)}</b>
             <span className="muted small">
-              Up to {mb(p.maxBytes)}, {p.maxTriangles.toLocaleString('en')} triangles, {p.maxTexture} px
-              textures
-              {p.requiresAnimation ? ', animated' : ''}
+              {t(p.requiresAnimation ? 'dialog.export.limitsAnimated' : 'dialog.export.limits', {
+                size: mb(p.maxBytes),
+                triangles: p.maxTriangles,
+                texture: t.number(p.maxTexture, { useGrouping: false }),
+              })}
             </span>
           </label>
         ))}
@@ -98,12 +106,12 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
       {isBundle && (
         <div className="checks-row">
           <label>
-            <input type="checkbox" checked={includeMp4} onChange={(e) => setMp4(e.target.checked)} /> Ad video
-            (MP4)
+            <input type="checkbox" checked={includeMp4} onChange={(e) => setMp4(e.target.checked)} />{' '}
+            {t('dialog.export.includeVideo')}
           </label>
           <label>
-            <input type="checkbox" checked={includePng} onChange={(e) => setPng(e.target.checked)} /> Images
-            (PNG)
+            <input type="checkbox" checked={includePng} onChange={(e) => setPng(e.target.checked)} />{' '}
+            {t('dialog.export.includeImages')}
           </label>
         </div>
       )}
@@ -111,13 +119,17 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
         <div className="report" data-testid="export-report" data-passed={report.passed}>
           <p className={report.passed ? 'ok' : 'bad'}>
             {report.passed
-              ? `Ready for ${GLB_PRESETS[preset].label}`
-              : `Does not meet ${GLB_PRESETS[preset].label} yet`}
+              ? t('dialog.export.ready', { preset: t(`glbPreset.${preset}`) })
+              : t('dialog.export.notReady', { preset: t(`glbPreset.${preset}`) })}
           </p>
           <ul>
             {report.checks.map((c) => (
               <li key={c.id} data-check={c.id} data-passed={c.passed}>
-                {c.passed ? <Check size={14} aria-label="passed" /> : <X size={14} aria-label="failed" />}{' '}
+                {c.passed ? (
+                  <Check size={14} aria-label={t('dialog.export.passed')} />
+                ) : (
+                  <X size={14} aria-label={t('dialog.export.failed')} />
+                )}{' '}
                 {c.message}
               </li>
             ))}
@@ -143,9 +155,9 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
               <li key={f.id}>
                 <span>
                   {f.mime === 'application/zip'
-                    ? 'All files (.zip)'
+                    ? t('dialog.export.zip')
                     : f.mime === 'model/gltf-binary'
-                      ? 'GLB model'
+                      ? t('dialog.export.glb')
                       : f.mime}
                 </span>
                 <span className="muted">{mb(f.byteSize)}</span>
@@ -155,7 +167,7 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
                   download={name}
                   data-testid={`download-${f.mime.split('/')[1]}`}
                 >
-                  <Download size={14} aria-hidden="true" /> Download
+                  <Download size={14} aria-hidden="true" /> {t('dialog.download')}
                 </a>
               </li>
             );
@@ -164,7 +176,7 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
       )}
       <div className="modal-actions">
         <button type="button" className="btn-secondary" onClick={onClose}>
-          {result ? 'Done' : 'Cancel'}
+          {result ? t('common.done') : t('common.cancel')}
         </button>
         {!result && (
           <button
@@ -174,7 +186,7 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
             disabled={busy}
             data-testid="export-run"
           >
-            {busy ? 'Exporting…' : 'Export (free)'}
+            {busy ? t('dialog.export.exporting') : t('dialog.export.run')}
           </button>
         )}
       </div>

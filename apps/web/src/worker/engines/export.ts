@@ -1,5 +1,5 @@
 import type { EngineContext, EngineOutput, GlbPresetId, ResolvedInput } from '@annie3d/contracts';
-import { GLB_PRESETS } from '@annie3d/contracts';
+import { localized, type Translator } from '../lib/i18n';
 import { type ExportReport, exportGlb, zip } from '../services/exporter';
 
 async function sha(buf: ArrayBuffer) {
@@ -17,6 +17,8 @@ export interface BundleOptions {
   includeMp4: boolean;
   includePng: boolean;
   name: string;
+  /** Language of progress stages and check messages. */
+  t: Translator;
 }
 
 /**
@@ -32,11 +34,12 @@ export async function buildBundle(
   const outputs: EngineOutput[] = [];
   const zipped: { name: string; data: Uint8Array }[] = [];
   let report: ExportReport | null = null;
+  const { t } = opts;
   const base = slug(opts.name);
   const model = inputs.find((i) => i.type === 'model3d' && i.assetId);
   if (model) {
-    await ctx.progress(0.2, `Optimising for ${GLB_PRESETS[opts.preset].label}`);
-    const res = await exportGlb(new Uint8Array(await ctx.readInput(model)), opts.preset);
+    await ctx.progress(0.2, t('api.stage.export.optimising', { preset: t(`glbPreset.${opts.preset}`) }));
+    const res = await exportGlb(new Uint8Array(await ctx.readInput(model)), opts.preset, t);
     report = res.report;
     const buf = res.glb.buffer.slice(
       res.glb.byteOffset,
@@ -61,7 +64,7 @@ export async function buildBundle(
     const wantVideo = opts.includeMp4 && i.type === 'video';
     const wantImage = opts.includePng && i.type === 'image';
     if (!wantVideo && !wantImage) continue;
-    await ctx.progress(0.5, 'Collecting files');
+    await ctx.progress(0.5, t('api.stage.export.collecting'));
     const data = await ctx.readInput(i);
     const ext =
       i.mime === 'video/mp4'
@@ -84,8 +87,8 @@ export async function buildBundle(
       meta: { filename: name },
     });
   }
-  if (!zipped.length) throw new Error('Nothing to export: connect a 3D model, video or images');
-  await ctx.progress(0.8, 'Packaging');
+  if (!zipped.length) throw localized('api.export.nothingToExport');
+  await ctx.progress(0.8, t('api.stage.export.packaging'));
   const z = zip(zipped);
   const zbuf = z.buffer.slice(z.byteOffset, z.byteOffset + z.byteLength) as ArrayBuffer;
   const zipName = `${base}-${opts.preset}.zip`;

@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { ZipError } from '@annie3d/contracts';
 import type { DesktopInfo, DesktopUpdateState, DocPayload } from '@annie3d/contracts/desktop';
 import {
   app,
@@ -15,6 +16,7 @@ import { DEV_URL, INLINE_HOSTS, ORIGIN } from './config';
 import * as docs from './docs';
 import { isBoardFile, openPath, setOpener } from './files';
 import { parseHeaders } from './headers';
+import { applyStartupLanguage, locale, setLocale, t, zipErrorText } from './i18n';
 import { interceptOrigin } from './protocol';
 import { ShellUpdater } from './shellUpdate';
 import { WebPackStore } from './webpack';
@@ -28,6 +30,7 @@ import { WebPackStore } from './webpack';
 // Tests (and side-by-side installs) can isolate the app's data folder; must run before any store reads it.
 if (process.env.ANNIE3D_USER_DATA) app.setPath('userData', process.env.ANNIE3D_USER_DATA);
 else useLegacyUserData();
+applyStartupLanguage();
 
 /**
  * Builds before productName was set ran as "@annie3d/desktop" (the macOS menu read "Quit
@@ -135,7 +138,7 @@ function createWindow(page = '/') {
     minHeight: 480,
     show: false,
     backgroundColor: '#f2f2f2',
-    title: 'Annie 3D',
+    title: t()('common.brand'),
     // macOS: a click on the inactive window also reaches the page, as in Chrome (Electron's
     // default only activates the window, so the first click after switching apps is lost).
     acceptFirstMouse: true,
@@ -206,66 +209,95 @@ function sendKeyToPage(key: string, shift = false) {
 
 function buildMenu() {
   const mac = process.platform === 'darwin';
+  const tr = t();
+  const name = tr('common.brand');
+  // Items with a role keep the role's behaviour; the label is ours, so it follows the language.
   const template: MenuItemConstructorOptions[] = [
-    ...(mac ? [{ role: 'appMenu' as const }] : []),
+    ...(mac
+      ? [
+          {
+            label: name,
+            submenu: [
+              { role: 'about', label: tr('desktop.menu.about', { app: name }) },
+              { type: 'separator' },
+              { role: 'services', label: tr('desktop.menu.services') },
+              { type: 'separator' },
+              { role: 'hide', label: tr('desktop.menu.hide', { app: name }) },
+              { role: 'hideOthers', label: tr('desktop.menu.hideOthers') },
+              { role: 'unhide', label: tr('desktop.menu.showAll') },
+              { type: 'separator' },
+              { role: 'quit', label: tr('desktop.menu.quitApp', { app: name }) },
+            ] satisfies MenuItemConstructorOptions[],
+          },
+        ]
+      : []),
     {
-      label: 'File',
+      label: tr('desktop.menu.file'),
       submenu: [
-        { label: 'New Board File', accelerator: 'CmdOrCtrl+N', click: () => newDocument() },
+        { label: tr('desktop.menu.newBoardFile'), accelerator: 'CmdOrCtrl+N', click: () => newDocument() },
         {
-          label: 'Open…',
+          label: tr('desktop.menu.open'),
           accelerator: 'CmdOrCtrl+O',
           // The page handles ⌘O/⌘S itself (so text fields and the canvas agree); the items are for mice.
           registerAccelerator: false,
           click: () => void pickFiles(),
         },
-        { role: 'recentDocuments', submenu: [{ role: 'clearRecentDocuments' }] },
+        {
+          role: 'recentDocuments',
+          label: tr('desktop.menu.openRecent'),
+          submenu: [{ role: 'clearRecentDocuments', label: tr('desktop.menu.clearRecent') }],
+        },
         { type: 'separator' },
         {
-          label: 'Save',
+          label: tr('desktop.menu.save'),
           accelerator: 'CmdOrCtrl+S',
           registerAccelerator: false,
           click: () => docs.commandFocused(BrowserWindow.getFocusedWindow(), 'save'),
         },
         {
-          label: 'Save As…',
+          label: tr('desktop.menu.saveAs'),
           accelerator: 'Shift+CmdOrCtrl+S',
           registerAccelerator: false,
           click: () => docs.commandFocused(BrowserWindow.getFocusedWindow(), 'saveAs'),
         },
         { type: 'separator' },
         {
-          label: 'Import into This Board…',
+          label: tr('desktop.menu.importIntoBoard'),
           click: () => docs.commandFocused(BrowserWindow.getFocusedWindow(), 'import'),
         },
         { type: 'separator' },
-        mac ? { role: 'close' } : { role: 'quit' },
+        mac
+          ? { role: 'close', label: tr('desktop.menu.closeWindow') }
+          : {
+              role: 'quit',
+              label: process.platform === 'win32' ? tr('desktop.menu.exit') : tr('desktop.menu.quit'),
+            },
       ],
     },
     {
-      label: 'Edit',
+      label: tr('desktop.menu.edit'),
       submenu: [
         // macOS menus take key equivalents before the page, so these route ⌘Z/⌘A to the canvas or
         // to the focused text field. On Windows/Linux the page gets the keys first and Chromium
         // edits text itself; registering them there would undo twice.
         {
-          label: 'Undo',
+          label: tr('desktop.menu.undo'),
           accelerator: 'CmdOrCtrl+Z',
           registerAccelerator: mac,
           click: () => sendKeyToPage('z'),
         },
         {
-          label: 'Redo',
+          label: tr('desktop.menu.redo'),
           accelerator: 'Shift+CmdOrCtrl+Z',
           registerAccelerator: mac,
           click: () => sendKeyToPage('z', true),
         },
         { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
+        { role: 'cut', label: tr('desktop.menu.cut') },
+        { role: 'copy', label: tr('desktop.menu.copy') },
+        { role: 'paste', label: tr('desktop.menu.paste') },
         {
-          label: 'Select All',
+          label: tr('desktop.menu.selectAll'),
           accelerator: 'CmdOrCtrl+A',
           registerAccelerator: mac,
           click: () => sendKeyToPage('a'),
@@ -273,16 +305,39 @@ function buildMenu() {
       ],
     },
     {
-      label: 'View',
+      label: tr('desktop.menu.view'),
       submenu: [
-        ...(app.isPackaged ? [] : [{ role: 'reload' as const }, { role: 'toggleDevTools' as const }]),
-        { role: 'togglefullscreen' },
+        ...(app.isPackaged
+          ? []
+          : ([
+              { role: 'reload', label: tr('desktop.menu.reload') },
+              { role: 'toggleDevTools', label: tr('desktop.menu.toggleDevTools') },
+            ] satisfies MenuItemConstructorOptions[])),
+        { role: 'togglefullscreen', label: tr('desktop.menu.toggleFullScreen') },
       ],
     },
-    { role: 'windowMenu' },
+    // role 'window' keeps macOS's list of open windows in this menu.
     {
+      label: tr('desktop.menu.window'),
+      role: 'window',
+      submenu: mac
+        ? [
+            { role: 'minimize', label: tr('desktop.menu.minimize') },
+            { role: 'zoom', label: tr('desktop.menu.zoom') },
+            { type: 'separator' },
+            { role: 'front', label: tr('desktop.menu.bringAllToFront') },
+          ]
+        : [
+            { role: 'minimize', label: tr('desktop.menu.minimize') },
+            { role: 'close', label: tr('desktop.menu.close') },
+          ],
+    },
+    {
+      label: tr('desktop.menu.help'),
       role: 'help',
-      submenu: [{ label: 'Annie 3D website', click: () => void shell.openExternal(ORIGIN) }],
+      submenu: [
+        { label: tr('desktop.menu.website', { app: name }), click: () => void shell.openExternal(ORIGIN) },
+      ],
     },
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
@@ -356,8 +411,13 @@ ipcMain.handle(
     arch: process.arch,
     webVersion: DEV_URL ? 'dev' : pack.version,
     mode: DEV_URL ? 'dev' : 'pack',
+    locale: locale(),
   }),
 );
+// The person picked a language in the page: menus and dialogs follow, now and at the next start.
+ipcMain.on('app:setLocale', (_e, code: unknown) => {
+  if (setLocale(code) && app.isReady()) buildMenu();
+});
 ipcMain.handle('updates:get', () => updateState());
 ipcMain.handle('updates:check', async () => {
   lastWebCheck = Date.now();
@@ -380,19 +440,29 @@ async function pickFiles() {
   const w = BrowserWindow.getFocusedWindow();
   const opts = {
     properties: ['openFile', 'multiSelections'] as ('openFile' | 'multiSelections')[],
-    filters: [{ name: 'Annie 3D board', extensions: ['annie3d'] }],
+    filters: [{ name: t()('desktop.doc.fileType'), extensions: ['annie3d'] }],
   };
   const r = w ? await dialog.showOpenDialog(w, opts) : await dialog.showOpenDialog(opts);
   for (const p of r.filePaths) void openDocument(p);
 }
 const winOf = (e: Electron.IpcMainInvokeEvent) => BrowserWindow.fromWebContents(e.sender);
+/** Board-file errors reach the page in the shell's language (the shared ZIP reader writes English). */
+const localized = async <T>(run: () => T | Promise<T>): Promise<T> => {
+  try {
+    return await run();
+  } catch (e) {
+    throw e instanceof ZipError ? new ZipError(zipErrorText(e.message)) : e;
+  }
+};
 ipcMain.handle('docs:read', (e, id: string) => docs.read(id, e.sender));
 ipcMain.handle('docs:save', (e, id: string, p: DocPayload, o: { as: boolean; suggestedName: string }) =>
-  docs.save(id, p, o, e.sender),
+  localized(() => docs.save(id, p, o, e.sender)),
 );
-ipcMain.handle('docs:saveCopy', (e, p: DocPayload, name: string) => docs.saveCopy(p, name, winOf(e)));
-ipcMain.handle('docs:stash', (e, id: string, p: DocPayload) => docs.stash(id, p, e.sender));
-ipcMain.handle('docs:pack', (e, id: string, p: DocPayload) => docs.pack(id, p, e.sender));
+ipcMain.handle('docs:saveCopy', (e, p: DocPayload, name: string) =>
+  localized(() => docs.saveCopy(p, name, winOf(e))),
+);
+ipcMain.handle('docs:stash', (e, id: string, p: DocPayload) => localized(() => docs.stash(id, p, e.sender)));
+ipcMain.handle('docs:pack', (e, id: string, p: DocPayload) => localized(() => docs.pack(id, p, e.sender)));
 ipcMain.on('docs:setDirty', (e, id: string, dirty: boolean) => docs.setDirty(id, !!dirty, e.sender));
 ipcMain.on('docs:close', (e, id: string) => docs.close(id, e.sender));
 ipcMain.on('docs:open', () => void pickFiles());

@@ -1,19 +1,18 @@
 import { FREE_RUN_CREDITS } from '@annie3d/contracts';
 import { useEffect, useRef } from 'react';
+import { useT } from '../i18n';
 import { showOneTap, signInWithGoogle } from '../lib/auth';
 import { useUi } from '../store/ui';
 
 const COPY = {
-  run: {
-    title: 'Sign in to run it',
-    body: `Your first full run is free (${FREE_RUN_CREDITS} credits). Your board comes with you.`,
-  },
-  share: { title: 'Sign in to share', body: 'Share links need a saved board. Your board comes with you.' },
-  save: { title: 'Sign in to keep this board', body: 'Guest boards live only in this browser.' },
+  run: { title: 'signin.run.title', body: 'signin.run.body' },
+  share: { title: 'signin.share.title', body: 'signin.share.body' },
+  save: { title: 'signin.save.title', body: 'signin.save.body' },
 } as const;
 
 /** Modal shown when a guest tries a paid or cloud action (F11: sign in at the moment of value). */
 export function SignInPrompt() {
+  const t = useT();
   const prompt = useUi((s) => s.signInPrompt);
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -34,8 +33,8 @@ export function SignInPrompt() {
       onClose={() => useUi.setState({ signInPrompt: null })}
       data-testid="signin-prompt"
     >
-      <h2 id="signin-title">{copy.title}</h2>
-      <p>{copy.body}</p>
+      <h2 id="signin-title">{t(copy.title)}</h2>
+      <p>{copy.body === 'signin.run.body' ? t(copy.body, { count: FREE_RUN_CREDITS }) : t(copy.body)}</p>
       <button
         type="button"
         className="btn-google"
@@ -60,10 +59,10 @@ export function SignInPrompt() {
             d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"
           />
         </svg>
-        Continue with Google
+        {t('signin.google')}
       </button>
       <button type="button" className="btn-link" onClick={() => useUi.setState({ signInPrompt: null })}>
-        Not now
+        {t('signin.notNow')}
       </button>
     </dialog>
   );

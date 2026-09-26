@@ -5,6 +5,7 @@ import { type Context, Hono } from 'hono';
 import type { AppEnv, Env } from '../env';
 import { getDb } from '../lib/db';
 import { body, httpError, uuidParam } from '../lib/http';
+import { localeOf } from '../lib/i18n';
 import { requireEditor, requireUser } from '../lib/session';
 import { loadBoard, loadGraph } from '../services/boards';
 import { workingCopyExpiry } from '../services/cleanup';
@@ -23,7 +24,7 @@ const room = (env: Env, runId: string) =>
 
 async function runDto(db: Db, runId: string): Promise<RunDto> {
   const run = await db.query.runs.findFirst({ where: (t, { eq }) => eq(t.id, runId) });
-  if (!run) throw httpError(404, 'not_found', 'Run not found');
+  if (!run) throw httpError(404, 'not_found', 'api.run.notFound');
   const steps = await db.select().from(runSteps).where(eq(runSteps.runId, runId)).orderBy(asc(runSteps.seq));
   return {
     id: run.id,
@@ -53,7 +54,7 @@ async function ownRun(c: Context<AppEnv>, runId: string) {
   const run = await db.query.runs.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, runId), eq(t.workspaceId, c.get('workspaceId')!)),
   });
-  if (!run) throw httpError(404, 'not_found', 'Run not found');
+  if (!run) throw httpError(404, 'not_found', 'api.run.notFound');
   return run;
 }
 
@@ -67,7 +68,7 @@ async function preflight(c: Context<AppEnv>, boardId: string, idempotencyKey: st
   const user = c.get('user')!;
   const ws = c.get('workspaceId')!;
   const lim = await c.env.RL_RUN.limit({ key: user.id });
-  if (!lim.success) throw httpError(429, 'rate_limited', 'Too many runs. Wait a minute.');
+  if (!lim.success) throw httpError(429, 'rate_limited', 'api.run.tooMany');
   const db = dbIn ?? getDb(c);
   const existing = await db.query.runs.findFirst({
     where: (t, { and, eq }) => and(eq(t.workspaceId, ws), eq(t.idempotencyKey, idempotencyKey)),
@@ -77,8 +78,7 @@ async function preflight(c: Context<AppEnv>, boardId: string, idempotencyKey: st
   const active = await db.query.runs.findFirst({
     where: (t, { and, eq, inArray }) => and(eq(t.boardId, boardId), inArray(t.status, ['queued', 'running'])),
   });
-  if (active)
-    throw httpError(409, 'conflict', 'A run is already in progress on this board', { runId: active.id });
+  if (active) throw httpError(409, 'conflict', 'api.run.alreadyRunning', { runId: active.id });
   return { db, existing: null };
 }
 
@@ -131,7 +131,8 @@ async function createRun(
       estimatedCredits: estimate,
       idempotencyKey: r.idempotencyKey,
       usedFreeRun: free.length > 0,
-      params: { ...(r.params ?? {}), ...(simSpeed ? { simSpeed } : {}) },
+      // The run speaks the language of the request that started it (step messages, stages).
+      params: { ...(r.params ?? {}), locale: localeOf(c.req.raw), ...(simSpeed ? { simSpeed } : {}) },
     });
     await tx.insert(runSteps).values(
       r.steps.map((p, i) => ({
@@ -147,7 +148,7 @@ async function createRun(
       const acc = await tx.execute<{ a: number }>(
         sql`SELECT (balance - reserved)::int AS a FROM credit_accounts WHERE workspace_id = ${ws}`,
       );
-      throw httpError(402, 'insufficient_credits', 'Not enough credits for this run', {
+      throw httpError(402, 'insufficient_credits', 'api.run.notEnoughCredits', {
         needed: estimate,
         available: acc.rows[0]?.a ?? 0,
       });
@@ -196,13 +197,13 @@ runRoutes.post('/api/boards/:boardId/runs', requireEditor, async (c) => {
   const { db, existing } = await preflight(c, boardId, req.idempotencyKey);
   if (existing) return c.json(await runDto(db, existing));
   const { graph } = await loadGraph(db, boardId);
-  if (req.nodeId && !graph.nodes.has(req.nodeId)) throw httpError(404, 'not_found', 'Node not found');
+  if (req.nodeId && !graph.nodes.has(req.nodeId)) throw httpError(404, 'not_found', 'api.board.nodeNotFound');
   const full = (await planRun(db, graph, req.nodeId, req.scope)).filter((p) => NODE_DEFS[p.kind].runnable);
-  if (!full.length) throw httpError(400, 'bad_request', 'Nothing to run: add a runnable node');
+  if (!full.length) throw httpError(400, 'bad_request', 'api.run.nothingToRun');
   // Cached steps are not scheduled: the plan already knows nothing upstream of them re-runs,
   // so running them would only repeat lookups (15 steps → 3 after a one-node edit).
   const plan = full.filter((p) => !p.cached);
-  if (!plan.length) throw httpError(409, 'conflict', 'Everything is up to date', { upToDate: true });
+  if (!plan.length) throw httpError(409, 'conflict', 'api.run.upToDate', { upToDate: true });
   const runId = await createRun(c, db, {
     boardId,
     kind: 'graph',
@@ -227,15 +228,15 @@ runRoutes.post('/api/boards/:boardId/nodes/:nodeId/edits', requireEditor, async 
   const node = await db.query.boardNodes.findFirst({
     where: (t, { and, eq, isNull }) => and(eq(t.id, nodeId), eq(t.boardId, boardId), isNull(t.deletedAt)),
   });
-  if (!node) throw httpError(404, 'not_found', 'Node not found');
+  if (!node) throw httpError(404, 'not_found', 'api.board.nodeNotFound');
   if (node.kind !== 'model3d' && node.kind !== 'upload3d')
-    throw httpError(400, 'bad_request', 'Region edits apply to 3D model nodes');
+    throw httpError(400, 'bad_request', 'api.run.editNeedsModel');
   const base = await db.query.nodeVersions.findFirst({
     where: (t, { and, eq }) => and(eq(t.id, req.baseVersionId), eq(t.nodeId, nodeId)),
   });
-  if (!base) throw httpError(404, 'not_found', 'Version not found on this node');
+  if (!base) throw httpError(404, 'not_found', 'api.run.versionNotOnNode');
   const faces = [...new Set(req.selection.faces)].sort((a, b) => a - b);
-  if (!faces.length) throw httpError(400, 'bad_request', 'Select a region first');
+  if (!faces.length) throw httpError(400, 'bad_request', 'api.run.selectRegion');
   const runId = crypto.randomUUID();
   const facesKey = `${c.env.R2_KEY_PREFIX}ws/${c.get('workspaceId')}/edits/${runId}.u32`;
   await c.env.ARTIFACTS.put(facesKey, new Uint32Array(faces).buffer, {
@@ -281,7 +282,7 @@ runRoutes.post('/api/runs/:runId/cancel', requireEditor, async (c) => {
 /** WebSocket of run events. Authorised here, then handed to the run's Durable Object. */
 runRoutes.get('/api/runs/:runId/events', requireUser, async (c) => {
   if (c.req.header('upgrade') !== 'websocket')
-    throw httpError(426 as 400, 'bad_request', 'Expected a WebSocket upgrade');
+    throw httpError(426 as 400, 'bad_request', 'api.http.expectedWebSocket');
   const run = await ownRun(c, uuidParam(c, 'runId'));
   return room(c.env, run.id).fetch(c.req.raw);
 });

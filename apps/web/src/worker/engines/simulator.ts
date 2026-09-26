@@ -7,6 +7,7 @@ import type {
   NodeKind,
 } from '@annie3d/contracts';
 import { FIXTURE_MANIFEST, FIXTURE_VERSION, type FixtureProduct } from '@annie3d/fixtures';
+import { type MessageKey, type Translator, tDynamic } from '../lib/i18n';
 
 /**
  * Deterministic simulator for every runnable node kind (engine plug point, P5).
@@ -16,19 +17,37 @@ import { FIXTURE_MANIFEST, FIXTURE_VERSION, type FixtureProduct } from '@annie3d
  *
  * Test hooks: a prompt containing `#fail` fails the main gate; `#slow` triples the duration.
  */
-const STAGES: Record<string, string[]> = {
+const STAGES: Partial<Record<NodeKind, MessageKey[]>> = {
   model3d: [
-    'Reading photos',
-    'Segmenting product',
-    'Estimating shape',
-    'Building mesh',
-    'Baking textures',
-    'Checking silhouette',
+    'api.stage.model3d.readingPhotos',
+    'api.stage.model3d.segmenting',
+    'api.stage.model3d.estimatingShape',
+    'api.stage.model3d.buildingMesh',
+    'api.stage.model3d.bakingTextures',
+    'api.stage.model3d.checkingSilhouette',
   ],
-  stage: ['Reading brief', 'Blocking the set', 'Lighting', 'Placing product', 'Test render'],
-  packshot: ['Framing cameras', 'Rendering front', 'Rendering angles', 'Denoising'],
-  adVideo: ['Storyboard', 'Camera moves', 'Rendering frames', 'Adding headline', 'Mixing music', 'Encoding'],
-  export: ['Packaging', 'Validating glTF', 'Writing files'],
+  stage: [
+    'api.stage.stage.readingBrief',
+    'api.stage.stage.blockingSet',
+    'api.stage.stage.lighting',
+    'api.stage.stage.placingProduct',
+    'api.stage.stage.testRender',
+  ],
+  packshot: [
+    'api.stage.packshot.framing',
+    'api.stage.packshot.renderingFront',
+    'api.stage.packshot.renderingAngles',
+    'api.stage.packshot.denoising',
+  ],
+  adVideo: [
+    'api.stage.adVideo.storyboard',
+    'api.stage.adVideo.cameraMoves',
+    'api.stage.adVideo.renderingFrames',
+    'api.stage.adVideo.addingHeadline',
+    'api.stage.adVideo.mixingMusic',
+    'api.stage.adVideo.encoding',
+  ],
+  export: ['api.stage.export.packaging', 'api.stage.export.validating', 'api.stage.export.writing'],
 };
 const SECONDS: Record<string, number> = { model3d: 8, stage: 5, packshot: 4, adVideo: 9, export: 2 };
 const PRODUCTS: FixtureProduct[] = ['serum', 'headphones', 'ring'];
@@ -47,6 +66,8 @@ export interface SimulatorOptions {
   /** Multiplies simulated durations (tests use ~0.05). */
   speed: number;
   readFixture(key: string): Promise<ArrayBuffer | null>;
+  /** Language of progress stages and failure messages: the run's. */
+  t: Translator;
 }
 
 /** Which rendered product this node "produces": inherited from inputs, else from look/motion, else hashed. */
@@ -84,6 +105,7 @@ function sleep(ms: number, signal: AbortSignal) {
   });
 }
 
+/** A failed quality gate: `gate` is its stable id, `message` is already in the run's language. */
 export class GateFailure extends Error {
   constructor(
     public gate: string,
@@ -101,10 +123,11 @@ export function simulator(kind: NodeKind, opts: SimulatorOptions): Engine {
     version: 'sim-1',
     async run(ctx: EngineContext): Promise<EngineResult> {
       const prompt = String(ctx.settings.prompt ?? '');
-      const stages = STAGES[kind] ?? ['Working'];
+      const { t } = opts;
+      const stages = (STAGES[kind] ?? ['api.stage.working']).map((k) => t(k));
       const total = (SECONDS[kind] ?? 3) * 1000 * opts.speed * (prompt.includes('#slow') ? 3 : 1);
       if (kind === 'model3d' && !ctx.inputs.some((i) => i.type === 'image' || i.text)) {
-        throw new GateFailure('inputs', 'Add a product photo or a description');
+        throw new GateFailure('inputs', t('api.run.needsPhotoOrText'));
       }
       for (let i = 0; i < stages.length; i++) {
         await ctx.progress(i / stages.length, stages[i]!);
@@ -117,15 +140,18 @@ export function simulator(kind: NodeKind, opts: SimulatorOptions): Engine {
       if (failed)
         throw new GateFailure(
           failed.id,
-          `Quality gate "${failed.id}" failed`,
+          t('api.run.gateFailed', { gate: gateName(t, failed.id) }),
           failed.value,
           failed.threshold,
         );
-      await ctx.progress(1, 'Done');
+      await ctx.progress(1, t('api.stage.done'));
       return { outputs, gates, meta: { simulator: true, product } };
     },
   };
 }
+
+/** A gate's name for people (`web:bytes` → the `bytes` check), or its id when unnamed. */
+export const gateName = (t: Translator, id: string) => tDynamic(t, `api.gate.${id.split(':').pop()}`, id);
 
 export function gatesFor(kind: NodeKind, product: FixtureProduct, prompt: string): EngineResult['gates'] {
   const fail = prompt.includes('#fail');

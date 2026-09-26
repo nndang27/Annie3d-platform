@@ -22,6 +22,7 @@ import {
 } from '@annie3d/contracts';
 import type { DocCommand, DocFile, DocPayload } from '@annie3d/contracts/desktop';
 import { app, type BrowserWindow, dialog } from 'electron';
+import { t, zipErrorText } from './i18n';
 
 /**
  * `.annie3d` files as documents, one window each (draw.io desktop, Sketch): open, edit, Save
@@ -92,7 +93,7 @@ const fileRange =
     try {
       const b = new Uint8Array(length);
       const { bytesRead } = await fh.read(b, 0, length, offset);
-      if (bytesRead !== length) throw new ZipError('The file is damaged');
+      if (bytesRead !== length) throw new ZipError(t()('desktop.file.damaged'));
       return b;
     } finally {
       await fh.close();
@@ -106,7 +107,7 @@ async function index(path: string) {
   const entries = await readZipIndex(read, size);
   const manifest = await readManifestText(read, entries, inflate);
   const parsed = BoardFileManifest.safeParse(JSON.parse(manifest));
-  if (!parsed.success) throw new ZipError('Not an Annie 3D file (or a newer version)');
+  if (!parsed.success) throw new ZipError(t()('desktop.file.notBoardOrNewer'));
   const assets = new Map<string, Asset>();
   for (const e of entries.values())
     if (e.name !== BOARD_FILE_MANIFEST_NAME)
@@ -144,7 +145,7 @@ export async function openDocument(
   }
   const d: Doc = {
     id: randomUUID(),
-    name: path ? basename(path) : 'Untitled.annie3d',
+    name: path ? basename(path) : t()('desktop.doc.untitled'),
     path,
     win: null,
     dirty: false,
@@ -160,9 +161,14 @@ export async function openDocument(
       Object.assign(d, await index(path));
     } catch (e) {
       report({ failed: path, error: String(e) });
+      const tr = t();
       dialog.showErrorBox(
-        `“${basename(path)}” could not be opened`,
-        e instanceof ZipError || e instanceof SyntaxError ? e.message : String(e),
+        tr('desktop.open.failed', { name: basename(path) }),
+        e instanceof ZipError
+          ? zipErrorText(e.message)
+          : e instanceof SyntaxError
+            ? tr('desktop.file.invalidDescription')
+            : String(e),
       );
       return false;
     }
@@ -178,13 +184,14 @@ export async function openDocument(
   win.on('close', (e) => {
     if (!d.dirty || d.closing) return;
     e.preventDefault();
+    const tr = t();
     const choice = dialog.showMessageBoxSync(win, {
       type: 'warning',
-      buttons: ['Save', 'Don’t Save', 'Cancel'],
+      buttons: [tr('common.save'), tr('desktop.close.dontSave'), tr('common.cancel')],
       defaultId: 0,
       cancelId: 2,
-      message: `Do you want to save the changes you made to “${d.name}”?`,
-      detail: 'Your changes will be lost if you don’t save them.',
+      message: tr('desktop.close.message', { name: d.name }),
+      detail: tr('desktop.close.detail'),
     });
     if (choice === 0) command(d, 'saveAndClose');
     else if (choice === 1) {
@@ -369,19 +376,22 @@ const ASSET_NAME = /^assets\/[A-Za-z0-9._-]{1,120}$/;
 
 /** Checks a payload from the page before anything is written. */
 function validate(payload: DocPayload, source: Doc | null) {
+  const tr = t();
   if (typeof payload?.manifest !== 'string' || payload.manifest.length > BOARD_FILE_MAX_MANIFEST)
-    throw new ZipError('The board description is too large');
-  if (!BoardFileManifest.safeParse(JSON.parse(payload.manifest)).success) throw new ZipError('Invalid board');
+    throw new ZipError(tr('desktop.file.descriptionTooLarge'));
+  if (!BoardFileManifest.safeParse(JSON.parse(payload.manifest)).success)
+    throw new ZipError(tr('desktop.file.invalidBoard'));
   const seen = new Set<string>();
   let total = 0;
   for (const f of payload.files) {
-    if (!ASSET_NAME.test(f.path) || seen.has(f.path)) throw new ZipError(`Invalid file ${f.path}`);
+    if (!ASSET_NAME.test(f.path) || seen.has(f.path))
+      throw new ZipError(tr('desktop.file.invalidAsset', { name: f.path }));
     seen.add(f.path);
     const size = f.bytes ? f.bytes.byteLength : source?.assets.get(f.path)?.size;
-    if (size === undefined) throw new ZipError(`Missing ${f.path}`);
+    if (size === undefined) throw new ZipError(tr('desktop.file.missingAsset', { name: f.path }));
     total += size;
   }
-  if (total > BOARD_FILE_MAX_BYTES) throw new ZipError('The board is larger than 2 GB');
+  if (total > BOARD_FILE_MAX_BYTES) throw new ZipError(tr('desktop.file.boardTooLarge'));
 }
 
 async function writeAll(out: WriteStream, chunk: Uint8Array) {
@@ -462,7 +472,7 @@ async function askPath(win: BrowserWindow | null, suggestedName: string, near: s
   const name = suggestedName.toLowerCase().endsWith('.annie3d') ? suggestedName : `${suggestedName}.annie3d`;
   const opts = {
     defaultPath: join(near ? dirname(near) : app.getPath('documents'), name),
-    filters: [{ name: 'Annie 3D board', extensions: ['annie3d'] }],
+    filters: [{ name: t()('desktop.doc.fileType'), extensions: ['annie3d'] }],
   };
   const r = win ? await dialog.showSaveDialog(win, opts) : await dialog.showSaveDialog(opts);
   return r.canceled || !r.filePath ? null : r.filePath;
@@ -486,7 +496,7 @@ export async function save(
 }
 
 export async function saveCopy(payload: DocPayload, suggestedName: string, win: BrowserWindow | null) {
-  if (payload.files.some((f) => !f.bytes)) throw new ZipError('Every file needs its bytes');
+  if (payload.files.some((f) => !f.bytes)) throw new ZipError(t()('desktop.file.needsBytes'));
   const target = await askPath(win, suggestedName, null);
   if (!target) return null;
   await writeBoardFile(target, payload, null);

@@ -2,6 +2,7 @@ import { Download, Film } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api/client';
 import { uploadAsset } from '../canvas/actions';
+import { useT } from '../i18n';
 import { recordReel } from '../lib/reel';
 import { useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
@@ -22,6 +23,7 @@ export function ReelDialog() {
 
 /** Top-bar entry: appears after a run finishes with results. */
 export function ReelButton() {
+  const t = useT();
   const runId = useRuns((s) => s.lastFinishedRunId);
   const running = useRuns((s) => s.activeRunId !== null);
   if (!runId || running) return null;
@@ -30,14 +32,15 @@ export function ReelButton() {
       type="button"
       onClick={() => useUi.setState({ dialog: { type: 'reel', runId } })}
       data-testid="make-reel"
-      title="A 9:16 video: the ad on top, how it was made below"
+      title={t('dialog.reel.hint')}
     >
-      <Film size={16} aria-hidden="true" /> <span className="lbl">Process reel</span>
+      <Film size={16} aria-hidden="true" /> <span className="lbl">{t('dialog.reel.button')}</span>
     </button>
   );
 }
 
 function ReelBody({ runId, onClose }: { runId: string; onClose: () => void }) {
+  const t = useT();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [state, setState] = useState<'idle' | 'recording' | 'saving' | 'done' | 'error'>('idle');
   const [progress, setProgress] = useState(0);
@@ -75,8 +78,8 @@ function ReelBody({ runId, onClose }: { runId: string; onClose: () => void }) {
   };
   return (
     <>
-      <h2 id="reel-title">Process reel</h2>
-      <p>A 9:16 video for Reels and TikTok: your ad on top, how Annie 3D made it below.</p>
+      <h2 id="reel-title">{t('dialog.reel.title')}</h2>
+      <p>{t('dialog.reel.intro')}</p>
       <div className="reel-stage">
         {state === 'done' && url ? (
           // biome-ignore lint/a11y/useMediaCaption: the reel's audio is the ad's music, no speech.
@@ -86,17 +89,22 @@ function ReelBody({ runId, onClose }: { runId: string; onClose: () => void }) {
             ref={canvasRef}
             width={540}
             height={960}
-            aria-label="Reel preview"
+            aria-label={t('dialog.reel.preview')}
             data-testid="reel-canvas"
           />
         )}
       </div>
       {state === 'recording' && (
         <p className="muted small" aria-live="polite" data-testid="reel-progress">
-          Recording… {Math.round(progress * 100)}%
+          {t('dialog.reel.recording', {
+            percent: t.number(Math.round(progress * 100) / 100, {
+              style: 'percent',
+              maximumFractionDigits: 0,
+            }),
+          })}
         </p>
       )}
-      {state === 'saving' && <p className="muted small">Saving…</p>}
+      {state === 'saving' && <p className="muted small">{t('dialog.reel.saving')}</p>}
       {state === 'error' && error && (
         <p className="bad small" data-testid="reel-error">
           {error}
@@ -109,7 +117,7 @@ function ReelBody({ runId, onClose }: { runId: string; onClose: () => void }) {
           onClick={onClose}
           disabled={state === 'recording' || state === 'saving'}
         >
-          {state === 'done' ? 'Done' : 'Cancel'}
+          {state === 'done' ? t('common.done') : t('common.cancel')}
         </button>
         {state === 'done' && url ? (
           <a
@@ -118,7 +126,7 @@ function ReelBody({ runId, onClose }: { runId: string; onClose: () => void }) {
             download={name}
             data-testid="reel-download"
           >
-            <Download size={14} aria-hidden="true" /> Download
+            <Download size={14} aria-hidden="true" /> {t('dialog.download')}
           </a>
         ) : (
           <button
@@ -128,7 +136,7 @@ function ReelBody({ runId, onClose }: { runId: string; onClose: () => void }) {
             disabled={state === 'recording' || state === 'saving'}
             data-testid="reel-record"
           >
-            {state === 'error' ? 'Try again' : 'Record reel'}
+            {state === 'error' ? t('common.retry') : t('dialog.reel.record')}
           </button>
         )}
       </div>

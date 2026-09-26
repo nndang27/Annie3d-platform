@@ -1,4 +1,5 @@
-import { creditsFor, NODE_DEFS, STARTER_META, STARTERS } from '@annie3d/contracts';
+import { creditsFor, NODE_DEFS, STARTERS } from '@annie3d/contracts';
+import type { MessageKey } from '@annie3d/i18n';
 import { useQuery } from '@tanstack/react-query';
 import { useReactFlow, useViewport } from '@xyflow/react';
 import {
@@ -6,6 +7,7 @@ import {
   Download,
   FilePlus,
   FolderOpen,
+  Languages,
   LayoutTemplate,
   LogIn,
   MoreHorizontal,
@@ -16,6 +18,7 @@ import { memo, type ReactNode, useMemo, useRef, useState } from 'react';
 import { api } from '../api/client';
 import { useMe } from '../api/me';
 import { insertStarter } from '../canvas/actions';
+import { useT } from '../i18n';
 import { signOut } from '../lib/auth';
 import { openBoardFilePicker } from '../lib/boardFile';
 import { docs, isDoc, openBoardFile, saveDocument, useDoc, webFiles, withCloud } from '../lib/doc';
@@ -23,15 +26,16 @@ import { MAX_ZOOM, MIN_ZOOM, zoomStep } from '../lib/zoom';
 import { useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
 import { toast, useUi } from '../store/ui';
+import { LanguageButton, LanguageMenu } from './LanguageMenu';
 import { Popover } from './Popover';
 import { ReelButton } from './ReelDialog';
 
 const SAVE_LABEL = {
-  saved: 'Saved',
-  saving: 'Saving…',
-  offline: 'Offline, will sync',
-  error: 'Retrying…',
-} as const;
+  saved: 'topbar.save.saved',
+  saving: 'topbar.save.saving',
+  offline: 'topbar.save.offline',
+  error: 'topbar.save.error',
+} as const satisfies Record<string, MessageKey>;
 
 /**
  * One bar across the top (not a row of floating cards): the board on the left, what to do with
@@ -39,9 +43,10 @@ const SAVE_LABEL = {
  * tool and stays behind ⌥P.
  */
 export function TopBar() {
+  const t = useT();
   return (
     <header className="topbar pill">
-      <a href="/home" className="logo-link" aria-label="Annie 3D home">
+      <a href="/home" className="logo-link" aria-label={t('topbar.home')}>
         <span className="logo-mark">A</span>
       </a>
       <Title />
@@ -62,6 +67,7 @@ export function TopBar() {
 }
 
 function Title() {
+  const t = useT();
   const title = useBoard((s) => s.title);
   const boardId = useBoard((s) => s.boardId);
   const [draft, setDraft] = useState<string | null>(null);
@@ -81,7 +87,7 @@ function Title() {
   return (
     <input
       className="title-input"
-      aria-label="Board title"
+      aria-label={t('topbar.title')}
       value={draft ?? title}
       maxLength={120}
       onFocus={() => setDraft(title)}
@@ -99,6 +105,7 @@ function Title() {
 }
 
 function SaveState() {
+  const t = useT();
   const mode = useBoard((s) => s.mode);
   const state = useBoard((s) => s.saveState);
   const doc = useDoc((s) => s.doc);
@@ -108,22 +115,29 @@ function SaveState() {
       <span
         className="save-state"
         data-state={doc.busy ? 'saving' : doc.dirty ? 'offline' : 'saved'}
-        title={doc.path ?? 'Not saved to a file yet'}
+        title={doc.path ?? t('topbar.save.noFile')}
         data-testid="doc-state"
       >
-        <span className="lbl">{doc.busy ?? (doc.dirty ? 'Edited' : doc.path ? 'Saved' : 'Not saved')}</span>
+        <span className="lbl">
+          {doc.busy ??
+            (doc.dirty
+              ? t('topbar.save.edited')
+              : doc.path
+                ? t('topbar.save.saved')
+                : t('topbar.save.notSaved'))}
+        </span>
       </span>
     );
   // A guest's board is kept in this browser: said plainly, not as a warning ("Sign in" is next to it).
   if (mode === 'guest')
     return (
-      <span className="save-state hide-sm" title="Sign in to keep it in your account">
-        Saved in this browser
+      <span className="save-state hide-sm" title={t('topbar.save.guestHint')}>
+        {t('topbar.save.guest')}
       </span>
     );
   return (
     <span className="save-state" data-state={state} data-testid="save-state">
-      <span className="lbl">{SAVE_LABEL[state]}</span>
+      <span className="lbl">{t(SAVE_LABEL[state])}</span>
     </span>
   );
 }
@@ -133,7 +147,10 @@ function SaveState() {
  * in their own windows, new file. Website: download the board, open a file into it.
  */
 function FileMenu() {
+  const t = useT();
   const [menu, setMenu] = useState<DOMRect | null>(null);
+  // Phones hide the top bar's language button: the same list opens from here.
+  const [langMenu, setLangMenu] = useState<DOMRect | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const inDoc = useDoc((s) => !!s.doc);
   const item = (label: string, icon: ReactNode, kbd: string | null, run: () => void, testId?: string) => (
@@ -155,11 +172,14 @@ function FileMenu() {
       <button
         ref={trigger}
         type="button"
-        aria-label="Board file"
+        aria-label={t('topbar.file.menu')}
         aria-haspopup="menu"
         aria-expanded={!!menu}
-        title="Board file"
-        onClick={(e) => setMenu(menu ? null : e.currentTarget.getBoundingClientRect())}
+        title={t('topbar.file.menu')}
+        onClick={(e) => {
+          setLangMenu(null);
+          setMenu(menu ? null : e.currentTarget.getBoundingClientRect());
+        }}
         data-testid="file-menu"
       >
         <MoreHorizontal size={16} aria-hidden="true" />
@@ -169,14 +189,14 @@ function FileMenu() {
           anchor={menu}
           trigger={trigger.current}
           onClose={() => setMenu(null)}
-          label="Board file"
+          label={t('topbar.file.menu')}
           testId="file-menu-popover"
         >
           <div role="menu">
             {docs || webFiles ? (
               <>
                 {item(
-                  inDoc ? 'Save' : 'Save as file…',
+                  inDoc ? t('topbar.file.save') : t('topbar.file.saveAsFile'),
                   <Save size={15} aria-hidden="true" />,
                   '⌘S',
                   () => void saveDocument(),
@@ -184,23 +204,29 @@ function FileMenu() {
                 )}
                 {inDoc &&
                   item(
-                    'Save as…',
+                    t('topbar.file.saveAs'),
                     <Save size={15} aria-hidden="true" />,
                     '⇧⌘S',
                     () => void saveDocument(true),
                     'file-save-as',
                   )}
-                {item('Open…', <FolderOpen size={15} aria-hidden="true" />, '⌘O', openBoardFile, 'file-open')}
+                {item(
+                  t('topbar.file.open'),
+                  <FolderOpen size={15} aria-hidden="true" />,
+                  '⌘O',
+                  openBoardFile,
+                  'file-open',
+                )}
                 {docs &&
                   item(
-                    'New board file',
+                    t('topbar.file.new'),
                     <FilePlus size={15} aria-hidden="true" />,
                     '⌘N',
                     () => docs?.create(),
                     'file-new',
                   )}
                 {item(
-                  'Import into this board…',
+                  t('topbar.file.import'),
                   <Download size={15} aria-hidden="true" />,
                   null,
                   openBoardFilePicker,
@@ -210,14 +236,14 @@ function FileMenu() {
             ) : (
               <>
                 {item(
-                  'Download board (.annie3d)',
+                  t('topbar.file.download'),
                   <Download size={15} aria-hidden="true" />,
                   '⌘S',
                   () => void saveDocument(),
                   'file-export',
                 )}
                 {item(
-                  'Open board file…',
+                  t('topbar.file.openFile'),
                   <FolderOpen size={15} aria-hidden="true" />,
                   '⌘O',
                   openBoardFilePicker,
@@ -225,14 +251,30 @@ function FileMenu() {
                 )}
               </>
             )}
+            {item(
+              t('common.language'),
+              <Languages size={15} aria-hidden="true" />,
+              null,
+              () => setLangMenu(trigger.current?.getBoundingClientRect() ?? null),
+              'file-language',
+            )}
           </div>
         </Popover>
+      )}
+      {langMenu && (
+        <LanguageMenu
+          anchor={langMenu}
+          align="start"
+          trigger={trigger.current}
+          onClose={() => setLangMenu(null)}
+        />
       )}
     </>
   );
 }
 
 function Starters() {
+  const t = useT();
   const [menu, setMenu] = useState<DOMRect | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const rf = useReactFlow();
@@ -256,9 +298,9 @@ function Starters() {
         aria-expanded={!!menu}
         onClick={(e) => setMenu(menu ? null : e.currentTarget.getBoundingClientRect())}
         data-testid="starters-button"
-        aria-label="Templates"
+        aria-label={t('topbar.templates')}
       >
-        <LayoutTemplate size={16} aria-hidden="true" /> <span className="lbl">Templates</span>
+        <LayoutTemplate size={16} aria-hidden="true" /> <span className="lbl">{t('topbar.templates')}</span>
         <ChevronDown size={14} aria-hidden="true" className="lbl" />
       </button>
       {menu && (
@@ -266,7 +308,7 @@ function Starters() {
           anchor={menu}
           trigger={trigger.current}
           onClose={() => setMenu(null)}
-          label="Templates"
+          label={t('topbar.templates')}
           testId="starters-menu"
         >
           <div role="menu" className="template-menu">
@@ -278,9 +320,9 @@ function Starters() {
                 onClick={() => add(id)}
                 data-testid={`starter-${id}`}
               >
-                <span className="template-cat">{STARTER_META[id].vertical}</span>
-                <b>{STARTER_META[id].title}</b>
-                <span className="template-desc">{STARTER_META[id].description}</span>
+                <span className="template-cat">{t(`starter.${id}.vertical`)}</span>
+                <b>{t(`starter.${id}.title`)}</b>
+                <span className="template-desc">{t(`starter.${id}.description`)}</span>
               </button>
             ))}
           </div>
@@ -292,6 +334,7 @@ function Starters() {
 
 /** Run all and its cost. The client sum is a hint; the server estimate (with cache hits) is shown before charging. */
 function RunAll() {
+  const t = useT();
   const nodes = useBoard((s) => s.graph.nodes);
   const mode = useBoard((s) => s.mode);
   const boardId = useBoard((s) => s.boardId);
@@ -330,10 +373,10 @@ function RunAll() {
       <div className="group">
         <span className="running-dot" aria-hidden="true" />
         <span className="running-label" aria-live="polite">
-          Running…
+          {t('topbar.running')}
         </span>
         <button type="button" onClick={() => void cancel()} data-testid="cancel-run">
-          Cancel
+          {t('common.cancel')}
         </button>
       </div>
     );
@@ -345,13 +388,14 @@ function RunAll() {
       className="primary"
       onClick={onClick}
       data-testid="run-all"
-      title="Unchanged nodes are free; the exact cost is shown before you confirm"
+      title={t('topbar.runAllHint')}
     >
       {upToDate ? (
-        'Up to date'
+        t('topbar.upToDate')
       ) : (
         <>
-          Run all<span className="cost lbl">{cost} credits</span>
+          {t('topbar.runAll')}
+          <span className="cost lbl">{t('common.credits', { count: cost })}</span>
         </>
       )}
     </button>
@@ -359,13 +403,15 @@ function RunAll() {
 }
 
 const Zoom = memo(function Zoom() {
+  const t = useT();
   const { zoom } = useViewport();
   const rf = useReactFlow();
+  const percent = t.number(Math.round(zoom * 100) / 100, { style: 'percent', maximumFractionDigits: 0 });
   return (
     <>
       <button
         type="button"
-        aria-label="Zoom out"
+        aria-label={t('topbar.zoomOut')}
         onClick={() => zoomStep(rf, -1)}
         disabled={zoom <= MIN_ZOOM + 0.001}
       >
@@ -373,17 +419,17 @@ const Zoom = memo(function Zoom() {
       </button>
       <button
         type="button"
-        aria-label={`${Math.round(zoom * 100)}% zoom, fit to screen`}
-        title="Fit to screen (Shift+1)"
+        aria-label={t('topbar.zoomLevel', { percent })}
+        title={t('topbar.fitToScreen')}
         onClick={() => void rf.fitView({ duration: 250, padding: 0.1 })}
         className="zoom-level"
         data-testid="zoom-level"
       >
-        {Math.round(zoom * 100)}%
+        {percent}
       </button>
       <button
         type="button"
-        aria-label="Zoom in"
+        aria-label={t('topbar.zoomIn')}
         onClick={() => zoomStep(rf, 1)}
         disabled={zoom >= MAX_ZOOM - 0.001}
       >
@@ -394,11 +440,12 @@ const Zoom = memo(function Zoom() {
 });
 
 function Account() {
+  const t = useT();
   const me = useMe();
   const mode = useBoard((s) => s.mode);
   const share = () =>
     isDoc()
-      ? toast('A board file is shared as the file: send the .annie3d file itself.')
+      ? toast(t('topbar.shareFile'))
       : mode === 'guest'
         ? useUi.setState({ signInPrompt: { reason: 'share' } })
         : useUi.setState({ dialog: { type: 'share' } });
@@ -410,9 +457,9 @@ function Account() {
           className="credits"
           onClick={() => useUi.setState({ dialog: { type: 'billing' } })}
           data-testid="credits"
-          title="Credits and plan"
+          title={t('topbar.creditsHint')}
         >
-          {me.data.credits.balance} credits
+          {t('common.credits', { count: me.data.credits.balance })}
         </button>
       ) : (
         <button
@@ -422,11 +469,12 @@ function Account() {
           data-testid="sign-in"
         >
           <LogIn size={16} aria-hidden="true" />
-          Sign in
+          {t('topbar.signIn')}
         </button>
       )}
-      <button type="button" onClick={share} data-testid="share" aria-label="Share">
-        <Share2 size={16} aria-hidden="true" /> <span className="lbl">Share</span>
+      <LanguageButton />
+      <button type="button" onClick={share} data-testid="share" aria-label={t('topbar.share')}>
+        <Share2 size={16} aria-hidden="true" /> <span className="lbl">{t('topbar.share')}</span>
       </button>
       {me.data && (
         <AccountMenu name={me.data.user.name} email={me.data.user.email} image={me.data.user.image} />
@@ -436,6 +484,7 @@ function Account() {
 }
 
 function AccountMenu({ name, email, image }: { name: string; email: string; image: string | null }) {
+  const t = useT();
   const [menu, setMenu] = useState<DOMRect | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   return (
@@ -444,7 +493,7 @@ function AccountMenu({ name, email, image }: { name: string; email: string; imag
         ref={trigger}
         type="button"
         className="avatar-btn"
-        aria-label={`Account: ${name}`}
+        aria-label={t('topbar.accountOf', { name })}
         aria-haspopup="menu"
         aria-expanded={!!menu}
         onClick={(e) => setMenu(menu ? null : e.currentTarget.getBoundingClientRect())}
@@ -462,10 +511,11 @@ function AccountMenu({ name, email, image }: { name: string; email: string; imag
           align="end"
           trigger={trigger.current}
           onClose={() => setMenu(null)}
-          label="Account"
+          label={t('topbar.account')}
           testId="account-menu"
         >
-          <div className="account-head">
+          {/* The person's own name and email: content, never translated (HTML translate="no"). */}
+          <div className="account-head" translate="no">
             <b>{name}</b>
             <span className="muted small">{email}</span>
           </div>
@@ -478,10 +528,10 @@ function AccountMenu({ name, email, image }: { name: string; email: string; imag
                 useUi.setState({ dialog: { type: 'billing' } });
               }}
             >
-              Credits & plan
+              {t('topbar.creditsAndPlan')}
             </button>
             <button type="button" role="menuitem" onClick={() => void signOut()} data-testid="sign-out">
-              Sign out
+              {t('topbar.signOut')}
             </button>
           </div>
         </Popover>

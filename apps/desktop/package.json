@@ -2,7 +2,7 @@
   "name": "@annie3d/desktop",
   "productName": "Annie 3D",
   "private": true,
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Annie 3D desktop app (Electron shell around the web app)",
   "author": {
     "name": "Annie 3D",
@@ -29,6 +29,7 @@
     "typescript": "~5.9.3"
   },
   "dependencies": {
+    "@annie3d/i18n": "workspace:*",
     "electron-updater": "^6.8.9"
   }
 }

@@ -44,7 +44,52 @@ function violations(css: string) {
   return found;
 }
 
+/**
+ * Safari (WebKit) repaints the whole zoomed board for every frame of a transition on it (13
+ * frames over 25 ms, up to 68 ms, in a pointer sweep; 0 in Chrome). An element that animates on
+ * the board sits on its own layer (`will-change: opacity`, see app.css) so it does not. SVG parts
+ * cannot have a layer (wires: a stroke colour, measured as minor), and the progress bar only moves
+ * during a run.
+ */
+const TRANSITION_EXEMPT = new Set([
+  '.wire .react-flow__edge-path',
+  '.wire-delete circle',
+  '.node-preview .progress > i',
+]);
+const selectorsOf = (raw: string) =>
+  raw
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .split(',')
+    .map((x) => x.trim().replace(/\s+/g, ' '))
+    .filter(Boolean);
+
+function transitionsWithoutLayer(css: string) {
+  const layered = new Set<string>();
+  const animated: string[] = [];
+  for (const m of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const body = m[2]!;
+    if (/will-change\s*:\s*[^;]*opacity/.test(body)) for (const sel of selectorsOf(m[1]!)) layered.add(sel);
+    const tr = body.match(/(?:^|;|\s)transition\s*:\s*([^;]+)/);
+    if (tr && !/^none\b/.test(tr[1]!.trim()))
+      for (const sel of selectorsOf(m[1]!)) if (BOARD.test(sel) && !FIXED_UI.test(sel)) animated.push(sel);
+  }
+  return animated.filter((sel) => !layered.has(sel) && !TRANSITION_EXEMPT.has(sel));
+}
+
 describe('board paint', () => {
+  it('puts every transition on the board on its own layer (Safari)', () => {
+    const css = readFileSync(join(process.cwd(), 'apps/web/src/client/app.css'), 'utf8');
+    expect(transitionsWithoutLayer(css)).toEqual([]);
+    expect(transitionsWithoutLayer('.node-x .badge { transition: opacity 120ms; }')).toEqual([
+      '.node-x .badge',
+    ]);
+    expect(
+      transitionsWithoutLayer(
+        '.node-x .badge { transition: opacity 120ms; } .node-x .badge { will-change: opacity; }',
+      ),
+    ).toEqual([]);
+  });
+
   it('uses no blurred shadows, blur filters or gradients on board content', () => {
     const css = readFileSync(join(process.cwd(), 'apps/web/src/client/app.css'), 'utf8');
     expect(violations(css)).toEqual([]);

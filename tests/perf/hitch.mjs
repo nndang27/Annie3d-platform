@@ -1,12 +1,12 @@
 // Hitches ("one stall, then it continues") during zoom bursts and pointer sweeps, Chrome vs the
 // packaged desktop app, same site. Records every frame gap over 25 ms, Long Animation Frame
 // entries (what the frame spent its time on) and images loaded during the run.
-// Usage: node tests/perf/hitch.mjs [origin] [--only=chrome,app] [--reps=3]
+// Usage: node tests/perf/hitch.mjs [origin] [--only=chrome,app,webkit] [--reps=3]
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { chromium, _electron as electron } from '@playwright/test';
+import { chromium, _electron as electron, webkit } from '@playwright/test';
 import { buildIdentity, save } from './lib.mjs';
 
 const ORIGIN = process.argv.find((a) => a.startsWith('http')) ?? 'https://annie3d.nndang2701.workers.dev';
@@ -96,7 +96,36 @@ async function scenario(page) {
       }
     }
   });
-  return { size, zoom, sweep };
+  // Drag-pans on the empty board (grab and move the view), back and forth.
+  const pan = await record(page, async () => {
+    const start = await page.evaluate(() => {
+      const pane = document.querySelector('.react-flow__pane').getBoundingClientRect();
+      return { x: pane.left + 30, y: pane.top + pane.height / 2 };
+    });
+    for (let pass = 0; pass < 4; pass++) {
+      await page.mouse.move(start.x, start.y);
+      await page.mouse.down();
+      for (let i = 1; i <= 40; i++) {
+        const d = pass % 2 ? -i : i;
+        await page.mouse.move(start.x + d * 12, start.y + d * 4);
+        await page.waitForTimeout(16);
+      }
+      await page.mouse.up();
+      await page.waitForTimeout(200);
+    }
+  });
+  return { size, zoom, sweep, pan };
+}
+
+/** Safari's engine (Playwright WebKit): same scenario, frame gaps only (no LoAF in WebKit). */
+async function runWebkit() {
+  const browser = await webkit.launch({ headless: false });
+  const page = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+  await page.goto(ORIGIN);
+  const r = await scenario(page);
+  r.gpu = `webkit=${browser.version()}`;
+  await browser.close();
+  return r;
 }
 
 async function runChrome() {
@@ -184,10 +213,11 @@ for (let rep = 0; rep < REPS; rep++) {
   const run = {};
   if (only.includes('chrome')) run.chrome = await runChrome();
   if (only.includes('app')) run.app = await runApp();
+  if (only.includes('webkit')) run.webkit = await runWebkit();
   results.runs.push(run);
   for (const [k, r] of Object.entries(run))
     console.log(
-      `rep ${rep} zoom  ${line(k, r.zoom)}\nrep ${rep} sweep ${line(k, r.sweep)}${r.gpu ? `\nrep ${rep} gpu   ${r.gpu}` : ''}`,
+      `rep ${rep} zoom  ${line(k, r.zoom)}\nrep ${rep} sweep ${line(k, r.sweep)}\nrep ${rep} pan   ${line(k, r.pan)}${r.gpu ? `\nrep ${rep} gpu   ${r.gpu}` : ''}`,
     );
 }
 save(`hitch-${new URL(ORIGIN).hostname.split('.')[0]}`, results);

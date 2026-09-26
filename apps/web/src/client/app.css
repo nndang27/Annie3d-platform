@@ -2387,6 +2387,21 @@ a.btn-primary {
   cursor: pointer;
 }
 
+/* Safari (WebKit) repaints the whole zoomed board for every frame of a hover transition on it:
+   10–13 frames over 25 ms (up to 66 ms) in a pointer sweep, against 0 in Chrome. On their own
+   compositing layer the transitions stay off the board's paint: 0–2 frames. `opacity`, not
+   `transform`: Chrome keeps a will-change: transform layer at its first raster scale, which blurs
+   it when the board zooms. Measured with tests/perf/hitch.mjs --only=webkit,chrome
+   (docs/PERFORMANCE_STANDARDS.md, 2026-09-26). */
+.react-flow__handle.port,
+.react-flow__handle.port .port-tip,
+.node-preview .refs img,
+.node-preview .refs .more,
+.overlay-btn,
+.node-preview .open3d {
+  will-change: opacity;
+}
+
 /* Language picker */
 .lang-button .lbl {
   max-width: 12ch;

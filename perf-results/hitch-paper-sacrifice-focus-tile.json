@@ -1,0 +1,262 @@
+{
+  "build": {
+    "commit": "88046fb",
+    "node": "v25.5.0",
+    "date": "2026-09-26T04:22:38.254Z",
+    "platform": "darwin arm64"
+  },
+  "origin": "https://paper-sacrifice-focus-tile.trycloudflare.com",
+  "runs": [
+    {
+      "webkit": {
+        "size": {
+          "w": 1440,
+          "h": 900,
+          "dpr": 1
+        },
+        "zoom": {
+          "gaps": [],
+          "loaf": [],
+          "imgs": [
+            {
+              "at": 626,
+              "ms": 506,
+              "name": "serum/stage_poster_1024.webp"
+            },
+            {
+              "at": 626,
+              "ms": 3201,
+              "name": "serum/stage_poster_1024.webp"
+            },
+            {
+              "at": 1642,
+              "ms": 446,
+              "name": "serum/packshot_top_512.webp"
+            },
+            {
+              "at": 1642,
+              "ms": 465,
+              "name": "serum/packshot_three_quarter_512.webp"
+            },
+            {
+              "at": 1642,
+              "ms": 479,
+              "name": "serum/packshot_detail_512.webp"
+            },
+            {
+              "at": 1642,
+              "ms": 495,
+              "name": "serum/packshot_front_512.webp"
+            },
+            {
+              "at": 1642,
+              "ms": 3199,
+              "name": "serum/packshot_three_quarter_512.webp"
+            },
+            {
+              "at": 1642,
+              "ms": 3199,
+              "name": "serum/packshot_front_512.webp"
+            },
+            {
+              "at": 1642,
+              "ms": 3199,
+              "name": "serum/packshot_top_512.webp"
+            },
+            {
+              "at": 1642,
+              "ms": 3199,
+              "name": "serum/packshot_detail_512.webp"
+            },
+            {
+              "at": 1775,
+              "ms": 461,
+              "name": "headphones/packshot_detail_512.webp"
+            },
+            {
+              "at": 1775,
+              "ms": 469,
+              "name": "headphones/packshot_three_quarter_512.webp"
+            },
+            {
+              "at": 1775,
+              "ms": 469,
+              "name": "headphones/packshot_top_512.webp"
+            },
+            {
+              "at": 1775,
+              "ms": 476,
+              "name": "headphones/packshot_front_512.webp"
+            },
+            {
+              "at": 1775,
+              "ms": 3201,
+              "name": "headphones/packshot_three_quarter_512.webp"
+            },
+            {
+              "at": 1775,
+              "ms": 3201,
+              "name": "headphones/packshot_front_512.webp"
+            },
+            {
+              "at": 1775,
+              "ms": 3201,
+              "name": "headphones/packshot_top_512.webp"
+            },
+            {
+              "at": 1775,
+              "ms": 3201,
+              "name": "headphones/packshot_detail_512.webp"
+            },
+            {
+              "at": 1841,
+              "ms": 431,
+              "name": "serum/photo_512.webp"
+            },
+            {
+              "at": 1841,
+              "ms": 3201,
+              "name": "serum/photo_512.webp"
+            },
+            {
+              "at": 1875,
+              "ms": 471,
+              "name": "headphones/photo_512.webp"
+            },
+            {
+              "at": 1875,
+              "ms": 3199,
+              "name": "headphones/photo_512.webp"
+            },
+            {
+              "at": 1974,
+              "ms": 471,
+              "name": "headphones/stage_poster_1024.webp"
+            },
+            {
+              "at": 1974,
+              "ms": 3199,
+              "name": "headphones/stage_poster_1024.webp"
+            }
+          ]
+        },
+        "sweep": {
+          "gaps": [
+            {
+              "at": 3251,
+              "ms": 30
+            },
+            {
+              "at": 4193,
+              "ms": 37
+            }
+          ],
+          "loaf": [],
+          "imgs": []
+        },
+        "pan": {
+          "gaps": [],
+          "loaf": [],
+          "imgs": []
+        },
+        "gpu": "webkit=26.6"
+      }
+    },
+    {
+      "webkit": {
+        "size": {
+          "w": 1440,
+          "h": 900,
+          "dpr": 1
+        },
+        "zoom": {
+          "gaps": [
+            {
+              "at": 408,
+              "ms": 31
+            }
+          ],
+          "loaf": [],
+          "imgs": [
+            {
+              "at": 628,
+              "ms": 206,
+              "name": "serum/stage_poster_1024.webp"
+            },
+            {
+              "at": 1644,
+              "ms": 56,
+              "name": "serum/packshot_three_quarter_512.webp"
+            },
+            {
+              "at": 1644,
+              "ms": 62,
+              "name": "serum/packshot_detail_512.webp"
+            },
+            {
+              "at": 1644,
+              "ms": 65,
+              "name": "serum/packshot_top_512.webp"
+            },
+            {
+              "at": 1644,
+              "ms": 71,
+              "name": "serum/packshot_front_512.webp"
+            },
+            {
+              "at": 1776,
+              "ms": 54,
+              "name": "headphones/packshot_three_quarter_512.webp"
+            },
+            {
+              "at": 1776,
+              "ms": 55,
+              "name": "headphones/packshot_top_512.webp"
+            },
+            {
+              "at": 1776,
+              "ms": 61,
+              "name": "headphones/packshot_front_512.webp"
+            },
+            {
+              "at": 1776,
+              "ms": 73,
+              "name": "headphones/packshot_detail_512.webp"
+            },
+            {
+              "at": 1845,
+              "ms": 50,
+              "name": "serum/photo_512.webp"
+            },
+            {
+              "at": 1877,
+              "ms": 51,
+              "name": "headphones/photo_512.webp"
+            },
+            {
+              "at": 1976,
+              "ms": 44,
+              "name": "headphones/stage_poster_1024.webp"
+            }
+          ]
+        },
+        "sweep": {
+          "gaps": [
+            {
+              "at": 5269,
+              "ms": 36
+            }
+          ],
+          "loaf": [],
+          "imgs": []
+        },
+        "pan": {
+          "gaps": [],
+          "loaf": [],
+          "imgs": []
+        },
+        "gpu": "webkit=26.6"
+      }
+    }
+  ]
+}

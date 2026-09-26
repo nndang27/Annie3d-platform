@@ -191,3 +191,30 @@ first paint only when it is the chosen one (docs/I18N.md).
 | Vietnamese (plus its chunk and the Inter font) | 125 ms | 160 ms |
 
 The spread between series (114–128 ms) is as large as any difference measured.
+
+## Safari: hover transitions on the board (2026-09-26)
+
+Safari (WebKit) lagged on zoom, hover and drag-pan while Chrome did not.
+- Cause: every hover transition on the board (ports, port tips, the stacked images, the corner
+  buttons) made WebKit repaint the whole zoomed board on every frame of the transition.
+- Bisected by switching effects off one group at a time (`INJECT_CSS`):
+  - shadows and `border-image` sprites: no change;
+  - animations: no change;
+  - transitions: 13 → 1 stalls; no single group of them was the cause.
+- Fix: those elements sit on their own compositing layer (`will-change: opacity`). `transform`
+  would have blurred them in Chrome when the board zooms.
+- `boardPaint.test.ts` now fails on a board transition without that layer.
+
+`node tests/perf/hitch.mjs http://localhost:4173 --only=webkit,chrome`: frames over 25 ms per
+scenario, over 2–3 runs.
+
+| | WebKit before | WebKit after | Chrome after |
+| --- | --- | --- | --- |
+| Pinch-zoom bursts | 4 (≤ 35 ms) | 0 | 0 |
+| Pointer sweep over nodes | 13–15 (≤ 68 ms) | 0–1 (≤ 39 ms) | 0 |
+| Drag-pan | 2–3 (≤ 54 ms) | 0–1 (≤ 26 ms) | 0 |
+| Cold Chrome (`cold-compare.mjs`) | | | 0 stalls, the same as without the fix |
+
+Through the quick-tunnel link, WebKit after the fix: zoom 0–1, sweep 1–2 and pan 0 stalls.
+Chrome showed one gap of about 125 ms, with no script, style or paint in that frame, with and
+without the fix; it is not caused by the fix.

@@ -15,28 +15,18 @@ import {
 import { Handle, type NodeProps, Position } from '@xyflow/react';
 import {
   AudioLines,
-  Box,
-  Camera,
   ChevronDown,
-  Clapperboard,
   Copy,
   Download,
-  Image as ImageIcon,
-  type LucideIcon,
   Maximize2,
-  MonitorSmartphone,
   MoreHorizontal,
-  Music,
-  Package,
   Play,
-  StickyNote,
   Trash2,
-  Type,
   Upload,
-  Video,
   Zap,
 } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { Popover } from '../chrome/Popover';
 import { withCloud } from '../lib/doc';
 import { pickImage } from '../lib/media';
 import { perfStart } from '../lib/perf';
@@ -48,6 +38,7 @@ import { useRuns } from '../store/runs';
 import { useUi } from '../store/ui';
 import { deleteNodes, onRunNode, openEditor, uploadIntoNode } from './actions';
 import { copySelection, duplicateNodes } from './clipboard';
+import { KIND_ICON, PORT_ICON } from './kindIcons';
 
 const PROMPT_KEY: Partial<Record<NodeKind, string>> = {
   model3d: 'prompt',
@@ -57,28 +48,6 @@ const PROMPT_KEY: Partial<Record<NodeKind, string>> = {
   note: 'text',
 };
 
-export const PORT_ICON: Record<PortType, LucideIcon> = {
-  image: ImageIcon,
-  text: Type,
-  model3d: Box,
-  scene: Clapperboard,
-  video: Video,
-  audio: AudioLines,
-  file: Package,
-};
-const KIND_ICON: Record<NodeKind, LucideIcon> = {
-  photo: ImageIcon,
-  text: Type,
-  upload3d: Box,
-  audio: Music,
-  model3d: Box,
-  stage: Clapperboard,
-  packshot: Camera,
-  adVideo: Video,
-  export: Package,
-  note: StickyNote,
-  simulation: MonitorSmartphone,
-};
 const ACCEPT: Partial<Record<NodeKind, string>> = {
   photo: 'image/png,image/jpeg,image/webp',
   audio: 'audio/*',
@@ -251,6 +220,7 @@ function Header({ node }: { node: NodeRecord }) {
           stale
         </span>
       )}
+      {/* Information, not a control: plain meta text (Soft UI keeps "raised" for things you press). */}
       <span className="engine">
         {def.runnable && version ? <span className="ver">v{version.versionNo}</span> : null}
         {def.category !== 'input' && def.category !== 'note' ? def.engine : null}
@@ -390,8 +360,8 @@ function Preview({ node, selected }: { node: NodeRecord; selected: boolean }) {
         </b>
         {gates.length > 0 && (
           <span className={passed === gates.length ? 'ok' : 'bad'}>
-            {preset ? `${GLB_PRESETS[preset as keyof typeof GLB_PRESETS]?.label ?? preset} · ` : ''}
             {passed}/{gates.length} checks passed
+            {preset ? ` (${GLB_PRESETS[preset as keyof typeof GLB_PRESETS]?.label ?? preset})` : ''}
           </span>
         )}
       </div>
@@ -611,9 +581,10 @@ function autosize(el: HTMLTextAreaElement) {
 function RunButton({ node }: { node: NodeRecord }) {
   const running = useRuns((s) => s.progress.has(node.id));
   const cost = creditsFor(node.kind, node.settings);
-  const [menu, setMenu] = useState(false);
+  const [menu, setMenu] = useState<DOMRect | null>(null);
+  const more = useRef<HTMLButtonElement>(null);
   const scoped = (scope: 'node' | 'from_here' | 'with_upstream') => {
-    setMenu(false);
+    setMenu(null);
     withCloud('run', { kind: 'run', nodeId: node.id, scope }, (id) =>
       useUi.setState({ dialog: { type: 'run', nodeId: id!, scope } }),
     );
@@ -626,34 +597,47 @@ function RunButton({ node }: { node: NodeRecord }) {
         onClick={() => onRunNode(node.id)}
         disabled={running}
         data-testid="run-node"
-        aria-label={`Run · ${cost} credits`}
-        title={`Run · ${cost} credits`}
+        aria-label={`Run (${cost} credits)`}
+        title={`Run (${cost} credits)`}
       >
         {running ? 'Running…' : 'Run'}
       </button>
       <button
+        ref={more}
         type="button"
         className="run-more"
         aria-label="Run options"
-        aria-expanded={menu}
-        onClick={() => setMenu((m) => !m)}
+        aria-haspopup="menu"
+        aria-expanded={!!menu}
+        onClick={(e) => setMenu(menu ? null : e.currentTarget.getBoundingClientRect())}
         disabled={running}
         data-testid="run-options"
       >
         <ChevronDown size={14} aria-hidden />
       </button>
+      {/* In screen space (not on the zoomed board): Escape, a click outside or focus leaving
+          closes it, and it opens above the button when the bottom toolbar is in the way. */}
       {menu && (
-        <div className="run-menu" role="menu" onPointerLeave={() => setMenu(false)}>
-          <button type="button" role="menuitem" onClick={() => scoped('with_upstream')}>
-            Run with inputs
-          </button>
-          <button type="button" role="menuitem" onClick={() => scoped('node')}>
-            Run this node only
-          </button>
-          <button type="button" role="menuitem" onClick={() => scoped('from_here')}>
-            Run this and everything after
-          </button>
-        </div>
+        <Popover
+          anchor={menu}
+          align="end"
+          trigger={more.current}
+          onClose={() => setMenu(null)}
+          label="Run options"
+          testId="run-menu"
+        >
+          <div role="menu">
+            <button type="button" role="menuitem" onClick={() => scoped('with_upstream')}>
+              Run with inputs
+            </button>
+            <button type="button" role="menuitem" onClick={() => scoped('node')}>
+              Run this node only
+            </button>
+            <button type="button" role="menuitem" onClick={() => scoped('from_here')}>
+              Run this and everything after
+            </button>
+          </div>
+        </Popover>
       )}
     </div>
   );
@@ -667,7 +651,8 @@ function Toolbar({ node }: { node: NodeRecord }) {
   const primary = useBoard((st) =>
     node.currentVersionId ? st.versions.get(node.currentVersionId)?.outputs[0] : undefined,
   );
-  const [more, setMore] = useState(false);
+  const [more, setMore] = useState<DOMRect | null>(null);
+  const moreBtn = useRef<HTMLButtonElement>(null);
   const sel = (
     key: string,
     options: readonly (string | number)[],
@@ -790,35 +775,60 @@ function Toolbar({ node }: { node: NodeRecord }) {
         <button
           type="button"
           className="tb-icon"
+          ref={moreBtn}
           aria-label="More actions"
-          aria-expanded={more}
-          onClick={() => setMore((m) => !m)}
+          aria-haspopup="menu"
+          aria-expanded={!!more}
+          onClick={(e) => setMore(more ? null : e.currentTarget.getBoundingClientRect())}
           data-testid="node-more"
         >
           <MoreHorizontal size={16} aria-hidden />
         </button>
       </div>
       {more && (
-        <div className="run-menu tb-menu" role="menu" onPointerLeave={() => setMore(false)}>
-          <button type="button" role="menuitem" onClick={() => duplicateNodes([node.id])}>
-            <Copy size={14} aria-hidden /> Duplicate <kbd>⌘D</kbd>
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={() => {
-              setMore(false);
-              copySelection();
-            }}
-          >
-            <Copy size={14} aria-hidden /> Copy <kbd>⌘C</kbd>
-          </button>
-          {NODE_DEFS[node.kind].runnable && (
-            <button type="button" role="menuitem" onClick={() => onRunNode(node.id)}>
-              <Play size={14} aria-hidden /> Run with inputs
+        <Popover
+          anchor={more}
+          align="end"
+          trigger={moreBtn.current}
+          onClose={() => setMore(null)}
+          label="More actions"
+          testId="node-more-menu"
+        >
+          <div role="menu">
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setMore(null);
+                duplicateNodes([node.id]);
+              }}
+            >
+              <Copy size={14} aria-hidden /> Duplicate <kbd>⌘D</kbd>
             </button>
-          )}
-        </div>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setMore(null);
+                copySelection();
+              }}
+            >
+              <Copy size={14} aria-hidden /> Copy <kbd>⌘C</kbd>
+            </button>
+            {NODE_DEFS[node.kind].runnable && (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setMore(null);
+                  onRunNode(node.id);
+                }}
+              >
+                <Play size={14} aria-hidden /> Run with inputs
+              </button>
+            )}
+          </div>
+        </Popover>
       )}
     </div>
   );

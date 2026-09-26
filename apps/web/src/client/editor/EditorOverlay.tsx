@@ -259,9 +259,9 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
         <button type="button" className="btn-link-inline" onClick={closeEditor} data-testid="editor-back">
           <ArrowLeft size={16} aria-hidden="true" /> Back to canvas
         </button>
-        <span className="muted" data-testid="editor-title">
-          {label} · v{shownNo}
-          {shownId !== currentId && ' (not current)'}
+        <span className="editor-title" data-testid="editor-title">
+          {label} <span className="ver">v{shownNo}</span>
+          {shownId !== currentId && <span className="muted"> (not current)</span>}
         </span>
         <button
           type="button"
@@ -375,7 +375,7 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
                 aria-pressed={v.id === shownId}
                 className={v.id === currentId ? 'current' : ''}
                 onClick={() => setViewing(v.id === currentId ? null : v.id)}
-                title={`${v.source} · ${new Date(v.createdAt).toLocaleString()}`}
+                title={`${v.source}, ${new Date(v.createdAt).toLocaleString()}`}
                 data-testid={`version-${v.versionNo}`}
               >
                 v{v.versionNo}
@@ -411,26 +411,29 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
             </div>
           )}
         </div>
-        <aside className="editor-agent" aria-label="Edit with the agent">
-          <b>Agent</b>
+        <aside className="editor-agent" aria-label="Edit a region">
+          <h2 className="panel-title">Edit a region</h2>
           <div className="chips">
             <span className="chip">
               {label} v{shownNo}
             </span>
             {sel.faces > 0 && (
               <span className="chip" data-testid="selection-chip">
-                {sel.regions || 1} region{(sel.regions || 1) > 1 ? 's' : ''} · {sel.faces.toLocaleString()}{' '}
+                {sel.regions || 1} region{(sel.regions || 1) > 1 ? 's' : ''}, {sel.faces.toLocaleString()}{' '}
                 faces
               </span>
             )}
           </div>
+          {/* The step stays visible (a placeholder disappears as soon as you type). */}
+          <label className="field-label" htmlFor="edit-instruction">
+            {sel.faces ? 'What should change in the selection?' : '1. Paint or lasso a region on the model'}
+          </label>
           <textarea
+            id="edit-instruction"
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}
-            placeholder={
-              sel.faces ? 'Make the cap matte black' : 'Select a region with the brush or lasso first'
-            }
-            aria-label="Edit instruction"
+            placeholder="For example: make the cap matte black"
+            aria-describedby="edit-help"
             data-testid="edit-instruction"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) void apply();
@@ -443,9 +446,10 @@ export default function EditorOverlay({ nodeId }: { nodeId: string }) {
             onClick={() => void apply()}
             data-testid="edit-apply"
           >
-            {running ? `${running.stage}…` : `Apply · ${EDIT_CREDITS} cr`}
+            {running ? `${running.stage}…` : 'Apply'}
+            {!running && <span className="cost">{EDIT_CREDITS} credits</span>}
           </button>
-          <p className="muted small">
+          <p className="muted small" id="edit-help">
             Only the selected faces change. The result becomes a new version; the old one stays in the strip.
           </p>
         </aside>

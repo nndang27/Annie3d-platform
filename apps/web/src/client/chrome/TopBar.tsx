@@ -6,14 +6,13 @@ import {
   Download,
   FilePlus,
   FolderOpen,
-  Gauge,
+  LayoutTemplate,
   LogIn,
   MoreHorizontal,
   Save,
   Share2,
-  Sparkles,
 } from 'lucide-react';
-import { memo, type ReactNode, useMemo, useState } from 'react';
+import { memo, type ReactNode, useMemo, useRef, useState } from 'react';
 import { api } from '../api/client';
 import { useMe } from '../api/me';
 import { insertStarter } from '../canvas/actions';
@@ -30,38 +29,33 @@ import { ReelButton } from './ReelDialog';
 const SAVE_LABEL = {
   saved: 'Saved',
   saving: 'Saving…',
-  offline: 'Offline · will sync',
+  offline: 'Offline, will sync',
   error: 'Retrying…',
 } as const;
 
+/**
+ * One bar across the top (not a row of floating cards): the board on the left, what to do with
+ * it in the middle, the view and the account on the right. The performance panel is a developer
+ * tool and stays behind ⌥P.
+ */
 export function TopBar() {
   return (
-    <header className="topbar">
-      <div className="pill">
-        <a href="/home" className="logo-link" aria-label="Annie 3D home">
-          <span className="logo-mark">A</span>
-        </a>
-        <Title />
-        <SaveState />
-        <FileMenu />
-      </div>
+    <header className="topbar pill">
+      <a href="/home" className="logo-link" aria-label="Annie 3D home">
+        <span className="logo-mark">A</span>
+      </a>
+      <Title />
+      <SaveState />
+      <FileMenu />
+      <span className="sep" />
       <Starters />
       <RunAll />
       <ReelButton />
       <div className="spacer" />
-      <div className="pill hide-sm">
+      <div className="group hide-sm">
         <Zoom />
-        <span className="sep" />
-        <button
-          type="button"
-          onClick={() => useUi.setState((s) => ({ perfOpen: !s.perfOpen }))}
-          aria-label="Performance"
-          title="Performance (⌥P)"
-          data-testid="perf-toggle"
-        >
-          <Gauge size={16} aria-hidden="true" />
-        </button>
       </div>
+      <span className="sep hide-sm" />
       <Account />
     </header>
   );
@@ -120,10 +114,11 @@ function SaveState() {
         <span className="lbl">{doc.busy ?? (doc.dirty ? 'Edited' : doc.path ? 'Saved' : 'Not saved')}</span>
       </span>
     );
+  // A guest's board is kept in this browser: said plainly, not as a warning ("Sign in" is next to it).
   if (mode === 'guest')
     return (
-      <span className="save-state" data-state="offline" title="Guest boards are kept in this browser">
-        <span className="lbl">Not signed in</span>
+      <span className="save-state hide-sm" title="Sign in to keep it in your account">
+        Saved in this browser
       </span>
     );
   return (
@@ -138,7 +133,8 @@ function SaveState() {
  * in their own windows, new file. Website: download the board, open a file into it.
  */
 function FileMenu() {
-  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const [menu, setMenu] = useState<DOMRect | null>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
   const inDoc = useDoc((s) => !!s.doc);
   const item = (label: string, icon: ReactNode, kbd: string | null, run: () => void, testId?: string) => (
     <button
@@ -157,23 +153,21 @@ function FileMenu() {
   return (
     <>
       <button
+        ref={trigger}
         type="button"
         aria-label="Board file"
         aria-haspopup="menu"
         aria-expanded={!!menu}
         title="Board file"
-        onClick={(e) => {
-          const r = e.currentTarget.getBoundingClientRect();
-          setMenu(menu ? null : { x: r.left, y: r.bottom + 6 });
-        }}
+        onClick={(e) => setMenu(menu ? null : e.currentTarget.getBoundingClientRect())}
         data-testid="file-menu"
       >
         <MoreHorizontal size={16} aria-hidden="true" />
       </button>
       {menu && (
         <Popover
-          x={menu.x}
-          y={menu.y}
+          anchor={menu}
+          trigger={trigger.current}
           onClose={() => setMenu(null)}
           label="Board file"
           testId="file-menu-popover"
@@ -231,18 +225,6 @@ function FileMenu() {
                 )}
               </>
             )}
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                setMenu(null);
-                useUi.setState((s) => ({ perfOpen: !s.perfOpen }));
-              }}
-              data-testid="menu-perf"
-            >
-              <Gauge size={15} aria-hidden="true" /> Performance
-              <kbd>⌥P</kbd>
-            </button>
           </div>
         </Popover>
       )}
@@ -251,7 +233,8 @@ function FileMenu() {
 }
 
 function Starters() {
-  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const [menu, setMenu] = useState<DOMRect | null>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
   const rf = useReactFlow();
   const add = (id: (typeof STARTERS)[number]) => {
     setMenu(null);
@@ -265,24 +248,28 @@ function Starters() {
     );
   };
   return (
-    <div className="pill">
+    <>
       <button
+        ref={trigger}
         type="button"
         aria-haspopup="menu"
         aria-expanded={!!menu}
-        onClick={(e) => {
-          const r = e.currentTarget.getBoundingClientRect();
-          setMenu(menu ? null : { x: r.left, y: r.bottom + 6 });
-        }}
+        onClick={(e) => setMenu(menu ? null : e.currentTarget.getBoundingClientRect())}
         data-testid="starters-button"
-        aria-label="Starters"
+        aria-label="Templates"
       >
-        <Sparkles size={16} aria-hidden="true" /> <span className="lbl">Starters</span>{' '}
+        <LayoutTemplate size={16} aria-hidden="true" /> <span className="lbl">Templates</span>
         <ChevronDown size={14} aria-hidden="true" className="lbl" />
       </button>
       {menu && (
-        <Popover x={menu.x} y={menu.y} onClose={() => setMenu(null)} label="Starters" testId="starters-menu">
-          <div role="menu">
+        <Popover
+          anchor={menu}
+          trigger={trigger.current}
+          onClose={() => setMenu(null)}
+          label="Templates"
+          testId="starters-menu"
+        >
+          <div role="menu" className="template-menu">
             {STARTERS.map((id) => (
               <button
                 type="button"
@@ -290,24 +277,20 @@ function Starters() {
                 key={id}
                 onClick={() => add(id)}
                 data-testid={`starter-${id}`}
-                style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 2 }}
               >
-                <span>
-                  <b>{STARTER_META[id].title}</b> · {STARTER_META[id].vertical}
-                </span>
-                <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>
-                  {STARTER_META[id].description}
-                </span>
+                <span className="template-cat">{STARTER_META[id].vertical}</span>
+                <b>{STARTER_META[id].title}</b>
+                <span className="template-desc">{STARTER_META[id].description}</span>
               </button>
             ))}
           </div>
         </Popover>
       )}
-    </div>
+    </>
   );
 }
 
-/** Run all · cost. The client sum is a hint; the server estimate (with cache hits) is shown before charging. */
+/** Run all and its cost. The client sum is a hint; the server estimate (with cache hits) is shown before charging. */
 function RunAll() {
   const nodes = useBoard((s) => s.graph.nodes);
   const mode = useBoard((s) => s.mode);
@@ -344,7 +327,7 @@ function RunAll() {
   };
   if (running) {
     return (
-      <div className="pill">
+      <div className="group">
         <span className="running-dot" aria-hidden="true" />
         <span className="running-label" aria-live="polite">
           Running…
@@ -357,23 +340,21 @@ function RunAll() {
   }
   const upToDate = mode === 'remote' && !!est.data && cost === 0;
   return (
-    <div className="pill">
-      <button
-        type="button"
-        className="primary"
-        onClick={onClick}
-        data-testid="run-all"
-        title="Cached nodes are free; the exact cost is shown before you confirm"
-      >
-        {upToDate ? (
-          'Up to date'
-        ) : (
-          <>
-            Run<span className="lbl"> all · {cost} cr</span>
-          </>
-        )}
-      </button>
-    </div>
+    <button
+      type="button"
+      className="primary"
+      onClick={onClick}
+      data-testid="run-all"
+      title="Unchanged nodes are free; the exact cost is shown before you confirm"
+    >
+      {upToDate ? (
+        'Up to date'
+      ) : (
+        <>
+          Run all<span className="cost lbl">{cost} credits</span>
+        </>
+      )}
+    </button>
   );
 }
 
@@ -395,7 +376,7 @@ const Zoom = memo(function Zoom() {
         aria-label={`${Math.round(zoom * 100)}% zoom, fit to screen`}
         title="Fit to screen (Shift+1)"
         onClick={() => void rf.fitView({ duration: 250, padding: 0.1 })}
-        style={{ minWidth: 52, justifyContent: 'center', fontVariantNumeric: 'tabular-nums' }}
+        className="zoom-level"
         data-testid="zoom-level"
       >
         {Math.round(zoom * 100)}%
@@ -422,26 +403,26 @@ function Account() {
         ? useUi.setState({ signInPrompt: { reason: 'share' } })
         : useUi.setState({ dialog: { type: 'share' } });
   return (
-    <div className="pill">
+    <div className="group">
       {me.data ? (
         <button
           type="button"
           className="credits"
           onClick={() => useUi.setState({ dialog: { type: 'billing' } })}
           data-testid="credits"
-          title="Credits"
+          title="Credits and plan"
         >
-          {me.data.credits.balance} cr
+          {me.data.credits.balance} credits
         </button>
       ) : (
         <button
           type="button"
+          className="sign-in"
           onClick={() => useUi.setState({ signInPrompt: { reason: 'save' } })}
           data-testid="sign-in"
-          aria-label="Sign in"
         >
-          <LogIn size={16} aria-hidden="true" className="icon-sm" />
-          <span className="lbl">Sign in</span>
+          <LogIn size={16} aria-hidden="true" />
+          Sign in
         </button>
       )}
       <button type="button" onClick={share} data-testid="share" aria-label="Share">
@@ -455,19 +436,18 @@ function Account() {
 }
 
 function AccountMenu({ name, email, image }: { name: string; email: string; image: string | null }) {
-  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const [menu, setMenu] = useState<DOMRect | null>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
   return (
     <>
       <button
+        ref={trigger}
         type="button"
         className="avatar-btn"
         aria-label={`Account: ${name}`}
         aria-haspopup="menu"
         aria-expanded={!!menu}
-        onClick={(e) => {
-          const r = e.currentTarget.getBoundingClientRect();
-          setMenu(menu ? null : { x: r.right - 220, y: r.bottom + 6 });
-        }}
+        onClick={(e) => setMenu(menu ? null : e.currentTarget.getBoundingClientRect())}
         data-testid="account"
       >
         {image ? (
@@ -477,7 +457,14 @@ function AccountMenu({ name, email, image }: { name: string; email: string; imag
         )}
       </button>
       {menu && (
-        <Popover x={menu.x} y={menu.y} onClose={() => setMenu(null)} label="Account" testId="account-menu">
+        <Popover
+          anchor={menu}
+          align="end"
+          trigger={trigger.current}
+          onClose={() => setMenu(null)}
+          label="Account"
+          testId="account-menu"
+        >
           <div className="account-head">
             <b>{name}</b>
             <span className="muted small">{email}</span>

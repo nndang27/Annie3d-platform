@@ -26,16 +26,14 @@ export function ReelButton() {
   const running = useRuns((s) => s.activeRunId !== null);
   if (!runId || running) return null;
   return (
-    <div className="pill">
-      <button
-        type="button"
-        onClick={() => useUi.setState({ dialog: { type: 'reel', runId } })}
-        data-testid="make-reel"
-        title="A 9:16 video: the ad on top, how it was made below"
-      >
-        <Film size={16} aria-hidden="true" /> Process reel
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={() => useUi.setState({ dialog: { type: 'reel', runId } })}
+      data-testid="make-reel"
+      title="A 9:16 video: the ad on top, how it was made below"
+    >
+      <Film size={16} aria-hidden="true" /> <span className="lbl">Process reel</span>
+    </button>
   );
 }
 

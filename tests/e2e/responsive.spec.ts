@@ -13,7 +13,6 @@ for (const [name, device] of [
 
     test('chrome fits the screen and touch controls stay reachable', async ({ page }) => {
       await openCanvas(page);
-      await page.getByRole('button', { name: 'Close agent' }).click();
       const offscreen = await page.evaluate(() =>
         [...document.querySelectorAll<HTMLElement>('.topbar button, .topbar a')]
           .filter((b) => {
@@ -44,9 +43,8 @@ for (const [name, device] of [
       await expect(close).toBeInViewport();
       await close.click();
 
-      // The board menu (always visible) opens the performance panel on every screen size.
-      await page.getByTestId('file-menu').click();
-      await page.getByTestId('menu-perf').click();
+      // ⌥P opens the performance panel (a developer tool) on every screen size.
+      await page.keyboard.press('Alt+KeyP');
       const panel = page.getByTestId('perf-panel');
       await expect(panel).toBeVisible();
       const box = (await panel.boundingBox())!;

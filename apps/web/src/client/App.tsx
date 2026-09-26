@@ -136,7 +136,7 @@ function useCheckoutReturn() {
     history.replaceState(null, '', u);
     void queryClient.invalidateQueries({ queryKey: ['me'] });
     void queryClient.invalidateQueries({ queryKey: ['credits'] });
-    toast('Payment complete · credits added');
+    toast('Payment complete. Credits added.');
   }, []);
 }
 

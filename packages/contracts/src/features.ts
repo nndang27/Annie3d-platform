@@ -46,7 +46,7 @@ export const FEATURES: Feature[] = [
     surface: 'shared',
     layer: 'web',
     paths: [
-      `${C}/canvas/{Canvas,FlowNode,FlowEdge,Grid,useWheelZoom,useShortcuts,actions,example}.{ts,tsx}`,
+      `${C}/canvas/{Canvas,FlowNode,FlowEdge,Grid,useWheelZoom,useShortcuts,actions,example,kindIcons}.{ts,tsx}`,
       `${C}/chrome/{TopBar,Toolbar,ContextMenu,Palette,Popover,Toasts,Modal}.tsx`,
       `${C}/canvas/neu/**`,
     ],
@@ -86,7 +86,7 @@ export const FEATURES: Feature[] = [
     layer: 'web',
     paths: [
       `${C}/editor/**`,
-      'packages/viewer-3d/src/{editor,environment,fixtures,presets,viewer,composite,index}.ts',
+      'packages/viewer-3d/src/{editor,environment,fixtures,presets,viewer,composite,index,theme}.ts',
       'packages/viewer-3d/assets/**',
     ],
   },

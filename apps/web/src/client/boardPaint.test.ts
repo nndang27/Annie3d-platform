@@ -9,11 +9,15 @@ import { describe, expect, it } from 'vitest';
  * tests/perf/cold-compare.mjs and tests/perf/pipeline-trace.mjs; docs/DESKTOP.md). So rules that
  * style things on the board use borders, spread-only rings, hard offsets and flat fills.
  */
-const BOARD = /\.(node|wire|react-flow|sim-thumb|refs|run-menu|port)\b/;
-const FIXED_UI = /\.(popover|toast|modal|perf-panel|update-pill|tb-menu)\b/;
+const BOARD = /\.(node|wire|react-flow|sim-thumb|refs|port|open-sim|run-split|drop-slot|overlay-btn)\b/;
+const FIXED_UI = /\.(popover|toast|modal|perf-panel|update-pill|topbar|toolbar|agent|editor|sim-overlay)\b/;
 
-/** `box-shadow` layers with a blur radius above zero (third length). */
+/** Design-system shadow tokens (app.css :root): all of them are blurred. */
+const BLURRED_TOKENS = /var\(--(raised|raised-sm|pressed|floating|shadow-popover|shadow-floating)\)/;
+
+/** `box-shadow` layers with a blur radius above zero (third length), or a blurred token. */
 function blurredShadow(value: string) {
+  if (BLURRED_TOKENS.test(value)) return true;
   return value.split(/,(?![^(]*\))/).some((layer) => {
     const lengths =
       layer.replace(/rgba?\([^)]*\)|#[0-9a-f]+|var\([^)]*\)|inset/gi, '').match(/-?[\d.]+(px)?/g) ?? [];

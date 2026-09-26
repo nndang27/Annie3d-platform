@@ -7,7 +7,7 @@
 // Each sprite holds only the shadow (the shape itself is transparent), so an element keeps its own
 // background colour and radius. Scale 2 is enough: a shadow is a smooth gradient, and the sharp edge is the element's own.
 // Shadows follow the Soft UI recipe (namethatui.com/styles/neumorphism): light from the top-left
-// (white), dark toward the bottom-right (rgba(163,177,198)), on the base #e3e7ee.
+// (white), dark toward the bottom-right (warm grey rgba(163,152,137)), on the base #ece9e4.
 // Usage: node scripts/bake-neu-sprites.mjs, then convert to lossless WebP (38 KB for all three):
 //   python3 -c "from PIL import Image; import os
 //   [Image.open(f'{n}.png').save(f'{n}.webp', lossless=True, method=6) or os.remove(f'{n}.png') for n in ('raised','circle','inset')]"
@@ -20,7 +20,9 @@ import { chromium } from '@playwright/test';
 const OUT = fileURLToPath(new URL('../apps/web/src/client/canvas/neu/', import.meta.url));
 const K = 2;
 const LIGHT = 'rgba(255,255,255,0.92)';
-const DARK = 'rgba(163,177,198,0.68)';
+/** The board surface (app.css --surface): the sprites are drawn on it, then cut out. */
+const BASE = '#ece9e4';
+const DARK = 'rgba(163,152,137,0.62)';
 
 /** Raised rounded rect: radius r, shadow offset o and blur b, margin m around the shape. */
 const raised = { name: 'raised', r: 22, o: 9, b: 20, m: 40 };
@@ -32,7 +34,7 @@ const inset = { name: 'inset', r: 16, o: 5, b: 10, m: 0 };
 const browser = await chromium.launch();
 const page = await browser.newPage();
 const out = await page.evaluate(
-  ({ K, LIGHT, DARK, raised, circle, inset }) => {
+  ({ K, LIGHT, DARK, BASE, raised, circle, inset }) => {
     const rr = (ctx, x, y, w, h, r) => {
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, r);
@@ -55,7 +57,7 @@ const out = await page.evaluate(
         ctx.shadowBlur = s.b * K; // shadowBlur is in device pixels
         ctx.shadowOffsetX = dx * K;
         ctx.shadowOffsetY = dx * K;
-        ctx.fillStyle = '#e3e7ee';
+        ctx.fillStyle = BASE;
         rr(ctx, s.m, s.m, size, size, s.name === 'circle' ? size / 2 : s.r);
         ctx.fill();
         ctx.restore();
@@ -83,7 +85,7 @@ const out = await page.evaluate(
         ctx.shadowBlur = s.b * K;
         ctx.shadowOffsetX = d * K;
         ctx.shadowOffsetY = d * K;
-        ctx.fillStyle = '#e3e7ee';
+        ctx.fillStyle = BASE;
         ctx.beginPath();
         ctx.rect(-100, -100, side + 200, side + 200);
         ctx.roundRect(0, 0, side, side, s.r);
@@ -94,7 +96,7 @@ const out = await page.evaluate(
     }
     return result;
   },
-  { K, LIGHT, DARK, raised, circle, inset },
+  { K, LIGHT, DARK, BASE, raised, circle, inset },
 );
 await browser.close();
 

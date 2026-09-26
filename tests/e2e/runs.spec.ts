@@ -33,7 +33,7 @@ test.describe('runs', () => {
     await signedInExample(page);
     const stage = await firstNode(page, 'stage');
     await editPrompt(page, stage, 'Warmer light, marble podium');
-    await expect(page.getByTestId('run-all')).toHaveText(/Run all · 22 cr/);
+    await expect(page.getByTestId('run-all')).toHaveText(/Run all\s*22 credits/);
     await page.getByTestId('run-all').click();
     const dialog = page.getByTestId('run-dialog');
     await expect(dialog).toBeVisible();
@@ -46,7 +46,7 @@ test.describe('runs', () => {
     await page.getByTestId('run-confirm').click();
     await expect(page.getByTestId('cancel-run')).toBeVisible();
     await expect(page.locator(`.react-flow__node[data-id="${stage}"] .progress`)).toBeVisible();
-    await expect(page.getByText(/Run finished · 22 credits/)).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByText(/Run finished: 22 credits used/)).toBeVisible({ timeout: 45_000 });
     const after = await page.evaluate(
       (id) => (window as any).__annie3d.useBoard.getState().graph.nodes.get(id).currentVersionId,
       stage,
@@ -67,7 +67,7 @@ test.describe('runs', () => {
       'Check failed: silhouette_iou',
       { timeout: 45_000 },
     );
-    await expect(page.getByText('Run failed · credits refunded')).toBeVisible();
+    await expect(page.getByText('Run failed. Credits refunded.')).toBeVisible();
     await expect(page.getByTestId('credits')).toContainText('60');
   });
 

@@ -1,5 +1,5 @@
 import { NODE_DEFS } from '@annie3d/contracts';
-import { ArrowUp, X } from 'lucide-react';
+import { ArrowUp, Check, X } from 'lucide-react';
 import { useState } from 'react';
 import { useBoard } from '../store/board';
 import { useUi } from '../store/ui';
@@ -12,6 +12,12 @@ export interface AgentMessage {
   /** Op batches the agent applied, shown as undoable chips. */
   applied?: { label: string }[];
 }
+
+const SUGGESTIONS = [
+  'Make the stage warmer and add a 6-second cut',
+  'Add a packshot with four angles',
+  'Use a softer light on the 3D model',
+];
 
 /**
  * Right dock (F7). The composer carries a budget and the selected nodes as context chips.
@@ -49,24 +55,30 @@ export function AgentDockView({
     setText('');
   };
   return (
-    <aside className="agent" aria-label="Agent" data-testid="agent-dock" data-busy={busy}>
+    <aside className="agent" aria-label="Ask Annie" data-testid="agent-dock" data-busy={busy}>
       <header>
-        <span className="dot" aria-hidden="true" /> Annie agent
+        Ask Annie
         <button
           type="button"
-          className="icon-btn"
+          className="icon-btn close"
           aria-label="Close agent"
           onClick={() => useUi.setState({ agentOpen: false })}
-          style={{ marginLeft: 'auto' }}
         >
           <X size={16} aria-hidden="true" />
         </button>
       </header>
       <div className="msgs" aria-live="polite">
         {messages.length === 0 ? (
+          // Right above the box they fill: what Annie does, and changes to start from.
           <div className="empty">
-            <p>Ask for a change and I will edit the board.</p>
-            <p style={{ fontSize: 12 }}>“Make the stage warmer and add a 6-second cut.”</p>
+            <p>Annie changes this board for you: nodes, settings and wires. ⌘Z undoes her edits.</p>
+            <div className="suggestions">
+              {SUGGESTIONS.map((t) => (
+                <button key={t} type="button" onClick={() => setText(t)} data-testid="agent-suggestion">
+                  {t}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           messages
@@ -78,7 +90,7 @@ export function AgentDockView({
                   <div className="op-chips">
                     {m.applied.map((a, i) => (
                       <span key={`${a.label}-${i}`} className="op-chip" title="Undo with ⌘Z">
-                        ✓ {a.label}
+                        <Check size={12} aria-hidden="true" /> {a.label}
                       </span>
                     ))}
                   </div>
@@ -122,7 +134,7 @@ export function AgentDockView({
             >
               {[25, 50, 100, 200].map((b) => (
                 <option key={b} value={b}>
-                  {b} cr
+                  {b} credits
                 </option>
               ))}
             </select>

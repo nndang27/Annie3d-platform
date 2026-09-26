@@ -3,7 +3,6 @@ import {
   Box3,
   BufferAttribute,
   BufferGeometry,
-  Color,
   DirectionalLight,
   type Group,
   HemisphereLight,
@@ -24,6 +23,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { type GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { acceleratedRaycast, CONTAINED, INTERSECTED, MeshBVH, NOT_INTERSECTED } from 'three-mesh-bvh';
 import { roomEnvironment } from './environment';
+import { uiColor } from './theme';
 
 export type EditorTool = 'orbit' | 'brush' | 'lasso';
 
@@ -52,7 +52,8 @@ interface Slot {
   duration: number;
 }
 
-const SELECT_COLOR = new Color('#2f6bff');
+/** Painted faces: the app's accent (read once, when the editor module loads). */
+const SELECT_COLOR = uiColor('--accent', '#c0441a');
 
 /**
  * Model editor viewport (F8/F9). One WebGL context for the whole overlay; created on open,
@@ -97,7 +98,7 @@ export class ModelEditor {
     });
     this.renderer.outputColorSpace = SRGBColorSpace;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, opts.dprCap ?? 2));
-    this.renderer.setClearColor('#f4f4f1');
+    this.renderer.setClearColor(uiColor('--surface-sunken', '#e3dfd8'));
     for (const s of this.slots) s.scene.add(new HemisphereLight('#ffffff', '#d0d4da', 0.6));
     this.envReady = roomEnvironment(this.renderer).then(({ texture, dispose }) => {
       if (this.disposed) return dispose();

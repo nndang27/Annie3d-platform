@@ -298,7 +298,7 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
                   {[0, 1, 2, 3, 4].map((i) => (
                     <Star key={i} size={15} fill="currentColor" />
                   ))}
-                  <span>4.9 · 128 reviews</span>
+                  <span>4.9 (128 reviews)</span>
                 </p>
                 <p className="price">{price}</p>
                 <p className="desc">Drag to turn it around. What you see is the real 3D product.</p>
@@ -420,7 +420,7 @@ export default function SimulatorOverlay({ nodeId }: { nodeId: string }) {
               </p>
               {pose && (
                 <p className="pose" data-testid="sim-pose">
-                  α {pose.alpha.toFixed(0)}° · β {pose.beta.toFixed(0)}° · γ {pose.gamma.toFixed(0)}°
+                  α {pose.alpha.toFixed(0)}°, β {pose.beta.toFixed(0)}°, γ {pose.gamma.toFixed(0)}°
                 </p>
               )}
               <button type="button" className="sim-btn" onClick={() => viewer.current?.recenter()}>

@@ -110,7 +110,7 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
         {steps.map((p) => (
           <li key={p.nodeId}>
             <span>{label(nodes.get(p.nodeId)?.label, p.kind)}</span>
-            <span className="muted">{p.credits} cr</span>
+            <span className="muted">{p.credits} credits</span>
           </li>
         ))}
         {cached > 0 && (
@@ -127,8 +127,8 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
         <b data-testid="run-total">{total} credits</b>
       </p>
       <p className="muted">
-        Balance {est.data.balance} cr{est.data.freeRunAvailable ? ' · your first run is free' : ''}. Failed
-        steps are refunded.
+        Balance: {est.data.balance} credits.{est.data.freeRunAvailable ? ' Your first run is free.' : ''}{' '}
+        Failed steps are refunded.
       </p>
       <div className="modal-actions">
         <button type="button" className="btn-secondary" onClick={close}>
@@ -142,7 +142,8 @@ function RunBody({ nodeId, scope }: { nodeId: string | null; scope: string }) {
             disabled={starting}
             data-testid="run-confirm"
           >
-            {starting ? 'Starting…' : `Run · ${total} cr`}
+            {starting ? 'Starting…' : 'Run'}
+            {!starting && <span className="cost">{total} credits</span>}
           </button>
         ) : (
           <button

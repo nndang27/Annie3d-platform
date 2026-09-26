@@ -1,13 +1,8 @@
-import {
-  NODE_DEFS,
-  type NodeKind,
-  PORT_COLOR,
-  STARTER_META,
-  STARTERS,
-  type StarterId,
-} from '@annie3d/contracts';
+import { NODE_DEFS, type NodeKind, STARTER_META, STARTERS, type StarterId } from '@annie3d/contracts';
+import { LayoutTemplate } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { createNodeAt, insertStarter } from '../canvas/actions';
+import { KIND_ICON } from '../canvas/kindIcons';
 import { useUi } from '../store/ui';
 import { Popover } from './Popover';
 
@@ -98,7 +93,7 @@ function PaletteBody({
               {inGroup.map((i) => {
                 idx = items.indexOf(i);
                 const my = idx;
-                const out = i.type === 'node' ? NODE_DEFS[i.kind].output?.type : undefined;
+                const Icon = i.type === 'node' ? KIND_ICON[i.kind] : LayoutTemplate;
                 return (
                   <button
                     type="button"
@@ -109,9 +104,9 @@ function PaletteBody({
                     onClick={() => pick(i)}
                     data-testid={`palette-${i.type === 'node' ? i.kind : i.id}`}
                   >
-                    <span className="swatch" style={{ background: out ? PORT_COLOR[out] : '#bbb' }} />
+                    <Icon size={15} aria-hidden="true" />
                     {i.label}
-                    {i.type === 'node' && <kbd>{NODE_DEFS[i.kind].engine}</kbd>}
+                    {i.type === 'node' && <span className="meta">{NODE_DEFS[i.kind].engine}</span>}
                   </button>
                 );
               })}

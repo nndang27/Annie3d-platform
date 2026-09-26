@@ -82,7 +82,7 @@ export default function PerfPanel() {
         </tbody>
       </table>
       <p className="net">
-        {net.count} requests · {net.kb} KB transferred
+        {net.count} requests, {net.kb} KB transferred
       </p>
       <h3>Features</h3>
       <table>

@@ -84,7 +84,7 @@ test.describe('3D editor', () => {
     await page.getByTestId('compare').click();
     await page.getByTestId('version-1').click();
     await page.getByTestId('make-current').click();
-    await expect(page.getByTestId('editor-title')).toHaveText('3D model · v1');
+    await expect(page.getByTestId('editor-title')).toHaveText('3D model v1');
     const current = await page.evaluate(
       (id) => (window as any).__annie3d.useBoard.getState().graph.nodes.get(id).currentVersionId,
       model,

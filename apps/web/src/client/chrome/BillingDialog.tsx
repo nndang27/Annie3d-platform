@@ -65,7 +65,7 @@ function BillingBody({ onClose }: { onClose: () => void }) {
       <h2 id="billing-title">Credits</h2>
       <div className="balance" data-testid="billing-balance">
         <b>{credits.balance}</b> credits
-        {credits.reserved > 0 && <span className="muted"> · {credits.reserved} held by a running job</span>}
+        {credits.reserved > 0 && <span className="muted"> ({credits.reserved} held by a running job)</span>}
         <span className="plan-badge">
           {workspace.plan === 'free' ? 'Free' : workspace.plan === 'creator' ? 'Creator' : 'Studio'}
         </span>

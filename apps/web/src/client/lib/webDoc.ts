@@ -183,7 +183,7 @@ export async function webDocHost(key: string, picked?: FileSystemFileHandle): Pr
       });
     },
     setDirty(dirty, name) {
-      document.title = `${dirty ? '• ' : ''}${name} · Annie 3D`;
+      document.title = `${dirty ? '• ' : ''}${name} – Annie 3D`;
       if (dirty && !unload) {
         unload = (e) => e.preventDefault();
         window.addEventListener('beforeunload', unload);

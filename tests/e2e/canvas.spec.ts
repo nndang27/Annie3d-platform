@@ -228,7 +228,6 @@ test.describe('node UI, wires and clipboard', () => {
     page,
   }) => {
     const errors = await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
     const model = await firstNode(page, 'model3d');
     const node = page.locator(`.react-flow__node[data-id="${model}"]`);
     await expect(node.locator('.react-flow__handle.port.port-image')).toHaveClass(/\bon\b/);
@@ -256,7 +255,6 @@ test.describe('node UI, wires and clipboard', () => {
 
   test('double-click on the canvas creates a Text node ready to type', async ({ page }) => {
     await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
     const n0 = (await graph(page)).kinds.text ?? 0;
     await page.locator('.react-flow__pane').dblclick({ position: { x: 1100, y: 160 } });
     await expect(page.getByTestId('prompt-editor')).toBeFocused();
@@ -272,7 +270,6 @@ test.describe('node UI, wires and clipboard', () => {
     page,
   }) => {
     await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
     const model = await firstNode(page, 'model3d');
     // Give the model a prompt, then copy it with ⌘C and paste with ⌘V.
     const node = page.locator(`.react-flow__node[data-id="${model}"]`);
@@ -341,7 +338,6 @@ test.describe('delete/undo, ports, 3D shortcut and Run', () => {
 
   test('deleting several nodes then one ⌘Z restores results, settings and every wire', async ({ page }) => {
     await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
     const before = await snapshot(page);
     const [model, stage] = [await firstNode(page, 'model3d'), await firstNode(page, 'stage')];
     await page.locator(`.react-flow__node[data-id="${model}"] .node-head`).click();
@@ -357,7 +353,6 @@ test.describe('delete/undo, ports, 3D shortcut and Run', () => {
 
   test('port bubbles show their name in a tooltip; Run shows no credits', async ({ page }) => {
     await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
     const stage = await firstNode(page, 'stage');
     const port = page.locator(
       `.react-flow__node[data-id="${stage}"] .react-flow__handle[data-handleid="prompt"]`,
@@ -374,7 +369,6 @@ test.describe('delete/undo, ports, 3D shortcut and Run', () => {
     page,
   }) => {
     await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
     const model = await firstNode(page, 'model3d');
     const preview = page.locator(`.react-flow__node[data-id="${model}"] .node-preview`);
     await preview.click();
@@ -386,7 +380,6 @@ test.describe('delete/undo, ports, 3D shortcut and Run', () => {
 
   test('hovering a wire runs the delete button from the source end to the middle', async ({ page }) => {
     await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
     const geo = await page.evaluate(() => {
       const p = document.querySelectorAll('.react-flow__edge-path')[3] as SVGPathElement;
       const at = (l: number) => {
@@ -412,7 +405,6 @@ test.describe('delete/undo, ports, 3D shortcut and Run', () => {
 test.describe('reference stack and performance panel', () => {
   test('wired images stack in an empty result and fan out in a row on hover', async ({ page }) => {
     await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
     const id = await page.evaluate(async () => {
       const { useBoard } = (window as any).__annie3d;
       const nodes = [...useBoard.getState().graph.nodes.values()] as any[];
@@ -474,8 +466,8 @@ test.describe('reference stack and performance panel', () => {
 
   test('the performance panel shows page-load vitals and feature timings', async ({ page }) => {
     await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
-    await page.getByTestId('perf-toggle').click();
+    // A developer tool, not in the chrome: ⌥P opens it.
+    await page.keyboard.press('Alt+KeyP');
     const panel = page.getByTestId('perf-panel');
     await expect(panel).toBeVisible();
     await expect(panel.getByTestId('perf-board.ready')).not.toContainText('—');
@@ -508,7 +500,6 @@ test.describe('.annie3d board file', () => {
         });
       });
     await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
     const n0 = (await graph(page)).nodes;
     const e0 = (await graph(page)).edges;
     const download = picker ? null : page.waitForEvent('download');
@@ -543,5 +534,63 @@ test.describe('.annie3d board file', () => {
         .map((n: any) => s.versions.get(n.currentVersionId)?.outputs.length ?? 0);
     });
     expect(packs.filter((c: number) => c === 4)).toHaveLength(6);
+  });
+});
+
+test.describe('menus', () => {
+  test('the Run menu works from the keyboard, closes with Escape or a click outside, and stays clear of the toolbar', async ({
+    page,
+  }) => {
+    await openCanvas(page);
+    const more = page.getByTestId('run-options').first();
+    await more.click();
+    const menu = page.getByTestId('run-menu');
+    await expect(menu).toBeVisible();
+    // Focus starts on the first item; arrows move it.
+    await expect(menu.getByRole('menuitem').first()).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await expect(menu.getByRole('menuitem').nth(1)).toBeFocused();
+    // Escape closes it and gives focus back to the button.
+    await page.keyboard.press('Escape');
+    await expect(menu).toHaveCount(0);
+    await expect(more).toBeFocused();
+    // A click outside closes it; the button toggles it.
+    await more.click();
+    await expect(menu).toBeVisible();
+    await page.mouse.click(700, 140);
+    await expect(menu).toHaveCount(0);
+    await more.click();
+    await more.click();
+    await expect(menu).toHaveCount(0);
+    // Opened near the bottom, it goes above its button instead of under the toolbar.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    // The visible Run button closest to the bottom of the screen.
+    const h = page.viewportSize()!.height;
+    const boxes = await page
+      .getByTestId('run-options')
+      .evaluateAll(
+        (els, h) =>
+          els
+            .map((e, i) => ({ i, y: e.getBoundingClientRect().bottom }))
+            .filter((b) => b.y > 0 && b.y < h - 90),
+        h,
+      );
+    const low = boxes.sort((a, b) => b.y - a.y)[0]!;
+    await page.getByTestId('run-options').nth(low.i).click();
+    const box = (await page.getByTestId('run-menu').boundingBox())!;
+    const bar = (await page.locator('.toolbar').boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(bar.y + 1);
+  });
+
+  test('the agent panel starts closed and remembers being opened', async ({ page }) => {
+    await openCanvas(page);
+    await expect(page.getByTestId('agent-dock')).toHaveCount(0);
+    await page.getByTestId('toggle-agent').click();
+    await expect(page.getByTestId('agent-dock')).toBeVisible();
+    // Suggestions sit right above the box they fill.
+    await page.getByTestId('agent-suggestion').first().click();
+    await expect(page.getByTestId('agent-input')).toHaveValue(/stage warmer/);
+    await page.reload();
+    await expect(page.getByTestId('agent-dock')).toBeVisible();
   });
 });

@@ -75,7 +75,7 @@ function ShareBody({ onClose }: { onClose: () => void }) {
       </div>
       {share && (
         <p className="muted small">
-          {share.viewCount} view{share.viewCount === 1 ? '' : 's'} ·{' '}
+          {share.viewCount} view{share.viewCount === 1 ? '' : 's'}.{' '}
           <a href={share.url} target="_blank" rel="noreferrer" data-testid="share-open">
             Open preview <ExternalLink size={12} aria-hidden="true" />
           </a>

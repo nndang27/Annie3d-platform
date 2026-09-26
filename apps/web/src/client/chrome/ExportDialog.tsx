@@ -88,8 +88,9 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
             />
             <b>{p.label}</b>
             <span className="muted small">
-              ≤ {mb(p.maxBytes)} · ≤ {p.maxTriangles.toLocaleString('en')} tris · textures ≤ {p.maxTexture}px
-              {p.requiresAnimation ? ' · animated' : ''}
+              Up to {mb(p.maxBytes)}, {p.maxTriangles.toLocaleString('en')} triangles, {p.maxTexture} px
+              textures
+              {p.requiresAnimation ? ', animated' : ''}
             </span>
           </label>
         ))}
@@ -173,7 +174,7 @@ function ExportBody({ nodeId, onClose }: { nodeId?: string; onClose: () => void 
             disabled={busy}
             data-testid="export-run"
           >
-            {busy ? 'Exporting…' : 'Export · free'}
+            {busy ? 'Exporting…' : 'Export (free)'}
           </button>
         )}
       </div>

@@ -7,6 +7,8 @@ async function signedIn(page: Page) {
   await signUp(page, 'Agent Tester');
   await openCanvas(page);
   await page.waitForFunction(() => (window as any).__annie3d.useBoard.getState().mode === 'remote');
+  // The agent panel starts closed: "Ask Annie" opens it.
+  await page.getByTestId('toggle-agent').click();
 }
 
 async function select(page: Page, id: string) {
@@ -41,7 +43,7 @@ test.describe('agent (F7)', () => {
     await page.getByTestId('agent-input').fill('use the velvet look and run it');
     await page.keyboard.press('Enter');
     await expect(page.getByTestId('msg-agent').last()).toContainText('Velvet');
-    await expect(page.getByText(/Run finished · \d+ credits/)).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByText(/Run finished: \d+ credits used/)).toBeVisible({ timeout: 45_000 });
     // History survives a reload.
     await page.reload();
     await expect(page.getByTestId('msg-user').first()).toContainText('make it square');

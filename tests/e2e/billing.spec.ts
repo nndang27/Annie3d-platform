@@ -18,9 +18,9 @@ test.describe('credits and billing (F11)', () => {
     await expect(page.getByTestId('checkout-page')).toBeVisible();
     await expect(page.getByTestId('checkout-page')).toContainText('Creator plan');
     await page.getByTestId('checkout-pay').click();
-    await expect(page.getByText('Payment complete · credits added')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText('Payment complete. Credits added.')).toBeVisible({ timeout: 20_000 });
     expect(page.url()).toBe(boardUrl);
-    await expect(page.getByTestId('credits')).toHaveText('360 cr');
+    await expect(page.getByTestId('credits')).toHaveText('360 credits');
     await page.getByTestId('credits').click();
     await expect(page.getByTestId('billing-history')).toContainText('Plan purchase');
     await expect(page.getByTestId('plan-creator')).toContainText('Add credits');

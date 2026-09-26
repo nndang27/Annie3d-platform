@@ -99,10 +99,10 @@ function apply(e: RunEvent, queryClient: QueryClient) {
       });
       void queryClient.invalidateQueries({ queryKey: ['me'] });
       const msg = {
-        succeeded: `Run finished · ${e.chargedCredits} credits`,
-        partial: `Run finished with errors · ${e.chargedCredits} credits`,
-        failed: 'Run failed · credits refunded',
-        cancelled: `Run cancelled · ${e.chargedCredits} credits used`,
+        succeeded: `Run finished: ${e.chargedCredits} credits used`,
+        partial: `Run finished with errors: ${e.chargedCredits} credits used`,
+        failed: 'Run failed. Credits refunded.',
+        cancelled: `Run cancelled: ${e.chargedCredits} credits used`,
       }[e.status];
       toast(msg, e.status === 'succeeded' ? 'info' : 'error');
       return;

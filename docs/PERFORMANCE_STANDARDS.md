@@ -38,7 +38,7 @@ own budget.
 
 | Tool | What it measures | How |
 | --- | --- | --- |
-| Performance panel | This browser: TTFB, FCP, LCP, CLS, INP, "board ready", request count and size, every feature timing (last, p95, count), slowest API calls and files with worker time (`Server-Timing`) | Gauge button in the top bar, ⌥P, or `?perf` in the URL; "Copy report" gives JSON |
+| Performance panel | This browser: TTFB, FCP, LCP, CLS, INP, "board ready", request count and size, every feature timing (last, p95, count), slowest API calls and files with worker time (`Server-Timing`) | ⌥P or `?perf` in the URL (no button: it is a developer tool); "Copy report" gives JSON |
 | Real-user beacons | The same numbers from every visitor, with country and Cloudflare colo | `POST /api/rum` on tab hide → Workers Logs (`event: "rum"`) |
 | `pnpm measure <url>` | Cold and warm loads of any URL (local, `pnpm share` link, production) in headless Chromium | e.g. `pnpm measure https://annie3d.nndang2701.workers.dev --runs 3` |
 | Lighthouse | Lab score on the production build | Chrome DevTools MCP (see CLAUDE.md) |
@@ -158,3 +158,18 @@ Same look, measured on the example board (Chrome for Testing):
 | Warm GPU raster during a zoom | 210–262 ms (before the restyle 213–260) | 659–1,491 ms |
 | Warm long frames during a zoom | 0–1 | 6–7 |
 | 200-node pan / zoom | 116–120 / 117–120 fps | — |
+
+## One design system (2026-09-26)
+
+The Soft UI restyle was extended to the whole app. It uses a warm palette (#ece9e4), one accent
+(#c0441a), six type sizes, four radii and a self-hosted Instrument Sans (see
+docs/DESIGN_SYSTEM.md). The sprites were re-baked for the new surface (40 KB together). Chrome
+shadows (bars, panels, menus) are CSS tokens. `boardPaint.test.ts` keeps those tokens off board
+content. Measured the same way (Chrome for Testing, example board):
+
+| | Before | After |
+| --- | --- | --- |
+| Cold zoom stalls | 3–4 (≤ 101 ms) | 1–2 (≤ 92 ms), 3 runs |
+| Cold pointer-sweep stalls | 0–1 | 0–2 (the second at the first video playback) |
+| 200-node pan / zoom | 116–120 / 117–120 fps | 116–119 / 117–120 fps |
+| Board ready / images ready, local cold | 0.11 / 0.15 s | 0.11 / 0.16 s |

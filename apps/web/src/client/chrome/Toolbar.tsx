@@ -1,7 +1,8 @@
-import { NODE_DEFS, type NodeKind, PORT_COLOR } from '@annie3d/contracts';
+import { NODE_DEFS, type NodeKind } from '@annie3d/contracts';
 import { useReactFlow } from '@xyflow/react';
 import { Hand, MessageSquare, MousePointer2, Plus, Redo2, Undo2 } from 'lucide-react';
 import { createNodeAt } from '../canvas/actions';
+import { KIND_ICON } from '../canvas/kindIcons';
 import { redo, undo, useBoard } from '../store/board';
 import { useUi } from '../store/ui';
 
@@ -42,8 +43,9 @@ export function Toolbar() {
         <Hand aria-hidden="true" />
       </button>
       <span className="sep" />
+      {/* Each kind shows the icon its nodes carry (not a colour to decode). */}
       {QUICK.map((k) => {
-        const out = NODE_DEFS[k].output?.type;
+        const Icon = KIND_ICON[k];
         return (
           <button
             type="button"
@@ -51,9 +53,10 @@ export function Toolbar() {
             className="quick-add"
             onClick={() => addAtCenter(k)}
             title={`Add ${NODE_DEFS[k].label}`}
+            aria-label={`Add ${NODE_DEFS[k].label}`}
             data-testid={`add-${k}`}
           >
-            <span className="swatch" style={{ background: out ? PORT_COLOR[out] : '#bbb' }} />
+            <Icon aria-hidden="true" />
             <span className="hide-md">{NODE_DEFS[k].label}</span>
           </button>
         );
@@ -76,12 +79,13 @@ export function Toolbar() {
       <span className="sep" />
       <button
         type="button"
-        aria-label="Agent"
+        aria-label="Ask Annie"
         aria-pressed={agentOpen}
         onClick={() => useUi.setState({ agentOpen: !agentOpen })}
         data-testid="toggle-agent"
       >
         <MessageSquare aria-hidden="true" />
+        <span className="hide-md">Ask Annie</span>
       </button>
     </nav>
   );

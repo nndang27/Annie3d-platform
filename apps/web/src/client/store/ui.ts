@@ -25,7 +25,7 @@ export interface UiState {
   editPromptId: string | null;
   /** F13: the Simulation node whose full-screen simulator is open. */
   simulatingNodeId: string | null;
-  /** Performance panel (top bar gauge, ⌥P or `?perf`). */
+  /** Performance panel (a developer tool: ⌥P or `?perf`). */
   perfOpen: boolean;
   /** Nodes the first paint should frame (the example's first line); null frames everything. */
   initialFit: string[] | null;
@@ -41,6 +41,19 @@ export interface UiState {
     | { type: 'run'; nodeId: string | null; scope: string };
 }
 
+/**
+ * The agent panel starts closed (the board gets the room; "Ask Annie" opens it) and then stays
+ * as the person left it, in this browser.
+ */
+const AGENT_KEY = 'annie3d.agentOpen';
+function agentWasOpen() {
+  try {
+    return localStorage.getItem(AGENT_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
 export const useUi = create<UiState>()(() => ({
   lod: 'full',
   zoom: 0.8,
@@ -49,7 +62,7 @@ export const useUi = create<UiState>()(() => ({
   tool: 'select',
   palette: null,
   contextMenu: null,
-  agentOpen: true,
+  agentOpen: agentWasOpen(),
   editingNodeId: null,
   editPromptId: null,
   simulatingNodeId: null,
@@ -71,3 +84,12 @@ export function toast(text: string, tone: 'info' | 'error' = 'info') {
   useUi.setState((s) => ({ toasts: [...s.toasts, { id, text, tone }] }));
   setTimeout(() => useUi.setState((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), 4000);
 }
+
+useUi.subscribe((s, p) => {
+  if (s.agentOpen === p.agentOpen) return;
+  try {
+    localStorage.setItem(AGENT_KEY, s.agentOpen ? '1' : '0');
+  } catch {
+    /* private mode: the panel just starts closed */
+  }
+});

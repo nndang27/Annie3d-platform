@@ -1,7 +1,6 @@
 import {
   AmbientLight,
   BackSide,
-  Color,
   DirectionalLight,
   Group,
   HemisphereLight,
@@ -35,6 +34,7 @@ import {
   LIGHTS,
   type LightPreset,
 } from './presets';
+import { uiColor } from './theme';
 
 export interface ViewerSceneInput {
   fixtureId: FixtureId;
@@ -105,7 +105,7 @@ export class ProductViewer {
   private shadowMat: ShadowMaterial;
   private outline: Mesh | null = null;
   private outlineMat = new MeshBasicMaterial({
-    color: new Color('#2457d6'),
+    color: uiColor('--accent', '#c0441a'),
     side: BackSide,
     transparent: true,
     opacity: 0.9,

@@ -3,6 +3,9 @@ import { lazy, StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { initPerf } from './lib/perf';
+// Instrument Sans (OFL), self-hosted: only the upright weight axis (a variable font, latin subsets
+// load on demand by unicode-range; CSP font-src 'self').
+import '@fontsource-variable/instrument-sans/wght.css';
 import './app.css';
 import { useBoard } from './store/board';
 import { useUi } from './store/ui';

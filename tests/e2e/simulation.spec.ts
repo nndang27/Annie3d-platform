@@ -7,7 +7,6 @@ test.describe('F13 simulation', () => {
     browser,
   }) => {
     const errors = await openCanvas(page);
-    await page.getByRole('button', { name: 'Close agent' }).click();
     const sim = await firstNode(page, 'simulation');
     const node = page.locator(`.react-flow__node[data-id="${sim}"]`);
     await expect(node.getByTestId('sim-thumb')).toBeVisible();

@@ -56,7 +56,7 @@ export function exampleBoard() {
         ...n,
         settings: n.kind === 'photo' ? { ...n.settings, assetId: outputs[0]!.id } : n.settings,
         currentVersionId: id,
-        label: row === 0 || n.kind !== 'photo' ? n.label : `${n.label} · ${product}`,
+        label: row === 0 || n.kind !== 'photo' ? n.label : `${n.label} (${product})`,
       });
     }
     edges.push(...g.edges);

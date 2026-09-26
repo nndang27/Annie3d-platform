@@ -7,7 +7,7 @@
   /* minmax(0, 1fr): grid items may shrink below their content (tabs scroll instead of pushing Close off-screen). */
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
-  background: #f4f4f2;
+  background: var(--surface);
   animation: sim-in 160ms ease-out;
 }
 @keyframes sim-in {
@@ -21,8 +21,8 @@
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  background: #fff;
-  border-bottom: 1px solid #e6e6e2;
+  background: var(--surface);
+  box-shadow: 0 4px 12px var(--shade);
 }
 .sim-head .grow {
   flex: 1;
@@ -30,24 +30,25 @@
 .sim-tabs {
   display: flex;
   gap: 2px;
-  background: #f1f1ee;
-  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--pressed);
+  border-radius: var(--r-md);
   padding: 3px;
 }
 .sim-tabs button {
   border: 0;
   background: transparent;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--fs-md);
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: var(--r-md);
   cursor: pointer;
-  color: #55554f;
+  color: var(--ink-2);
 }
 .sim-tabs button[aria-pressed="true"] {
-  background: #fff;
-  color: #17191d;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  background: var(--surface);
+  color: var(--accent-ink);
+  box-shadow: var(--raised-sm);
 }
 .sim-icon {
   width: 34px;
@@ -55,13 +56,13 @@
   display: grid;
   place-items: center;
   border: 0;
-  border-radius: 9px;
+  border-radius: var(--r-md);
   background: transparent;
   cursor: pointer;
-  color: #3a3a36;
+  color: var(--ink-2);
 }
 .sim-icon:hover {
-  background: #f1f1ee;
+  box-shadow: var(--raised-sm);
 }
 .sim-body {
   position: relative;
@@ -94,12 +95,14 @@
   object-fit: contain;
 }
 .sim-empty {
-  color: #8a8a84;
-  font-size: 13px;
+  color: var(--ink-3);
+  font-size: var(--fs-md);
   text-align: center;
   padding: 0 16px;
 }
 
+/* Content mock-ups: pictures of a shop page, a TikTok feed, a chat and a showroom. Their colours
+   imitate those places on purpose, so they are not design-system colours. */
 /* ------------------------------------------------ shop page */
 .shop {
   width: min(1080px, 100%);
@@ -397,10 +400,14 @@
   margin: 0;
 }
 
+/* content end */
 /* ------------------------------------------------ showroom + remote */
+/* Content mock-ups: pictures of a shop page, a TikTok feed, a chat and a showroom. Their colours
+   imitate those places on purpose, so they are not design-system colours. */
 .sim-showroom {
   background: radial-gradient(ellipse at 40% 30%, #2a2c33, #0d0e11 70%);
 }
+/* content end */
 .showroom {
   width: 100%;
   height: 100%;
@@ -420,6 +427,8 @@
   height: auto;
   z-index: 1;
 }
+/* Content mock-ups: pictures of a shop page, a TikTok feed, a chat and a showroom. Their colours
+   imitate those places on purpose, so they are not design-system colours. */
 .showroom .plinth {
   position: absolute;
   bottom: 12%;
@@ -438,24 +447,26 @@
   letter-spacing: 0.02em;
   margin: 0;
 }
+/* content end */
 .showroom .remote {
   align-self: center;
-  background: #fff;
-  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--floating);
+  border-radius: var(--r-lg);
   padding: 18px;
   display: grid;
   gap: 10px;
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 .showroom .remote h2 {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
+  font-size: var(--fs-base);
   margin: 0;
 }
 .showroom .remote .muted {
-  color: #6b6b66;
+  color: var(--ink-3);
   margin: 0;
 }
 .showroom .qr {
@@ -468,15 +479,15 @@
   height: 100%;
 }
 .showroom .link {
-  font-size: 11px;
-  color: #6b6b66;
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
   word-break: break-all;
   text-align: center;
 }
 .showroom .warn {
-  background: #fff6e0;
-  color: #7a4d00;
-  border-radius: 8px;
+  background: var(--warning-soft);
+  color: var(--warning);
+  border-radius: var(--r-md);
   padding: 8px 10px;
   margin: 0;
 }
@@ -486,9 +497,10 @@
   justify-content: center;
   gap: 6px;
   height: 34px;
-  border: 1px solid #d6d6d1;
-  border-radius: 9px;
-  background: #fff;
+  border: 0;
+  box-shadow: var(--raised-sm);
+  border-radius: var(--r-md);
+  background: var(--surface);
   font: inherit;
   cursor: pointer;
 }
@@ -502,15 +514,15 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #c9c9c4;
+  background: var(--line-strong);
 }
 .sim-status[data-state="open"] i {
-  background: #1d9e75;
-  box-shadow: 0 0 0 3px rgb(29 158 117 / 0.2);
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--success-soft);
 }
 .pose {
   font-variant-numeric: tabular-nums;
-  color: #4a4a45;
+  color: var(--ink-2);
   margin: 0;
 }
 
@@ -523,15 +535,18 @@
 
 /* ------------------------------------------------ phone remote page */
 .remote-page {
+  --inv-raised: color-mix(in srgb, var(--surface) 9%, var(--ink));
+  --inv-line: color-mix(in srgb, var(--surface) 20%, var(--ink));
+  --inv-muted: color-mix(in srgb, var(--surface) 65%, var(--ink));
   min-height: 100dvh;
   box-sizing: border-box;
   padding: 18px 16px 28px;
-  background: #0f1014;
-  color: #fff;
+  background: var(--ink);
+  color: var(--surface);
   display: grid;
   align-content: start;
   gap: 14px;
-  font-size: 15px;
+  font-size: var(--fs-base);
 }
 .remote-page header {
   display: flex;
@@ -540,19 +555,19 @@
 }
 .remote-page header .sim-status {
   margin-left: auto;
-  font-size: 13px;
-  color: #b9b9b4;
+  font-size: var(--fs-md);
+  color: var(--inv-muted);
 }
 .remote-page h1 {
-  font-size: 22px;
+  font-size: var(--fs-xl);
   margin: 6px 0 0;
 }
 .remote-page button {
   font: inherit;
-  border-radius: 12px;
-  border: 1px solid #2c2e36;
-  background: #1a1c22;
-  color: #fff;
+  border-radius: var(--r-md);
+  border: 1px solid var(--inv-line);
+  background: var(--inv-raised);
+  color: var(--surface);
   padding: 12px;
   display: inline-flex;
   align-items: center;
@@ -560,27 +575,27 @@
   gap: 6px;
 }
 .remote-page .primary {
-  background: #2f7cf6;
-  border-color: #2f7cf6;
+  background: var(--accent);
+  border-color: var(--accent);
   height: 52px;
   font-weight: 600;
 }
 .remote-page .primary:disabled {
-  background: #1d3f73;
-  border-color: #1d3f73;
+  background: color-mix(in srgb, var(--accent) 40%, var(--ink));
+  border-color: transparent;
 }
 .remote-page .hint {
-  color: #f0b24b;
+  color: var(--warning-soft);
   margin: 0;
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 .remote-page .pad {
   height: 180px;
-  border-radius: 16px;
-  border: 1.5px dashed #3a3d47;
+  border-radius: var(--r-lg);
+  border: 1.5px dashed var(--inv-line);
   display: grid;
   place-items: center;
-  color: #8c8f99;
+  color: var(--inv-muted);
   touch-action: none;
   user-select: none;
 }
@@ -595,12 +610,12 @@
   gap: 8px;
 }
 .remote-page .envs button[aria-pressed="true"] {
-  background: #fff;
-  color: #0f1014;
+  background: var(--surface);
+  color: var(--ink);
 }
 .remote-page .snap {
   width: 100%;
-  border-radius: 14px;
+  border-radius: var(--r-lg);
 }
 /* No 3D model wired: the still is shown and the empty canvas stays out of the way. */
 .sim-slot:has(.sim-still) > .sim-canvas {
@@ -635,7 +650,7 @@
     gap: 16px;
   }
   .shop .buy h1 {
-    font-size: 22px;
+    font-size: var(--fs-xl);
   }
   .shop-nav {
     gap: 14px;

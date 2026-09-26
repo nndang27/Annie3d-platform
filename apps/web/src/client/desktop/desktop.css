@@ -10,11 +10,11 @@
   gap: 10px;
   max-width: min(560px, calc(100vw - 24px));
   padding: 8px 8px 8px 14px;
-  border-radius: 14px;
-  background: #17191d;
-  color: #fff;
-  font-size: 13px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  border-radius: var(--r-lg);
+  background: var(--ink);
+  color: var(--surface);
+  font-size: var(--fs-md);
+  box-shadow: var(--floating);
   animation: pill-in 180ms ease-out;
 }
 .update-pill span {
@@ -26,9 +26,9 @@
 .update-pill button {
   flex: none;
   border: 0;
-  border-radius: 9px;
-  background: #fff;
-  color: #17191d;
+  border-radius: var(--r-md);
+  background: var(--accent);
+  color: var(--on-accent);
   font: inherit;
   font-weight: 600;
   padding: 6px 12px;

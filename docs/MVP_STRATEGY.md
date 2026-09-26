@@ -3,6 +3,8 @@
 Status: consolidated decision record, 2026-09-24. Supersedes the scope parts of
 `WORKFLOW_3D_DESIGN.md` and refines `MVP_VERTICAL_WORKFLOWS.md` (which keeps the
 per-line node detail). Items marked **Decision needed** are open for the founder.
+Positioning in §1–2 is superseded by `VISION_3D_SUPERMARKET.md` (2026-09-26); 3D ads are now
+aisle 04 of the 3D supermarket.
 
 ## 1. Strategy in one paragraph
 

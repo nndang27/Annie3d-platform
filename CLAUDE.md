@@ -1,6 +1,7 @@
 # Annie 3D platform: working rules
 
-Product: Annie 3D, a canvas workspace that turns product photos into 3D ads.
+Product: Annie 3D, the 3D supermarket: a node canvas of ready-made 3D workflows (3D ads are one aisle).
+Vision, aisles, engines and dependency order: `docs/VISION_3D_SUPERMARKET.md` (read first).
 Plan: `docs/BUILD_PLAN_CANVAS.md`. Scope: `docs/MVP_STRATEGY.md` (F1–F12).
 
 ## Stack (do not change without a written decision in docs/)

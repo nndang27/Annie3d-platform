@@ -17,7 +17,15 @@ import * as docs from './docs';
 import { isBoardFile, openPath, setOpener } from './files';
 import { parseHeaders } from './headers';
 import { applyStartupLanguage, locale, setLocale, t, zipErrorText } from './i18n';
-import { ensureStudio, ensureWeb, LOCAL, LocalShellUpdater, startingPage, stopLocalServers } from './local';
+import {
+  ensureStudio,
+  ensureWeb,
+  LOCAL,
+  LocalShellUpdater,
+  startingPage,
+  stopLocalServers,
+  studioWaitText,
+} from './local';
 import { interceptOrigin } from './protocol';
 import { ShellUpdater } from './shellUpdate';
 import { WebPackStore } from './webpack';
@@ -252,11 +260,18 @@ function openStudio(url: string) {
     void win.loadURL(url);
     return;
   }
-  // A local build starts the studio's dev server on first use.
-  void win.loadURL(startingPage('the studio'));
+  // A local build keeps the studio's server ready from launch; say what it is doing meanwhile.
+  let shown = studioWaitText();
+  void win.loadURL(startingPage(shown));
+  const tick = setInterval(() => {
+    if (win.isDestroyed() || studioWaitText() === shown) return;
+    shown = studioWaitText();
+    void win.loadURL(startingPage(shown));
+  }, 1000);
   void ensureStudio().then((ok) => {
+    clearInterval(tick);
     if (win.isDestroyed()) return;
-    void win.loadURL(ok ? url : startingPage('the studio failed; see logs/studio.log in the app data'));
+    void win.loadURL(ok ? url : startingPage('the studio failed; see logs/studio*.log in the app data'));
   });
 }
 
@@ -556,6 +571,8 @@ app.whenReady().then(async () => {
     void splash.loadURL(startingPage('Annie 3D'));
     const ok = await ensureWeb();
     splash.destroy();
+    // Ready before the first click on Studio (built first if its source changed).
+    void ensureStudio();
     if (!ok) {
       dialog.showErrorBox(
         'Annie 3D',

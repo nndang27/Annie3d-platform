@@ -76,9 +76,15 @@ pnpm --filter @annie3d/desktop local:install   # build, install /Applications/An
 
 - The installer bakes `Contents/Resources/local.json` into the app (project root, PATH, node, bun,
   a fingerprint of `apps/desktop`'s sources). With that file the app loads the web app from its dev
-  server (`scripts/dev.mjs`, :5173) and the studio from its own (`bun dev` in
-  `Production_system/Pascal_editor`, :3002). It starts them when they are not running and stops the
-  ones it started when it quits. Web and studio changes therefore show at the next launch (or live).
+  server (`scripts/dev.mjs`, :5173) and the studio from a production build of
+  `Production_system/Pascal_editor` (`next start`, :3002), started at launch before anyone clicks
+  Studio. The studio is rebuilt first only when its git state (HEAD, diff, untracked files) differs
+  from `apps/editor/.next/annie-source`. It starts what is not running and stops what it started when
+  it quits. Web and studio changes therefore show at the next launch.
+- Measured 2026-09-28 (M-series Mac): web ready 6-8 s after launch; studio ready at the same time
+  (22 s when a rebuild was needed, turbo cache 3/5); studio page usable in 0.8-1.0 s (production,
+  5.7 MB of scripts) vs 1.1-1.8 s once compiled on the dev server (10 MB), whose cold start needed a
+  package build, five type watchers, a second Next app and a first compile.
 - Shell changes (`apps/desktop/src`, `build`, `scripts`, `package.json`, `electron-builder.yml`) make
   the page's "Update available · Restart" pill appear; it quits, rebuilds and reinstalls the app, then
   opens it. Log: `~/Library/Logs/Annie 3D/install-local.log`.

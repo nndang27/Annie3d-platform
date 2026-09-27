@@ -1,5 +1,6 @@
-import { type ChildProcess, spawn } from 'node:child_process';
-import { createWriteStream, existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { type ChildProcess, spawn, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { ShellUpdateState } from '@annie3d/contracts/desktop';
 import { app } from 'electron';
@@ -9,6 +10,7 @@ import { shellSourceHash } from '../../scripts/local-source.mjs';
  * A local build (scripts/install-local.mjs) runs this machine's source: the web app from its dev
  * server and the studio from its own, both started here when they are not running yet. The
  * installer writes `local.json` into the app's resources; without it the app is a normal build.
+ * The web app runs from its dev server; the studio from a production build (see ensureStudio).
  */
 export type LocalConfig = {
   /** The 3Dads project root. */
@@ -94,10 +96,95 @@ export function ensureWeb(): Promise<boolean> {
   return ensure('web', LOCAL.webUrl, LOCAL.node, [join(PLATFORM, 'scripts/dev.mjs')], PLATFORM);
 }
 
-/** The studio's dev server (Pascal editor), from the local source; started on first use. */
+// The studio runs as a production build (`next start` answers in about a second; the dev server
+// needed a package build, five type watchers and a first compile, measured at tens of seconds).
+// It is rebuilt only when its source changed since the last build (git state of the studio repo).
+const STUDIO_APP = LOCAL ? join(STUDIO, 'apps/editor') : '';
+const STUDIO_STAMP = LOCAL ? join(STUDIO_APP, '.next/annie-source') : '';
+
+function studioSource(): string {
+  const git = (...args: string[]) =>
+    spawnSync('git', ['-C', STUDIO, ...args], {
+      encoding: 'utf8',
+      env: { ...process.env, PATH: LOCAL?.path },
+    }).stdout ?? '';
+  const hash = createHash('sha256');
+  hash.update(git('rev-parse', 'HEAD'));
+  hash.update(git('diff', 'HEAD'));
+  for (const file of git('ls-files', '--others', '--exclude-standard').split('\n').filter(Boolean)) {
+    hash.update(file);
+    try {
+      hash.update(readFileSync(join(STUDIO, file)));
+    } catch {
+      /* removed meanwhile */
+    }
+  }
+  return hash.digest('hex').slice(0, 16);
+}
+
+function buildStudio(source: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const logs = join(app.getPath('userData'), 'logs');
+    mkdirSync(logs, { recursive: true });
+    const log = createWriteStream(join(logs, 'studio-build.log'), { flags: 'a' });
+    const child = spawn(
+      LOCAL!.bun,
+      ['x', 'turbo', 'run', 'build', '--filter=./apps/editor', '--concurrency=2'],
+      {
+        cwd: STUDIO,
+        env: { ...process.env, PATH: LOCAL?.path },
+        stdio: ['ignore', 'pipe', 'pipe'],
+      },
+    );
+    child.stdout?.pipe(log);
+    child.stderr?.pipe(log);
+    child.on('exit', (code) => {
+      if (code === 0) writeFileSync(STUDIO_STAMP, source);
+      resolve(code === 0);
+    });
+  });
+}
+
+let studioPhase: 'idle' | 'building' | 'starting' = 'idle';
+/** What the studio window says while it waits. */
+export const studioWaitText = () =>
+  studioPhase === 'building' ? 'the studio (building the latest code, about a minute)' : 'the studio';
+
+let studioJob: Promise<boolean> | null = null;
+/** The studio server from the latest local source: built when needed, then started. */
 export function ensureStudio(): Promise<boolean> {
   if (!LOCAL) return Promise.resolve(true);
-  return ensure('studio', LOCAL.studioUrl, LOCAL.bun, ['dev'], STUDIO);
+  studioJob ??= (async () => {
+    if (await answers(LOCAL.studioUrl)) return true;
+    const source = studioSource();
+    let stamp = '';
+    try {
+      stamp = readFileSync(STUDIO_STAMP, 'utf8');
+    } catch {
+      stamp = '';
+    }
+    if (stamp !== source) {
+      studioPhase = 'building';
+      const built = await buildStudio(source);
+      if (!built && !existsSync(join(STUDIO_APP, '.next/BUILD_ID'))) return false;
+    }
+    studioPhase = 'starting';
+    const port = new URL(LOCAL.studioUrl).port || '3002';
+    return ensure(
+      'studio',
+      LOCAL.studioUrl,
+      LOCAL.node,
+      [join(STUDIO, 'node_modules/next/dist/bin/next'), 'start', '-p', port],
+      STUDIO_APP,
+    );
+  })().finally(() => {
+    studioPhase = 'idle';
+  });
+  const job = studioJob;
+  job.then((ok) => {
+    if (!ok) studioJob = null;
+  });
+  return job;
 }
 
 /** Servers this app started stop with it; servers someone else started keep running. */

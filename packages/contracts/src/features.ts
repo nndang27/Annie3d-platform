@@ -47,7 +47,7 @@ export const FEATURES: Feature[] = [
     layer: 'web',
     paths: [
       `${C}/canvas/{Canvas,FlowNode,FlowEdge,Grid,useWheelZoom,useShortcuts,actions,example,kindIcons}.{ts,tsx}`,
-      `${C}/chrome/{TopBar,Toolbar,ContextMenu,Palette,Popover,Toasts,Modal}.tsx`,
+      `${C}/chrome/{TopBar,Logo,Toolbar,ContextMenu,Palette,Popover,Toasts,Modal}.tsx`,
       `${C}/lib/studio.ts`,
       `${C}/canvas/neu/**`,
     ],

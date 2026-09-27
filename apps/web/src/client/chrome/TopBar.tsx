@@ -29,6 +29,7 @@ import { useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
 import { toast, useUi } from '../store/ui';
 import { LanguageButton, LanguageMenu } from './LanguageMenu';
+import { Logo } from './Logo';
 import { Popover } from './Popover';
 import { ReelButton } from './ReelDialog';
 
@@ -49,7 +50,7 @@ export function TopBar() {
   return (
     <header className="topbar pill">
       <a href="/home" className="logo-link" aria-label={t('topbar.home')}>
-        <span className="logo-mark">A</span>
+        <Logo />
       </a>
       <Title />
       <SaveState />

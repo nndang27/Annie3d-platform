@@ -528,6 +528,8 @@ ipcMain.on('docs:open', () => void pickFiles());
 ipcMain.on('docs:create', () => newDocument());
 
 app.whenReady().then(async () => {
+  // Unpackaged runs show the current icon in the Dock (packaged builds get it from electron-builder).
+  if (!app.isPackaged) app.dock?.setIcon(join(__dirname, '../build/icon.png'));
   buildMenu();
   let headers: ReturnType<typeof parseHeaders> | null = null;
   if (!DEV_URL) {

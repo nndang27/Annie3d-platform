@@ -83,10 +83,10 @@ function ensure(name: string, url: string, command: string, args: string[], cwd:
     }
     return false;
   })();
+  // Remembered only while it starts: a server that answered once (ours or someone else's) may be
+  // gone at the next call, which then checks and starts it again.
   starting.set(name, job);
-  job.then((ok) => {
-    if (!ok) starting.delete(name);
-  });
+  void job.finally(() => starting.delete(name));
   return job;
 }
 
@@ -177,12 +177,13 @@ export function ensureStudio(): Promise<boolean> {
       [join(STUDIO, 'node_modules/next/dist/bin/next'), 'start', '-p', port],
       STUDIO_APP,
     );
-  })().finally(() => {
+  })();
+  void studioJob.finally(() => {
     studioPhase = 'idle';
   });
   const job = studioJob;
-  job.then((ok) => {
-    if (!ok) studioJob = null;
+  void job.finally(() => {
+    studioJob = null;
   });
   return job;
 }

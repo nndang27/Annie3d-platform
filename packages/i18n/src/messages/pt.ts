@@ -168,6 +168,8 @@ const catalog: Catalog = {
 
   // Top bar: templates, run all, zoom.
   'topbar.templates': 'Modelos',
+  'topbar.studio': 'Estúdio',
+  'topbar.studioHint': 'Abrir o estúdio 3D',
   'topbar.running': 'Executando…',
   'topbar.runAll': 'Executar tudo',
   'topbar.runAllHint': 'Nós sem alterações são grátis; o custo exato aparece antes de você confirmar',

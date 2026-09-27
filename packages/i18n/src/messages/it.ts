@@ -167,6 +167,8 @@ const catalog: Catalog = {
 
   // Top bar: templates, run all, zoom.
   'topbar.templates': 'Template',
+  'topbar.studio': 'Studio',
+  'topbar.studioHint': 'Apri lo studio 3D',
   'topbar.running': 'Esecuzione…',
   'topbar.runAll': 'Esegui tutto',
   'topbar.runAllHint': 'I nodi invariati sono gratuiti; vedi il costo esatto prima di confermare',
@@ -1205,6 +1207,7 @@ const catalog: Catalog = {
 
 /** Keys whose correct Italian is the English text (names, loanwords). */
 export const sameAsEnglish: readonly string[] = [
+  'topbar.studio',
   'common.brand',
   'node.packshot',
   'port.audio.out',

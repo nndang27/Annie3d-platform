@@ -168,6 +168,8 @@ const catalog: Catalog = {
 
   // Top bar: templates, run all, zoom.
   'topbar.templates': 'Plantillas',
+  'topbar.studio': 'Estudio',
+  'topbar.studioHint': 'Abrir el estudio 3D',
   'topbar.running': 'Ejecutando…',
   'topbar.runAll': 'Ejecutar todo',
   'topbar.runAllHint': 'Los nodos sin cambios son gratis; verás el precio exacto antes de confirmar',

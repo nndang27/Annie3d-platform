@@ -166,6 +166,8 @@ const catalog: Catalog = {
 
   // Top bar: templates, run all, zoom.
   'topbar.templates': '模板',
+  'topbar.studio': '工作室',
+  'topbar.studioHint': '打开 3D 工作室',
   'topbar.running': '正在运行…',
   'topbar.runAll': '全部运行',
   'topbar.runAllHint': '未更改的节点不收费；确认前会显示确切费用',

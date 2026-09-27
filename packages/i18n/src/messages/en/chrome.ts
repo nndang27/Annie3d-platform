@@ -36,6 +36,8 @@ export default {
 
   // Top bar: templates, run all, zoom.
   'topbar.templates': 'Templates',
+  'topbar.studio': 'Studio',
+  'topbar.studioHint': 'Open the 3D studio',
   'topbar.running': 'Running…',
   'topbar.runAll': 'Run all',
   'topbar.runAllHint': 'Unchanged nodes are free; the exact cost is shown before you confirm',

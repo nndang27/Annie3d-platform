@@ -11,3 +11,10 @@ export const ALLOW_UNSIGNED = process.env.ANNIE3D_ALLOW_UNSIGNED === '1';
 export const WORKER_FIRST = /^\/(api|s|billing|desktop)(\/|$)/;
 /** Pages allowed inside the app window besides our origin (Google sign-in). */
 export const INLINE_HOSTS = new Set(['accounts.google.com']);
+/**
+ * The 3D studio (a separate app, Production_system/Pascal_editor). It opens in its own window
+ * with no preload, so it never reaches `window.annieDesktop`. `ANNIE3D_STUDIO_URL` names it;
+ * a dev run defaults to the local studio dev server.
+ */
+const studio = process.env.ANNIE3D_STUDIO_URL || (DEV_URL ? 'http://localhost:3002' : null);
+export const STUDIO_ORIGIN = studio ? new URL(studio).origin : null;

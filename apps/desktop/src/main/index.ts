@@ -12,7 +12,7 @@ import {
   session,
   shell,
 } from 'electron';
-import { DEV_URL, INLINE_HOSTS, ORIGIN } from './config';
+import { DEV_URL, INLINE_HOSTS, ORIGIN, STUDIO_ORIGIN } from './config';
 import * as docs from './docs';
 import { isBoardFile, openPath, setOpener } from './files';
 import { parseHeaders } from './headers';
@@ -178,15 +178,74 @@ function createWindow(page = '/') {
   win.webContents.on('will-navigate', (e, url) => {
     if (inside(url)) return;
     e.preventDefault();
-    void shell.openExternal(url);
+    if (isStudio(url)) openStudio(url);
+    else void shell.openExternal(url);
   });
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (inside(url)) return { action: 'allow' };
+    if (isStudio(url)) {
+      openStudio(url);
+      return { action: 'deny' };
+    }
     if (/^https?:/.test(url)) void shell.openExternal(url);
     return { action: 'deny' };
   });
   void win.loadURL(`${DEV_URL ?? ORIGIN}${page}`);
   return win;
+}
+
+const isStudio = (url: string) => {
+  try {
+    return !!STUDIO_ORIGIN && new URL(url).origin === STUDIO_ORIGIN;
+  } catch {
+    return false;
+  }
+};
+
+/** The studio in its own window: sandboxed, no preload (no desktop bridge), links outside it go to the browser. */
+let studioWin: BrowserWindow | null = null;
+function openStudio(url: string) {
+  if (studioWin && !studioWin.isDestroyed()) {
+    void studioWin.loadURL(url);
+    studioWin.focus();
+    return;
+  }
+  const win = new BrowserWindow({
+    ...loadBounds(),
+    minWidth: 360,
+    minHeight: 480,
+    show: false,
+    backgroundColor: '#1a1a1a',
+    acceptFirstMouse: true,
+    webPreferences: { contextIsolation: true, sandbox: true, nodeIntegration: false, spellcheck: false },
+  });
+  studioWin = win;
+  win.once('ready-to-show', () => win.show());
+  win.on('closed', () => {
+    studioWin = null;
+  });
+  // "Back to Annie 3D" in the studio returns to the board window instead of loading the site here.
+  win.webContents.on('will-navigate', (e, next) => {
+    if (isStudio(next)) return;
+    e.preventDefault();
+    try {
+      if (new URL(next).origin === new URL(DEV_URL ?? ORIGIN).origin) {
+        const board = [...windows][0];
+        if (board) board.focus();
+        else createWindow(new URL(next).pathname);
+        win.close();
+        return;
+      }
+    } catch {
+      /* malformed URL */
+    }
+    if (/^https?:/.test(next)) void shell.openExternal(next);
+  });
+  win.webContents.setWindowOpenHandler(({ url: next }) => {
+    if (/^https?:/.test(next) && !isStudio(next)) void shell.openExternal(next);
+    return { action: 'deny' };
+  });
+  void win.loadURL(url);
 }
 
 // ---- menu: native Edit roles for text, but ⌘Z/⌘A reach the canvas when no text field has focus ----

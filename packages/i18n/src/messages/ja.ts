@@ -170,6 +170,8 @@ const catalog: Catalog = {
 
   // Top bar: templates, run all, zoom.
   'topbar.templates': 'テンプレート',
+  'topbar.studio': 'スタジオ',
+  'topbar.studioHint': '3D スタジオを開く',
   'topbar.running': '実行中…',
   'topbar.runAll': 'すべて実行',
   'topbar.runAllHint': '変更のないノードは無料です。正確な料金は確定前に表示されます',

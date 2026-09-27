@@ -171,6 +171,8 @@ const catalog: Catalog = {
 
   // Top bar: templates, run all, zoom.
   'topbar.templates': 'Шаблоны',
+  'topbar.studio': 'Студия',
+  'topbar.studioHint': 'Открыть 3D-студию',
   'topbar.running': 'Выполняется…',
   'topbar.runAll': 'Запустить все',
   'topbar.runAllHint': 'Неизменённые узлы бесплатны; точная стоимость — перед подтверждением',

@@ -166,6 +166,8 @@ const catalog: Catalog = {
 
   // Top bar: templates, run all, zoom.
   'topbar.templates': 'Mẫu',
+  'topbar.studio': 'Studio',
+  'topbar.studioHint': 'Mở studio 3D',
   'topbar.running': 'Đang chạy…',
   'topbar.runAll': 'Chạy tất cả',
   'topbar.runAllHint': 'Node không đổi được miễn phí; chi phí chính xác hiện ra trước khi bạn xác nhận',
@@ -1107,6 +1109,7 @@ const catalog: Catalog = {
 
 /** Keys whose correct Vietnamese is the English text (names, loanwords). */
 export const sameAsEnglish: readonly string[] = [
+  'topbar.studio',
   'node.packshot',
   'port.adVideo.logo',
   'port.simulation.logo',

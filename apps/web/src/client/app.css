@@ -231,6 +231,12 @@ button .cost {
 .topbar .sign-in {
   font-weight: 600;
 }
+/* Mid-width windows keep the board's name readable: Studio shows its icon only (its title names it). */
+@media (max-width: 1180px) {
+  .topbar .studio-btn .lbl {
+    display: none;
+  }
+}
 .popover .template-menu button {
   display: grid;
   gap: 2px;

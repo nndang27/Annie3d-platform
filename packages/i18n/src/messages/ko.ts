@@ -167,6 +167,8 @@ const catalog: Catalog = {
 
   // Top bar: templates, run all, zoom.
   'topbar.templates': '템플릿',
+  'topbar.studio': '스튜디오',
+  'topbar.studioHint': '3D 스튜디오 열기',
   'topbar.running': '실행 중…',
   'topbar.runAll': '모두 실행',
   'topbar.runAllHint': '변경 없는 노드는 무료이며, 확인하기 전에 정확한 비용을 보여 드려요',

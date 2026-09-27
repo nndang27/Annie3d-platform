@@ -3,6 +3,7 @@ import type { MessageKey } from '@annie3d/i18n';
 import { useQuery } from '@tanstack/react-query';
 import { useReactFlow, useViewport } from '@xyflow/react';
 import {
+  Box,
   ChevronDown,
   Download,
   FilePlus,
@@ -22,6 +23,7 @@ import { boardTitle, useT } from '../i18n';
 import { signOut } from '../lib/auth';
 import { openBoardFilePicker } from '../lib/boardFile';
 import { docs, isDoc, openBoardFile, saveDocument, useDoc, webFiles, withCloud } from '../lib/doc';
+import { studioHref } from '../lib/studio';
 import { MAX_ZOOM, MIN_ZOOM, zoomStep } from '../lib/zoom';
 import { useBoard } from '../store/board';
 import { useRuns } from '../store/runs';
@@ -56,6 +58,7 @@ export function TopBar() {
       <Starters />
       <RunAll />
       <ReelButton />
+      <StudioButton />
       <div className="spacer" />
       <div className="group hide-sm">
         <Zoom />
@@ -63,6 +66,28 @@ export function TopBar() {
       <span className="sep hide-sm" />
       <Account />
     </header>
+  );
+}
+
+/** Opens the 3D studio as its own page; ⌘/Ctrl-click opens it in a new tab. */
+function StudioButton() {
+  const t = useT();
+  const boardId = useBoard((s) => s.boardId);
+  const href = studioHref(boardId);
+  if (!href) return null;
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        if (e.metaKey || e.ctrlKey) window.open(href, '_blank', 'noopener');
+        else location.assign(href);
+      }}
+      className="studio-btn"
+      title={t('topbar.studioHint')}
+      data-testid="studio"
+    >
+      <Box size={16} aria-hidden="true" /> <span className="lbl">{t('topbar.studio')}</span>
+    </button>
   );
 }
 

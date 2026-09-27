@@ -18,7 +18,8 @@
     "dist:mac": "node build.mjs && electron-builder --mac",
     "dist:win": "node build.mjs && electron-builder --win",
     "dist:linux": "node build.mjs && electron-builder --linux",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "local:install": "node scripts/install-local.mjs --open"
   },
   "devDependencies": {
     "@annie3d/contracts": "workspace:*",

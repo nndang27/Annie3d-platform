@@ -68,6 +68,24 @@ pnpm --filter @annie3d/desktop run dist:linux # AppImage + deb
 
 Use `pnpm run pack`, not `pnpm pack` (a pnpm built-in that makes a tarball).
 
+## Local build: the Dock app runs this machine's latest source (2026-09-28)
+
+```bash
+pnpm --filter @annie3d/desktop local:install   # build, install /Applications/Annie 3D.app, open it
+```
+
+- The installer bakes `Contents/Resources/local.json` into the app (project root, PATH, node, bun,
+  a fingerprint of `apps/desktop`'s sources). With that file the app loads the web app from its dev
+  server (`scripts/dev.mjs`, :5173) and the studio from its own (`bun dev` in
+  `Production_system/Pascal_editor`, :3002). It starts them when they are not running and stops the
+  ones it started when it quits. Web and studio changes therefore show at the next launch (or live).
+- Shell changes (`apps/desktop/src`, `build`, `scripts`, `package.json`, `electron-builder.yml`) make
+  the page's "Update available · Restart" pill appear; it quits, rebuilds and reinstalls the app, then
+  opens it. Log: `~/Library/Logs/Annie 3D/install-local.log`.
+- The build number is the install time, and the build folder's copy is unregistered, so `.annie3d`
+  files and `annie3d://` links open the installed local app. Without `local.json` the same code is
+  the normal production app (web packs and electron-updater).
+
 ## Distribution status (2026-09-25)
 
 - Built on macOS: `.app` (arm64, run and tested), Windows NSIS `.exe` + `.blockmap`, Linux

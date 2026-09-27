@@ -1,10 +1,13 @@
+import { LOCAL } from './local';
+
 /**
  * Where the app points. Production by default; `ANNIE3D_ORIGIN` points a build at another site
  * (a `pnpm share` link, a local preview), and `ANNIE3D_DEV_URL` loads a live dev server with hot
  * reload instead of the stored web pack (development only).
  */
 export const ORIGIN = new URL(process.env.ANNIE3D_ORIGIN ?? 'https://annie3d.nndang2701.workers.dev').origin;
-export const DEV_URL = process.env.ANNIE3D_DEV_URL || null;
+// A local build (scripts/install-local.mjs) always shows this machine's latest source.
+export const DEV_URL = process.env.ANNIE3D_DEV_URL || LOCAL?.webUrl || null;
 /** Unsigned web packs are accepted only when explicitly allowed (local development). */
 export const ALLOW_UNSIGNED = process.env.ANNIE3D_ALLOW_UNSIGNED === '1';
 /** Paths the Worker answers itself (never served from the local pack). Mirrors wrangler `run_worker_first`. */
@@ -16,5 +19,6 @@ export const INLINE_HOSTS = new Set(['accounts.google.com']);
  * with no preload, so it never reaches `window.annieDesktop`. `ANNIE3D_STUDIO_URL` names it;
  * a dev run defaults to the local studio dev server.
  */
-const studio = process.env.ANNIE3D_STUDIO_URL || (DEV_URL ? 'http://localhost:3002' : null);
+const studio =
+  process.env.ANNIE3D_STUDIO_URL || LOCAL?.studioUrl || (DEV_URL ? 'http://localhost:3002' : null);
 export const STUDIO_ORIGIN = studio ? new URL(studio).origin : null;

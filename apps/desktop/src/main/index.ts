@@ -17,6 +17,7 @@ import * as docs from './docs';
 import { isBoardFile, openPath, setOpener } from './files';
 import { parseHeaders } from './headers';
 import { applyStartupLanguage, locale, setLocale, t, zipErrorText } from './i18n';
+import { ensureStudio, ensureWeb, LOCAL, LocalShellUpdater, startingPage, stopLocalServers } from './local';
 import { interceptOrigin } from './protocol';
 import { ShellUpdater } from './shellUpdate';
 import { WebPackStore } from './webpack';
@@ -64,7 +65,9 @@ const pack = new WebPackStore(
     for (const w of windows) w.webContents.reload();
   },
 );
-const shellUpdater = new ShellUpdater(() => broadcast('updates:state', updateState()));
+const onShellState = () => broadcast('updates:state', updateState());
+// A local build updates by rebuilding itself from the source tree (local.ts).
+const shellUpdater = LOCAL ? new LocalShellUpdater(onShellState) : new ShellUpdater(onShellState);
 function updateState(): DesktopUpdateState {
   return {
     web: pack.state,
@@ -245,7 +248,16 @@ function openStudio(url: string) {
     if (/^https?:/.test(next) && !isStudio(next)) void shell.openExternal(next);
     return { action: 'deny' };
   });
-  void win.loadURL(url);
+  if (!LOCAL) {
+    void win.loadURL(url);
+    return;
+  }
+  // A local build starts the studio's dev server on first use.
+  void win.loadURL(startingPage('the studio'));
+  void ensureStudio().then((ok) => {
+    if (win.isDestroyed()) return;
+    void win.loadURL(ok ? url : startingPage('the studio failed; see logs/studio.log in the app data'));
+  });
 }
 
 // ---- menu: native Edit roles for text, but ⌘Z/⌘A reach the canvas when no text field has focus ----
@@ -440,6 +452,7 @@ app.on('before-quit', () => {
   });
 });
 app.on('will-quit', () => {
+  stopLocalServers();
   if (!restarting) return;
   writeFileSync(
     restoreFile(),
@@ -531,6 +544,25 @@ app.whenReady().then(async () => {
   // Unpackaged runs show the current icon in the Dock (packaged builds get it from electron-builder).
   if (!app.isPackaged) app.dock?.setIcon(join(__dirname, '../build/icon.png'));
   buildMenu();
+  if (LOCAL) {
+    // A local build shows this machine's source: its web dev server must answer first.
+    const splash = new BrowserWindow({
+      width: 360,
+      height: 200,
+      frame: false,
+      resizable: false,
+      backgroundColor: '#17191d',
+    });
+    void splash.loadURL(startingPage('Annie 3D'));
+    const ok = await ensureWeb();
+    splash.destroy();
+    if (!ok) {
+      dialog.showErrorBox(
+        'Annie 3D',
+        `The local web app did not start. See ${join(app.getPath('userData'), 'logs', 'web.log')}.`,
+      );
+    }
+  }
   let headers: ReturnType<typeof parseHeaders> | null = null;
   if (!DEV_URL) {
     await pack.init();

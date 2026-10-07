@@ -30,7 +30,7 @@ ignore `server-*` React rules; never make React Flow wheel/touch listeners passi
 
 ## Workflow per change
 1. Write code with the React rules in context; cite the source of any optimisation in a comment.
-   Every text a person can read goes through `t()`. Add it in English and in all nine other
+   Every text a person can read goes through `t()`. Add it in English and in all seven other
    languages in the same change (docs/I18N.md; translators follow packages/i18n/TRANSLATING.md).
 2. `pnpm lint && pnpm typecheck && pnpm test`; E2E for touched flows.
 3. Measure with Chrome DevTools MCP on the production build when performance is affected.

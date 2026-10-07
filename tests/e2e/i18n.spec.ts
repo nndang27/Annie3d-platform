@@ -171,11 +171,11 @@ test.describe('every text is translated (pseudo-locale)', () => {
 });
 
 /**
- * Every language fits: French or Russian run a third longer than English, and Chinese, Japanese
+ * Every language fits: French runs up to a third longer than English, and Japanese
  * and Korean use other fonts. For each language, on a laptop and a phone: the bars do not
  * overflow and no button or label cuts its text. Screenshots land in test-results/i18n/.
  */
-const CODES = ['en', 'vi', 'fr', 'pt', 'es', 'it', 'ru', 'ko', 'ja', 'zh'] as const;
+const CODES = ['en', 'vi', 'fr', 'pt', 'es', 'it', 'ko', 'ja'] as const;
 test.describe('every language fits', () => {
   for (const code of CODES) {
     test(`${code}: top bar, toolbar and node controls fit`, async ({ page }) => {
@@ -233,10 +233,8 @@ test('picking a language switches the page at once and is remembered', async ({ 
     'Português',
     'Español',
     'Italiano',
-    'Русский',
     '한국어',
     '日本語',
-    '简体中文',
   ]);
   await page.getByTestId('language-vi').click();
   await expect(page.getByTestId('run-all')).toContainText('Chạy tất cả');

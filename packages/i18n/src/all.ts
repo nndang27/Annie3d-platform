@@ -7,12 +7,10 @@ import it from './messages/it';
 import ja from './messages/ja';
 import ko from './messages/ko';
 import pt from './messages/pt';
-import ru from './messages/ru';
 import vi from './messages/vi';
-import zh from './messages/zh';
 
 /** Every language at once, for the Worker, the desktop shell and the static site (no lazy loading there). */
-export const CATALOGS: Record<Locale, Catalog> = { en, vi, fr, pt, es, it, ru, ko, ja, zh };
+export const CATALOGS: Record<Locale, Catalog> = { en, vi, fr, pt, es, it, ko, ja };
 
 const cache = new Map<Locale, Translator>();
 export function translator(locale: Locale): Translator {

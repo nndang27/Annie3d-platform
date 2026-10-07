@@ -10,10 +10,8 @@ export const LOCALES = [
   { code: 'pt', tag: 'pt-BR', name: 'Português' },
   { code: 'es', tag: 'es', name: 'Español' },
   { code: 'it', tag: 'it', name: 'Italiano' },
-  { code: 'ru', tag: 'ru', name: 'Русский' },
   { code: 'ko', tag: 'ko', name: '한국어' },
   { code: 'ja', tag: 'ja', name: '日本語' },
-  { code: 'zh', tag: 'zh-CN', name: '简体中文' },
 ] as const;
 
 export type Locale = (typeof LOCALES)[number]['code'];
@@ -35,7 +33,7 @@ export const tagOf = (l: Locale) => LOCALES.find((x) => x.code === l)!.tag;
 
 /**
  * The best supported language for a list of preferred language tags (navigator.languages,
- * Accept-Language), by exact code, then primary subtag ("pt-PT" → pt, "zh-TW" → zh).
+ * Accept-Language), by exact code, then primary subtag ("pt-PT" → pt, "fr-CA" → fr).
  */
 export function negotiate(preferred: readonly string[]): Locale {
   for (const p of preferred) {

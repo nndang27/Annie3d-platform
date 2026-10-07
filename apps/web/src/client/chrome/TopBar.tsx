@@ -492,10 +492,12 @@ function Account() {
           type="button"
           className="sign-in"
           onClick={() => useUi.setState({ signInPrompt: { reason: 'save' } })}
+          aria-label={t('topbar.signIn')}
           data-testid="sign-in"
         >
           <LogIn size={16} aria-hidden="true" />
-          {t('topbar.signIn')}
+          {/* Phones: the icon only, like Share (longer words, e.g. "Iniciar sesión", do not fit). */}
+          <span className="lbl">{t('topbar.signIn')}</span>
         </button>
       )}
       <LanguageButton />

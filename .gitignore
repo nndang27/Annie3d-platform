@@ -29,10 +29,8 @@ apps/web/public/fr
 apps/web/public/pt
 apps/web/public/es
 apps/web/public/it
-apps/web/public/ru
 apps/web/public/ko
 apps/web/public/ja
-apps/web/public/zh
 
 # Generated fixture pack (uploaded to R2 public bucket)
 fixtures/out/*

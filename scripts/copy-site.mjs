@@ -1,7 +1,7 @@
 // Copies the static Astro pages (/home, /legal/*, and each language's /<code>/home,
 // /<code>/legal/*) into the SPA's public folder so the Worker serves them from the same origin
 // as the canvas. Generated files are gitignored.
-import { cpSync, existsSync, readFileSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 
 const src = 'apps/site/dist';
 const dst = 'apps/web/public';
@@ -13,6 +13,12 @@ const codes = [...readFileSync('packages/i18n/src/locales.ts', 'utf8').matchAll(
   .map((m) => m[1])
   .filter((c) => c !== 'en');
 if (codes.length < 2) throw new Error('No languages found in packages/i18n/src/locales.ts');
+
+// A language removed from the list leaves its old pages behind: drop any language folder (a
+// two-letter folder with a home page) that is no longer in the list.
+for (const d of readdirSync(dst))
+  if (/^[a-z]{2}$/.test(d) && !codes.includes(d) && existsSync(`${dst}/${d}/home`))
+    rmSync(`${dst}/${d}`, { recursive: true, force: true });
 
 for (const p of ['home', 'legal', ...codes, '_astro', 'sitemap-index.xml', 'sitemap-0.xml']) {
   rmSync(`${dst}/${p}`, { recursive: true, force: true });

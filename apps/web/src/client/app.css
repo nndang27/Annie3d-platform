@@ -87,17 +87,11 @@
   --node-w: 320px;
 }
 /* Fonts per language (docs/I18N.md). Instrument Sans covers Latin only: Vietnamese (stacked
-   diacritics) and Russian use Inter, a close neutral grotesque with both scripts (self-hosted,
-   OFL; its files download only in those languages). Chinese, Japanese and Korean use the
-   system's own UI font (a CJK web font is several MB); Latin words inside keep Instrument Sans. */
-:root:lang(vi),
-:root:lang(ru) {
+   diacritics) uses Inter, a close neutral grotesque that has them (self-hosted, OFL; its files
+   download only in Vietnamese). Japanese and Korean use the system's own UI font (a CJK web font
+   is several MB); Latin words inside keep Instrument Sans. */
+:root:lang(vi) {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-:root:lang(zh) {
-  --font-sans:
-    "Instrument Sans Variable", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC",
-    "Noto Sans SC", sans-serif;
 }
 :root:lang(ja) {
   --font-sans:
@@ -2337,9 +2331,6 @@ a.btn-primary {
   }
   .topbar button {
     padding: 6px 8px;
-  }
-  .topbar .sign-in svg {
-    display: none;
   }
   .toolbar {
     bottom: max(10px, env(safe-area-inset-bottom));

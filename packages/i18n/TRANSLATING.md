@@ -39,20 +39,17 @@ Each generation step is a **run**, and runs cost **credits**.
 
 - Keep every `{placeholder}` exactly as written. Move it to wherever your grammar wants it.
 - **Plurals.** A plural object lists the CLDR forms your language uses:
-  - vi, ko, ja, zh: `other` only;
+  - vi, ko, ja: `other` only;
   - fr, pt, es, it: `one`, `many`, `other`;
-  - ru: `one`, `few`, `many`, `other`.
   - `i18n.test.ts` checks the forms against `Intl.PluralRules`.
 - **Keep literal**: Annie, Annie 3D, the plan names Creator and Studio ("Free" is translated), GLB, MP4, PNG, ZIP, TikTok, Google Merchant, Google Swirl,
   keyboard symbols (⌘ ⌥ ⇧ ⌫), px, fps, ms, and the version letter in "v{n}".
-- **Byte units** follow your language's software: Mo/Ko/Go in French, МБ/КБ/ГБ in Russian,
-  MB/KB/GB elsewhere.
+- **Byte units** follow your language's software: Mo/Ko/Go in French, MB/KB/GB elsewhere.
 - **Style.**
   - Short and plain, as in good native software (Apple, Figma, Canva in your language).
   - Buttons are short verbs.
   - Sentence case where your script has case. No exclamation marks.
-  - Use native punctuation and quotes (« » in French, 「」 in Japanese, full-width punctuation in
-    Chinese and Japanese).
+  - Use native punctuation and quotes (« » in French, 「」 and full-width punctuation in Japanese).
 - **Address.** Match the target language's usual software register:
 
   | Language | Address |

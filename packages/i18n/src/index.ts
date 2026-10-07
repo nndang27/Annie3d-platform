@@ -101,10 +101,8 @@ const LOADERS: Record<Exclude<Locale, 'en'>, () => Promise<{ default: Catalog }>
   pt: () => import('./messages/pt'),
   es: () => import('./messages/es'),
   it: () => import('./messages/it'),
-  ru: () => import('./messages/ru'),
   ko: () => import('./messages/ko'),
   ja: () => import('./messages/ja'),
-  zh: () => import('./messages/zh'),
 };
 
 export async function loadCatalog(locale: Locale | typeof PSEUDO): Promise<Catalog> {

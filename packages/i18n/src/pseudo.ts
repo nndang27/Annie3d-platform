@@ -55,7 +55,7 @@ const ACCENTS: Record<string, string> = {
   Z: 'Ž',
 };
 
-/** Marks one message: accented letters in ⟦ ⟧, placeholders kept, a third longer (as French or Russian can be). */
+/** Marks one message: accented letters in ⟦ ⟧, placeholders kept, a third longer (as French can be). */
 export function pseudo(s: string): string {
   const body = s.replace(/(\{\w+\})|[A-Za-z]/g, (m, ph: string | undefined) => ph ?? ACCENTS[m] ?? m);
   const pad = '·'.repeat(Math.ceil(s.replace(/\{\w+\}/g, '').length * 0.3));

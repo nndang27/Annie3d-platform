@@ -161,10 +161,8 @@ describe('language list', () => {
       'Português',
       'Español',
       'Italiano',
-      'Русский',
       '한국어',
       '日本語',
-      '简体中文',
     ]);
     // Regional-indicator pairs are how flag emoji are written.
     const flag = /\p{Regional_Indicator}/u;
@@ -182,27 +180,23 @@ describe('translator', () => {
     const t = createTranslator('en', en);
     expect(t('common.credits', { count: 1 })).toBe('1 credit');
     expect(t('common.credits', { count: 1234 })).toBe('1,234 credits');
-    const ru = createTranslator('ru', {
+    const fr = createTranslator('fr', {
       ...en,
-      'common.credits': {
-        one: '{count} кредит',
-        few: '{count} кредита',
-        many: '{count} кредитов',
-        other: '{count} кредита',
-      },
+      'common.credits': { one: '{count} crédit', many: '{count} de crédits', other: '{count} crédits' },
     });
-    expect([1, 3, 5, 21, 1234.5].map((n) => ru('common.credits', { count: n }))).toEqual([
-      '1 кредит',
-      '3 кредита',
-      '5 кредитов',
-      '21 кредит',
-      '1\u00a0234,5 кредита', // Intl groups with a no-break space
+    // French: 0 and 1 are "one", a round million is "many"; groups use a narrow no-break space.
+    expect([0, 1, 5, 1_000_000].map((n) => fr('common.credits', { count: n }))).toEqual([
+      '0 crédit',
+      '1 crédit',
+      '5 crédits',
+      '1\u202f000\u202f000 de crédits',
     ]);
   });
 
   it('negotiates languages from browser and header lists', () => {
     expect(negotiate(['pt-PT', 'en'])).toBe('pt');
-    expect(negotiate(['zh-TW'])).toBe('zh');
+    expect(negotiate(['zh-TW', 'ja'])).toBe('ja');
+    expect(negotiate(['ru'])).toBe('en');
     expect(negotiate(['de-DE', 'fr-CA'])).toBe('fr');
     expect(negotiate(['de'])).toBe('en');
     expect(parseAcceptLanguage('de;q=0.9, ja-JP, en;q=0.5')).toEqual(['ja-JP', 'de', 'en']);

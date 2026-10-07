@@ -181,7 +181,7 @@ first paint only when it is the chosen one (docs/I18N.md).
 
 | | Size |
 | --- | --- |
-| One language chunk | 15.0–18.0 KB gzip (Russian is the largest) |
+| One language chunk | 15.0–18.0 KB gzip (Russian, since removed, was the largest) |
 | Main bundle `index.js` | 60 KB gzip, including the English text |
 
 | Local preview, cold, median of 3 | Board ready | Images ready |

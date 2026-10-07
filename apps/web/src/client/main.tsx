@@ -7,8 +7,8 @@ import { initPerf } from './lib/perf';
 // Instrument Sans (OFL), self-hosted: only the upright weight axis (a variable font, latin subsets
 // load on demand by unicode-range; CSP font-src 'self').
 import '@fontsource-variable/instrument-sans/wght.css';
-// Inter (OFL) for Vietnamese and Russian: declared here, downloaded only when those languages
-// render (unicode-range + a family used only under :lang(vi) / :lang(ru)).
+// Inter (OFL) for Vietnamese: declared here, downloaded only when Vietnamese renders
+// (unicode-range + a family used only under :lang(vi)).
 import '@fontsource-variable/inter/wght.css';
 import './app.css';
 import { useBoard } from './store/board';

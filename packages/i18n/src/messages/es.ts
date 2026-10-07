@@ -1128,6 +1128,8 @@ const catalog: Catalog = {
   'site.home.headline': 'Entra una foto de producto. Sale un anuncio 3D.',
   'site.home.lead':
     'Suelta una foto de producto en el lienzo. Annie 3D crea el producto como un modelo 3D real y te da un video publicitario, packshots desde cualquier ángulo, un GLB animado para tu tienda y un enlace que cualquiera puede abrir. Como todos los resultados salen del mismo modelo, tu producto se ve exactamente igual en todos.',
+  'site.home.screenshotAlt':
+    'El lienzo de Annie 3D: una foto del producto conectada a un modelo 3D y, luego, a packshots, un set, un video publicitario, una exportación y una vista previa de página de tienda.',
   'site.home.whatEyebrow': 'Qué obtienes',
   'site.home.whatTitle': 'Todo a partir de un solo modelo',
   'site.home.videosTitle': 'Videos publicitarios',

@@ -1036,6 +1036,8 @@ const catalog: Catalog = {
   'site.home.headline': '製品写真1枚から、3D広告へ。',
   'site.home.lead':
     'キャンバスに製品写真をドロップするだけ。Annie 3Dが製品を本物の3Dモデルとして構築し、広告動画、あらゆる角度のパックショット、ストア用のアニメーション付きGLB、誰でも開ける共有リンクを用意します。すべての出力が同じモデルから生まれるので、どの出力でも製品が正確に再現されます。',
+  'site.home.screenshotAlt':
+    'Annie 3D のキャンバス：製品写真が3Dモデルにつながり、パックショット、ステージ、広告動画、エクスポート、商品ページのプレビューへと続きます。',
   'site.home.whatEyebrow': 'できること',
   'site.home.whatTitle': 'ひとつのモデルからすべてを',
   'site.home.videosTitle': '広告動画',

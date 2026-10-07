@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import { CANVAS, type LocaleProps, localeStaticPaths, pageT } from '../../lib/site';
 
@@ -7,6 +8,9 @@ const { locale } = Astro.props as LocaleProps;
 const t = pageT(locale);
 // From a page in another language, opening the canvas keeps that language (see scripts/lang.ts).
 const keep = locale === 'en' ? undefined : locale;
+// The canvas in the page's language (scripts/site-screens.mjs takes them from the live site).
+const screens = import.meta.glob<{ default: ImageMetadata }>('../../assets/screens/canvas-*.webp', { eager: true });
+const screen = (screens[`../../assets/screens/canvas-${locale}.webp`] ?? screens['../../assets/screens/canvas-en.webp'])!.default;
 ---
 
 <Base locale={locale} title={t('site.home.title')} description={t('site.home.description')}>
@@ -22,6 +26,16 @@ const keep = locale === 'en' ? undefined : locale;
       <p class="lead">{t('site.home.lead')}</p>
     </div>
   </section>
+
+  <figure class="container-wide hero-shot">
+    <Image
+      src={screen}
+      alt={t('site.home.screenshotAlt')}
+      widths={[800, 1200, 1600]}
+      sizes="(min-width: 1240px) 1200px, 100vw"
+      loading="eager"
+    />
+  </figure>
 
   <section class="section container" aria-labelledby="h-what">
     <p class="eyebrow">{t('site.home.whatEyebrow')}</p>

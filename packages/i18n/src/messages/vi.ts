@@ -1033,6 +1033,8 @@ const catalog: Catalog = {
   'site.home.headline': 'Một ảnh sản phẩm vào. Một quảng cáo 3D ra.',
   'site.home.lead':
     'Thả ảnh sản phẩm lên khung vẽ. Annie 3D dựng sản phẩm thành mô hình 3D thật, rồi tạo cho bạn video quảng cáo, packshot từ mọi góc, GLB có hoạt ảnh cho cửa hàng và một đường liên kết ai cũng mở được. Vì mọi đầu ra đều từ cùng một mô hình, sản phẩm của bạn trông chuẩn xác ở tất cả.',
+  'site.home.screenshotAlt':
+    'Khung vẽ Annie 3D: ảnh sản phẩm nối vào mô hình 3D, rồi tới bộ packshot, bối cảnh, video quảng cáo, xuất tệp và trang cửa hàng xem trước.',
   'site.home.whatEyebrow': 'Bạn nhận được gì',
   'site.home.whatTitle': 'Tất cả từ một mô hình',
   'site.home.videosTitle': 'Video quảng cáo',

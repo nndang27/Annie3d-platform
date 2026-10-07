@@ -1127,6 +1127,8 @@ const catalog: Catalog = {
   'site.home.headline': 'Une photo produit en entrée. Une pub 3D en sortie.',
   'site.home.lead':
     'Déposez une photo produit sur le canevas. Annie 3D reconstruit le produit en véritable modèle 3D, puis vous livre un spot vidéo, des packshots sous tous les angles, un GLB animé pour votre boutique et un lien que tout le monde peut ouvrir. Comme chaque rendu provient du même modèle, votre produit est fidèle partout.',
+  'site.home.screenshotAlt':
+    'Le canevas Annie 3D : une photo produit reliée à un modèle 3D, puis à des packshots, un plateau, un spot vidéo, un export et un aperçu de page boutique.',
   'site.home.whatEyebrow': 'Ce que vous obtenez',
   'site.home.whatTitle': 'Tout à partir d’un seul modèle',
   'site.home.videosTitle': 'Spots vidéo',

@@ -24,6 +24,8 @@ export default {
   'site.home.headline': 'One product photo in. A 3D ad out.',
   'site.home.lead':
     'Drop a product photo on the canvas. Annie 3D builds the product as a real 3D model, then gives you an ad video, packshots from any angle, an animated GLB for your store and a link anyone can open. Because every output comes from the same model, your product looks exactly right in all of them.',
+  'site.home.screenshotAlt':
+    'The Annie 3D canvas: a product photo wired to a 3D model, then to packshots, a stage, an ad video, an export and a shop preview.',
   'site.home.whatEyebrow': 'What you get',
   'site.home.whatTitle': 'Everything from one model',
   'site.home.videosTitle': 'Ad videos',

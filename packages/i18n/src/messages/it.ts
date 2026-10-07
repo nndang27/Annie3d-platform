@@ -1131,6 +1131,8 @@ const catalog: Catalog = {
   'site.home.headline': 'Entra una foto di prodotto. Esce un annuncio 3D.',
   'site.home.lead':
     'Trascina una foto di prodotto sul canvas. Annie 3D ricrea il prodotto come un vero modello 3D, poi ti dà un video pubblicitario, packshot da ogni angolazione, un GLB animato per il tuo negozio e un link che chiunque può aprire. Poiché ogni risultato nasce dallo stesso modello, il prodotto appare identico in tutti.',
+  'site.home.screenshotAlt':
+    'Il canvas di Annie 3D: una foto del prodotto collegata a un modello 3D, poi a packshot, un set, un video pubblicitario, un’esportazione e un’anteprima della pagina negozio.',
   'site.home.whatEyebrow': 'Cosa ottieni',
   'site.home.whatTitle': 'Tutto da un solo modello',
   'site.home.videosTitle': 'Video pubblicitari',

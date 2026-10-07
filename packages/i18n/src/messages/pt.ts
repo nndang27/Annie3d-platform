@@ -1135,6 +1135,8 @@ const catalog: Catalog = {
   'site.home.headline': 'Entra uma foto do produto. Sai um anúncio 3D.',
   'site.home.lead':
     'Solte uma foto do produto na tela. O Annie 3D cria o produto como um modelo 3D de verdade e entrega um anúncio em vídeo, packshots de qualquer ângulo, um GLB animado para a sua loja e um link que qualquer pessoa pode abrir. Como tudo sai do mesmo modelo, seu produto fica exatamente igual em todos eles.',
+  'site.home.screenshotAlt':
+    'A tela do Annie 3D: uma foto do produto ligada a um modelo 3D e, depois, a packshots, um cenário, um anúncio em vídeo, uma exportação e uma prévia de página de loja.',
   'site.home.whatEyebrow': 'O que você recebe',
   'site.home.whatTitle': 'Tudo a partir de um só modelo',
   'site.home.videosTitle': 'Anúncios em vídeo',

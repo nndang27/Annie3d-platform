@@ -1029,6 +1029,8 @@ const catalog: Catalog = {
   'site.home.headline': '제품 사진 한 장으로 3D 광고까지.',
   'site.home.lead':
     '캔버스에 제품 사진을 드롭하세요. Annie 3D가 제품을 실제 3D 모델로 만든 다음 광고 영상, 모든 각도의 팩샷, 스토어용 애니메이션 GLB, 누구나 열 수 있는 링크를 만들어 줘요. 모든 결과물이 같은 모델에서 나오기 때문에 어디서든 제품이 정확하게 보여요.',
+  'site.home.screenshotAlt':
+    'Annie 3D 캔버스: 제품 사진이 3D 모델로 연결되고, 다시 팩샷, 스테이지, 광고 영상, 내보내기, 쇼핑몰 페이지 미리보기로 이어져요.',
   'site.home.whatEyebrow': '제공되는 결과물',
   'site.home.whatTitle': '모델 하나로 모든 것을',
   'site.home.videosTitle': '광고 영상',

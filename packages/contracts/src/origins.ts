@@ -4,6 +4,11 @@
  * links keep working. A browser page opened there moves to the new address (`movedTo`).
  */
 export const CANONICAL_ORIGIN = 'https://annie3d.app';
+/**
+ * The canvas. annie3d.app/ is the landing page (since 2026-10-08); the editor opens at /app, and a
+ * signed-in board at /b/<id>. The desktop app still opens the editor at its own "/".
+ */
+export const APP_PATH = '/app';
 export const LEGACY_ORIGINS = ['https://annie3d.nndang2701.workers.dev'] as const;
 
 /** The same page on the canonical address, or null when this page stays where it is. */

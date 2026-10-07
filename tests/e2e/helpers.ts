@@ -26,7 +26,7 @@ export function graph(page: Page): Promise<GraphSummary> {
 }
 
 /** Opens the canvas as a fresh guest and waits for the board to render. */
-export async function openCanvas(page: Page, path = '/') {
+export async function openCanvas(page: Page, path = '/app') {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => {

@@ -1,4 +1,5 @@
 import {
+  APP_PATH,
   type AssetDto,
   CreateShareRequest,
   type NodeKind,
@@ -283,7 +284,7 @@ shareRoutes.get('/s/:token', async (c) => {
       page(
         t,
         t('share.unavailableTitle'),
-        `<main class="empty"><h1>${esc(t('share.unavailableHeading'))}</h1><p>${esc(t('share.unavailableBody'))}</p><a class="cta" href="/">${esc(t('share.openApp'))}</a></main>`,
+        `<main class="empty"><h1>${esc(t('share.unavailableHeading'))}</h1><p>${esc(t('share.unavailableBody'))}</p><a class="cta" href="${APP_PATH}">${esc(t('share.openApp'))}</a></main>`,
         '',
       ),
       404,

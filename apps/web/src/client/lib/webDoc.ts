@@ -1,4 +1,5 @@
 import {
+  APP_PATH,
   BOARD_FILE_MANIFEST,
   type BoardFileOutput,
   type DocPayload,
@@ -50,7 +51,7 @@ export async function openFileInTab() {
     if (!handle) return;
     const key = crypto.randomUUID();
     await kvPut(handleKey(key), handle);
-    history.pushState(null, '', `/?file=${key}`);
+    history.pushState(null, '', `${APP_PATH}?file=${key}`);
     // Back leaves the file: reload onto the board (a file with unsaved edits asks first).
     addEventListener('popstate', () => location.reload(), { once: true });
     const { loadDocument } = await import('./doc');

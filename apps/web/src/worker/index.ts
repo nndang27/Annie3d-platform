@@ -12,6 +12,7 @@ import { boardFileRoutes } from './routes/boardFile';
 import { boardRoutes } from './routes/boards';
 import { creditRoutes } from './routes/credits';
 import { exportRoutes } from './routes/exports';
+import { landingRoutes } from './routes/landing';
 import { me } from './routes/me';
 import { publicRoutes } from './routes/public';
 import { reelRoutes } from './routes/reels';
@@ -68,6 +69,7 @@ app.post('/api/test/purge-working-copies', async (c) => {
   return c.json(await purgeWorkingCopies(c.env, getDb(c), now ? new Date(now) : new Date()));
 });
 
+app.route('/', landingRoutes);
 app.use('/api/*', loadSession);
 app.route('/', me);
 app.route('/', boardRoutes);

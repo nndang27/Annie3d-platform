@@ -1,3 +1,5 @@
+import { APP_PATH } from '@annie3d/contracts';
+
 /**
  * Better Auth browser client, loaded on first use: ~75 kB of source that only sign-in needs
  * (react-best-practices: bundle-dynamic-imports).
@@ -60,5 +62,6 @@ export async function showOneTap() {
 
 export async function signOut() {
   await (await client()).client.signOut();
-  location.assign('/');
+  // Signed out: back on the canvas as a guest (the root is the landing page).
+  location.assign(APP_PATH);
 }

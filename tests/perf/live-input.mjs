@@ -142,7 +142,7 @@ async function runChrome() {
   });
   const page = await (await browser.newContext({ viewport: null })).newPage();
   await page.addInitScript(INIT);
-  await page.goto(ORIGIN);
+  await page.goto(`${ORIGIN}/app`);
   await page.bringToFront();
   console.log('CHROME window is open: click anywhere on the board to start the recording.');
   const r = await collect(page);

@@ -40,7 +40,7 @@ own budget.
 | --- | --- | --- |
 | Performance panel | This browser: TTFB, FCP, LCP, CLS, INP, "board ready", request count and size, every feature timing (last, p95, count), slowest API calls and files with worker time (`Server-Timing`) | ⌥P or `?perf` in the URL (no button: it is a developer tool); "Copy report" gives JSON |
 | Real-user beacons | The same numbers from every visitor, with country and Cloudflare colo | `POST /api/rum` on tab hide → Workers Logs (`event: "rum"`) |
-| `pnpm measure <url>` | Cold and warm loads of any URL (local, `pnpm share` link, production) in headless Chromium | e.g. `pnpm measure https://annie3d.nndang2701.workers.dev --runs 3` |
+| `pnpm measure <url>` | Cold and warm loads of any URL (local, `pnpm share` link, production) in headless Chromium | e.g. `pnpm measure https://annie3d.app/app --runs 3` (the canvas; "/" is the landing page) |
 | Lighthouse | Lab score on the production build | Chrome DevTools MCP (see CLAUDE.md) |
 
 ## Measured 2026-09-24 (from Sydney)

@@ -163,7 +163,7 @@ async function runChrome() {
   const ctx = await browser.newContext({ viewport: null });
   const page = await ctx.newPage();
   await page.addInitScript(INIT);
-  await page.goto(BASE);
+  await page.goto(`${BASE}/app`);
   const r = await scenario(page);
   r.requests = await page.evaluate(() => performance.getEntriesByType('resource').length);
   await browser.close();

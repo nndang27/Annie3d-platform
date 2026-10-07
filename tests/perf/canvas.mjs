@@ -15,7 +15,7 @@ const board = execSync(`npx -y tsx tests/perf/seed-board.ts ${N}`, {
 }).toString();
 
 async function seed(page) {
-  await page.goto(BASE);
+  await page.goto(`${BASE}/app`);
   await page.waitForSelector('.react-flow__node');
   await page.evaluate(async (json) => {
     await new Promise((resolve, reject) => {

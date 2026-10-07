@@ -19,6 +19,13 @@
       "!apps/web/public/home",
       "!apps/web/public/legal",
       "!apps/web/public/_astro",
+      "!apps/web/public/vi",
+      "!apps/web/public/fr",
+      "!apps/web/public/pt",
+      "!apps/web/public/es",
+      "!apps/web/public/it",
+      "!apps/web/public/ko",
+      "!apps/web/public/ja",
       "!fixtures/out"
     ]
   },

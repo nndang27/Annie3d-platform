@@ -11,7 +11,7 @@ test.describe('signed-in board sync', () => {
     const guest = await graph(page);
 
     await signUp(page);
-    await page.goto('/');
+    await page.goto('/app');
     await expect(page).toHaveURL(/\/b\/[0-9a-f-]{36}/);
     await page.waitForFunction(() => (window as any).__annie3d.useBoard.getState().mode === 'remote');
     const imported = await graph(page);

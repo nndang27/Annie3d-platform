@@ -76,7 +76,7 @@ async function untranslated(page: Page, where: string): Promise<string[]> {
 
 test.describe('every text is translated (pseudo-locale)', () => {
   test('board, menus, agent, palette, dialogs, editor and simulator', async ({ page }) => {
-    const errors = await openCanvas(page, '/?lang=en-XA');
+    const errors = await openCanvas(page, '/app?lang=en-XA');
     expect(await page.evaluate(() => document.documentElement.lang)).toBe('en');
     const all: string[] = [];
     const sweep = async (where: string) => all.push(...(await untranslated(page, where)));
@@ -140,9 +140,9 @@ test.describe('every text is translated (pseudo-locale)', () => {
   });
 
   test('signed in: account, credits, run and export dialogs, and server messages', async ({ page }) => {
-    await page.goto('/?lang=en-XA');
+    await page.goto('/app?lang=en-XA');
     await signUp(page);
-    await openCanvas(page, '/?lang=en-XA');
+    await openCanvas(page, '/app?lang=en-XA');
     const all: string[] = [];
     const sweep = async (where: string) => all.push(...(await untranslated(page, where)));
     await sweep('signed-in board');
@@ -185,7 +185,7 @@ test.describe('every language fits', () => {
         { width: 390, height: 844 },
       ]) {
         await page.setViewportSize(size);
-        await openCanvas(page, `/?lang=${code}`);
+        await openCanvas(page, `/app?lang=${code}`);
         expect(await page.evaluate(() => document.documentElement.lang)).toMatch(new RegExp(`^${code}`));
         problems.push(
           ...(await page.evaluate((w) => {

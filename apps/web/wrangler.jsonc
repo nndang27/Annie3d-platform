@@ -9,8 +9,9 @@
     "binding": "ASSETS",
     // Canvas is a SPA; unknown paths serve index.html (Workers static assets SPA routing).
     "not_found_handling": "single-page-application",
-    // API and share pages always hit the Worker, in dev and prod alike.
-    "run_worker_first": ["/api/*", "/s/*", "/billing/*"]
+    // API and share pages always hit the Worker, in dev and prod alike; so do "/" (the landing
+    // page in the visitor's language) and /home (moved to "/").
+    "run_worker_first": ["/api/*", "/s/*", "/billing/*", "/", "/home", "/home/"]
   },
   "observability": { "enabled": true },
   // Daily: delete expired desktop working copies (services/cleanup.ts).

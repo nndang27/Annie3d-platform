@@ -1,4 +1,4 @@
-import { CheckoutRequest, EstimateRequest } from '@annie3d/contracts';
+import { APP_PATH, CheckoutRequest, EstimateRequest } from '@annie3d/contracts';
 import { creditAccounts, creditEntries, grant, paymentEvents, subscriptions, workspaces } from '@annie3d/db';
 import { desc, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
@@ -146,7 +146,7 @@ creditRoutes.post('/api/billing/simulated/confirm', requireEditor, async (c) => 
   const [acc] = await db.select().from(creditAccounts).where(eq(creditAccounts.workspaceId, data.ws));
   // The hosted checkout page posts a form: send the browser back to the app.
   if ((c.req.header('content-type') ?? '').includes('application/x-www-form-urlencoded')) {
-    const back = new URL(data.ret?.startsWith('/') ? data.ret : '/', new URL(c.req.url).origin);
+    const back = new URL(data.ret?.startsWith('/') ? data.ret : APP_PATH, new URL(c.req.url).origin);
     back.searchParams.set('checkout', 'success');
     return c.redirect(back.pathname + back.search, 303);
   }
@@ -184,7 +184,7 @@ a{color:#6b6f76;display:block;text-align:center;margin-top:12px;font-size:13px}<
 <div class="row"><span>${esc(t('api.checkout.creditsMonthly', { count: plan.creditsPerMonth }))}</span><span>${esc(price)}</span></div>
 <div class="row total"><span>${esc(t('api.checkout.dueToday'))}</span><span>${esc(price)}</span></div>
 <button type="submit" data-testid="checkout-pay">${esc(t('api.checkout.pay', { price }))}</button>
-<a href="${esc(data.ret?.startsWith('/') ? data.ret : '/')}">${esc(t('api.checkout.cancel'))}</a>
+<a href="${esc(data.ret?.startsWith('/') ? data.ret : APP_PATH)}">${esc(t('api.checkout.cancel'))}</a>
 </form></body></html>`);
 });
 

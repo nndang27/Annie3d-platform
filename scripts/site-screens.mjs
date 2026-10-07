@@ -22,7 +22,7 @@ try {
   for (const code of codes) {
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
     const page = await ctx.newPage();
-    await page.goto(`${ORIGIN}/?lang=${code}`);
+    await page.goto(`${ORIGIN}/app?lang=${code}`);
     await page.waitForSelector('.react-flow__node', { timeout: 30_000 });
     // Every preview image decoded, then a moment for videos' first frames and fonts.
     await page.waitForFunction(

@@ -121,7 +121,7 @@ async function scenario(page) {
 async function runWebkit() {
   const browser = await webkit.launch({ headless: false });
   const page = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
-  await page.goto(ORIGIN);
+  await page.goto(`${ORIGIN}/app`);
   const r = await scenario(page);
   r.gpu = `webkit=${browser.version()}`;
   await browser.close();
@@ -133,7 +133,7 @@ async function runChrome() {
   const channel = process.env.CHROME === 'cft' ? undefined : 'chrome';
   const browser = await chromium.launch({ channel, headless: false, args: ['--window-size=1440,990'] });
   const page = await (await browser.newContext({ viewport: null })).newPage();
-  await page.goto(ORIGIN);
+  await page.goto(`${ORIGIN}/app`);
   const r = await scenario(page);
   r.gpu = `browser=${browser.version()}`;
   await browser.close();

@@ -6,11 +6,89 @@
     <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#f7f7f5" />
     <title>Annie 3D</title>
-    <meta name="description" content="Turn one product photo into 3D ads, packshots and an animated GLB on a free canvas." />
+    <meta
+      name="description"
+      content="Annie 3D turns one product photo into a 3D model, ad videos, packshots and an animated GLB, on a canvas you can open without signing up."
+    />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://annie3d.app/" />
+    <!-- Link previews (chat apps, social posts, search). -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Annie 3D" />
+    <meta property="og:url" content="https://annie3d.app/" />
+    <meta property="og:title" content="Annie 3D: one product photo in, a 3D ad out" />
+    <meta
+      property="og:description"
+      content="A canvas that turns a product photo into a 3D model, ad videos, packshots and an animated GLB."
+    />
+    <meta property="og:image" content="https://annie3d.app/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      /* Boot screen: the company in plain HTML for anything that does not run the app (link
+         checkers, crawlers, a slow or blocked script). React replaces it on its first render, so
+         people normally never see it: it only fades in if the app has not started after 0.6 s. */
+      .boot {
+        max-width: 560px;
+        margin: 18vh auto 0;
+        padding: 0 24px;
+        font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: #544e47;
+        opacity: 0;
+        animation: boot-in 0.3s ease-out 0.6s forwards;
+      }
+      .boot h1 {
+        margin: 6px 0 10px;
+        font-size: 26px;
+        line-height: 1.2;
+        color: #24211e;
+      }
+      .boot .brand {
+        margin: 0;
+        font-weight: 600;
+        color: #24211e;
+      }
+      .boot nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 18px;
+        margin-top: 18px;
+      }
+      .boot a {
+        color: #8f3210;
+      }
+      .boot .legal {
+        margin-top: 18px;
+        font-size: 13px;
+      }
+      @keyframes boot-in {
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="boot">
+        <p class="brand">Annie 3D</p>
+        <h1>One product photo in. A 3D ad out.</h1>
+        <p>
+          Annie 3D is a canvas that turns one product photo into a 3D model, ad videos, packshots from
+          any angle and an animated GLB. Open it without signing up.
+        </p>
+        <nav aria-label="Annie 3D">
+          <a href="/home">About Annie 3D</a>
+          <a href="/legal/privacy">Privacy</a>
+          <a href="/legal/terms">Terms</a>
+          <a href="https://www.linkedin.com/company/annie3d" rel="noopener">LinkedIn</a>
+          <a href="mailto:ngocdang.nguyen@annie3d.app">ngocdang.nguyen@annie3d.app</a>
+        </nav>
+        <p class="legal">© 2026 Annie 3D, Australia.</p>
+        <noscript><p>The canvas needs JavaScript. Turn it on to open the editor.</p></noscript>
+      </main>
+    </div>
     <script type="module" src="/src/client/main.tsx"></script>
   </body>
 </html>

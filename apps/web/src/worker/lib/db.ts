@@ -16,6 +16,10 @@ export function getDb(c: Context<AppEnv>): Db {
     connecting.catch(() => {}); // surfaced by the first query instead
     c.set('db', made.db);
     c.set('dbClient', made.client);
+    c.set(
+      'dbConnecting',
+      connecting.catch(() => {}),
+    );
     db = made.db;
   }
   return db;
@@ -26,6 +30,15 @@ export const closeDb: MiddlewareHandler<AppEnv> = async (c, next) => {
     await next();
   } finally {
     const client = c.get('dbClient');
-    if (client) c.executionCtx.waitUntil(client.end().catch(() => {}));
+    // A route that never queried (get-session without a cookie) still opened a client: end it
+    // only once its connection is up. pg's end() on a socket still connecting throws at once,
+    // outside its promise, which used to turn the response into a 500.
+    if (client)
+      c.executionCtx.waitUntil(
+        (async () => {
+          await c.get('dbConnecting');
+          await client.end();
+        })().catch(() => {}),
+      );
   }
 };

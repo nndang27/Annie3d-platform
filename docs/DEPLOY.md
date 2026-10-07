@@ -36,7 +36,7 @@ pnpm share:stop
 | Hyperdrive | `annie3d-prod` → Neon production (direct URL, channel_binding removed); id in wrangler.jsonc |
 | Secrets | `wrangler secret bulk --name annie3d` from stdin: BETTER_AUTH_SECRET (fresh, prod only), GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, CLOUDFLARE_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY |
 | Never in production | `ANNIE3D_TEST_AUTH` (email/password test sign-in) |
-| R2 CORS | `infra/r2-cors.json` on `annie3d-uploads` (includes the workers.dev origin) |
+| R2 CORS | `infra/r2-cors.json` on `annie3d-uploads` (annie3d.app and the old workers.dev origin; applied 2026-10-07) |
 | Fixtures | `annie3d-public/fixtures/v1/*` (`node fixtures/upload.mjs`) |
 
 ## Still needed from the owner

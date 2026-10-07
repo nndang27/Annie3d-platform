@@ -40,6 +40,8 @@ export interface SessionUser {
 export interface Vars {
   db: Db | undefined;
   dbClient: import('pg').Client | undefined;
+  /** Settles when the pg connection is up (or failed); closing waits for it. */
+  dbConnecting: Promise<unknown> | undefined;
   user: SessionUser | null;
   workspaceId: string | null;
   role: 'owner' | 'editor' | 'viewer' | null;

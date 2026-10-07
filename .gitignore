@@ -42,3 +42,6 @@ perf-results/*.heapsnapshot
 # Desktop app packages (electron-builder output)
 apps/desktop/release
 apps/desktop/dist
+
+# macOS Finder files
+.DS_Store

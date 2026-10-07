@@ -1144,6 +1144,54 @@ const catalog: Catalog = {
   'site.home.howBody':
     'Partez d’un graphe prêt à l’emploi ou ajoutez vos propres nœuds : photo, texte, modèle 3D, plateau, packshot, spot vidéo et export. Sélectionnez une zone du modèle et décrivez la modification ; chaque retouche devient une nouvelle version que vous pouvez comparer ou annuler.',
   'site.home.tryExample': 'Essayer le tableau d’exemple',
+  // Landing page: who it is for, trust, questions, closing call to action.
+  'site.home.whoEyebrow': 'Pour qui',
+  'site.home.whoTitle': 'Conçu pour celles et ceux qui vendent des produits',
+  'site.home.whoSellersTitle': 'Vendeurs en ligne',
+  'site.home.whoSellersBody':
+    'Transformez les photos que vous avez déjà en vues 3D, packshots et vidéos courtes pour votre boutique et les marketplaces.',
+  'site.home.whoBrandsTitle': 'Marques et équipes marketing',
+  'site.home.whoBrandsBody':
+    'Gardez chaque pub fidèle à votre marque : tous les formats proviennent du même modèle 3D de votre produit.',
+  'site.home.whoAgenciesTitle': 'Agences et freelances',
+  'site.home.whoAgenciesBody':
+    'Démarrez un projet client à partir d’un tableau prêt à l’emploi, reconnectez-le pour son produit et envoyez un lien qu’il peut ouvrir.',
+  'site.home.trustEyebrow': 'Votre travail vous appartient',
+  'site.home.trustTitle': 'Conçu pour mériter votre confiance',
+  'site.home.trustRightsTitle': 'Votre contenu est à vous',
+  'site.home.trustRightsBody':
+    'Vous conservez les droits sur les photos que vous importez et sur tout ce que vous créez.',
+  'site.home.trustDataTitle': 'Où sont vos données',
+  'site.home.trustDataBody':
+    'Les comptes et les tableaux sont stockés à Sydney, en Australie, et les fichiers dans Cloudflare R2, dans la région Océanie.',
+  'site.home.trustRefundTitle': 'Crédits rendus en cas d’échec d’un contrôle',
+  'site.home.trustRefundBody':
+    'Chaque exécution est contrôlée. Une exécution qui échoue à nos contrôles qualité vous rend automatiquement ses crédits.',
+  'site.home.trustFilesTitle': 'Des fichiers utilisables partout',
+  'site.home.trustFilesBody':
+    'Téléchargez des fichiers GLB, MP4 et PNG standard, ou enregistrez un tableau entier dans un seul fichier sur votre ordinateur.',
+  'site.home.faqEyebrow': 'Questions',
+  'site.home.faqTitle': 'Questions fréquentes',
+  'site.home.faqAccountQ': 'Faut-il un compte pour essayer ?',
+  'site.home.faqAccountA':
+    'Non. Ouvrez le canevas et explorez tout de suite le tableau d’exemple. Connectez-vous avec Google quand vous voulez importer vos propres photos et lancer leur traitement.',
+  'site.home.faqPriceQ': 'Combien ça coûte ?',
+  'site.home.faqPriceA':
+    'Les nouveaux comptes reçoivent {credits} crédits offerts, de quoi lancer un tableau d’exemple complet. Chaque étape consomme des crédits, et une étape qui échoue à nos contrôles qualité est remboursée.',
+  'site.home.faqFilesQ': 'Quels fichiers vais-je obtenir ?',
+  'site.home.faqFilesA':
+    'Un GLB animé vérifié selon les limites du web, de Google Merchant et de Google Swirl, des spots vidéo MP4 en 1:1, 4:5 et 9:16, des packshots PNG et un lien que tout le monde peut ouvrir.',
+  'site.home.faqOwnQ': 'À qui appartient ce que je crée ?',
+  'site.home.faqOwnA':
+    'À vous. Vous conservez les droits sur les photos que vous importez et sur tout ce que vous créez. N’importez que des produits dont vous avez le droit de faire la publicité.',
+  'site.home.faqLanguagesQ': 'Dans quelles langues Annie 3D est-elle disponible ?',
+  'site.home.faqLanguagesA':
+    'En anglais, vietnamien, français, portugais, espagnol, italien, coréen et japonais, dans le canevas comme sur ce site.',
+  'site.home.faqWhoQ': 'Qui fait Annie 3D ?',
+  'site.home.faqWhoA': 'Une petite équipe produit basée en Australie. Écrivez-nous à {email}.',
+  'site.home.ctaTitle': 'Transformez votre prochaine photo produit en pub 3D',
+  'site.home.ctaBody':
+    'Ouvrez le canevas, essayez le tableau d’exemple, puis lancez votre propre photo dès que vous le souhaitez.',
 
   // /legal/*
   'site.legal.draft': 'Version provisoire de la préversion · à faire relire par un avocat avant le lancement',
@@ -1258,6 +1306,7 @@ export const sameAsEnglish: readonly string[] = [
   'desktop.menu.services',
   'site.meta.pageTitle',
   'site.nav.contact',
+  'site.home.faqEyebrow',
   'site.privacy.cookiesTitle',
 ];
 

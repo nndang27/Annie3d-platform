@@ -1045,6 +1045,52 @@ const catalog: Catalog = {
   'site.home.howBody':
     '미리 만들어진 그래프에서 시작하거나 사진, 텍스트, 3D 모델, 스테이지, 팩샷, 광고 영상, 내보내기 노드를 직접 추가하세요. 모델에서 영역을 선택하고 변경 사항을 설명하면, 모든 편집이 새 버전이 되어 비교하거나 되돌릴 수 있어요.',
   'site.home.tryExample': '예시 보드 사용해 보기',
+  // Landing page: who it is for, trust, questions, closing call to action.
+  'site.home.whoEyebrow': '이런 분께 추천해요',
+  'site.home.whoTitle': '제품을 판매하는 모든 분을 위해',
+  'site.home.whoSellersTitle': '온라인 판매자',
+  'site.home.whoSellersBody':
+    '이미 가지고 있는 사진으로 쇼핑몰과 오픈마켓에 올릴 3D 뷰, 팩샷, 짧은 영상을 만들어 보세요.',
+  'site.home.whoBrandsTitle': '브랜드 및 마케팅 팀',
+  'site.home.whoBrandsBody':
+    '모든 광고를 브랜드에 맞게 유지하세요. 모든 형식이 같은 제품 3D 모델에서 만들어져요.',
+  'site.home.whoAgenciesTitle': '에이전시 및 프리랜서',
+  'site.home.whoAgenciesBody':
+    '미리 만들어진 보드로 클라이언트 프로젝트를 시작하고, 클라이언트 제품에 맞게 다시 연결한 뒤 누구나 열 수 있는 링크를 보내세요.',
+  'site.home.trustEyebrow': '작업물은 온전히 내 것',
+  'site.home.trustTitle': '소중한 제품을 믿고 맡길 수 있도록',
+  'site.home.trustRightsTitle': '콘텐츠의 권리는 사용자에게',
+  'site.home.trustRightsBody': '업로드한 사진과 만든 모든 결과물에 대한 권리는 사용자에게 있어요.',
+  'site.home.trustDataTitle': '데이터 저장 위치',
+  'site.home.trustDataBody':
+    '계정과 보드는 호주 시드니에, 파일은 오세아니아 지역의 Cloudflare R2에 저장돼요.',
+  'site.home.trustRefundTitle': '검사에 실패하면 크레딧 환불',
+  'site.home.trustRefundBody':
+    '모든 실행은 검사를 거쳐요. 품질 검사를 통과하지 못한 실행은 크레딧이 자동으로 환불돼요.',
+  'site.home.trustFilesTitle': '어디서나 쓸 수 있는 파일',
+  'site.home.trustFilesBody':
+    '표준 GLB, MP4, PNG 파일을 다운로드하거나 보드 전체를 파일 하나로 컴퓨터에 저장할 수 있어요.',
+  'site.home.faqEyebrow': '질문',
+  'site.home.faqTitle': '자주 묻는 질문',
+  'site.home.faqAccountQ': '사용해 보려면 계정이 필요한가요?',
+  'site.home.faqAccountA':
+    '아니요. 캔버스를 열고 바로 예시 보드를 살펴볼 수 있어요. 직접 사진을 업로드하고 실행하려면 Google로 로그인하세요.',
+  'site.home.faqPriceQ': '비용은 얼마인가요?',
+  'site.home.faqPriceA':
+    '새 계정에는 {credits}크레딧이 무료로 제공되며, 예시 보드 하나를 처음부터 끝까지 실행할 수 있는 양이에요. 각 단계에는 크레딧이 사용되고, 품질 검사를 통과하지 못한 단계는 환불돼요.',
+  'site.home.faqFilesQ': '어떤 파일을 받을 수 있나요?',
+  'site.home.faqFilesA':
+    '웹, Google Merchant, Google Swirl 기준으로 검사한 애니메이션 GLB, 1:1, 4:5, 9:16 비율의 MP4 광고 영상, PNG 팩샷, 그리고 누구나 열 수 있는 링크를 받을 수 있어요.',
+  'site.home.faqOwnQ': '내가 만든 결과물은 누구의 소유인가요?',
+  'site.home.faqOwnA':
+    '사용자의 소유예요. 업로드한 사진과 만든 모든 결과물에 대한 권리는 사용자에게 있어요. 광고할 권리가 있는 제품만 업로드하세요.',
+  'site.home.faqLanguagesQ': 'Annie 3D는 어떤 언어를 지원하나요?',
+  'site.home.faqLanguagesA':
+    '캔버스와 이 사이트에서 영어, 베트남어, 프랑스어, 포르투갈어, 스페인어, 이탈리아어, 한국어, 일본어를 지원해요.',
+  'site.home.faqWhoQ': 'Annie 3D는 누가 만드나요?',
+  'site.home.faqWhoA': '호주에 있는 작은 제품 팀이 만들어요. 문의: {email}',
+  'site.home.ctaTitle': '다음 제품 사진을 3D 광고로 만들어 보세요',
+  'site.home.ctaBody': '캔버스를 열고 예시 보드를 사용해 본 다음, 준비되면 내 사진으로 실행해 보세요.',
 
   // /legal/*
   'site.legal.draft': '정식 출시 전 초안 · 출시 전 법률 자문 검토 예정',

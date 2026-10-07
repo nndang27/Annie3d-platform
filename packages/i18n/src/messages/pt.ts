@@ -1152,6 +1152,53 @@ const catalog: Catalog = {
   'site.home.howBody':
     'Comece com um fluxo pronto ou adicione seus próprios nós: foto, texto, modelo 3D, cenário, packshot, anúncio em vídeo e exportação. Selecione uma região do modelo e descreva a alteração; cada edição vira uma nova versão que você pode comparar ou desfazer.',
   'site.home.tryExample': 'Experimente o quadro de exemplo',
+  // Landing page: who it is for, trust, questions, closing call to action.
+  'site.home.whoEyebrow': 'Para quem é',
+  'site.home.whoTitle': 'Feito para quem vende produtos',
+  'site.home.whoSellersTitle': 'Lojistas on-line',
+  'site.home.whoSellersBody':
+    'Transforme as fotos que você já tem em vistas 3D, packshots e vídeos curtos para sua loja e marketplaces.',
+  'site.home.whoBrandsTitle': 'Marcas e equipes de marketing',
+  'site.home.whoBrandsBody':
+    'Mantenha todos os anúncios fiéis à marca: todos os formatos saem do mesmo modelo 3D do seu produto.',
+  'site.home.whoAgenciesTitle': 'Agências e freelancers',
+  'site.home.whoAgenciesBody':
+    'Comece um projeto de cliente com um quadro pronto, reconecte-o para o produto dele e envie um link que ele possa abrir.',
+  'site.home.trustEyebrow': 'Seu trabalho continua seu',
+  'site.home.trustTitle': 'Feito para merecer a confiança dos seus produtos',
+  'site.home.trustRightsTitle': 'Seu conteúdo é seu',
+  'site.home.trustRightsBody': 'Você mantém os direitos sobre as fotos que envia e sobre tudo o que cria.',
+  'site.home.trustDataTitle': 'Onde seus dados ficam',
+  'site.home.trustDataBody':
+    'Contas e quadros ficam armazenados em Sydney, na Austrália, e os arquivos no Cloudflare R2, na região da Oceania.',
+  'site.home.trustRefundTitle': 'Créditos de volta quando uma verificação falha',
+  'site.home.trustRefundBody':
+    'Toda execução é verificada. Uma execução reprovada nas nossas verificações de qualidade devolve os créditos automaticamente.',
+  'site.home.trustFilesTitle': 'Arquivos que você leva para qualquer lugar',
+  'site.home.trustFilesBody':
+    'Baixe arquivos padrão GLB, MP4 e PNG ou salve um quadro inteiro como um único arquivo no seu computador.',
+  'site.home.faqEyebrow': 'Dúvidas',
+  'site.home.faqTitle': 'Perguntas frequentes',
+  'site.home.faqAccountQ': 'Preciso de uma conta para experimentar?',
+  'site.home.faqAccountA':
+    'Não. Abra a tela e explore o quadro de exemplo na hora. Entre com o Google quando quiser enviar suas próprias fotos e executá-las.',
+  'site.home.faqPriceQ': 'Quanto custa?',
+  'site.home.faqPriceA':
+    'Contas novas ganham {credits} créditos grátis, o suficiente para executar um quadro de exemplo completo. Cada etapa usa créditos, e uma etapa reprovada nas nossas verificações de qualidade é reembolsada.',
+  'site.home.faqFilesQ': 'Quais arquivos eu recebo?',
+  'site.home.faqFilesA':
+    'Um GLB animado verificado com os limites da web, do Google Merchant e do Google Swirl, anúncios em vídeo MP4 em 1:1, 4:5 e 9:16, packshots em PNG e um link que qualquer pessoa pode abrir.',
+  'site.home.faqOwnQ': 'De quem é o que eu crio?',
+  'site.home.faqOwnA':
+    'Seu. Você mantém os direitos sobre as fotos que envia e sobre tudo o que cria. Envie apenas produtos que você tem o direito de anunciar.',
+  'site.home.faqLanguagesQ': 'Em quais idiomas o Annie 3D está disponível?',
+  'site.home.faqLanguagesA':
+    'Inglês, vietnamita, francês, português, espanhol, italiano, coreano e japonês, na tela e neste site.',
+  'site.home.faqWhoQ': 'Quem faz o Annie 3D?',
+  'site.home.faqWhoA': 'Uma pequena equipe de produto sediada na Austrália. Escreva para nós em {email}.',
+  'site.home.ctaTitle': 'Transforme a próxima foto do seu produto em um anúncio 3D',
+  'site.home.ctaBody':
+    'Abra a tela, experimente o quadro de exemplo e execute sua própria foto quando quiser.',
 
   // /legal/*
   'site.legal.draft':

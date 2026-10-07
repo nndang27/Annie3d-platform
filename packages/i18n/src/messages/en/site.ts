@@ -40,6 +40,52 @@ export default {
   'site.home.howBody':
     'Start from a ready-made graph or add your own nodes: photo, text, 3D model, stage, packshot, ad video and export. Select a region on the model and describe the change; every edit becomes a new version you can compare or undo.',
   'site.home.tryExample': 'Try the example board',
+  // Landing page: who it is for, trust, questions, closing call to action.
+  'site.home.whoEyebrow': 'Who it is for',
+  'site.home.whoTitle': 'Made for people who sell products',
+  'site.home.whoSellersTitle': 'Online sellers',
+  'site.home.whoSellersBody':
+    'Turn the photos you already have into 3D views, packshots and short videos for your shop and marketplaces.',
+  'site.home.whoBrandsTitle': 'Brands and marketing teams',
+  'site.home.whoBrandsBody':
+    'Keep every ad on brand: all formats come from the same 3D model of your product.',
+  'site.home.whoAgenciesTitle': 'Agencies and freelancers',
+  'site.home.whoAgenciesBody':
+    'Start a client project from a ready-made board, rewire it for their product and send a link they can open.',
+  'site.home.trustEyebrow': 'Your work stays yours',
+  'site.home.trustTitle': 'Built to be trusted with your products',
+  'site.home.trustRightsTitle': 'Your content is yours',
+  'site.home.trustRightsBody': 'You keep the rights to the photos you upload and to everything you create.',
+  'site.home.trustDataTitle': 'Where your data lives',
+  'site.home.trustDataBody':
+    'Accounts and boards are stored in Sydney, Australia, and files in Cloudflare R2 in the Oceania region.',
+  'site.home.trustRefundTitle': 'Credits back when a check fails',
+  'site.home.trustRefundBody':
+    'Every run is checked. A run that fails our quality checks gives its credits back automatically.',
+  'site.home.trustFilesTitle': 'Files you can take anywhere',
+  'site.home.trustFilesBody':
+    'Download standard GLB, MP4 and PNG files, or save a whole board as one file on your computer.',
+  'site.home.faqEyebrow': 'Questions',
+  'site.home.faqTitle': 'Frequently asked questions',
+  'site.home.faqAccountQ': 'Do I need an account to try it?',
+  'site.home.faqAccountA':
+    'No. Open the canvas and explore the example board right away. Sign in with Google when you want to upload your own photos and run them.',
+  'site.home.faqPriceQ': 'How much does it cost?',
+  'site.home.faqPriceA':
+    'New accounts get {credits} free credits, enough to run one complete example board. Each step uses credits, and a step that fails our quality checks is refunded.',
+  'site.home.faqFilesQ': 'Which files do I get?',
+  'site.home.faqFilesA':
+    'An animated GLB checked against web, Google Merchant and Google Swirl limits, MP4 ad videos in 1:1, 4:5 and 9:16, PNG packshots, and a link anyone can open.',
+  'site.home.faqOwnQ': 'Who owns what I make?',
+  'site.home.faqOwnA':
+    'You do. You keep the rights to the photos you upload and to everything you create. Only upload products you have the right to advertise.',
+  'site.home.faqLanguagesQ': 'Which languages does Annie 3D speak?',
+  'site.home.faqLanguagesA':
+    'English, Vietnamese, French, Portuguese, Spanish, Italian, Korean and Japanese, in the canvas and on this site.',
+  'site.home.faqWhoQ': 'Who makes Annie 3D?',
+  'site.home.faqWhoA': 'A small product team based in Australia. Write to us at {email}.',
+  'site.home.ctaTitle': 'Turn your next product photo into a 3D ad',
+  'site.home.ctaBody': 'Open the canvas, try the example board, and run your own photo when you are ready.',
 
   // /legal/*
   'site.legal.draft': 'Draft for the pre-release · to be reviewed by counsel before launch',

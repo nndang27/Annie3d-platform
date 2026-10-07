@@ -1053,6 +1053,54 @@ const catalog: Catalog = {
   'site.home.howBody':
     '用意されたグラフから始めるか、写真、テキスト、3Dモデル、ステージ、パックショット、広告動画、エクスポートのノードを自分で追加します。モデル上の領域を選んで変更内容を伝えるだけ。すべての編集は新しいバージョンになり、比較や取り消しができます。',
   'site.home.tryExample': 'サンプルボードを試す',
+  // Landing page: who it is for, trust, questions, closing call to action.
+  'site.home.whoEyebrow': 'こんな方に',
+  'site.home.whoTitle': '製品を販売するすべての人に',
+  'site.home.whoSellersTitle': 'オンライン販売者',
+  'site.home.whoSellersBody':
+    '手持ちの写真を、ショップやマーケットプレイス向けの3Dビュー、パックショット、短い動画に変えられます。',
+  'site.home.whoBrandsTitle': 'ブランド・マーケティングチーム',
+  'site.home.whoBrandsBody':
+    'すべての広告でブランドの一貫性を保てます。どのフォーマットも、製品の同じ3Dモデルから作られます。',
+  'site.home.whoAgenciesTitle': '代理店・フリーランス',
+  'site.home.whoAgenciesBody':
+    '用意されたボードからクライアントの案件を始め、製品に合わせてつなぎ直し、相手がそのまま開けるリンクを送れます。',
+  'site.home.trustEyebrow': 'あなたの作品はあなたのもの',
+  'site.home.trustTitle': '大切な製品を安心して任せられる設計',
+  'site.home.trustRightsTitle': 'コンテンツの権利はあなたに',
+  'site.home.trustRightsBody': 'アップロードした写真と作成したすべてのものの権利は、あなたが保持します。',
+  'site.home.trustDataTitle': 'データの保存場所',
+  'site.home.trustDataBody':
+    'アカウントとボードはオーストラリア・シドニーに、ファイルはオセアニア地域のCloudflare R2に保存されます。',
+  'site.home.trustRefundTitle': 'チェック不合格ならクレジットを返還',
+  'site.home.trustRefundBody':
+    'すべての実行はチェックされます。品質チェックに合格しなかった実行のクレジットは、自動的に払い戻されます。',
+  'site.home.trustFilesTitle': 'どこでも使えるファイル',
+  'site.home.trustFilesBody':
+    '標準のGLB、MP4、PNGファイルをダウンロードできます。ボード全体を1つのファイルとしてパソコンに保存することもできます。',
+  'site.home.faqEyebrow': '質問',
+  'site.home.faqTitle': 'よくある質問',
+  'site.home.faqAccountQ': '試すのにアカウントは必要ですか？',
+  'site.home.faqAccountA':
+    'いいえ。キャンバスを開けば、すぐにサンプルボードを操作できます。自分の写真をアップロードして実行したいときは、Googleでログインしてください。',
+  'site.home.faqPriceQ': '料金はいくらですか？',
+  'site.home.faqPriceA':
+    '新規アカウントには{credits} クレジットが無料で付与されます。サンプルボード1つを最後まで実行できる量です。各ステップでクレジットを使用し、品質チェックに合格しなかったステップは払い戻されます。',
+  'site.home.faqFilesQ': 'どんなファイルが手に入りますか？',
+  'site.home.faqFilesA':
+    'Web、Google Merchant、Google Swirlの制限に適合しているかチェック済みのアニメーション付きGLB、1:1・4:5・9:16のMP4広告動画、PNGのパックショット、そして誰でも開けるリンクです。',
+  'site.home.faqOwnQ': '作ったものの所有者は誰ですか？',
+  'site.home.faqOwnA':
+    'あなたです。アップロードした写真と作成したすべてのものの権利は、あなたが保持します。広告する権利を持つ製品のみをアップロードしてください。',
+  'site.home.faqLanguagesQ': 'Annie 3Dはどの言語に対応していますか？',
+  'site.home.faqLanguagesA':
+    '英語、ベトナム語、フランス語、ポルトガル語、スペイン語、イタリア語、韓国語、日本語に対応しています（キャンバスとこのサイトの両方）。',
+  'site.home.faqWhoQ': 'Annie 3Dを作っているのは誰ですか？',
+  'site.home.faqWhoA':
+    'オーストラリアを拠点とする小さなプロダクトチームです。お問い合わせは{email}までどうぞ。',
+  'site.home.ctaTitle': '次の製品写真を、3D広告に',
+  'site.home.ctaBody':
+    'キャンバスを開いてサンプルボードを試し、準備ができたら自分の写真で実行してみましょう。',
 
   // /legal/*
   'site.legal.draft': 'プレリリース版の草案・公開前に法律顧問による確認を予定',

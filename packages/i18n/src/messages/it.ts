@@ -1148,6 +1148,52 @@ const catalog: Catalog = {
   'site.home.howBody':
     'Parti da uno schema già pronto o aggiungi i tuoi nodi: foto, testo, modello 3D, set, packshot, video pubblicitario ed esportazione. Seleziona un’area del modello e descrivi la modifica: ogni intervento diventa una nuova versione che puoi confrontare o annullare.',
   'site.home.tryExample': 'Prova la lavagna di esempio',
+  // Landing page: who it is for, trust, questions, closing call to action.
+  'site.home.whoEyebrow': 'Per chi è',
+  'site.home.whoTitle': 'Pensato per chi vende prodotti',
+  'site.home.whoSellersTitle': 'Venditori online',
+  'site.home.whoSellersBody':
+    'Trasforma le foto che hai già in viste 3D, packshot e brevi video per il tuo negozio e i marketplace.',
+  'site.home.whoBrandsTitle': 'Brand e team marketing',
+  'site.home.whoBrandsBody':
+    'Ogni annuncio resta coerente con il brand: tutti i formati nascono dallo stesso modello 3D del tuo prodotto.',
+  'site.home.whoAgenciesTitle': 'Agenzie e freelance',
+  'site.home.whoAgenciesBody':
+    'Avvia un progetto per un cliente da una lavagna già pronta, ricollegala per il suo prodotto e invia un link che può aprire.',
+  'site.home.trustEyebrow': 'Il tuo lavoro resta tuo',
+  'site.home.trustTitle': 'Affidabile per i tuoi prodotti',
+  'site.home.trustRightsTitle': 'I tuoi contenuti sono tuoi',
+  'site.home.trustRightsBody': 'Conservi i diritti sulle foto che carichi e su tutto ciò che crei.',
+  'site.home.trustDataTitle': 'Dove si trovano i tuoi dati',
+  'site.home.trustDataBody':
+    'Account e lavagne sono conservati a Sydney, in Australia, e i file in Cloudflare R2 nella regione Oceania.',
+  'site.home.trustRefundTitle': 'Crediti restituiti se un controllo fallisce',
+  'site.home.trustRefundBody':
+    'Ogni esecuzione viene verificata. Se non supera i nostri controlli di qualità, i suoi crediti vengono restituiti automaticamente.',
+  'site.home.trustFilesTitle': 'File da portare ovunque',
+  'site.home.trustFilesBody':
+    'Scarica file standard GLB, MP4 e PNG, oppure salva un’intera lavagna come un unico file sul tuo computer.',
+  'site.home.faqEyebrow': 'Domande',
+  'site.home.faqTitle': 'Domande frequenti',
+  'site.home.faqAccountQ': 'Serve un account per provarlo?',
+  'site.home.faqAccountA':
+    'No. Apri il canvas ed esplora subito la lavagna di esempio. Accedi con Google quando vuoi caricare le tue foto ed eseguirle.',
+  'site.home.faqPriceQ': 'Quanto costa?',
+  'site.home.faqPriceA':
+    'I nuovi account ricevono {credits} crediti gratuiti, sufficienti per eseguire una lavagna di esempio completa. Ogni passaggio consuma crediti, e un passaggio che non supera i nostri controlli di qualità viene rimborsato.',
+  'site.home.faqFilesQ': 'Quali file ottengo?',
+  'site.home.faqFilesA':
+    'Un GLB animato verificato rispetto ai limiti web, Google Merchant e Google Swirl, video pubblicitari MP4 in 1:1, 4:5 e 9:16, packshot PNG e un link che chiunque può aprire.',
+  'site.home.faqOwnQ': 'Di chi è ciò che creo?',
+  'site.home.faqOwnA':
+    'Tuo. Conservi i diritti sulle foto che carichi e su tutto ciò che crei. Carica solo prodotti che hai il diritto di pubblicizzare.',
+  'site.home.faqLanguagesQ': 'In quali lingue è disponibile Annie 3D?',
+  'site.home.faqLanguagesA':
+    'Inglese, vietnamita, francese, portoghese, spagnolo, italiano, coreano e giapponese, nel canvas e su questo sito.',
+  'site.home.faqWhoQ': 'Chi c’è dietro Annie 3D?',
+  'site.home.faqWhoA': 'Un piccolo team di prodotto con sede in Australia. Scrivici a {email}.',
+  'site.home.ctaTitle': 'Trasforma la tua prossima foto di prodotto in un annuncio 3D',
+  'site.home.ctaBody': 'Apri il canvas, prova la lavagna di esempio ed esegui la tua foto quando sei pronto.',
 
   // /legal/*
   'site.legal.draft': 'Bozza per la versione preliminare · da far rivedere a un legale prima del lancio',

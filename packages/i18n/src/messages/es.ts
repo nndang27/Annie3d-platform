@@ -1145,6 +1145,53 @@ const catalog: Catalog = {
   'site.home.howBody':
     'Empieza con un grafo ya preparado o añade tus propios nodos: foto, texto, modelo 3D, set, packshot, video publicitario y exportación. Selecciona una región del modelo y describe el cambio; cada edición se convierte en una nueva versión que puedes comparar o deshacer.',
   'site.home.tryExample': 'Probar el tablero de ejemplo',
+  // Landing page: who it is for, trust, questions, closing call to action.
+  'site.home.whoEyebrow': 'Para quién es',
+  'site.home.whoTitle': 'Hecho para quienes venden productos',
+  'site.home.whoSellersTitle': 'Vendedores online',
+  'site.home.whoSellersBody':
+    'Convierte las fotos que ya tienes en vistas 3D, packshots y videos cortos para tu tienda y los marketplaces.',
+  'site.home.whoBrandsTitle': 'Marcas y equipos de marketing',
+  'site.home.whoBrandsBody':
+    'Mantén la coherencia de marca en cada anuncio: todos los formatos salen del mismo modelo 3D de tu producto.',
+  'site.home.whoAgenciesTitle': 'Agencias y freelancers',
+  'site.home.whoAgenciesBody':
+    'Empieza el proyecto de un cliente desde un tablero ya preparado, reconéctalo para su producto y envíale un enlace que pueda abrir.',
+  'site.home.trustEyebrow': 'Tu trabajo sigue siendo tuyo',
+  'site.home.trustTitle': 'Pensado para que le confíes tus productos',
+  'site.home.trustRightsTitle': 'Tu contenido es tuyo',
+  'site.home.trustRightsBody': 'Conservas los derechos sobre las fotos que subes y sobre todo lo que creas.',
+  'site.home.trustDataTitle': 'Dónde se guardan tus datos',
+  'site.home.trustDataBody':
+    'Las cuentas y los tableros se guardan en Sídney (Australia), y los archivos, en Cloudflare R2 en la región de Oceanía.',
+  'site.home.trustRefundTitle': 'Recuperas los créditos si falla una comprobación',
+  'site.home.trustRefundBody':
+    'Cada ejecución se comprueba. Si una ejecución no supera nuestras comprobaciones de calidad, sus créditos se devuelven automáticamente.',
+  'site.home.trustFilesTitle': 'Archivos que puedes llevar a cualquier parte',
+  'site.home.trustFilesBody':
+    'Descarga archivos GLB, MP4 y PNG estándar, o guarda un tablero entero como un solo archivo en tu computadora.',
+  'site.home.faqEyebrow': 'Preguntas',
+  'site.home.faqTitle': 'Preguntas frecuentes',
+  'site.home.faqAccountQ': '¿Necesito una cuenta para probarlo?',
+  'site.home.faqAccountA':
+    'No. Abre el lienzo y explora el tablero de ejemplo al instante. Inicia sesión con Google cuando quieras subir tus propias fotos y ejecutarlas.',
+  'site.home.faqPriceQ': '¿Cuánto cuesta?',
+  'site.home.faqPriceA':
+    'Las cuentas nuevas reciben {credits} créditos gratis, suficientes para ejecutar un tablero de ejemplo completo. Cada paso consume créditos, y un paso que no supera nuestras comprobaciones de calidad se reembolsa.',
+  'site.home.faqFilesQ': '¿Qué archivos obtengo?',
+  'site.home.faqFilesA':
+    'Un GLB animado comprobado con los límites de la web, Google Merchant y Google Swirl, videos publicitarios MP4 en 1:1, 4:5 y 9:16, packshots PNG y un enlace que cualquiera puede abrir.',
+  'site.home.faqOwnQ': '¿De quién es lo que creo?',
+  'site.home.faqOwnA':
+    'Tuyo. Conservas los derechos sobre las fotos que subes y sobre todo lo que creas. Sube solo productos que tengas derecho a anunciar.',
+  'site.home.faqLanguagesQ': '¿En qué idiomas está Annie 3D?',
+  'site.home.faqLanguagesA':
+    'Inglés, vietnamita, francés, portugués, español, italiano, coreano y japonés, en el lienzo y en este sitio.',
+  'site.home.faqWhoQ': '¿Quién hace Annie 3D?',
+  'site.home.faqWhoA': 'Un pequeño equipo de producto con sede en Australia. Escríbenos a {email}.',
+  'site.home.ctaTitle': 'Convierte tu próxima foto de producto en un anuncio 3D',
+  'site.home.ctaBody':
+    'Abre el lienzo, prueba el tablero de ejemplo y ejecuta tu propia foto cuando quieras.',
 
   // /legal/*
   'site.legal.draft':

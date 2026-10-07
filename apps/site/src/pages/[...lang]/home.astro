@@ -1,7 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import { CANVAS, type LocaleProps, localeStaticPaths, pageT } from '../../lib/site';
+import { tagOf } from '@annie3d/i18n';
+import { FREE_RUN_CREDITS } from '../../../../../packages/contracts/src/credits';
+import { CANVAS, CONTACT_EMAIL, LINKEDIN, type LocaleProps, localeStaticPaths, pageT } from '../../lib/site';
 
 export const getStaticPaths = localeStaticPaths;
 const { locale } = Astro.props as LocaleProps;
@@ -11,9 +13,67 @@ const keep = locale === 'en' ? undefined : locale;
 // The canvas in the page's language (scripts/site-screens.mjs takes them from the live site).
 const screens = import.meta.glob<{ default: ImageMetadata }>('../../assets/screens/canvas-*.webp', { eager: true });
 const screen = (screens[`../../assets/screens/canvas-${locale}.webp`] ?? screens['../../assets/screens/canvas-en.webp'])!.default;
+
+const who = (['Sellers', 'Brands', 'Agencies'] as const).map((k) => ({
+  title: t(`site.home.who${k}Title`),
+  body: t(`site.home.who${k}Body`),
+}));
+const trust = (['Rights', 'Data', 'Refund', 'Files'] as const).map((k) => ({
+  title: t(`site.home.trust${k}Title`),
+  body: t(`site.home.trust${k}Body`),
+}));
+const faq = [
+  { q: t('site.home.faqAccountQ'), a: t('site.home.faqAccountA') },
+  { q: t('site.home.faqPriceQ'), a: t('site.home.faqPriceA', { credits: FREE_RUN_CREDITS }) },
+  { q: t('site.home.faqFilesQ'), a: t('site.home.faqFilesA') },
+  { q: t('site.home.faqOwnQ'), a: t('site.home.faqOwnA') },
+  { q: t('site.home.faqLanguagesQ'), a: t('site.home.faqLanguagesA') },
+  { q: t('site.home.faqWhoQ'), a: t('site.home.faqWhoA', { email: CONTACT_EMAIL }) },
+];
+// Structured data (schema.org) for search engines and anything that verifies the company.
+const site = Astro.site!.origin;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${site}/#organization`,
+    name: 'Annie 3D',
+    url: `${site}/`,
+    logo: `${site}/favicon.svg`,
+    email: CONTACT_EMAIL,
+    sameAs: [LINKEDIN],
+    address: { '@type': 'PostalAddress', addressCountry: 'AU' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Annie 3D',
+    url: `${site}/`,
+    inLanguage: tagOf(locale),
+    publisher: { '@id': `${site}/#organization` },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Annie 3D',
+    applicationCategory: 'DesignApplication',
+    operatingSystem: 'Web',
+    url: `${site}${CANVAS}`,
+    description: t('site.home.description'),
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    publisher: { '@id': `${site}/#organization` },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: tagOf(locale),
+    mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+];
 ---
 
 <Base locale={locale} title={t('site.home.title')} description={t('site.home.description')}>
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <section class="container-wide hero">
     <div>
       <p class="eyebrow">{t('site.home.eyebrow')}</p>
@@ -52,5 +112,35 @@ const screen = (screens[`../../assets/screens/canvas-${locale}.webp`] ?? screens
     <h2 id="h-how" class="h2" style="margin-top:10px">{t('site.home.howTitle')}</h2>
     <p class="body" style="margin-top:12px;max-width:60ch">{t('site.home.howBody')}</p>
     <p style="margin-top:24px"><a class="btn btn-secondary" href={CANVAS} data-lang={keep}>{t('site.home.tryExample')}</a></p>
+  </section>
+
+  <section class="section container" style="padding-top:0" aria-labelledby="h-who">
+    <p class="eyebrow">{t('site.home.whoEyebrow')}</p>
+    <h2 id="h-who" class="h2" style="margin-top:10px">{t('site.home.whoTitle')}</h2>
+    <div class="cards" style="margin-top:32px">
+      {who.map((w) => <div class="card-item"><h3 class="h3">{w.title}</h3><p class="body" style="margin-top:8px">{w.body}</p></div>)}
+    </div>
+  </section>
+
+  <section class="section container" style="padding-top:0" aria-labelledby="h-trust">
+    <p class="eyebrow">{t('site.home.trustEyebrow')}</p>
+    <h2 id="h-trust" class="h2" style="margin-top:10px">{t('site.home.trustTitle')}</h2>
+    <div class="cards cards-4" style="margin-top:32px">
+      {trust.map((w) => <div class="card-item"><h3 class="h3">{w.title}</h3><p class="body" style="margin-top:8px">{w.body}</p></div>)}
+    </div>
+  </section>
+
+  <section class="section container" style="padding-top:0" aria-labelledby="h-faq">
+    <p class="eyebrow">{t('site.home.faqEyebrow')}</p>
+    <h2 id="h-faq" class="h2" style="margin-top:10px">{t('site.home.faqTitle')}</h2>
+    <div class="faq" style="margin-top:24px">
+      {faq.map((f) => <details><summary>{f.q}</summary><p class="body">{f.a}</p></details>)}
+    </div>
+  </section>
+
+  <section class="section container cta-band" aria-labelledby="h-cta">
+    <h2 id="h-cta" class="h2">{t('site.home.ctaTitle')}</h2>
+    <p class="lead" style="margin-top:12px">{t('site.home.ctaBody')}</p>
+    <p style="margin-top:24px"><a class="btn btn-primary btn-lg btn-pill" href={CANVAS} data-lang={keep}>{t('site.nav.openCanvas')}</a></p>
   </section>
 </Base>

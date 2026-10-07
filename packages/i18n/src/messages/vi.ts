@@ -1050,6 +1050,52 @@ const catalog: Catalog = {
   'site.home.howBody':
     'Bắt đầu từ một sơ đồ dựng sẵn hoặc tự thêm node: ảnh, văn bản, mô hình 3D, bối cảnh, packshot, video quảng cáo và xuất tệp. Chọn một vùng trên mô hình và mô tả thay đổi; mỗi lần chỉnh sửa tạo ra một phiên bản mới để bạn so sánh hoặc hoàn tác.',
   'site.home.tryExample': 'Dùng thử bảng ví dụ',
+  // Landing page: who it is for, trust, questions, closing call to action.
+  'site.home.whoEyebrow': 'Dành cho ai',
+  'site.home.whoTitle': 'Dành cho những người bán sản phẩm',
+  'site.home.whoSellersTitle': 'Người bán hàng trực tuyến',
+  'site.home.whoSellersBody':
+    'Biến những bức ảnh bạn đã có thành góc nhìn 3D, packshot và video ngắn cho cửa hàng và các sàn thương mại điện tử.',
+  'site.home.whoBrandsTitle': 'Thương hiệu và đội marketing',
+  'site.home.whoBrandsBody':
+    'Giữ mọi quảng cáo đúng nhận diện thương hiệu: mọi định dạng đều từ cùng một mô hình 3D của sản phẩm.',
+  'site.home.whoAgenciesTitle': 'Agency và freelancer',
+  'site.home.whoAgenciesBody':
+    'Bắt đầu dự án cho khách hàng từ một bảng dựng sẵn, nối lại cho sản phẩm của họ và gửi đường liên kết họ mở được ngay.',
+  'site.home.trustEyebrow': 'Sản phẩm của bạn vẫn là của bạn',
+  'site.home.trustTitle': 'Đáng tin cậy để giao phó sản phẩm của bạn',
+  'site.home.trustRightsTitle': 'Nội dung thuộc về bạn',
+  'site.home.trustRightsBody': 'Bạn giữ quyền đối với ảnh bạn tải lên và mọi thứ bạn tạo ra.',
+  'site.home.trustDataTitle': 'Dữ liệu của bạn được lưu ở đâu',
+  'site.home.trustDataBody':
+    'Tài khoản và bảng được lưu tại Sydney, Úc; tệp được lưu trong Cloudflare R2 tại khu vực châu Đại Dương.',
+  'site.home.trustRefundTitle': 'Hoàn tín dụng khi kiểm tra không đạt',
+  'site.home.trustRefundBody':
+    'Mỗi lượt chạy đều được kiểm tra. Lượt chạy không vượt qua các bước kiểm tra chất lượng của chúng tôi sẽ tự động được hoàn tín dụng.',
+  'site.home.trustFilesTitle': 'Tệp mang đi đâu cũng dùng được',
+  'site.home.trustFilesBody':
+    'Tải xuống tệp GLB, MP4 và PNG chuẩn, hoặc lưu cả bảng thành một tệp trên máy tính của bạn.',
+  'site.home.faqEyebrow': 'Câu hỏi',
+  'site.home.faqTitle': 'Câu hỏi thường gặp',
+  'site.home.faqAccountQ': 'Tôi có cần tài khoản để dùng thử không?',
+  'site.home.faqAccountA':
+    'Không. Hãy mở khung vẽ và khám phá bảng ví dụ ngay. Đăng nhập bằng Google khi bạn muốn tải ảnh của mình lên và chạy.',
+  'site.home.faqPriceQ': 'Chi phí bao nhiêu?',
+  'site.home.faqPriceA':
+    'Tài khoản mới nhận {credits} tín dụng miễn phí, đủ để chạy trọn một bảng ví dụ. Mỗi bước dùng tín dụng, và bước nào không vượt qua các bước kiểm tra chất lượng của chúng tôi sẽ được hoàn lại.',
+  'site.home.faqFilesQ': 'Tôi nhận được những tệp nào?',
+  'site.home.faqFilesA':
+    'Một tệp GLB có hoạt ảnh đã kiểm tra theo giới hạn của web, Google Merchant và Google Swirl, video quảng cáo MP4 ở tỷ lệ 1:1, 4:5 và 9:16, packshot PNG, và một đường liên kết ai cũng mở được.',
+  'site.home.faqOwnQ': 'Ai sở hữu những gì tôi tạo ra?',
+  'site.home.faqOwnA':
+    'Là bạn. Bạn giữ quyền đối với ảnh bạn tải lên và mọi thứ bạn tạo ra. Chỉ tải lên những sản phẩm bạn có quyền quảng cáo.',
+  'site.home.faqLanguagesQ': 'Annie 3D hỗ trợ những ngôn ngữ nào?',
+  'site.home.faqLanguagesA':
+    'Tiếng Anh, tiếng Việt, tiếng Pháp, tiếng Bồ Đào Nha, tiếng Tây Ban Nha, tiếng Ý, tiếng Hàn và tiếng Nhật, trên khung vẽ và trên trang web này.',
+  'site.home.faqWhoQ': 'Ai làm ra Annie 3D?',
+  'site.home.faqWhoA': 'Một nhóm phát triển sản phẩm nhỏ tại Úc. Hãy viết cho chúng tôi qua {email}.',
+  'site.home.ctaTitle': 'Biến bức ảnh sản phẩm tiếp theo thành quảng cáo 3D',
+  'site.home.ctaBody': 'Mở khung vẽ, dùng thử bảng ví dụ và chạy ảnh của riêng bạn khi bạn sẵn sàng.',
 
   // /legal/*
   'site.legal.draft': 'Bản nháp cho giai đoạn tiền phát hành · sẽ được luật sư rà soát trước khi ra mắt',

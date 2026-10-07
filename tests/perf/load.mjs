@@ -1,5 +1,5 @@
 // Light load test against a deployment (default: production). Usage: node tests/perf/load.mjs [base] [requests] [concurrency]
-const BASE = process.argv[2] ?? 'https://annie3d.nndang2701.workers.dev';
+const BASE = process.argv[2] ?? 'https://annie3d.app';
 const N = Number(process.argv[3] ?? 1000);
 const C = Number(process.argv[4] ?? 50);
 const targets = [

@@ -1,4 +1,5 @@
 import './zod-setup';
+import { movedTo } from '@annie3d/contracts';
 import { lazy, StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
@@ -22,17 +23,21 @@ initPerf();
 const Controller = lazy(() => import('./sim/Controller'));
 const remote = location.pathname.startsWith('/sim/');
 
+// A page opened on the old workers.dev address moves to annie3d.app (the desktop app stays).
+const moved = movedTo(location, 'annieDesktop' in window);
+if (moved) location.replace(moved);
 // The language's text is in before the first paint (English is built in: no wait).
-void initLocale().then(() =>
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      {remote ? (
-        <Suspense fallback={null}>
-          <Controller />
-        </Suspense>
-      ) : (
-        <App />
-      )}
-    </StrictMode>,
-  ),
-);
+else
+  void initLocale().then(() =>
+    createRoot(document.getElementById('root')!).render(
+      <StrictMode>
+        {remote ? (
+          <Suspense fallback={null}>
+            <Controller />
+          </Suspense>
+        ) : (
+          <App />
+        )}
+      </StrictMode>,
+    ),
+  );

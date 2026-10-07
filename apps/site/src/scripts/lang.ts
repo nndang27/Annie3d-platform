@@ -1,5 +1,10 @@
 // The locale list only (the package entry also brings the English catalog: 44 KB for 3 constants).
+import { movedTo } from '../../../../packages/contracts/src/origins';
 import { COOKIE, isLocale, STORAGE_KEY } from '../../../../packages/i18n/src/locales';
+
+// A page opened on the old workers.dev address moves to annie3d.app.
+const moved = movedTo(location, false);
+if (moved) location.replace(moved);
 
 /**
  * A link with `data-lang` is a language choice: the language switcher, and the canvas links of

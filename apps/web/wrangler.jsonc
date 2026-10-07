@@ -56,7 +56,10 @@
   "env": {
     "production": {
       "name": "annie3d",
+      // annie3d.app is the address; workers.dev stays on for installed desktop apps and old links
+      // (packages/contracts/src/origins.ts).
       "workers_dev": true,
+      "routes": [{ "pattern": "annie3d.app", "custom_domain": true }],
       "triggers": { "crons": ["17 3 * * *"] },
       "r2_buckets": [
         { "binding": "UPLOADS", "bucket_name": "annie3d-uploads" },
@@ -82,7 +85,7 @@
       ],
       "vars": {
         "APP_ENV": "production",
-        "APP_URL": "https://annie3d.nndang2701.workers.dev",
+        "APP_URL": "https://annie3d.app",
         "R2_KEY_PREFIX": "",
         "SIM_SPEED": "1"
       }

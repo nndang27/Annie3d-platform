@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import { _electron as electron } from '@playwright/test';
 
 const APP = process.argv[2];
-const ORIGIN = process.env.ORIGIN ?? 'https://annie3d.nndang2701.workers.dev';
+const ORIGIN = process.env.ORIGIN ?? 'https://annie3d.app';
 const userData = mkdtempSync(join(tmpdir(), 'annie3d-trace-'));
 const app = await electron.launch({
   executablePath: APP,

@@ -39,14 +39,14 @@ jobs:
     timeout-minutes: 30
     environment:
       name: production
-      url: https://annie3d.nndang2701.workers.dev
+      url: https://annie3d.app
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       ANNIE3D_PACK_KEY: ${{ secrets.ANNIE3D_PACK_KEY }}
       ANNIE3D_PACK_KEY_ID: ${{ vars.ANNIE3D_PACK_KEY_ID || 'k1' }}
       MIGRATE_URL: ${{ secrets.DATABASE_URL_PROD }}
-      SITE: https://annie3d.nndang2701.workers.dev
+      SITE: https://annie3d.app
     steps:
       - name: Secrets present?
         id: ready
@@ -97,7 +97,8 @@ jobs:
         if: steps.ready.outputs.ok == 'true'
         run: |
           want=$(node -p "JSON.parse(require('./apps/web/dist/client/desktop/manifest.json').manifest).version")
-          for i in 1 2 3 4 5 6; do
+          # Up to 3 minutes: a newly attached custom domain needs its certificate first.
+          for i in $(seq 1 18); do
             got=$(curl -fsS "$SITE/desktop/manifest.json" | node -p "JSON.parse(JSON.parse(require('fs').readFileSync(0,'utf8')).manifest).version" || true)
             [ "$got" = "$want" ] && echo "live: $got" && exit 0
             echo "waiting for $want (got $got)"; sleep 10

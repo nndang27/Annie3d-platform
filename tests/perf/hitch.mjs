@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium, _electron as electron, webkit } from '@playwright/test';
 import { buildIdentity, save } from './lib.mjs';
 
-const ORIGIN = process.argv.find((a) => a.startsWith('http')) ?? 'https://annie3d.nndang2701.workers.dev';
+const ORIGIN = process.argv.find((a) => a.startsWith('http')) ?? 'https://annie3d.app';
 const only = (process.argv.find((a) => a.startsWith('--only=')) ?? '--only=chrome,app').slice(7).split(',');
 const REPS = Number((process.argv.find((a) => a.startsWith('--reps=')) ?? '--reps=3').slice(7));
 const APP =

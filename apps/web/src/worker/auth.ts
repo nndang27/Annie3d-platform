@@ -1,4 +1,4 @@
-import { FREE_RUN_CREDITS, newId } from '@annie3d/contracts';
+import { FREE_RUN_CREDITS, LEGACY_ORIGINS, newId } from '@annie3d/contracts';
 import {
   accounts,
   type Db,
@@ -23,10 +23,14 @@ import { type Locale, translator } from './lib/i18n';
 /**
  * Local builds shared through a Cloudflare quick tunnel (`pnpm share`, *.trycloudflare.com) serve
  * the app from a random public origin: outside production, that origin becomes the auth base URL
- * so cookies and callbacks match the page. Production only ever uses APP_URL.
+ * so cookies and callbacks match the page. Production uses APP_URL, or the old workers.dev
+ * address when the request came there (installed desktop apps live on it; see contracts/origins).
  */
 export function publicOrigin(env: Env, req: Request): string {
-  if (env.APP_ENV === 'production') return env.APP_URL;
+  if (env.APP_ENV === 'production') {
+    const origin = new URL(req.url).origin;
+    return (LEGACY_ORIGINS as readonly string[]).includes(origin) ? origin : env.APP_URL;
+  }
   // The Host the tunnel forwards (vite preview only accepts *.trycloudflare.com and localhost).
   const host = new URL(req.url).host;
   return /^[a-z0-9-]+\.trycloudflare\.com$/.test(host) ? `https://${host}` : env.APP_URL;
@@ -39,11 +43,14 @@ export function createAuth(env: Env, db: Db, origin = env.APP_URL, locale: Local
     baseURL: origin,
     basePath: '/api/auth',
     secret: env.BETTER_AUTH_SECRET,
-    // Local dev and the API test server run on fixed localhost ports; production trusts APP_URL only.
+    // Local dev and the API test server run on fixed localhost ports; production trusts APP_URL
+    // and the old workers.dev address (desktop apps, old links).
     trustedOrigins:
       env.APP_ENV === 'development'
         ? [origin, env.APP_URL, 'http://localhost:4173', 'http://localhost:5190', 'http://localhost:5191']
-        : [env.APP_URL],
+        : env.APP_ENV === 'production'
+          ? [env.APP_URL, ...LEGACY_ORIGINS]
+          : [env.APP_URL],
     telemetry: { enabled: false },
     // Google One Tap (F11): verifies Google's ID token server-side; uses the Google client id above.
     plugins: [oneTap()],

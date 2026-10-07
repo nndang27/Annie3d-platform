@@ -6,7 +6,7 @@ import { LOCALES } from '../../packages/i18n/src/locales.ts';
 // /home and /legal/*, in English there and under /<code>/ in every other language
 // (/vi/home, /vi/legal/terms). Built output is copied into apps/web/public by `pnpm build`.
 export default defineConfig({
-  site: process.env.PUBLIC_SITE_URL ?? 'https://annie3d.nndang2701.workers.dev',
+  site: process.env.PUBLIC_SITE_URL ?? 'https://annie3d.app',
   output: 'static',
   trailingSlash: 'never',
   build: { format: 'directory', inlineStylesheets: 'always' },

@@ -14,31 +14,24 @@ export default {
   'site.nav.terms': 'Terms',
   'site.nav.contact': 'Contact',
   'site.nav.languages': 'Languages',
+  'site.nav.features': 'Features',
+  'site.nav.howItWorks': 'How it works',
+  'site.nav.pricing': 'Pricing',
+  'site.nav.faq': 'FAQ',
+  'site.nav.signIn': 'Sign in',
+  'site.nav.menu': 'Menu',
+  'site.footer.product': 'Product',
+  'site.footer.company': 'Company',
+  'site.footer.legal': 'Legal',
   'site.footer.copyright': '© 2026 Annie 3D, Australia.',
 
   // /home
   'site.home.title': '3D product ads from one photo',
   'site.home.description':
     'Annie 3D turns one product photo into a true 3D model, ad videos, packshots at any angle and an animated GLB, on a canvas you can open without signing up.',
-  'site.home.eyebrow': '3D advertising workspace',
   'site.home.headline': 'One product photo in. A 3D ad out.',
-  'site.home.lead':
-    'Drop a product photo on the canvas. Annie 3D builds the product as a real 3D model, then gives you an ad video, packshots from any angle, an animated GLB for your store and a link anyone can open. Because every output comes from the same model, your product looks exactly right in all of them.',
   'site.home.screenshotAlt':
     'The Annie 3D canvas: a product photo wired to a 3D model, then to packshots, a stage, an ad video, an export and a shop preview.',
-  'site.home.whatEyebrow': 'What you get',
-  'site.home.whatTitle': 'Everything from one model',
-  'site.home.videosTitle': 'Ad videos',
-  'site.home.videosBody':
-    'Teardown reveals for tech, stone and water for jewelry, splash heroes for beauty, in 1:1, 4:5 and 9:16.',
-  'site.home.packshotsTitle': 'Packshots at any angle',
-  'site.home.packshotsBody': 'Frame the camera yourself or take four standard angles.',
-  'site.home.glbTitle': 'Animated GLB',
-  'site.home.glbBody': 'Checked against web, Google Merchant and Google Swirl limits before you download.',
-  'site.home.howEyebrow': 'How it works',
-  'site.home.howTitle': 'A canvas of nodes you can rewire',
-  'site.home.howBody':
-    'Start from a ready-made graph or add your own nodes: photo, text, 3D model, stage, packshot, ad video and export. Select a region on the model and describe the change; every edit becomes a new version you can compare or undo.',
   'site.home.tryExample': 'Try the example board',
   // Landing page: who it is for, trust, questions, closing call to action.
   'site.home.whoEyebrow': 'Who it is for',
@@ -86,6 +79,69 @@ export default {
   'site.home.faqWhoA': 'A small product team based in Australia. Write to us at {email}.',
   'site.home.ctaTitle': 'Turn your next product photo into a 3D ad',
   'site.home.ctaBody': 'Open the canvas, try the example board, and run your own photo when you are ready.',
+
+  // Landing page, full layout (2026-10-08).
+  'site.home.badge': 'Pre-release: start with {credits} free credits',
+  'site.home.heroLead':
+    'Drop a product photo. Annie 3D builds a real 3D model, then gives you ad videos, packshots from any angle, an animated GLB and live previews on a shop page or in a TikTok feed.',
+  'site.home.heroPrimary': 'Start free',
+  'site.home.heroSecondary': 'See how it works',
+  'site.home.heroNote': 'No card needed. Works in your browser.',
+  'site.home.heroVideoLabel': 'Ad video, 9:16',
+  'site.home.heroGlbLabel': 'GLB checked for Google Swirl',
+  'site.home.outputsTitle': 'One photo, every format your ads need',
+  'site.home.outputsPhoto': 'Your photo',
+  'site.home.featModelEyebrow': 'Photo to 3D',
+  'site.home.featModelTitle': 'A real 3D model from one photo',
+  'site.home.featModelBody':
+    'Annie 3D builds your product as a true 3D model, so every angle, light and frame stays exact. Turn it, check it, and change any part by painting on it.',
+  'site.home.featVideoEyebrow': 'Ad videos',
+  'site.home.featVideoTitle': 'Ad videos in every format',
+  'site.home.featVideoBody':
+    'Turntables, hero orbits, teardown reveals and splash heroes, in 1:1, 4:5, 9:16 and 16:9, with your headline, logo and music.',
+  'site.home.featPackshotEyebrow': 'Packshots',
+  'site.home.featPackshotTitle': 'Packshots from any angle',
+  'site.home.featPackshotBody':
+    'Take four standard angles or frame the camera yourself, on a clean background or in a staged scene that fits your brand.',
+  'site.home.featPreviewEyebrow': 'Live previews',
+  'site.home.featPreviewTitle': 'See your ad where it will sell',
+  'site.home.featPreviewBody':
+    'Preview the real 3D product on a shop page, in a TikTok feed, as a chat sticker or in a showroom you steer from your phone.',
+  'site.home.featCanvasEyebrow': 'Canvas',
+  'site.home.featCanvasTitle': 'A workflow you can see and rewire',
+  'site.home.featCanvasBody':
+    'Every step is a node on one board: photo, 3D model, stage, packshot, ad video and export. Change one node and only what depends on it runs again.',
+  'site.home.stepsTitle': 'From photo to campaign in three steps',
+  'site.home.step1Title': 'Drop a product photo',
+  'site.home.step1Body':
+    'Start from a ready-made board or a blank canvas, and add the photo you already have.',
+  'site.home.step2Title': 'Build and stage it',
+  'site.home.step2Body':
+    'Annie 3D makes the 3D model; you pick a look, a camera move and the formats you need.',
+  'site.home.step3Title': 'Export and share',
+  'site.home.step3Body': 'Download GLB, MP4 and PNG files, or send a link anyone can open.',
+  'site.pricing.eyebrow': 'Pricing',
+  'site.pricing.title': 'Start free, pay as you grow',
+  'site.pricing.note':
+    'Pre-release prices. Payments open soon; every new account starts with {credits} free credits.',
+  'site.pricing.perMonth': '{price} per month',
+  'site.pricing.popular': 'Most popular',
+  'site.pricing.freeDesc': 'Try every node and run a complete example board.',
+  'site.pricing.creatorDesc': 'For sellers launching new products every month.',
+  'site.pricing.studioDesc': 'For brands and agencies with many products.',
+  'site.pricing.startCredits': { one: '{count} credit to start', other: '{count} credits to start' },
+  'site.pricing.monthlyCredits': { one: '{count} credit every month', other: '{count} credits every month' },
+  'site.pricing.allNodes': 'Every node and starter board',
+  'site.pricing.shareLinks': 'Share links and checked exports',
+  'site.pricing.everythingFree': 'Everything in Free',
+  'site.pricing.everythingCreator': 'Everything in Creator',
+  'site.pricing.refunds': 'Credits back when a check fails',
+  'site.pricing.support': 'Priority email support',
+  'site.pricing.startFree': 'Start free',
+  'site.pricing.choose': 'Choose {plan}',
+  'site.pricing.costTitle': 'What credits buy',
+  'site.pricing.costRange': '{min} to {max} credits',
+  'site.pricing.regionEdit': 'Region edit on a 3D model',
 
   // /legal/*
   'site.legal.draft': 'Draft for the pre-release · to be reviewed by counsel before launch',

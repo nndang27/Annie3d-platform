@@ -19,6 +19,7 @@
       "!apps/web/public/home",
       "!apps/web/public/legal",
       "!apps/web/public/_astro",
+      "!apps/web/public/media",
       "!apps/web/public/vi",
       "!apps/web/public/fr",
       "!apps/web/public/pt",

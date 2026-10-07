@@ -1,8 +1,8 @@
 ---
-import { Image } from 'astro:assets';
-import Base from '../../layouts/Base.astro';
 import { tagOf } from '@annie3d/i18n';
-import { FREE_RUN_CREDITS } from '../../../../../packages/contracts/src/credits';
+import { Image } from 'astro:assets';
+import { creditsFor, EDIT_CREDITS, FREE_RUN_CREDITS, PLANS } from '../../../../../packages/contracts/src/credits';
+import Base from '../../layouts/Base.astro';
 import { CANVAS, CONTACT_EMAIL, LINKEDIN, type LocaleProps, localeStaticPaths, pageT } from '../../lib/site';
 
 export const getStaticPaths = localeStaticPaths;
@@ -10,9 +10,72 @@ const { locale } = Astro.props as LocaleProps;
 const t = pageT(locale);
 // From a page in another language, opening the canvas keeps that language (see scripts/lang.ts).
 const keep = locale === 'en' ? undefined : locale;
-// The canvas in the page's language (scripts/site-screens.mjs takes them from the live site).
-const screens = import.meta.glob<{ default: ImageMetadata }>('../../assets/screens/canvas-*.webp', { eager: true });
-const screen = (screens[`../../assets/screens/canvas-${locale}.webp`] ?? screens['../../assets/screens/canvas-en.webp'])!.default;
+
+// Screenshots of the product in the page's language (scripts/site-screens.mjs), and the
+// product's own sample outputs (scripts/site-media.mjs).
+type Img = { default: ImageMetadata };
+const screens = import.meta.glob<Img>('../../assets/screens/*.webp', { eager: true });
+const screen = (name: string) =>
+  (screens[`../../assets/screens/${name}-${locale}.webp`] ?? screens[`../../assets/screens/${name}-en.webp`])!.default;
+const media = import.meta.glob<Img>('../../assets/media/*.webp', { eager: true });
+const m = (name: string) => media[`../../assets/media/${name}.webp`]!.default;
+
+const PRODUCTS = ['serum', 'headphones', 'ring'] as const;
+// "{price} per month" with the amount in bold: split the language's own sentence around it.
+const [perPre = '', perPost = ''] = t.template('site.pricing.perMonth').split('{price}');
+const usd = (n: number) => t.number(n, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+
+const outputs = [
+  { img: m('serum-photo'), label: t('site.home.outputsPhoto') },
+  { img: m('serum-packshot-three-quarter'), label: t('node.model3d') },
+  { img: m('serum-stage'), label: t('node.stage') },
+  { img: m('serum-packshot-front'), label: t('node.packshot') },
+];
+
+const plans = [
+  {
+    id: 'free',
+    name: t('dialog.billing.plan.free'),
+    price: usd(0),
+    desc: t('site.pricing.freeDesc'),
+    features: [
+      t('site.pricing.startCredits', { count: FREE_RUN_CREDITS }),
+      t('site.pricing.allNodes'),
+      t('site.pricing.shareLinks'),
+      t('site.pricing.refunds'),
+    ],
+    cta: t('site.pricing.startFree'),
+    popular: false,
+  },
+  ...PLANS.map((p) => ({
+    id: p.id,
+    name: t(`dialog.billing.plan.${p.id}`),
+    price: usd(p.priceMonthlyUsd),
+    desc: t(p.id === 'creator' ? 'site.pricing.creatorDesc' : 'site.pricing.studioDesc'),
+    features: [
+      t(p.id === 'creator' ? 'site.pricing.everythingFree' : 'site.pricing.everythingCreator'),
+      t('site.pricing.monthlyCredits', { count: p.creditsPerMonth }),
+      ...(p.id === 'studio' ? [t('site.pricing.support')] : [t('site.pricing.refunds')]),
+    ],
+    cta: t('site.pricing.choose', { plan: t(`dialog.billing.plan.${p.id}`) }),
+    popular: p.id === 'creator',
+  })),
+];
+
+// What each step costs, from the same function the canvas uses.
+const range = (vals: number[]) => {
+  const lo = Math.min(...vals);
+  const hi = Math.max(...vals);
+  return lo === hi ? t('common.credits', { count: lo }) : t('site.pricing.costRange', { min: lo, max: hi });
+};
+const costs = [
+  { label: t('node.model3d'), value: range(['draft', 'standard', 'high'].map((detail) => creditsFor('model3d', { detail }))) },
+  { label: t('node.stage'), value: range([creditsFor('stage', {})]) },
+  { label: t('node.packshot'), value: range(['1k', '2k'].map((size) => creditsFor('packshot', { size }))) },
+  { label: t('node.adVideo'), value: range([6, 10, 15].map((durationSec) => creditsFor('adVideo', { durationSec }))) },
+  { label: t('node.export'), value: range([creditsFor('export', {})]) },
+  { label: t('site.pricing.regionEdit'), value: range([EDIT_CREDITS]) },
+];
 
 const who = (['Sellers', 'Brands', 'Agencies'] as const).map((k) => ({
   title: t(`site.home.who${k}Title`),
@@ -30,6 +93,7 @@ const faq = [
   { q: t('site.home.faqLanguagesQ'), a: t('site.home.faqLanguagesA') },
   { q: t('site.home.faqWhoQ'), a: t('site.home.faqWhoA', { email: CONTACT_EMAIL }) },
 ];
+
 // Structured data (schema.org) for search engines and anything that verifies the company.
 const site = Astro.site!.origin;
 const jsonLd = [
@@ -60,7 +124,10 @@ const jsonLd = [
     operatingSystem: 'Web',
     url: `${site}${CANVAS}`,
     description: t('site.home.description'),
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    offers: [
+      { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD' },
+      ...PLANS.map((p) => ({ '@type': 'Offer', name: p.id, price: String(p.priceMonthlyUsd), priceCurrency: 'USD' })),
+    ],
     publisher: { '@id': `${site}/#organization` },
   },
   {
@@ -74,73 +141,213 @@ const jsonLd = [
 
 <Base locale={locale} title={t('site.home.title')} description={t('site.home.description')}>
   <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-  <section class="container-wide hero">
-    <div>
-      <p class="eyebrow">{t('site.home.eyebrow')}</p>
-      <h1 class="h1" style="margin-top:12px">{t('site.home.headline')}</h1>
-      <div class="hero-actions">
-        <a class="btn btn-primary btn-lg btn-pill" href={CANVAS} data-lang={keep} data-testid="hero-open-canvas">{t('site.nav.openCanvas')}</a>
+
+  <!-- Hero -->
+  <section class="lp-hero">
+    <div class="container lp-hero-copy">
+      <p class="lp-badge"><span class="lp-dot" aria-hidden="true"></span>{t('site.home.badge', { credits: FREE_RUN_CREDITS })}</p>
+      <h1 class="lp-display">{t('site.home.headline')}</h1>
+      <p class="lp-lead">{t('site.home.heroLead')}</p>
+      <div class="lp-actions">
+        <a class="lp-btn lp-btn-primary" href={CANVAS} data-lang={keep} data-testid="hero-open-canvas">{t('site.home.heroPrimary')}</a>
+        <a class="lp-btn lp-btn-ghost" href="#how">{t('site.home.heroSecondary')}</a>
+      </div>
+      <p class="lp-note">{t('site.home.heroNote')}</p>
+    </div>
+    <div class="container-wide lp-stage">
+      <figure class="lp-window">
+        <Image
+          src={screen('canvas')}
+          alt={t('site.home.screenshotAlt')}
+          widths={[800, 1200, 1600]}
+          sizes="(min-width: 1240px) 1200px, 100vw"
+          loading="eager"
+        />
+      </figure>
+      <div class="lp-float lp-float-video" aria-hidden="true">
+        <video src="/media/serum-ad-9x16.mp4" poster={m('serum-ad-poster').src} autoplay muted loop playsinline preload="metadata"></video>
+        <span class="lp-chip">{t('site.home.heroVideoLabel')}</span>
+      </div>
+      <div class="lp-float lp-float-glb" aria-hidden="true">
+        <Image src={m('ring-packshot-three-quarter')} alt="" widths={[240]} sizes="120px" />
+        <span class="lp-chip lp-chip-ok">{t('site.home.heroGlbLabel')}</span>
       </div>
     </div>
+  </section>
+
+  <!-- One photo, every format -->
+  <section class="lp-section container" id="features">
+    <h2 class="lp-h2 lp-center">{t('site.home.outputsTitle')}</h2>
+    <ol class="lp-flow">
+      {outputs.map((o) => (
+        <li class="lp-flow-item">
+          <Image src={o.img} alt={o.label} widths={[320, 480]} sizes="(min-width: 900px) 220px, 45vw" />
+          <span>{o.label}</span>
+        </li>
+      ))}
+      <li class="lp-flow-item lp-flow-video">
+        <video src="/media/headphones-ad-9x16.mp4" poster={m('headphones-ad-poster').src} muted loop playsinline autoplay preload="none" aria-label={t('node.adVideo')}></video>
+        <span>{t('node.adVideo')}</span>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Features, image and text in turn -->
+  <section class="lp-section container lp-feature">
+    <div class="lp-feature-copy">
+      <p class="lp-eyebrow">{t('site.home.featModelEyebrow')}</p>
+      <h2 class="lp-h2">{t('site.home.featModelTitle')}</h2>
+      <p class="lp-body">{t('site.home.featModelBody')}</p>
+    </div>
+    <figure class="lp-window lp-feature-media">
+      <Image src={screen('editor')} alt={t('site.home.featModelTitle')} widths={[800, 1200]} sizes="(min-width: 960px) 640px, 100vw" />
+    </figure>
+  </section>
+
+  <section class="lp-section container lp-feature lp-feature-flip">
+    <div class="lp-feature-copy">
+      <p class="lp-eyebrow">{t('site.home.featVideoEyebrow')}</p>
+      <h2 class="lp-h2">{t('site.home.featVideoTitle')}</h2>
+      <p class="lp-body">{t('site.home.featVideoBody')}</p>
+      <ul class="lp-formats" aria-label={t('site.home.featVideoTitle')}>
+        {['1:1', '4:5', '9:16', '16:9'].map((a) => <li>{a}</li>)}
+      </ul>
+    </div>
+    <div class="lp-phones lp-feature-media">
+      {PRODUCTS.map((p) => (
+        <div class="lp-phone">
+          <video src={`/media/${p}-ad-9x16.mp4`} poster={m(`${p}-ad-poster`).src} muted loop playsinline autoplay preload="none" aria-label={t('node.adVideo')}></video>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="lp-section container lp-feature">
+    <div class="lp-feature-copy">
+      <p class="lp-eyebrow">{t('site.home.featPackshotEyebrow')}</p>
+      <h2 class="lp-h2">{t('site.home.featPackshotTitle')}</h2>
+      <p class="lp-body">{t('site.home.featPackshotBody')}</p>
+    </div>
+    <div class="lp-grid4 lp-feature-media">
+      {['packshot-front', 'packshot-three-quarter', 'packshot-top', 'stage'].map((k) => (
+        <Image src={m(`headphones-${k}`)} alt={t('node.packshot')} widths={[320, 520]} sizes="(min-width: 960px) 300px, 45vw" />
+      ))}
+    </div>
+  </section>
+
+  <section class="lp-section container lp-feature lp-feature-flip">
+    <div class="lp-feature-copy">
+      <p class="lp-eyebrow">{t('site.home.featPreviewEyebrow')}</p>
+      <h2 class="lp-h2">{t('site.home.featPreviewTitle')}</h2>
+      <p class="lp-body">{t('site.home.featPreviewBody')}</p>
+    </div>
+    <div class="lp-stack lp-feature-media">
+      <figure class="lp-window"><Image src={screen('shop')} alt={t('simEnv.shop')} widths={[800, 1200]} sizes="(min-width: 960px) 600px, 100vw" /></figure>
+      <figure class="lp-window lp-stack-front"><Image src={screen('tiktok')} alt={t('simEnv.tiktok')} widths={[600, 900]} sizes="(min-width: 960px) 360px, 70vw" /></figure>
+    </div>
+  </section>
+
+  <section class="lp-section container lp-feature">
+    <div class="lp-feature-copy">
+      <p class="lp-eyebrow">{t('site.home.featCanvasEyebrow')}</p>
+      <h2 class="lp-h2">{t('site.home.featCanvasTitle')}</h2>
+      <p class="lp-body">{t('site.home.featCanvasBody')}</p>
+      <p><a class="lp-link" href={CANVAS} data-lang={keep}>{t('site.home.tryExample')} →</a></p>
+    </div>
+    <figure class="lp-window lp-feature-media">
+      <Image src={screen('canvas')} alt={t('site.home.screenshotAlt')} widths={[800, 1200]} sizes="(min-width: 960px) 640px, 100vw" />
+    </figure>
+  </section>
+
+  <!-- How it works -->
+  <section class="lp-section lp-band" id="how">
+    <div class="container">
+      <p class="lp-eyebrow lp-center">{t('site.nav.howItWorks')}</p>
+      <h2 class="lp-h2 lp-center">{t('site.home.stepsTitle')}</h2>
+      <ol class="lp-steps">
+        {[1, 2, 3].map((n) => (
+          <li>
+            <span class="lp-step-n">{n}</span>
+            <h3 class="lp-h3">{t(`site.home.step${n as 1 | 2 | 3}Title`)}</h3>
+            <p class="lp-body">{t(`site.home.step${n as 1 | 2 | 3}Body`)}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Who it is for -->
+  <section class="lp-section container">
+    <p class="lp-eyebrow">{t('site.home.whoEyebrow')}</p>
+    <h2 class="lp-h2">{t('site.home.whoTitle')}</h2>
+    <div class="lp-cards">
+      {who.map((w, i) => (
+        <div class="lp-card">
+          <Image src={m(`${PRODUCTS[i]}-packshot-front`)} alt="" widths={[160]} sizes="64px" class="lp-card-icon" />
+          <h3 class="lp-h3">{w.title}</h3>
+          <p class="lp-body">{w.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="lp-section container" id="pricing">
+    <p class="lp-eyebrow lp-center">{t('site.pricing.eyebrow')}</p>
+    <h2 class="lp-h2 lp-center">{t('site.pricing.title')}</h2>
+    <p class="lp-body lp-center lp-narrow">{t('site.pricing.note', { credits: FREE_RUN_CREDITS })}</p>
+    <div class="lp-plans">
+      {plans.map((p) => (
+        <div class:list={['lp-plan', { 'lp-plan-popular': p.popular }]} data-testid={`plan-${p.id}`}>
+          {p.popular && <span class="lp-plan-badge">{t('site.pricing.popular')}</span>}
+          <h3 class="lp-h3">{p.name}</h3>
+          <p class="lp-price">
+            {p.id === 'free' ? p.price : <>{perPre && <span class="lp-per">{perPre}</span>}{p.price}<span class="lp-per">{perPost}</span></>}
+          </p>
+          <p class="lp-body">{p.desc}</p>
+          <ul class="lp-checks">{p.features.map((f) => <li>{f}</li>)}</ul>
+          <a class:list={['lp-btn', p.popular ? 'lp-btn-primary' : 'lp-btn-ghost']} href={CANVAS} data-lang={keep}>{p.cta}</a>
+        </div>
+      ))}
+    </div>
+    <div class="lp-costs">
+      <h3 class="lp-h3">{t('site.pricing.costTitle')}</h3>
+      <dl>
+        {costs.map((c) => (
+          <div><dt>{c.label}</dt><dd>{c.value}</dd></div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <!-- Trust -->
+  <section class="lp-section container">
+    <p class="lp-eyebrow">{t('site.home.trustEyebrow')}</p>
+    <h2 class="lp-h2">{t('site.home.trustTitle')}</h2>
+    <div class="lp-cards lp-cards-4">
+      {trust.map((w) => (
+        <div class="lp-card"><h3 class="lp-h3">{w.title}</h3><p class="lp-body">{w.body}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Questions -->
+  <section class="lp-section container lp-faq" id="faq">
     <div>
-      <p class="lead">{t('site.home.lead')}</p>
+      <p class="lp-eyebrow">{t('site.home.faqEyebrow')}</p>
+      <h2 class="lp-h2">{t('site.home.faqTitle')}</h2>
+    </div>
+    <div class="lp-faq-list">
+      {faq.map((f) => <details><summary>{f.q}</summary><p class="lp-body">{f.a}</p></details>)}
     </div>
   </section>
 
-  <figure class="container-wide hero-shot">
-    <Image
-      src={screen}
-      alt={t('site.home.screenshotAlt')}
-      widths={[800, 1200, 1600]}
-      sizes="(min-width: 1240px) 1200px, 100vw"
-      loading="eager"
-    />
-  </figure>
-
-  <section class="section container" aria-labelledby="h-what">
-    <p class="eyebrow">{t('site.home.whatEyebrow')}</p>
-    <h2 id="h-what" class="h2" style="margin-top:10px">{t('site.home.whatTitle')}</h2>
-    <div class="steps" style="margin-top:32px">
-      <div class="step"><h3 class="h3">{t('site.home.videosTitle')}</h3><p class="body" style="margin-top:8px">{t('site.home.videosBody')}</p></div>
-      <div class="step"><h3 class="h3">{t('site.home.packshotsTitle')}</h3><p class="body" style="margin-top:8px">{t('site.home.packshotsBody')}</p></div>
-      <div class="step"><h3 class="h3">{t('site.home.glbTitle')}</h3><p class="body" style="margin-top:8px">{t('site.home.glbBody')}</p></div>
+  <!-- Closing call to action -->
+  <section class="container lp-cta">
+    <div class="lp-cta-inner">
+      <h2 class="lp-h2">{t('site.home.ctaTitle')}</h2>
+      <p class="lp-lead">{t('site.home.ctaBody')}</p>
+      <a class="lp-btn lp-btn-light" href={CANVAS} data-lang={keep}>{t('site.home.heroPrimary')}</a>
     </div>
-  </section>
-
-  <section class="section container" style="padding-top:0" aria-labelledby="h-how">
-    <p class="eyebrow">{t('site.home.howEyebrow')}</p>
-    <h2 id="h-how" class="h2" style="margin-top:10px">{t('site.home.howTitle')}</h2>
-    <p class="body" style="margin-top:12px;max-width:60ch">{t('site.home.howBody')}</p>
-    <p style="margin-top:24px"><a class="btn btn-secondary" href={CANVAS} data-lang={keep}>{t('site.home.tryExample')}</a></p>
-  </section>
-
-  <section class="section container" style="padding-top:0" aria-labelledby="h-who">
-    <p class="eyebrow">{t('site.home.whoEyebrow')}</p>
-    <h2 id="h-who" class="h2" style="margin-top:10px">{t('site.home.whoTitle')}</h2>
-    <div class="cards" style="margin-top:32px">
-      {who.map((w) => <div class="card-item"><h3 class="h3">{w.title}</h3><p class="body" style="margin-top:8px">{w.body}</p></div>)}
-    </div>
-  </section>
-
-  <section class="section container" style="padding-top:0" aria-labelledby="h-trust">
-    <p class="eyebrow">{t('site.home.trustEyebrow')}</p>
-    <h2 id="h-trust" class="h2" style="margin-top:10px">{t('site.home.trustTitle')}</h2>
-    <div class="cards cards-4" style="margin-top:32px">
-      {trust.map((w) => <div class="card-item"><h3 class="h3">{w.title}</h3><p class="body" style="margin-top:8px">{w.body}</p></div>)}
-    </div>
-  </section>
-
-  <section class="section container" style="padding-top:0" aria-labelledby="h-faq">
-    <p class="eyebrow">{t('site.home.faqEyebrow')}</p>
-    <h2 id="h-faq" class="h2" style="margin-top:10px">{t('site.home.faqTitle')}</h2>
-    <div class="faq" style="margin-top:24px">
-      {faq.map((f) => <details><summary>{f.q}</summary><p class="body">{f.a}</p></details>)}
-    </div>
-  </section>
-
-  <section class="section container cta-band" aria-labelledby="h-cta">
-    <h2 id="h-cta" class="h2">{t('site.home.ctaTitle')}</h2>
-    <p class="lead" style="margin-top:12px">{t('site.home.ctaBody')}</p>
-    <p style="margin-top:24px"><a class="btn btn-primary btn-lg btn-pill" href={CANVAS} data-lang={keep}>{t('site.nav.openCanvas')}</a></p>
   </section>
 </Base>

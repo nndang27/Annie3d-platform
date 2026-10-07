@@ -1,4 +1,4 @@
-import { APP_PATH, CheckoutRequest, EstimateRequest } from '@annie3d/contracts';
+import { APP_PATH, CheckoutRequest, EstimateRequest, PLANS } from '@annie3d/contracts';
 import { creditAccounts, creditEntries, grant, paymentEvents, subscriptions, workspaces } from '@annie3d/db';
 import { desc, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
@@ -12,12 +12,6 @@ import { sha256Hex } from '../services/hash';
 import { planRun } from '../services/plan';
 
 export const creditRoutes = new Hono<AppEnv>();
-
-/** Illustrative prices until payments launch (docs/MVP_STRATEGY.md §10). */
-export const PLANS = [
-  { id: 'creator' as const, priceMonthlyUsd: 19, creditsPerMonth: 300 },
-  { id: 'studio' as const, priceMonthlyUsd: 49, creditsPerMonth: 1000 },
-];
 
 creditRoutes.post('/api/boards/:boardId/runs/estimate', requireUser, async (c) => {
   const boardId = uuidParam(c, 'boardId');

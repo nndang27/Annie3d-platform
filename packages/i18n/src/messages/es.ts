@@ -1118,32 +1118,24 @@ const catalog: Catalog = {
   'site.nav.terms': 'Términos',
   'site.nav.contact': 'Contacto',
   'site.nav.languages': 'Idiomas',
+  'site.nav.features': 'Funciones',
+  'site.nav.howItWorks': 'Cómo funciona',
+  'site.nav.pricing': 'Precios',
+  'site.nav.faq': 'Preguntas',
+  'site.nav.signIn': 'Iniciar sesión',
+  'site.nav.menu': 'Menú',
+  'site.footer.product': 'Producto',
+  'site.footer.company': 'Empresa',
+  'site.footer.legal': 'Legal',
   'site.footer.copyright': '© 2026 Annie 3D, Australia.',
 
   // /home
   'site.home.title': 'Anuncios 3D de productos a partir de una foto',
   'site.home.description':
     'Annie 3D convierte una foto de producto en un modelo 3D real, videos publicitarios, packshots desde cualquier ángulo y un GLB animado, en un lienzo que puedes abrir sin registrarte.',
-  'site.home.eyebrow': 'Espacio de trabajo de publicidad 3D',
   'site.home.headline': 'Entra una foto de producto. Sale un anuncio 3D.',
-  'site.home.lead':
-    'Suelta una foto de producto en el lienzo. Annie 3D crea el producto como un modelo 3D real y te da un video publicitario, packshots desde cualquier ángulo, un GLB animado para tu tienda y un enlace que cualquiera puede abrir. Como todos los resultados salen del mismo modelo, tu producto se ve exactamente igual en todos.',
   'site.home.screenshotAlt':
     'El lienzo de Annie 3D: una foto del producto conectada a un modelo 3D y, luego, a packshots, un set, un video publicitario, una exportación y una vista previa de página de tienda.',
-  'site.home.whatEyebrow': 'Qué obtienes',
-  'site.home.whatTitle': 'Todo a partir de un solo modelo',
-  'site.home.videosTitle': 'Videos publicitarios',
-  'site.home.videosBody':
-    'Despieces reveladores para tecnología, piedra y agua para joyería, salpicaduras protagonistas para belleza, en 1:1, 4:5 y 9:16.',
-  'site.home.packshotsTitle': 'Packshots desde cualquier ángulo',
-  'site.home.packshotsBody': 'Encuadra la cámara tú mismo o usa cuatro ángulos estándar.',
-  'site.home.glbTitle': 'GLB animado',
-  'site.home.glbBody':
-    'Comprobado con los límites de la web, Google Merchant y Google Swirl antes de descargarlo.',
-  'site.home.howEyebrow': 'Cómo funciona',
-  'site.home.howTitle': 'Un lienzo de nodos que puedes reconectar',
-  'site.home.howBody':
-    'Empieza con un grafo ya preparado o añade tus propios nodos: foto, texto, modelo 3D, set, packshot, video publicitario y exportación. Selecciona una región del modelo y describe el cambio; cada edición se convierte en una nueva versión que puedes comparar o deshacer.',
   'site.home.tryExample': 'Probar el tablero de ejemplo',
   // Landing page: who it is for, trust, questions, closing call to action.
   'site.home.whoEyebrow': 'Para quién es',
@@ -1192,6 +1184,77 @@ const catalog: Catalog = {
   'site.home.ctaTitle': 'Convierte tu próxima foto de producto en un anuncio 3D',
   'site.home.ctaBody':
     'Abre el lienzo, prueba el tablero de ejemplo y ejecuta tu propia foto cuando quieras.',
+
+  // Landing page, full layout (2026-10-08).
+  'site.home.badge': 'Versión preliminar: empieza con {credits} créditos gratis',
+  'site.home.heroLead':
+    'Suelta una foto de producto. Annie 3D crea un modelo 3D real y te da videos publicitarios, packshots desde cualquier ángulo, un GLB animado y vistas previas en vivo en una página de tienda o en un feed de TikTok.',
+  'site.home.heroPrimary': 'Empieza gratis',
+  'site.home.heroSecondary': 'Mira cómo funciona',
+  'site.home.heroNote': 'Sin tarjeta. Funciona en tu navegador.',
+  'site.home.heroVideoLabel': 'Video publicitario, 9:16',
+  'site.home.heroGlbLabel': 'GLB comprobado para Google Swirl',
+  'site.home.outputsTitle': 'Una foto, todos los formatos que necesitan tus anuncios',
+  'site.home.outputsPhoto': 'Tu foto',
+  'site.home.featModelEyebrow': 'De foto a 3D',
+  'site.home.featModelTitle': 'Un modelo 3D real a partir de una foto',
+  'site.home.featModelBody':
+    'Annie 3D crea tu producto como un modelo 3D real, para que cada ángulo, luz y encuadre sea exacto. Gíralo, revísalo y cambia cualquier parte pintando sobre ella.',
+  'site.home.featVideoEyebrow': 'Videos publicitarios',
+  'site.home.featVideoTitle': 'Videos publicitarios en todos los formatos',
+  'site.home.featVideoBody':
+    'Plataformas giratorias, órbitas protagonistas, despieces reveladores y salpicaduras protagonistas, en 1:1, 4:5, 9:16 y 16:9, con tu titular, tu logo y tu música.',
+  'site.home.featPackshotEyebrow': 'Packshots',
+  'site.home.featPackshotTitle': 'Packshots desde cualquier ángulo',
+  'site.home.featPackshotBody':
+    'Usa cuatro ángulos estándar o encuadra la cámara tú mismo, sobre un fondo limpio o en una escena montada a la medida de tu marca.',
+  'site.home.featPreviewEyebrow': 'Vistas previas en vivo',
+  'site.home.featPreviewTitle': 'Mira tu anuncio donde va a vender',
+  'site.home.featPreviewBody':
+    'Previsualiza el producto 3D real en una página de tienda, en un feed de TikTok, como sticker de chat o en un showroom que controlas desde tu teléfono.',
+  'site.home.featCanvasEyebrow': 'Lienzo',
+  'site.home.featCanvasTitle': 'Un flujo de trabajo que puedes ver y reconectar',
+  'site.home.featCanvasBody':
+    'Cada paso es un nodo en un mismo tablero: foto, modelo 3D, set, packshot, video publicitario y exportación. Cambia un nodo y solo se vuelve a ejecutar lo que depende de él.',
+  'site.home.stepsTitle': 'De la foto a la campaña en tres pasos',
+  'site.home.step1Title': 'Suelta una foto de producto',
+  'site.home.step1Body':
+    'Empieza con un tablero ya preparado o con un lienzo en blanco, y añade la foto que ya tienes.',
+  'site.home.step2Title': 'Créalo y móntalo en escena',
+  'site.home.step2Body':
+    'Annie 3D crea el modelo 3D; tú eliges un estilo, un movimiento de cámara y los formatos que necesitas.',
+  'site.home.step3Title': 'Exporta y comparte',
+  'site.home.step3Body': 'Descarga archivos GLB, MP4 y PNG, o envía un enlace que cualquiera puede abrir.',
+  'site.pricing.eyebrow': 'Precios',
+  'site.pricing.title': 'Empieza gratis y paga a medida que creces',
+  'site.pricing.note':
+    'Precios de la versión preliminar. Los pagos se abrirán pronto; todas las cuentas nuevas empiezan con {credits} créditos gratis.',
+  'site.pricing.perMonth': '{price} al mes',
+  'site.pricing.popular': 'El más popular',
+  'site.pricing.freeDesc': 'Prueba todos los nodos y ejecuta un tablero de ejemplo completo.',
+  'site.pricing.creatorDesc': 'Para vendedores que lanzan productos nuevos cada mes.',
+  'site.pricing.studioDesc': 'Para marcas y agencias con muchos productos.',
+  'site.pricing.startCredits': {
+    one: '{count} crédito para empezar',
+    many: '{count} de créditos para empezar',
+    other: '{count} créditos para empezar',
+  },
+  'site.pricing.monthlyCredits': {
+    one: '{count} crédito al mes',
+    many: '{count} de créditos al mes',
+    other: '{count} créditos al mes',
+  },
+  'site.pricing.allNodes': 'Todos los nodos y tableros iniciales',
+  'site.pricing.shareLinks': 'Enlaces para compartir y exportaciones comprobadas',
+  'site.pricing.everythingFree': 'Todo lo del plan Gratis',
+  'site.pricing.everythingCreator': 'Todo lo del plan Creator',
+  'site.pricing.refunds': 'Recuperas los créditos si falla una comprobación',
+  'site.pricing.support': 'Soporte prioritario por correo electrónico',
+  'site.pricing.startFree': 'Empieza gratis',
+  'site.pricing.choose': 'Elegir {plan}',
+  'site.pricing.costTitle': 'Qué obtienes con los créditos',
+  'site.pricing.costRange': 'De {min} a {max} créditos',
+  'site.pricing.regionEdit': 'Edición de una región en un modelo 3D',
 
   // /legal/*
   'site.legal.draft':
@@ -1290,6 +1353,8 @@ export const sameAsEnglish: readonly string[] = [
   'desktop.menu.zoom',
   'site.meta.pageTitle',
   'site.footer.copyright',
+  'site.footer.legal',
+  'site.home.featPackshotEyebrow',
   'site.privacy.cookiesTitle',
 ];
 

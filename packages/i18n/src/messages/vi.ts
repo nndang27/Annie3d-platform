@@ -1023,32 +1023,24 @@ const catalog: Catalog = {
   'site.nav.terms': 'Điều khoản',
   'site.nav.contact': 'Liên hệ',
   'site.nav.languages': 'Ngôn ngữ',
+  'site.nav.features': 'Tính năng',
+  'site.nav.howItWorks': 'Cách hoạt động',
+  'site.nav.pricing': 'Bảng giá',
+  'site.nav.faq': 'Hỏi đáp',
+  'site.nav.signIn': 'Đăng nhập',
+  'site.nav.menu': 'Menu',
+  'site.footer.product': 'Sản phẩm',
+  'site.footer.company': 'Công ty',
+  'site.footer.legal': 'Pháp lý',
   'site.footer.copyright': '© 2026 Annie 3D, Úc.',
 
   // /home
   'site.home.title': 'Quảng cáo sản phẩm 3D từ một bức ảnh',
   'site.home.description':
     'Annie 3D biến một bức ảnh sản phẩm thành mô hình 3D thật, video quảng cáo, packshot ở mọi góc và GLB có hoạt ảnh, ngay trên khung vẽ bạn mở được mà không cần đăng ký.',
-  'site.home.eyebrow': 'Không gian làm quảng cáo 3D',
   'site.home.headline': 'Một ảnh sản phẩm vào. Một quảng cáo 3D ra.',
-  'site.home.lead':
-    'Thả ảnh sản phẩm lên khung vẽ. Annie 3D dựng sản phẩm thành mô hình 3D thật, rồi tạo cho bạn video quảng cáo, packshot từ mọi góc, GLB có hoạt ảnh cho cửa hàng và một đường liên kết ai cũng mở được. Vì mọi đầu ra đều từ cùng một mô hình, sản phẩm của bạn trông chuẩn xác ở tất cả.',
   'site.home.screenshotAlt':
     'Khung vẽ Annie 3D: ảnh sản phẩm nối vào mô hình 3D, rồi tới bộ packshot, bối cảnh, video quảng cáo, xuất tệp và trang cửa hàng xem trước.',
-  'site.home.whatEyebrow': 'Bạn nhận được gì',
-  'site.home.whatTitle': 'Tất cả từ một mô hình',
-  'site.home.videosTitle': 'Video quảng cáo',
-  'site.home.videosBody':
-    'Tháo rời từng lớp cho đồ công nghệ, đá và nước cho trang sức, tung nước nổi bật cho mỹ phẩm, ở tỷ lệ 1:1, 4:5 và 9:16.',
-  'site.home.packshotsTitle': 'Packshot ở mọi góc',
-  'site.home.packshotsBody': 'Tự căn khung camera hoặc dùng bốn góc chụp tiêu chuẩn.',
-  'site.home.glbTitle': 'GLB có hoạt ảnh',
-  'site.home.glbBody':
-    'Được kiểm tra theo giới hạn của web, Google Merchant và Google Swirl trước khi bạn tải xuống.',
-  'site.home.howEyebrow': 'Cách hoạt động',
-  'site.home.howTitle': 'Khung vẽ gồm các node bạn tự nối lại được',
-  'site.home.howBody':
-    'Bắt đầu từ một sơ đồ dựng sẵn hoặc tự thêm node: ảnh, văn bản, mô hình 3D, bối cảnh, packshot, video quảng cáo và xuất tệp. Chọn một vùng trên mô hình và mô tả thay đổi; mỗi lần chỉnh sửa tạo ra một phiên bản mới để bạn so sánh hoặc hoàn tác.',
   'site.home.tryExample': 'Dùng thử bảng ví dụ',
   // Landing page: who it is for, trust, questions, closing call to action.
   'site.home.whoEyebrow': 'Dành cho ai',
@@ -1096,6 +1088,68 @@ const catalog: Catalog = {
   'site.home.faqWhoA': 'Một nhóm phát triển sản phẩm nhỏ tại Úc. Hãy viết cho chúng tôi qua {email}.',
   'site.home.ctaTitle': 'Biến bức ảnh sản phẩm tiếp theo thành quảng cáo 3D',
   'site.home.ctaBody': 'Mở khung vẽ, dùng thử bảng ví dụ và chạy ảnh của riêng bạn khi bạn sẵn sàng.',
+
+  // Landing page, full layout (2026-10-08).
+  'site.home.badge': 'Tiền phát hành: bắt đầu với {credits} tín dụng miễn phí',
+  'site.home.heroLead':
+    'Thả một ảnh sản phẩm vào. Annie 3D dựng mô hình 3D thật, rồi tạo cho bạn video quảng cáo, packshot từ mọi góc, GLB có hoạt ảnh và bản xem trước trực tiếp trên trang cửa hàng hoặc bảng tin TikTok.',
+  'site.home.heroPrimary': 'Bắt đầu miễn phí',
+  'site.home.heroSecondary': 'Xem cách hoạt động',
+  'site.home.heroNote': 'Không cần thẻ. Chạy ngay trên trình duyệt.',
+  'site.home.heroVideoLabel': 'Video quảng cáo, 9:16',
+  'site.home.heroGlbLabel': 'GLB đã kiểm tra cho Google Swirl',
+  'site.home.outputsTitle': 'Một bức ảnh, đủ mọi định dạng quảng cáo bạn cần',
+  'site.home.outputsPhoto': 'Ảnh của bạn',
+  'site.home.featModelEyebrow': 'Ảnh thành 3D',
+  'site.home.featModelTitle': 'Mô hình 3D thật từ một bức ảnh',
+  'site.home.featModelBody':
+    'Annie 3D dựng sản phẩm của bạn thành mô hình 3D thật, nên mọi góc nhìn, ánh sáng và khung hình đều chính xác. Xoay để kiểm tra, và tô lên bất kỳ phần nào để thay đổi nó.',
+  'site.home.featVideoEyebrow': 'Video quảng cáo',
+  'site.home.featVideoTitle': 'Video quảng cáo ở mọi định dạng',
+  'site.home.featVideoBody':
+    'Bàn xoay, bay vòng quanh, tháo rời từng lớp và tung nước nổi bật, ở tỷ lệ 1:1, 4:5, 9:16 và 16:9, kèm tiêu đề, logo và nhạc của bạn.',
+  'site.home.featPackshotEyebrow': 'Packshot',
+  'site.home.featPackshotTitle': 'Packshot từ mọi góc',
+  'site.home.featPackshotBody':
+    'Dùng bốn góc chụp tiêu chuẩn hoặc tự căn khung camera, trên nền trơn hoặc trong bối cảnh dàn dựng hợp với thương hiệu.',
+  'site.home.featPreviewEyebrow': 'Xem trước trực tiếp',
+  'site.home.featPreviewTitle': 'Xem quảng cáo ngay tại nơi nó sẽ bán hàng',
+  'site.home.featPreviewBody':
+    'Xem trước sản phẩm 3D thật trên trang cửa hàng, trong bảng tin TikTok, dưới dạng nhãn dán trò chuyện hoặc trong phòng trưng bày bạn điều khiển bằng điện thoại.',
+  'site.home.featCanvasEyebrow': 'Khung vẽ',
+  'site.home.featCanvasTitle': 'Quy trình bạn nhìn thấy và nối lại được',
+  'site.home.featCanvasBody':
+    'Mỗi bước là một node trên cùng một bảng: ảnh, mô hình 3D, bối cảnh, packshot, video quảng cáo và xuất tệp. Đổi một node thì chỉ những gì phụ thuộc vào nó được chạy lại.',
+  'site.home.stepsTitle': 'Từ ảnh đến chiến dịch trong ba bước',
+  'site.home.step1Title': 'Thả một ảnh sản phẩm',
+  'site.home.step1Body': 'Bắt đầu từ một bảng dựng sẵn hoặc khung vẽ trống, rồi thêm bức ảnh bạn đã có.',
+  'site.home.step2Title': 'Dựng và dàn cảnh',
+  'site.home.step2Body':
+    'Annie 3D tạo mô hình 3D; bạn chọn phong cách, chuyển động camera và các định dạng cần dùng.',
+  'site.home.step3Title': 'Xuất và chia sẻ',
+  'site.home.step3Body': 'Tải xuống tệp GLB, MP4 và PNG, hoặc gửi đường liên kết ai cũng mở được.',
+  'site.pricing.eyebrow': 'Bảng giá',
+  'site.pricing.title': 'Bắt đầu miễn phí, trả phí khi bạn phát triển',
+  'site.pricing.note':
+    'Giá giai đoạn tiền phát hành. Thanh toán sẽ sớm mở; mọi tài khoản mới đều bắt đầu với {credits} tín dụng miễn phí.',
+  'site.pricing.perMonth': '{price}/tháng',
+  'site.pricing.popular': 'Phổ biến nhất',
+  'site.pricing.freeDesc': 'Dùng thử mọi node và chạy trọn một bảng ví dụ.',
+  'site.pricing.creatorDesc': 'Cho người bán ra mắt sản phẩm mới mỗi tháng.',
+  'site.pricing.studioDesc': 'Cho thương hiệu và agency có nhiều sản phẩm.',
+  'site.pricing.startCredits': { other: '{count} tín dụng để bắt đầu' },
+  'site.pricing.monthlyCredits': { other: '{count} tín dụng mỗi tháng' },
+  'site.pricing.allNodes': 'Mọi node và bảng mẫu khởi đầu',
+  'site.pricing.shareLinks': 'Đường liên kết chia sẻ và bản xuất đã kiểm tra',
+  'site.pricing.everythingFree': 'Mọi thứ trong gói Miễn phí',
+  'site.pricing.everythingCreator': 'Mọi thứ trong gói Creator',
+  'site.pricing.refunds': 'Hoàn tín dụng khi kiểm tra không đạt',
+  'site.pricing.support': 'Hỗ trợ ưu tiên qua email',
+  'site.pricing.startFree': 'Bắt đầu miễn phí',
+  'site.pricing.choose': 'Chọn gói {plan}',
+  'site.pricing.costTitle': 'Tín dụng dùng cho những gì',
+  'site.pricing.costRange': '{min} đến {max} tín dụng',
+  'site.pricing.regionEdit': 'Chỉnh sửa vùng trên mô hình 3D',
 
   // /legal/*
   'site.legal.draft': 'Bản nháp cho giai đoạn tiền phát hành · sẽ được luật sư rà soát trước khi ra mắt',
@@ -1157,6 +1211,7 @@ const catalog: Catalog = {
 
 /** Keys whose correct Vietnamese is the English text (names, loanwords). */
 export const sameAsEnglish: readonly string[] = [
+  'site.nav.menu',
   'topbar.studio',
   'node.packshot',
   'port.adVideo.logo',

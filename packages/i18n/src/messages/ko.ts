@@ -1019,31 +1019,24 @@ const catalog: Catalog = {
   'site.nav.terms': '이용약관',
   'site.nav.contact': '문의',
   'site.nav.languages': '언어',
+  'site.nav.features': '기능',
+  'site.nav.howItWorks': '작동 방식',
+  'site.nav.pricing': '요금제',
+  'site.nav.faq': '자주 묻는 질문',
+  'site.nav.signIn': '로그인',
+  'site.nav.menu': '메뉴',
+  'site.footer.product': '제품',
+  'site.footer.company': '회사',
+  'site.footer.legal': '법적 고지',
   'site.footer.copyright': '© 2026 Annie 3D, 호주.',
 
   // /home
   'site.home.title': '사진 한 장으로 만드는 3D 제품 광고',
   'site.home.description':
     'Annie 3D는 제품 사진 한 장을 실제 3D 모델, 광고 영상, 모든 각도의 팩샷, 애니메이션 GLB로 바꿔 줘요. 가입 없이 바로 캔버스를 열 수 있어요.',
-  'site.home.eyebrow': '3D 광고 워크스페이스',
   'site.home.headline': '제품 사진 한 장으로 3D 광고까지.',
-  'site.home.lead':
-    '캔버스에 제품 사진을 드롭하세요. Annie 3D가 제품을 실제 3D 모델로 만든 다음 광고 영상, 모든 각도의 팩샷, 스토어용 애니메이션 GLB, 누구나 열 수 있는 링크를 만들어 줘요. 모든 결과물이 같은 모델에서 나오기 때문에 어디서든 제품이 정확하게 보여요.',
   'site.home.screenshotAlt':
     'Annie 3D 캔버스: 제품 사진이 3D 모델로 연결되고, 다시 팩샷, 스테이지, 광고 영상, 내보내기, 쇼핑몰 페이지 미리보기로 이어져요.',
-  'site.home.whatEyebrow': '제공되는 결과물',
-  'site.home.whatTitle': '모델 하나로 모든 것을',
-  'site.home.videosTitle': '광고 영상',
-  'site.home.videosBody':
-    '테크 제품은 분해 리빌, 주얼리는 돌과 물, 뷰티는 스플래시 히어로로. 1:1, 4:5, 9:16 비율을 지원해요.',
-  'site.home.packshotsTitle': '모든 각도의 팩샷',
-  'site.home.packshotsBody': '카메라 구도를 직접 잡거나 표준 4개 각도로 촬영하세요.',
-  'site.home.glbTitle': '애니메이션 GLB',
-  'site.home.glbBody': '다운로드하기 전에 웹, Google Merchant, Google Swirl 기준을 충족하는지 검사해요.',
-  'site.home.howEyebrow': '작동 방식',
-  'site.home.howTitle': '자유롭게 다시 연결하는 노드 캔버스',
-  'site.home.howBody':
-    '미리 만들어진 그래프에서 시작하거나 사진, 텍스트, 3D 모델, 스테이지, 팩샷, 광고 영상, 내보내기 노드를 직접 추가하세요. 모델에서 영역을 선택하고 변경 사항을 설명하면, 모든 편집이 새 버전이 되어 비교하거나 되돌릴 수 있어요.',
   'site.home.tryExample': '예시 보드 사용해 보기',
   // Landing page: who it is for, trust, questions, closing call to action.
   'site.home.whoEyebrow': '이런 분께 추천해요',
@@ -1091,6 +1084,67 @@ const catalog: Catalog = {
   'site.home.faqWhoA': '호주에 있는 작은 제품 팀이 만들어요. 문의: {email}',
   'site.home.ctaTitle': '다음 제품 사진을 3D 광고로 만들어 보세요',
   'site.home.ctaBody': '캔버스를 열고 예시 보드를 사용해 본 다음, 준비되면 내 사진으로 실행해 보세요.',
+
+  // Landing page, full layout (2026-10-08).
+  'site.home.badge': '정식 출시 전: 무료 {credits}크레딧으로 시작하세요',
+  'site.home.heroLead':
+    '제품 사진을 드롭하세요. Annie 3D가 실제 3D 모델을 만든 다음 광고 영상, 모든 각도의 팩샷, 애니메이션 GLB, 쇼핑몰 페이지와 TikTok 피드에서 보는 실시간 미리보기까지 만들어 줘요.',
+  'site.home.heroPrimary': '무료로 시작하기',
+  'site.home.heroSecondary': '작동 방식 보기',
+  'site.home.heroNote': '카드 등록 없이 브라우저에서 바로 사용할 수 있어요.',
+  'site.home.heroVideoLabel': '광고 영상, 9:16',
+  'site.home.heroGlbLabel': 'Google Swirl 기준 검사를 마친 GLB',
+  'site.home.outputsTitle': '사진 한 장으로 광고에 필요한 모든 형식을',
+  'site.home.outputsPhoto': '내 사진',
+  'site.home.featModelEyebrow': '사진에서 3D로',
+  'site.home.featModelTitle': '사진 한 장으로 만드는 실제 3D 모델',
+  'site.home.featModelBody':
+    'Annie 3D가 제품을 실제 3D 모델로 만들기 때문에 모든 각도, 조명, 프레임이 정확하게 유지돼요. 돌려 보고, 확인하고, 원하는 부분을 칠해서 바꿀 수 있어요.',
+  'site.home.featVideoEyebrow': '광고 영상',
+  'site.home.featVideoTitle': '모든 형식의 광고 영상',
+  'site.home.featVideoBody':
+    '턴테이블, 히어로 오빗, 분해 리빌, 스플래시 히어로를 1:1, 4:5, 9:16, 16:9 비율로, 헤드라인과 로고, 음악을 넣어 만들어요.',
+  'site.home.featPackshotEyebrow': '팩샷',
+  'site.home.featPackshotTitle': '모든 각도의 팩샷',
+  'site.home.featPackshotBody':
+    '표준 4개 각도로 촬영하거나 카메라 구도를 직접 잡으세요. 깔끔한 배경에서도, 브랜드에 어울리는 연출된 씬에서도 촬영할 수 있어요.',
+  'site.home.featPreviewEyebrow': '실시간 미리보기',
+  'site.home.featPreviewTitle': '광고가 실제로 판매될 곳에서 미리 보기',
+  'site.home.featPreviewBody':
+    '실제 3D 제품을 쇼핑몰 페이지, TikTok 피드, 채팅 스티커, 휴대폰으로 조종하는 쇼룸에서 미리 볼 수 있어요.',
+  'site.home.featCanvasEyebrow': '캔버스',
+  'site.home.featCanvasTitle': '한눈에 보고 다시 연결하는 워크플로',
+  'site.home.featCanvasBody':
+    '사진, 3D 모델, 스테이지, 팩샷, 광고 영상, 내보내기까지 모든 단계가 하나의 보드 위 노드예요. 노드 하나를 바꾸면 그 노드에 연결된 부분만 다시 실행돼요.',
+  'site.home.stepsTitle': '세 단계로 사진에서 캠페인까지',
+  'site.home.step1Title': '제품 사진 드롭',
+  'site.home.step1Body': '미리 만들어진 보드나 빈 캔버스에서 시작해 가지고 있는 사진을 추가하세요.',
+  'site.home.step2Title': '3D로 만들고 연출하기',
+  'site.home.step2Body': 'Annie 3D가 3D 모델을 만들면 룩, 카메라 움직임, 필요한 형식을 고르세요.',
+  'site.home.step3Title': '내보내고 공유하기',
+  'site.home.step3Body': 'GLB, MP4, PNG 파일을 다운로드하거나 누구나 열 수 있는 링크를 보내세요.',
+  'site.pricing.eyebrow': '요금제',
+  'site.pricing.title': '무료로 시작하고, 필요한 만큼 결제하세요',
+  'site.pricing.note':
+    '정식 출시 전 가격이에요. 결제는 곧 열리며, 모든 새 계정은 무료 {credits}크레딧으로 시작해요.',
+  'site.pricing.perMonth': '월 {price}',
+  'site.pricing.popular': '가장 인기',
+  'site.pricing.freeDesc': '모든 노드를 사용해 보고 예시 보드 하나를 처음부터 끝까지 실행해 보세요.',
+  'site.pricing.creatorDesc': '매달 신제품을 출시하는 판매자를 위한 플랜',
+  'site.pricing.studioDesc': '제품이 많은 브랜드와 에이전시를 위한 플랜',
+  'site.pricing.startCredits': { other: '시작할 때 {count}크레딧 제공' },
+  'site.pricing.monthlyCredits': { other: '매월 {count}크레딧' },
+  'site.pricing.allNodes': '모든 노드와 스타터 보드',
+  'site.pricing.shareLinks': '공유 링크와 검사를 마친 내보내기',
+  'site.pricing.everythingFree': '무료 플랜의 모든 기능',
+  'site.pricing.everythingCreator': 'Creator 플랜의 모든 기능',
+  'site.pricing.refunds': '검사에 실패하면 크레딧 환불',
+  'site.pricing.support': '우선 이메일 지원',
+  'site.pricing.startFree': '무료로 시작하기',
+  'site.pricing.choose': '{plan} 선택',
+  'site.pricing.costTitle': '크레딧으로 할 수 있는 작업',
+  'site.pricing.costRange': '{min}~{max}크레딧',
+  'site.pricing.regionEdit': '3D 모델 영역 편집',
 
   // /legal/*
   'site.legal.draft': '정식 출시 전 초안 · 출시 전 법률 자문 검토 예정',

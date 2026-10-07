@@ -15,7 +15,7 @@ import type { Catalog } from '../index';
  * check / quality gate = チェック / 品質チェック, agent = エージェント, workspace = ワークスペース,
  * process reel = メイキングリール, sticker = スタンプ, showroom = ショールーム, phone = スマートフォン
  * (short: スマホ), line of nodes = フロー, undo / redo = 取り消す / やり直す, paste = ペースト,
- * lasso = なげなわ, plan names = フリー / クリエイター / スタジオ.
+ * lasso = なげなわ, plan names = フリー (Free) / Creator / Studio (Creator and Studio stay in Latin letters).
  * Style: です/ます in sentences, noun phrases on buttons, full-width 、。「」（）：, counters without a space
  * ("{count}個", "{count}件"), units with a space ("{size} MB", "{texture} px").
  */
@@ -1026,32 +1026,24 @@ const catalog: Catalog = {
   'site.nav.terms': '利用規約',
   'site.nav.contact': 'お問い合わせ',
   'site.nav.languages': '言語',
+  'site.nav.features': '機能',
+  'site.nav.howItWorks': '使い方',
+  'site.nav.pricing': '料金',
+  'site.nav.faq': 'よくある質問',
+  'site.nav.signIn': 'ログイン',
+  'site.nav.menu': 'メニュー',
+  'site.footer.product': '製品',
+  'site.footer.company': '会社情報',
+  'site.footer.legal': '法的情報',
   'site.footer.copyright': '© 2026 Annie 3D（オーストラリア）',
 
   // /home
   'site.home.title': '1枚の写真から作る3D製品広告',
   'site.home.description':
     'Annie 3Dは、1枚の製品写真から本物の3Dモデル、広告動画、あらゆる角度のパックショット、アニメーション付きGLBを作成します。キャンバスは登録なしで開けます。',
-  'site.home.eyebrow': '3D広告ワークスペース',
   'site.home.headline': '製品写真1枚から、3D広告へ。',
-  'site.home.lead':
-    'キャンバスに製品写真をドロップするだけ。Annie 3Dが製品を本物の3Dモデルとして構築し、広告動画、あらゆる角度のパックショット、ストア用のアニメーション付きGLB、誰でも開ける共有リンクを用意します。すべての出力が同じモデルから生まれるので、どの出力でも製品が正確に再現されます。',
   'site.home.screenshotAlt':
-    'Annie 3D のキャンバス：製品写真が3Dモデルにつながり、パックショット、ステージ、広告動画、エクスポート、商品ページのプレビューへと続きます。',
-  'site.home.whatEyebrow': 'できること',
-  'site.home.whatTitle': 'ひとつのモデルからすべてを',
-  'site.home.videosTitle': '広告動画',
-  'site.home.videosBody':
-    'テック製品には分解リビール、ジュエリーには石と水、コスメにはスプラッシュヒーロー。1:1、4:5、9:16に対応します。',
-  'site.home.packshotsTitle': 'あらゆる角度のパックショット',
-  'site.home.packshotsBody': 'カメラを自分でフレーミングするか、標準の4アングルを使えます。',
-  'site.home.glbTitle': 'アニメーション付きGLB',
-  'site.home.glbBody':
-    'ダウンロード前に、Web、Google Merchant、Google Swirlの制限を満たしているかチェックします。',
-  'site.home.howEyebrow': '使い方',
-  'site.home.howTitle': 'つなぎ直せるノードのキャンバス',
-  'site.home.howBody':
-    '用意されたグラフから始めるか、写真、テキスト、3Dモデル、ステージ、パックショット、広告動画、エクスポートのノードを自分で追加します。モデル上の領域を選んで変更内容を伝えるだけ。すべての編集は新しいバージョンになり、比較や取り消しができます。',
+    'Annie 3Dのキャンバス：製品写真が3Dモデルにつながり、パックショット、ステージ、広告動画、エクスポート、商品ページのプレビューへと続きます。',
   'site.home.tryExample': 'サンプルボードを試す',
   // Landing page: who it is for, trust, questions, closing call to action.
   'site.home.whoEyebrow': 'こんな方に',
@@ -1101,6 +1093,68 @@ const catalog: Catalog = {
   'site.home.ctaTitle': '次の製品写真を、3D広告に',
   'site.home.ctaBody':
     'キャンバスを開いてサンプルボードを試し、準備ができたら自分の写真で実行してみましょう。',
+
+  // Landing page, full layout (2026-10-08).
+  'site.home.badge': 'プレリリース：{credits} クレジット無料で始められます',
+  'site.home.heroLead':
+    '製品写真をドロップするだけ。Annie 3Dが本物の3Dモデルを構築し、広告動画、あらゆる角度のパックショット、アニメーション付きGLB、商品ページやTikTokフィードでのライブプレビューを用意します。',
+  'site.home.heroPrimary': '無料で始める',
+  'site.home.heroSecondary': '使い方を見る',
+  'site.home.heroNote': 'カード登録は不要。ブラウザで使えます。',
+  'site.home.heroVideoLabel': '広告動画（9:16）',
+  'site.home.heroGlbLabel': 'Google Swirl向けチェック済みGLB',
+  'site.home.outputsTitle': '1枚の写真から、広告に必要なすべてのフォーマットを',
+  'site.home.outputsPhoto': 'あなたの写真',
+  'site.home.featModelEyebrow': '写真から3Dへ',
+  'site.home.featModelTitle': '1枚の写真から本物の3Dモデルを',
+  'site.home.featModelBody':
+    'Annie 3Dは製品を本物の3Dモデルとして構築するので、どのアングル、ライト、フレームでも正確です。回転させて確認し、ペイントするだけでどの部分でも変更できます。',
+  'site.home.featVideoEyebrow': '広告動画',
+  'site.home.featVideoTitle': 'あらゆるフォーマットの広告動画',
+  'site.home.featVideoBody':
+    'ターンテーブル、ヒーローオービット、分解リビール、スプラッシュヒーローを、1:1、4:5、9:16、16:9で。見出し、ロゴ、音楽も入れられます。',
+  'site.home.featPackshotEyebrow': 'パックショット',
+  'site.home.featPackshotTitle': 'あらゆる角度のパックショット',
+  'site.home.featPackshotBody':
+    '標準の4アングルを使うか、カメラを自分でフレーミング。無地の背景にも、ブランドに合った演出シーンにも対応します。',
+  'site.home.featPreviewEyebrow': 'ライブプレビュー',
+  'site.home.featPreviewTitle': '売り場での見え方をその場で確認',
+  'site.home.featPreviewBody':
+    '実際の3D製品を、商品ページ、TikTokフィード、チャット用スタンプ、スマートフォンで操作するショールームでプレビューできます。',
+  'site.home.featCanvasEyebrow': 'キャンバス',
+  'site.home.featCanvasTitle': '見える、つなぎ直せるワークフロー',
+  'site.home.featCanvasBody':
+    'すべてのステップは、1つのボード上のノード（写真、3Dモデル、ステージ、パックショット、広告動画、エクスポート）です。ノードを1つ変更すると、それに依存する部分だけが再実行されます。',
+  'site.home.stepsTitle': '写真からキャンペーンまで、3ステップ',
+  'site.home.step1Title': '製品写真をドロップ',
+  'site.home.step1Body': '用意されたボードか白紙のキャンバスから始めて、手持ちの写真を追加します。',
+  'site.home.step2Title': '3Dモデルを作り、演出する',
+  'site.home.step2Body':
+    'Annie 3Dが3Dモデルを作成します。あなたはルック、カメラワーク、必要なフォーマットを選ぶだけです。',
+  'site.home.step3Title': 'エクスポートして共有',
+  'site.home.step3Body': 'GLB、MP4、PNGファイルをダウンロードするか、誰でも開けるリンクを送れます。',
+  'site.pricing.eyebrow': '料金',
+  'site.pricing.title': '無料で始めて、成長に合わせてアップグレード',
+  'site.pricing.note':
+    'プレリリース価格です。お支払いの受付はまもなく開始します。新規アカウントにはすべて{credits} クレジットが無料で付与されます。',
+  'site.pricing.perMonth': '{price}/月',
+  'site.pricing.popular': '一番人気',
+  'site.pricing.freeDesc': 'すべてのノードを試し、サンプルボードを最後まで実行できます。',
+  'site.pricing.creatorDesc': '毎月新製品を発売する販売者向け。',
+  'site.pricing.studioDesc': '多くの製品を扱うブランド・代理店向け。',
+  'site.pricing.startCredits': { other: 'スタート時に{count} クレジット' },
+  'site.pricing.monthlyCredits': { other: '毎月{count} クレジット' },
+  'site.pricing.allNodes': 'すべてのノードとスターターボード',
+  'site.pricing.shareLinks': '共有リンクとチェック済みのエクスポート',
+  'site.pricing.everythingFree': 'フリーの全機能',
+  'site.pricing.everythingCreator': 'Creator の全機能',
+  'site.pricing.refunds': 'チェック不合格ならクレジットを返還',
+  'site.pricing.support': '優先メールサポート',
+  'site.pricing.startFree': '無料で始める',
+  'site.pricing.choose': '{plan}を選択',
+  'site.pricing.costTitle': 'クレジットの使い道',
+  'site.pricing.costRange': '{min}〜{max} クレジット',
+  'site.pricing.regionEdit': '3Dモデルの領域編集',
 
   // /legal/*
   'site.legal.draft': 'プレリリース版の草案・公開前に法律顧問による確認を予定',

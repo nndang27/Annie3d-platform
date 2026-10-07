@@ -22,6 +22,7 @@ perf-results/poster-app
 apps/web/public/home
 apps/web/public/legal
 apps/web/public/_astro
+apps/web/public/media
 apps/web/public/sitemap-*.xml
 # Site pages in other languages (scripts/copy-site.mjs)
 apps/web/public/vi

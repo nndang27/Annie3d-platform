@@ -1117,32 +1117,24 @@ const catalog: Catalog = {
   'site.nav.terms': 'Conditions',
   'site.nav.contact': 'Contact',
   'site.nav.languages': 'Langues',
+  'site.nav.features': 'Fonctionnalités',
+  'site.nav.howItWorks': 'Comment ça marche',
+  'site.nav.pricing': 'Tarifs',
+  'site.nav.faq': 'FAQ',
+  'site.nav.signIn': 'Se connecter',
+  'site.nav.menu': 'Menu',
+  'site.footer.product': 'Produit',
+  'site.footer.company': 'Entreprise',
+  'site.footer.legal': 'Légal',
   'site.footer.copyright': '© 2026 Annie 3D, Australie.',
 
   // /home
   'site.home.title': 'Des pubs produit 3D à partir d’une seule photo',
   'site.home.description':
     'Annie 3D transforme une simple photo produit en véritable modèle 3D, en spots vidéo, en packshots sous tous les angles et en GLB animé, sur un canevas accessible sans inscription.',
-  'site.home.eyebrow': 'Espace de travail pour la publicité 3D',
   'site.home.headline': 'Une photo produit en entrée. Une pub 3D en sortie.',
-  'site.home.lead':
-    'Déposez une photo produit sur le canevas. Annie 3D reconstruit le produit en véritable modèle 3D, puis vous livre un spot vidéo, des packshots sous tous les angles, un GLB animé pour votre boutique et un lien que tout le monde peut ouvrir. Comme chaque rendu provient du même modèle, votre produit est fidèle partout.',
   'site.home.screenshotAlt':
     'Le canevas Annie 3D : une photo produit reliée à un modèle 3D, puis à des packshots, un plateau, un spot vidéo, un export et un aperçu de page boutique.',
-  'site.home.whatEyebrow': 'Ce que vous obtenez',
-  'site.home.whatTitle': 'Tout à partir d’un seul modèle',
-  'site.home.videosTitle': 'Spots vidéo',
-  'site.home.videosBody':
-    'Vues éclatées pour la tech, pierre et eau pour les bijoux, éclaboussures pour la beauté, en 1:1, 4:5 et 9:16.',
-  'site.home.packshotsTitle': 'Packshots sous tous les angles',
-  'site.home.packshotsBody': 'Cadrez vous-même la caméra ou utilisez quatre angles standard.',
-  'site.home.glbTitle': 'GLB animé',
-  'site.home.glbBody':
-    'Vérifié selon les limites du web, de Google Merchant et de Google Swirl avant le téléchargement.',
-  'site.home.howEyebrow': 'Comment ça marche',
-  'site.home.howTitle': 'Un canevas de nœuds à reconnecter à volonté',
-  'site.home.howBody':
-    'Partez d’un graphe prêt à l’emploi ou ajoutez vos propres nœuds : photo, texte, modèle 3D, plateau, packshot, spot vidéo et export. Sélectionnez une zone du modèle et décrivez la modification ; chaque retouche devient une nouvelle version que vous pouvez comparer ou annuler.',
   'site.home.tryExample': 'Essayer le tableau d’exemple',
   // Landing page: who it is for, trust, questions, closing call to action.
   'site.home.whoEyebrow': 'Pour qui',
@@ -1192,6 +1184,78 @@ const catalog: Catalog = {
   'site.home.ctaTitle': 'Transformez votre prochaine photo produit en pub 3D',
   'site.home.ctaBody':
     'Ouvrez le canevas, essayez le tableau d’exemple, puis lancez votre propre photo dès que vous le souhaitez.',
+
+  // Landing page, full layout (2026-10-08).
+  'site.home.badge': 'Préversion : commencez avec {credits} crédits offerts',
+  'site.home.heroLead':
+    'Déposez une photo produit. Annie 3D en fait un véritable modèle 3D, puis vous livre des spots vidéo, des packshots sous tous les angles, un GLB animé et des aperçus en direct sur une page boutique ou dans un fil TikTok.',
+  'site.home.heroPrimary': 'Commencer gratuitement',
+  'site.home.heroSecondary': 'Voir comment ça marche',
+  'site.home.heroNote': 'Sans carte bancaire. Directement dans votre navigateur.',
+  'site.home.heroVideoLabel': 'Spot vidéo, 9:16',
+  'site.home.heroGlbLabel': 'GLB vérifié pour Google Swirl',
+  'site.home.outputsTitle': 'Une photo, tous les formats dont vos pubs ont besoin',
+  'site.home.outputsPhoto': 'Votre photo',
+  'site.home.featModelEyebrow': 'De la photo à la 3D',
+  'site.home.featModelTitle': 'Un vrai modèle 3D à partir d’une seule photo',
+  'site.home.featModelBody':
+    'Annie 3D reconstruit votre produit en véritable modèle 3D : chaque angle, chaque éclairage et chaque cadrage restent exacts. Faites-le pivoter, vérifiez-le et modifiez n’importe quelle partie en peignant dessus.',
+  'site.home.featVideoEyebrow': 'Spots vidéo',
+  'site.home.featVideoTitle': 'Des spots vidéo dans tous les formats',
+  'site.home.featVideoBody':
+    'Rotations 360°, orbites vedettes, vues éclatées et éclaboussures vedettes, en 1:1, 4:5, 9:16 et 16:9, avec votre accroche, votre logo et votre musique.',
+  'site.home.featPackshotEyebrow': 'Packshots',
+  'site.home.featPackshotTitle': 'Des packshots sous tous les angles',
+  'site.home.featPackshotBody':
+    'Prenez quatre angles standard ou cadrez vous-même la caméra, sur fond neutre ou dans une scène à l’image de votre marque.',
+  'site.home.featPreviewEyebrow': 'Aperçus en direct',
+  'site.home.featPreviewTitle': 'Voyez votre pub là où elle fera vendre',
+  'site.home.featPreviewBody':
+    'Prévisualisez le vrai produit 3D sur une page boutique, dans un fil TikTok, en sticker de messagerie ou dans un showroom piloté depuis votre téléphone.',
+  'site.home.featCanvasEyebrow': 'Canevas',
+  'site.home.featCanvasTitle': 'Un flux de travail visible, à reconnecter à volonté',
+  'site.home.featCanvasBody':
+    'Chaque étape est un nœud sur un même tableau : photo, modèle 3D, plateau, packshot, spot vidéo et export. Modifiez un nœud, et seul ce qui en dépend est relancé.',
+  'site.home.stepsTitle': 'De la photo à la campagne en trois étapes',
+  'site.home.step1Title': 'Déposez une photo produit',
+  'site.home.step1Body':
+    'Partez d’un tableau prêt à l’emploi ou d’un canevas vierge, et ajoutez la photo que vous avez déjà.',
+  'site.home.step2Title': 'Modélisez et mettez en scène',
+  'site.home.step2Body':
+    'Annie 3D crée le modèle 3D ; vous choisissez une ambiance, un mouvement de caméra et les formats dont vous avez besoin.',
+  'site.home.step3Title': 'Exportez et partagez',
+  'site.home.step3Body':
+    'Téléchargez des fichiers GLB, MP4 et PNG, ou envoyez un lien que tout le monde peut ouvrir.',
+  'site.pricing.eyebrow': 'Tarifs',
+  'site.pricing.title': 'Commencez gratuitement, payez selon vos besoins',
+  'site.pricing.note':
+    'Tarifs de préversion. Les paiements ouvrent bientôt ; chaque nouveau compte démarre avec {credits} crédits offerts.',
+  'site.pricing.perMonth': '{price} par mois',
+  'site.pricing.popular': 'Le plus populaire',
+  'site.pricing.freeDesc': 'Essayez tous les nœuds et lancez un tableau d’exemple complet.',
+  'site.pricing.creatorDesc': 'Pour les vendeurs qui lancent de nouveaux produits chaque mois.',
+  'site.pricing.studioDesc': 'Pour les marques et les agences qui gèrent de nombreux produits.',
+  'site.pricing.startCredits': {
+    one: '{count} crédit pour commencer',
+    many: '{count} de crédits pour commencer',
+    other: '{count} crédits pour commencer',
+  },
+  'site.pricing.monthlyCredits': {
+    one: '{count} crédit par mois',
+    many: '{count} de crédits par mois',
+    other: '{count} crédits par mois',
+  },
+  'site.pricing.allNodes': 'Tous les nœuds et modèles de tableau',
+  'site.pricing.shareLinks': 'Liens de partage et exports vérifiés',
+  'site.pricing.everythingFree': 'Tout le forfait Gratuit',
+  'site.pricing.everythingCreator': 'Tout le forfait Creator',
+  'site.pricing.refunds': 'Crédits rendus en cas d’échec d’un contrôle',
+  'site.pricing.support': 'Assistance prioritaire par e-mail',
+  'site.pricing.startFree': 'Commencer gratuitement',
+  'site.pricing.choose': 'Choisir {plan}',
+  'site.pricing.costTitle': 'Ce que permettent les crédits',
+  'site.pricing.costRange': '{min} à {max} crédits',
+  'site.pricing.regionEdit': 'Modification d’une zone d’un modèle 3D',
 
   // /legal/*
   'site.legal.draft': 'Version provisoire de la préversion · à faire relire par un avocat avant le lancement',
@@ -1306,6 +1370,9 @@ export const sameAsEnglish: readonly string[] = [
   'desktop.menu.services',
   'site.meta.pageTitle',
   'site.nav.contact',
+  'site.nav.faq',
+  'site.nav.menu',
+  'site.home.featPackshotEyebrow',
   'site.home.faqEyebrow',
   'site.privacy.cookiesTitle',
 ];

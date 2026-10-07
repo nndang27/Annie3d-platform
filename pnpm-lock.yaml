@@ -81,6 +81,9 @@ importers:
 
   apps/site:
     dependencies:
+      '@annie3d/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@annie3d/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
@@ -90,6 +93,9 @@ importers:
       '@astrojs/sitemap':
         specifier: ^3.7.4
         version: 3.7.4
+      '@fontsource-variable/instrument-sans':
+        specifier: 5.3.0
+        version: 5.3.0
       '@fontsource-variable/inter':
         specifier: ^5.3.0
         version: 5.3.0

@@ -20,7 +20,7 @@ for (const d of readdirSync(dst))
   if (/^[a-z]{2}$/.test(d) && !codes.includes(d) && existsSync(`${dst}/${d}/home`))
     rmSync(`${dst}/${d}`, { recursive: true, force: true });
 
-for (const p of ['home', 'legal', ...codes, '_astro', 'sitemap-index.xml', 'sitemap-0.xml']) {
+for (const p of ['home', 'legal', ...codes, '_astro', 'media', 'sitemap-index.xml', 'sitemap-0.xml']) {
   rmSync(`${dst}/${p}`, { recursive: true, force: true });
   if (existsSync(`${src}/${p}`)) cpSync(`${src}/${p}`, `${dst}/${p}`, { recursive: true });
 }

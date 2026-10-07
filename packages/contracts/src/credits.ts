@@ -26,3 +26,12 @@ export const EDIT_CREDITS = 4;
 
 /** Credits granted with the first sign-in: enough for one full Starter graph run. */
 export const FREE_RUN_CREDITS = 60;
+
+/**
+ * Paid plans: illustrative prices until payments launch (docs/MVP_STRATEGY.md §10). One list for
+ * the checkout (Worker) and the landing page's pricing (apps/site).
+ */
+export const PLANS = [
+  { id: 'creator' as const, priceMonthlyUsd: 19, creditsPerMonth: 300 },
+  { id: 'studio' as const, priceMonthlyUsd: 49, creditsPerMonth: 1000 },
+];

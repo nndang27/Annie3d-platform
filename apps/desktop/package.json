@@ -6,7 +6,7 @@
   "description": "Annie 3D desktop app (Electron shell around the web app)",
   "author": {
     "name": "Annie 3D",
-    "email": "hello@annie3d.app"
+    "email": "ngocdang.nguyen@annie3d.app"
   },
   "homepage": "https://annie3d.nndang2701.workers.dev",
   "main": "dist/main.js",

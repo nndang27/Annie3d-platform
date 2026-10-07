@@ -61,7 +61,7 @@ linux:
   icon: build/icon-square.png
   category: Graphics
   target: [AppImage, deb]
-  maintainer: Annie 3D <hello@annie3d.app>
+  maintainer: Annie 3D <ngocdang.nguyen@annie3d.app>
   executableName: annie3d
 publish:
   - provider: generic

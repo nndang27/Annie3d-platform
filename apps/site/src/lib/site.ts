@@ -3,7 +3,9 @@ import { translator } from '@annie3d/i18n/all';
 
 /** The canvas workspace is served at the site root; this static site only hosts /home and /legal. */
 export const CANVAS = '/';
-export const CONTACT_EMAIL = 'hello@annie3d.example';
+export const CONTACT_EMAIL = 'ngocdang.nguyen@annie3d.app';
+/** The company page; the name stays "LinkedIn" in every language (a brand). */
+export const LINKEDIN = 'https://www.linkedin.com/company/annie3d';
 
 /**
  * English pages stay at their paths (/home, /legal/terms); every other language lives under
